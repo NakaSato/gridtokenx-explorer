@@ -1,8 +1,5 @@
-import { withSentryConfig } from '@sentry/nextjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-import { createSentryBuildConfig } from './sentry/config.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,8 +66,7 @@ const nextConfig = {
     },
 };
 
-/// Add wrapper to track errors with Sentry
-export default withSentryConfig(nextConfig, createSentryBuildConfig());
+export default nextConfig;
 
 /// We going to handle Sentry errors step-by-step by cathcing unhandled exceptions route-wise
 /// See: https://nextjs.org/docs/app/getting-started/error-handling#nested-error-boundaries
