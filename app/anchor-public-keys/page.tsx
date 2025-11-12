@@ -1,0 +1,239 @@
+'use client';
+
+import React, { useState } from 'react';
+import { PublicKey } from '@solana/web3.js';
+import {
+    AnchorPublicKeyDisplay,
+    AnchorPublicKeyList,
+    AnchorProgramKeyDisplay,
+} from '@components/transaction/AnchorPublicKeyDisplay';
+import { useCluster } from '@providers/cluster';
+import { clusterName, Cluster, ClusterStatus } from '@utils/cluster';
+
+export default function AnchorPublicKeysPage() {
+    const { cluster, url, status } = useCluster();
+    const [customPublicKey, setCustomPublicKey] = useState('');
+    const [showCustomKey, setShowCustomKey] = useState(false);
+
+    // Example public keys for demonstration
+    const examplePublicKeys = [
+        {
+            key: '11111111111111111111111111111111',
+            label: 'System Program',
+            description: 'Core Solana system program for creating accounts and managing native tokens',
+        },
+        {
+            key: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+            label: 'Token Program',
+            description: 'Native token program for creating and managing SPL tokens',
+        },
+        {
+            key: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+            label: 'Associated Token Program',
+            description: 'Program for managing associated token accounts',
+        },
+    ];
+
+    // Example program ID for demonstration
+    const exampleProgramId = '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM';
+
+    const isAnchorNetwork = url.includes('localhost') || url.includes('127.0.0.1') || cluster === Cluster.Custom;
+
+    const handleAddCustomKey = () => {
+        if (customPublicKey.trim()) {
+            try {
+                // Validate the public key format
+                new PublicKey(customPublicKey.trim());
+                setShowCustomKey(true);
+            } catch (error) {
+                alert('Invalid public key format. Please enter a valid Solana public key.');
+            }
+        }
+    };
+
+    const handleFetchIdl = () => {
+        console.log('Fetching IDL for program:', exampleProgramId);
+        // This would typically trigger the IDL fetching logic
+    };
+
+    return (
+        <div className="container mt-4">
+            <div className="row">
+                <div className="col-12">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2>🔗 Anchor Public Key Display</h2>
+                            <p className="text-muted">Display and manage public keys on Anchor custom RPC networks</p>
+                        </div>
+                        <div className="text-end">
+                            <div className="mb-2">
+                                <span className="badge bg-primary">{clusterName(cluster)}</span>
+                            </div>
+                            <div className="text-muted small">
+                                Status:{' '}
+                                {status === ClusterStatus.Connected
+                                    ? '🟢'
+                                    : status === ClusterStatus.Connecting
+                                    ? '🟡'
+                                    : '🔴'}{' '}
+                                {status}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Network Status */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className={`card ${isAnchorNetwork ? 'border-success' : ''}`}>
+                        <div className={`card-header ${isAnchorNetwork ? 'bg-success text-white' : ''}`}>
+                            <h5 className="card-title mb-0">
+                                {isAnchorNetwork ? '🔧 Anchor Custom RPC Network' : 'Standard Solana Network'}
+                            </h5>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <strong>Network URL:</strong>
+                                    <div className="font-monospace text-break">{url}</div>
+                                </div>
+                                <div className="col-md-6">
+                                    <strong>Cluster:</strong>
+                                    <div>{clusterName(cluster)}</div>
+                                </div>
+                            </div>
+                            {isAnchorNetwork && (
+                                <div className="alert alert-success mt-3 mb-0">
+                                    <strong>🎯 Anchor Network Detected!</strong>
+                                    <p className="mb-0">
+                                        You are connected to a custom Anchor RPC network. Special features are enabled
+                                        for Anchor program development and testing.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Custom Public Key Input */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="card">
+                        <div className="card-header">
+                            <h5 className="card-title mb-0">📝 Display Custom Public Key</h5>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-9">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="Enter a Solana public key (e.g., 11111111111111111111111111111111)"
+                                        value={customPublicKey}
+                                        onChange={e => setCustomPublicKey(e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-md-3">
+                                    <button className="btn btn-primary w-100" onClick={handleAddCustomKey}>
+                                        Display Key
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Display Custom Key if Added */}
+            {showCustomKey && customPublicKey && (
+                <div className="row mb-4">
+                    <div className="col-12">
+                        <AnchorPublicKeyDisplay
+                            publicKey={customPublicKey}
+                            label="Custom Public Key"
+                            showClusterInfo={true}
+                            truncate={false}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* Single Program Key Display */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <AnchorProgramKeyDisplay
+                        programId={exampleProgramId}
+                        programName="Example Anchor Program"
+                        showIdlStatus={true}
+                        onFetchIdl={handleFetchIdl}
+                    />
+                </div>
+            </div>
+
+            {/* List of Common Public Keys */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <AnchorPublicKeyList
+                        publicKeys={examplePublicKeys}
+                        title="Common Solana Programs"
+                        showClusterInfo={false}
+                    />
+                </div>
+            </div>
+
+            {/* Feature Information */}
+            <div className="row">
+                <div className="col-12">
+                    <div className="card">
+                        <div className="card-header">
+                            <h5 className="card-title mb-0">🚀 Features</h5>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h6>🔧 Anchor Network Features:</h6>
+                                    <ul className="mb-3">
+                                        <li>Automatic detection of localhost/custom RPC</li>
+                                        <li>Special styling for Anchor networks</li>
+                                        <li>Quick actions for developers</li>
+                                        <li>Test keypair generation</li>
+                                        <li>IDL fetching integration</li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h6>📋 Display Features:</h6>
+                                    <ul className="mb-3">
+                                        <li>Network status indicators</li>
+                                        <li>Cluster badges (Mainnet, Devnet, etc.)</li>
+                                        <li>Copy to clipboard functionality</li>
+                                        <li>Direct links to address details</li>
+                                        <li>Truncation options for long keys</li>
+                                        <li>Responsive design</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {isAnchorNetwork && (
+                                <div className="alert alert-info">
+                                    <h6>🎯 Anchor Developer Tools Available:</h6>
+                                    <p className="mb-2">
+                                        Since you're connected to an Anchor custom RPC network, you have access to
+                                        special features:
+                                    </p>
+                                    <ul className="mb-0">
+                                        <li>Generate test keypairs for local development</li>
+                                        <li>Quick navigation to address details</li>
+                                        <li>Enhanced network information display</li>
+                                        <li>Integration with Anchor Developer Tools</li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
