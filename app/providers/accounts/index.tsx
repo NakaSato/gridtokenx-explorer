@@ -1,6 +1,8 @@
 'use client';
 
-import { MetadataJson, programs } from '@metaplex/js';
+// TODO: Migrate to @metaplex-foundation/mpl-token-metadata v3
+// import { MetadataJson, programs } from '@metaplex/js';
+export type MetadataJson = any; // Temporary type
 import getEditionInfo, { EditionInfo } from '@providers/accounts/utils/getEditionInfo';
 import * as Cache from '@providers/cache';
 import { ActionType, FetchStatus } from '@providers/cache';
@@ -41,7 +43,7 @@ import { TokensProvider } from './tokens';
 import { getStakeActivation } from './utils/stake';
 export { useAccountHistory } from './history';
 
-const Metadata = programs.metadata.Metadata;
+// const Metadata = programs.metadata.Metadata;
 
 export type StakeProgramData = {
     program: 'stake';
@@ -60,7 +62,7 @@ export function isUpgradeableLoaderAccountData(data: { program: string }): data 
 }
 
 export type NFTData = {
-    metadata: programs.metadata.MetadataData;
+    metadata: any; // TODO: Update to new Metaplex SDK type
     json: MetadataJson | undefined;
     editionInfo: EditionInfo;
 };
@@ -403,21 +405,22 @@ async function handleParsedAccountData(
             let nftData;
 
             try {
+                // TODO: Re-implement with new Metaplex SDK
                 // Generate a PDA and check for a Metadata Account
-                if (parsed.type === 'mint') {
-                    const metadata = await Metadata.load(connection, await Metadata.getPDA(accountKey));
-                    if (metadata) {
-                        // We have a valid Metadata account. Try and pull edition data.
-                        const editionInfo = await getEditionInfo(metadata, connection);
-                        const id = pubkeyToString(accountKey);
-                        const metadataJSON = await getMetaDataJSON(id, metadata.data);
-                        nftData = {
-                            editionInfo,
-                            json: metadataJSON,
-                            metadata: metadata.data,
-                        };
-                    }
-                }
+                // if (parsed.type === 'mint') {
+                //     const metadata = await Metadata.load(connection, await Metadata.getPDA(accountKey));
+                //     if (metadata) {
+                //         // We have a valid Metadata account. Try and pull edition data.
+                //         const editionInfo = await getEditionInfo(metadata, connection);
+                //         const id = pubkeyToString(accountKey);
+                //         const metadataJSON = await getMetaDataJSON(id, metadata.data);
+                //         nftData = {
+                //             editionInfo,
+                //             json: metadataJSON,
+                //             metadata: metadata.data,
+                //         };
+                //     }
+                // }
             } catch (error) {
                 // unable to find NFT metadata account
             }
@@ -435,7 +438,7 @@ const IMAGE_MIME_TYPE_REGEX = /data:image\/(svg\+xml|png|jpeg|gif)/g;
 
 const getMetaDataJSON = async (
     id: string,
-    metadata: programs.metadata.MetadataData
+    metadata: any // TODO: Update to new Metaplex SDK type
 ): Promise<MetadataJson | undefined> => {
     return new Promise(resolve => {
         const uri = metadata.data.uri;

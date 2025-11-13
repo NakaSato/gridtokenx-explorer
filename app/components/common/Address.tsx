@@ -1,6 +1,6 @@
 'use client';
 
-import { Connection, programs } from '@metaplex/js';
+// import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 import { useCluster } from '@providers/cluster';
 import { PublicKey } from '@solana/web3.js';
 import { displayAddress, TokenLabelInfo } from '@utils/tx';
@@ -53,9 +53,10 @@ export function Address({
     let addressLabel = raw ? address : display;
 
     const metaplexData = useTokenMetadata(useMetadata, address);
-    if (metaplexData && metaplexData.data) {
-        addressLabel = metaplexData.data.data.name;
-    }
+    // Temporarily disabled - needs migration to new Metaplex SDK
+    // if (metaplexData && metaplexData.data) {
+    //     addressLabel = metaplexData.data.data.name;
+    // }
 
     const tokenInfo = useTokenInfo(fetchTokenLabelInfo, address);
     if (tokenInfo) {
@@ -113,30 +114,29 @@ export function Address({
     );
 }
 const useTokenMetadata = (useMetadata: boolean | undefined, pubkey: string) => {
-    const [data, setData] = useState<programs.metadata.MetadataData>();
-    const { url } = useCluster();
+    // TODO: Re-implement with @metaplex-foundation/mpl-token-metadata v3
+    // const [data, setData] = useState<any>();
+    // const { url } = useCluster();
 
-    useAsyncEffect(
-        async isMounted => {
-            if (!useMetadata) return;
-            if (pubkey && !data) {
-                try {
-                    const pda = await programs.metadata.Metadata.getPDA(pubkey);
-                    const connection = new Connection(url);
-                    const metadata = await programs.metadata.Metadata.load(connection, pda);
-                    if (isMounted()) {
-                        setData(metadata.data);
-                    }
-                } catch {
-                    if (isMounted()) {
-                        setData(undefined);
-                    }
-                }
-            }
-        },
-        [useMetadata, pubkey, url, data, setData]
-    );
-    return { data };
+    // useAsyncEffect(
+    //     async isMounted => {
+    //         if (!useMetadata) return;
+    //         if (pubkey && !data) {
+    //             try {
+    //                 // Update to use new Metaplex SDK
+    //                 if (isMounted()) {
+    //                     setData(undefined);
+    //                 }
+    //             } catch {
+    //                 if (isMounted()) {
+    //                     setData(undefined);
+    //                 }
+    //             }
+    //         }
+    //     },
+    //     [useMetadata, pubkey, data, setData]
+    //     );
+    return { data: undefined };
 };
 
 const useTokenInfo = (fetchTokenLabelInfo: boolean | undefined, pubkey: string) => {

@@ -1,14 +1,11 @@
 'use client';
 
 import { LoadingCard } from '@components/common/LoadingCard';
-import { captureException } from '@sentry/nextjs';
 import { ComponentProps, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { IdlCard } from '@/app/components/account/idl/IdlCard';
 import { ErrorCard } from '@/app/components/common/ErrorCard';
-
-const isSentryEnabled = process.env.NEXT_PUBLIC_ENABLE_CATCH_EXCEPTIONS === '1';
 
 type Props = Readonly<{
     params: {
@@ -25,11 +22,6 @@ function PageRenderer({
 }) {
     return (
         <ErrorBoundary
-            onError={(error: Error) => {
-                if (isSentryEnabled) {
-                    captureException(error);
-                }
-            }}
             fallbackRender={({ error }) => <ErrorCard text={`Failed to load: ${error.message}`} />}
         >
             <RenderComponent address={address} />

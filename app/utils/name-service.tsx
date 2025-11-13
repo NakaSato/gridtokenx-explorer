@@ -1,6 +1,6 @@
 'use client';
 
-import { getFilteredProgramAccounts, NAME_PROGRAM_ID, performReverseLookup } from '@bonfida/spl-name-service';
+import { getAllDomains, NAME_PROGRAM_ID, reverseLookup } from '@bonfida/spl-name-service';
 import { useCluster } from '@providers/cluster';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
@@ -9,24 +9,10 @@ import { useEffect, useState } from 'react';
 import { DomainInfo, SOL_TLD_AUTHORITY } from './domain-info';
 
 async function getUserDomainAddresses(connection: Connection, userAddress: string): Promise<PublicKey[]> {
-    const filters = [
-        // parent
-        {
-            memcmp: {
-                bytes: SOL_TLD_AUTHORITY.toBase58(),
-                offset: 0,
-            },
-        },
-        // owner
-        {
-            memcmp: {
-                bytes: userAddress,
-                offset: 32,
-            },
-        },
-    ];
-    const accounts = await getFilteredProgramAccounts(connection, NAME_PROGRAM_ID, filters);
-    return accounts.map(a => a.publicKey);
+    // Use getAllDomains instead of getFilteredProgramAccounts
+    const userPublicKey = new PublicKey(userAddress);
+    const accounts = await getAllDomains(connection, userPublicKey);
+    return accounts;
 }
 
 export const useUserDomains = (userAddress: string): [DomainInfo[] | null, boolean] => {
@@ -44,7 +30,7 @@ export const useUserDomains = (userAddress: string): [DomainInfo[] | null, boole
                 const userDomainAddresses = await getUserDomainAddresses(connection, userAddress);
                 const userDomains = await Promise.all(
                     userDomainAddresses.map(async address => {
-                        const domainName = await performReverseLookup(connection, address);
+                        const domainName = await reverseLookup(connection, address);
                         return {
                             address,
                             name: `${domainName}.sol`,

@@ -1,14 +1,11 @@
 'use client';
 
-import { captureException } from '@sentry/nextjs';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { ParsedAccountRenderer } from '@/app/components/account/ParsedAccountRenderer';
 import { ErrorCard } from '@/app/components/common/ErrorCard';
 import { SecurityCard } from '@/app/features/security-txt/ui/SecurityCard';
-
-const isSentryEnabled = process.env.NEXT_PUBLIC_ENABLE_CATCH_EXCEPTIONS === '1';
 
 type Props = Readonly<{
     params: {
@@ -30,11 +27,6 @@ function SecurityCardRenderer({
 export default function SecurityPageClient({ params: { address } }: Props) {
     return (
         <ErrorBoundary
-            onError={(error: Error) => {
-                if (isSentryEnabled) {
-                    captureException(error);
-                }
-            }}
             fallbackRender={({ error }) => <ErrorCard text={`Failed to load security data: ${error.message}`} />}
         >
             <ParsedAccountRenderer address={address} renderComponent={SecurityCardRenderer} />

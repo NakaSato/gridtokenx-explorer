@@ -10,9 +10,25 @@ const SUPPLY_ALIASES = ['accounts', 'accounts/top'];
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    experimental: {
-        // FIXME: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
-        missingSuspenseWithCSRBailout: false,
+    // Use webpack instead of turbopack for now due to package compatibility issues
+    webpack: (config, { isServer }) => {
+        config.resolve.alias = {
+            ...(config.resolve.alias || {}),
+            borsh: path.resolve(__dirname, 'node_modules/borsh'), // force legacy version
+        };
+
+        if (!isServer) {
+            // Fixes npm packages that depend on Node.js modules in browser
+            config.resolve.fallback = {
+                ...config.resolve.fallback,
+                fs: false,
+                os: false,
+                path: false,
+                crypto: false,
+            };
+        }
+
+        return config;
     },
     images: {
         remotePatterns: [
@@ -51,49 +67,6 @@ const nextConfig = {
             },
         ];
     },
-    webpack: (config, { isServer }) => {
-        config.resolve.alias = {
-            ...(config.resolve.alias || {}),
-            borsh: path.resolve(__dirname, 'node_modules/borsh'), // force legacy version
-        };
-
-        if (!isServer) {
-            // Fixes npm packages that depend on `fs` module like `@project-serum/anchor`.
-            config.resolve.fallback.fs = false;
-        }
-
-        return config;
-    },
 };
 
 export default nextConfig;
-
-/// We going to handle Sentry errors step-by-step by cathcing unhandled exceptions route-wise
-/// See: https://nextjs.org/docs/app/getting-started/error-handling#nested-error-boundaries
-/// FEAT: Next step would be adding a layer to catch errors globally.
-/// At this point we catch just the errors for a new functionality
-/// Use the code below to enable it globally in the future
-/// #<PROJECT_ROOT>/app/global-error.tsx
-// 'use client';
-
-// import * as Sentry from '@sentry/nextjs';
-// import NextError from 'next/error';
-// import { useEffect } from 'react';
-
-// export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
-//     useEffect(() => {
-//         Sentry.captureException(error);
-//     }, [error]);
-
-//     return (
-//         <html>
-//             <body>
-//                 {/* `NextError` is the default Next.js error page component. Its type
-//                 definition requires a `statusCode` prop. However, since the App Router
-//                 does not expose status codes for errors, we simply pass 0 to render a
-//                 generic error message. */}
-//                 <NextError statusCode={0} />
-//             </body>
-//         </html>
-//     );
-// }

@@ -19,7 +19,7 @@ import {
     IdlTypeDefined,
     IdlTypeDefTy,
 } from '@coral-xyz/anchor/dist/cjs/idl';
-import { sha256 } from '@noble/hashes/sha256';
+import { sha256 } from '@noble/hashes/sha2.js';
 import { snakeCase } from 'change-case';
 
 // Legacy types based on the Rust structs
@@ -252,7 +252,8 @@ function removeUnusedTypes(idl: Idl): Idl {
 }
 
 function getDisc(prefix: string, name: string): number[] {
-    const hash = sha256(`${prefix}:${name}`);
+    const input = new TextEncoder().encode(`${prefix}:${name}`);
+    const hash = sha256(input);
     return Array.from(hash.slice(0, 8));
 }
 

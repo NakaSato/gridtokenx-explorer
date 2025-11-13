@@ -1,6 +1,7 @@
 import { InfoTooltip } from '@components/common/InfoTooltip';
 import { ArtContent } from '@components/common/NFTArt';
-import { programs } from '@metaplex/js';
+// TODO: Migrate to @metaplex-foundation/mpl-token-metadata v3
+// import { programs } from '@metaplex/js';
 import { NFTData, useFetchAccountInfo, useMintAccountInfo } from '@providers/accounts';
 import { EditionInfo } from '@providers/accounts/utils/getEditionInfo';
 import { PublicKey } from '@solana/web3.js';
@@ -81,7 +82,7 @@ export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; addr
     );
 }
 
-type Creator = programs.metadata.Creator;
+type Creator = any; // TODO: Update to new Metaplex SDK type
 export function getCreatorDropdownItems(creators: Creator[] | null) {
     const CreatorHeader = () => {
         const creatorTooltip = 'Verified creators signed the metadata associated with this NFT when it was created.';
