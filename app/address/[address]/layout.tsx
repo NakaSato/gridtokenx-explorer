@@ -365,7 +365,7 @@ type Tab = {
 
 type TabComponent = {
     tab: Tab;
-    component: JSX.Element | null;
+    component: React.JSX.Element | null;
 };
 
 export type MoreTabs =
@@ -394,7 +394,7 @@ export type MoreTabs =
     | 'token-extensions'
     | 'attestation';
 
-function MoreSection({ children, tabs }: { children: React.ReactNode; tabs: (JSX.Element | null)[] }) {
+function MoreSection({ children, tabs }: { children: React.ReactNode; tabs: (React.JSX.Element | null)[] }) {
     return (
         <>
             <div className="container">

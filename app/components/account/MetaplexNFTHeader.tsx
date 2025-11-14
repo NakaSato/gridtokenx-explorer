@@ -121,7 +121,7 @@ export function getCreatorDropdownItems(creators: Creator[] | null) {
     };
 
     if (creators && creators.length > 0) {
-        const listOfCreators: JSX.Element[] = [];
+        const listOfCreators: React.JSX.Element[] = [];
 
         listOfCreators.push(<CreatorHeader key={'header'} />);
         creators.forEach(creator => {

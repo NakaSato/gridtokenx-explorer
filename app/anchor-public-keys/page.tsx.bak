@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import {
     AnchorPublicKeyDisplay,
@@ -10,7 +10,7 @@ import {
 import { useCluster } from '@providers/cluster';
 import { clusterName, Cluster, ClusterStatus } from '@utils/cluster';
 
-export default function AnchorPublicKeysPage() {
+function AnchorPublicKeysContent() {
     const { cluster, url, status } = useCluster();
     const [customPublicKey, setCustomPublicKey] = useState('');
     const [showCustomKey, setShowCustomKey] = useState(false);
@@ -235,5 +235,16 @@ export default function AnchorPublicKeysPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+// Force dynamic rendering to avoid static generation issues with useSearchParams
+export const dynamic = 'force-dynamic';
+
+export default function AnchorPublicKeysPage() {
+    return (
+        <Suspense fallback={<div className="container mt-4"><div className="spinner-border" role="status"><span className="visually-hidden">Loading...</span></div></div>}>
+            <AnchorPublicKeysContent />
+        </Suspense>
     );
 }

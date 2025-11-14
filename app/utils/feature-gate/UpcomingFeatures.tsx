@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 
-import { Address } from '@/app/components/common/Address';
+import { Address } from '@/app/components/common/AddressWrapper';
 import { isFeatureActivated } from '@/app/features/feature-gate';
 import { useCluster } from '@/app/providers/cluster';
 

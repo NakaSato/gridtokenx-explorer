@@ -1,5 +1,5 @@
 {
-    "name": "explorer",
+    "name": "gridtokenx-explorer",
     "version": "0.1.1",
     "private": true,
     "scripts": {
@@ -46,7 +46,7 @@
         "@solflare-wallet/utl-sdk": "1.4.0",
         "@sqds/multisig": "2.1.4",
         "@types/bn.js": "5.2.0",
-        "axios": "1.13.1",
+        "axios": "1.7.9",
         "bignumber.js": "9.3.1",
         "bn.js": "5.2.2",
         "borsh": "2.0.0",
@@ -97,6 +97,7 @@
         "@mdx-js/react": "3.1.1",
         "@solana/eslint-config-solana": "5.0.0",
         "@solana/prettier-config-solana": "0.0.5",
+        "@tailwindcss/postcss": "^4.1.16",
         "@testing-library/jest-dom": "6.9.1",
         "@testing-library/react": "16.3.0",
         "@testing-library/user-event": "14.6.1",

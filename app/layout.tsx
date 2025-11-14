@@ -1,18 +1,14 @@
-import './scss/theme-dark.scss';
-
-import { ClusterModal } from '@components/ClusterModal';
+import ClusterModalWrapper from '@components/ClusterModalWrapper';
 import { ClusterStatusButton } from '@components/ClusterStatusButton';
 import { MessageBanner } from '@components/MessageBanner';
-import { Navbar } from '@components/Navbar';
+import NavbarWrapper from '@components/NavbarWrapper';
+import SearchBarWrapper from '@components/SearchBarWrapper';
 import { ClusterProvider } from '@providers/cluster';
 import { ScrollAnchorProvider } from '@providers/scroll-anchor';
 import type { Viewport } from 'next';
-import dynamic from 'next/dynamic';
 import { Rubik } from 'next/font/google';
 import { Metadata } from 'next/types';
-const SearchBar = dynamic(() => import('@components/SearchBar'), {
-    ssr: false,
-});
+import React, { Suspense } from 'react';
 
 export const metadata: Metadata = {
     description: 'Inspect transactions, accounts, blocks, and more on the Solana blockchain',
@@ -48,24 +44,28 @@ export default function RootLayout({
                 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
             </head>
             <body>
-                <ScrollAnchorProvider>
-                    <ClusterProvider>
-                        <ClusterModal />
-                        <div className="main-content pb-4">
-                            <Navbar>
-                                <SearchBar />
-                            </Navbar>
-                            <MessageBanner />
-                            <div className="container my-3 d-lg-none">
-                                <SearchBar />
-                            </div>
-                            <div className="container my-3 d-lg-none">
-                                <ClusterStatusButton />
-                            </div>
-                            {children}
-                        </div>
-                    </ClusterProvider>
-                </ScrollAnchorProvider>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <ScrollAnchorProvider>
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <ClusterProvider>
+                                <ClusterModalWrapper />
+                                <div className="main-content pb-4">
+                                    <NavbarWrapper>
+                                        <SearchBarWrapper />
+                                    </NavbarWrapper>
+                                    <MessageBanner />
+                                    <div className="container my-3 d-lg-none">
+                                        <SearchBarWrapper />
+                                    </div>
+                                    <div className="container my-3 d-lg-none">
+                                        <ClusterStatusButton />
+                                    </div>
+                                    {children}
+                                </div>
+                            </ClusterProvider>
+                        </Suspense>
+                    </ScrollAnchorProvider>
+                </Suspense>
                 {analytics}
             </body>
         </html>

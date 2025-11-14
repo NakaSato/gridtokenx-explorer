@@ -7,11 +7,15 @@ type Props = Readonly<{
     params: {
         address: string;
     };
+    searchParams: {
+        cluster?: string;
+        customUrl?: string;
+    };
 }>;
 
 export async function generateMetadata(props: AddressPageMetadataProps): Promise<Metadata> {
     return {
-        description: `Attributes of the Metaplex NFT with address ${props.params.address} on Solana`,
+        description: `Attributes of the Metaplex NFT with address ${(await props.params).address} on Solana`,
         title: `Metaplex NFT Attributes | ${await getReadableTitleFromAddress(props)} | Solana`,
     };
 }

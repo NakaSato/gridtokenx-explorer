@@ -1,10 +1,28 @@
-import { AnchorProvider, Idl, Program } from '@coral-xyz/anchor';
-import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
+import { AnchorProvider, Idl, Program, Wallet } from '@coral-xyz/anchor';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
 import { useMemo } from 'react';
 
 import { Cluster } from '../utils/cluster';
 import { formatSerdeIdl, getFormattedIdl } from '../utils/convertLegacyIdl';
+
+// Simple wallet adapter for client-side use
+class SimpleWallet implements Wallet {
+    publicKey: PublicKey;
+    payer: Keypair;
+
+    constructor(publicKey: PublicKey = PublicKey.default) {
+        this.payer = Keypair.generate(); // Generate a keypair for payer
+        this.publicKey = publicKey;
+    }
+    
+    async signTransaction(_tx: any): Promise<any> {
+        throw new Error('SimpleWallet cannot sign transactions');
+    }
+    
+    async signAllTransactions(_txs: any[]): Promise<any[]> {
+        throw new Error('SimpleWallet cannot sign transactions');
+    }
+}
 
 const cachedAnchorProgramPromises: Record<
     string,
@@ -12,7 +30,11 @@ const cachedAnchorProgramPromises: Record<
 > = {};
 
 function getProvider(url: string) {
-    return new AnchorProvider(new Connection(url), new NodeWallet(Keypair.generate()), {});
+    return new AnchorProvider(
+        new Connection(url), 
+        new SimpleWallet(PublicKey.default), // Use a simple wallet instead of NodeWallet
+        {}
+    );
 }
 
 function useIdlFromAnchorProgramSeed(programAddress: string, url: string, cluster?: Cluster): Idl | null {

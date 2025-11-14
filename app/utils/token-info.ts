@@ -1,26 +1,37 @@
-import { Connection, PublicKey } from '@solana/web3.js';
-import { ChainId, Client, Token, UtlConfig } from '@solflare-wallet/utl-sdk';
+import { PublicKey } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
 import { TokenExtension } from '@validators/accounts/token-extension';
 
-type TokenExtensions = {
-    readonly website?: string;
-    readonly bridgeContract?: string;
-    readonly assetContract?: string;
-    readonly address?: string;
-    readonly explorer?: string;
-    readonly twitter?: string;
-    readonly github?: string;
-    readonly medium?: string;
-    readonly tgann?: string;
-    readonly tggroup?: string;
-    readonly discord?: string;
-    readonly serumV3Usdt?: string;
-    readonly serumV3Usdc?: string;
-    readonly coingeckoId?: string;
-    readonly imageUrl?: string;
-    readonly description?: string;
+// Re-export types from the API route
+export type FullTokenInfo = {
+    readonly chainId: number;
+    readonly address: string;
+    readonly name: string;
+    readonly decimals: number;
+    readonly symbol: string;
+    readonly logoURI?: string;
+    readonly tags?: string[];
+    readonly verified: boolean;
+    readonly extensions?: {
+        readonly website?: string;
+        readonly bridgeContract?: string;
+        readonly assetContract?: string;
+        readonly address?: string;
+        readonly explorer?: string;
+        readonly twitter?: string;
+        readonly github?: string;
+        readonly medium?: string;
+        readonly tgann?: string;
+        readonly tggroup?: string;
+        readonly discord?: string;
+        readonly serumV3Usdt?: string;
+        readonly serumV3Usdc?: string;
+        readonly coingeckoId?: string;
+        readonly imageUrl?: string;
+        readonly description?: string;
+    };
 };
+
 export type FullLegacyTokenInfo = {
     readonly chainId: number;
     readonly address: string;
@@ -29,34 +40,18 @@ export type FullLegacyTokenInfo = {
     readonly symbol: string;
     readonly logoURI?: string;
     readonly tags?: string[];
-    readonly extensions?: TokenExtensions;
-};
-export type FullTokenInfo = FullLegacyTokenInfo & {
-    readonly verified: boolean;
+    readonly extensions?: FullTokenInfo['extensions'];
 };
 
-type FullLegacyTokenInfoList = {
-    tokens: FullLegacyTokenInfo[];
+export type Token = {
+    readonly address: string;
+    readonly name: string;
+    readonly symbol: string;
+    readonly decimals: number;
+    readonly logoURI?: string;
+    readonly tags?: Set<string>;
+    readonly verified?: boolean;
 };
-
-function getChainId(cluster: Cluster): ChainId | undefined {
-    if (cluster === Cluster.MainnetBeta) return ChainId.MAINNET;
-    else if (cluster === Cluster.Testnet) return ChainId.TESTNET;
-    else if (cluster === Cluster.Devnet) return ChainId.DEVNET;
-    else return undefined;
-}
-
-function makeUtlClient(cluster: Cluster, connectionString: string): Client | undefined {
-    const chainId = getChainId(cluster);
-    if (!chainId) return undefined;
-
-    const config: UtlConfig = new UtlConfig({
-        chainId,
-        connection: new Connection(connectionString),
-    });
-
-    return new Client(config);
-}
 
 export function getTokenInfoSwrKey(address: string, cluster: Cluster, connectionString: string) {
     return ['get-token-info', address, cluster, connectionString];
@@ -67,56 +62,36 @@ export async function getTokenInfo(
     cluster: Cluster,
     connectionString: string
 ): Promise<Token | undefined> {
-    const client = makeUtlClient(cluster, connectionString);
-    if (!client) return undefined;
-    const token = await client.fetchMint(address);
-    return token;
+    try {
+        const response = await fetch(`/api/token-info?address=${address.toBase58()}&cluster=${cluster}&connectionString=${encodeURIComponent(connectionString)}`);
+        if (!response.ok) {
+            console.error('Error fetching token info:', response.statusText);
+            return undefined;
+        }
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error('Error fetching token info:', error);
+        return undefined;
+    }
 }
-
-type UtlApiResponse = {
-    content: Token[];
-};
 
 export async function getTokenInfoWithoutOnChainFallback(
     address: PublicKey,
     cluster: Cluster
 ): Promise<Token | undefined> {
-    const chainId = getChainId(cluster);
-    if (!chainId) return undefined;
-
-    // Request token info directly from UTL API
-    // We don't use the SDK here because we don't want it to fallback to an on-chain request
-    const response = await fetch(`https://token-list-api.solana.cloud/v1/mints?chainId=${chainId}`, {
-        body: JSON.stringify({ addresses: [address.toBase58()] }),
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        method: 'POST',
-    });
-
-    if (response.status >= 400) {
-        console.error(`Error calling UTL API for address ${address} on chain ID ${chainId}. Status ${response.status}`);
+    try {
+        const response = await fetch(`/api/token-info?address=${address.toBase58()}&cluster=${cluster}`);
+        if (!response.ok) {
+            console.error('Error fetching token info without on-chain fallback:', response.statusText);
+            return undefined;
+        }
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error('Error fetching token info without on-chain fallback:', error);
         return undefined;
     }
-
-    const fetchedData = (await response.json()) as UtlApiResponse;
-    return fetchedData.content[0];
-}
-
-async function getFullLegacyTokenInfoUsingCdn(
-    address: PublicKey,
-    chainId: ChainId
-): Promise<FullLegacyTokenInfo | undefined> {
-    const tokenListResponse = await fetch(
-        'https://cdn.jsdelivr.net/gh/solana-labs/token-list@latest/src/tokens/solana.tokenlist.json'
-    );
-    if (tokenListResponse.status >= 400) {
-        console.error(new Error('Error fetching token list from CDN'));
-        return undefined;
-    }
-    const { tokens } = (await tokenListResponse.json()) as FullLegacyTokenInfoList;
-    const tokenInfo = tokens.find(t => t.address === address.toString() && t.chainId === chainId);
-    return tokenInfo;
 }
 
 export function isRedactedTokenAddress(address: string): boolean {
@@ -138,42 +113,18 @@ export async function getFullTokenInfo(
     cluster: Cluster,
     connectionString: string
 ): Promise<FullTokenInfo | undefined> {
-    if (isRedactedTokenAddress(address.toBase58())) {
+    try {
+        const response = await fetch(`/api/token-info?address=${address.toBase58()}&cluster=${cluster}&connectionString=${encodeURIComponent(connectionString)}`);
+        if (!response.ok) {
+            console.error('Error fetching full token info:', response.statusText);
+            return undefined;
+        }
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error('Error fetching full token info:', error);
         return undefined;
     }
-    const chainId = getChainId(cluster);
-    if (!chainId) return undefined;
-
-    const [legacyCdnTokenInfo, sdkTokenInfo] = await Promise.all([
-        getFullLegacyTokenInfoUsingCdn(address, chainId),
-        getTokenInfo(address, cluster, connectionString),
-    ]);
-
-    if (!sdkTokenInfo) {
-        return legacyCdnTokenInfo
-            ? {
-                  ...legacyCdnTokenInfo,
-                  verified: true,
-              }
-            : undefined;
-    }
-
-    // Merge the fields, prioritising the sdk ones which are more up to date
-    let tags: string[] = [];
-    if (sdkTokenInfo.tags) tags = Array.from(sdkTokenInfo.tags);
-    else if (legacyCdnTokenInfo?.tags) tags = legacyCdnTokenInfo.tags;
-
-    return {
-        address: sdkTokenInfo.address,
-        chainId,
-        decimals: sdkTokenInfo.decimals ?? 0,
-        extensions: legacyCdnTokenInfo?.extensions,
-        logoURI: sdkTokenInfo.logoURI ?? undefined,
-        name: sdkTokenInfo.name,
-        symbol: sdkTokenInfo.symbol,
-        tags,
-        verified: sdkTokenInfo.verified ?? false,
-    };
 }
 
 export async function getTokenInfos(
@@ -181,10 +132,28 @@ export async function getTokenInfos(
     cluster: Cluster,
     connectionString: string
 ): Promise<Token[] | undefined> {
-    const client = makeUtlClient(cluster, connectionString);
-    if (!client) return undefined;
-    const tokens = await client.fetchMints(addresses);
-    return tokens;
+    try {
+        const response = await fetch('/api/token-info', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                addresses: addresses.map(addr => addr.toBase58()),
+                cluster,
+                connectionString,
+            }),
+        });
+        if (!response.ok) {
+            console.error('Error fetching multiple token infos:', response.statusText);
+            return undefined;
+        }
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error('Error fetching multiple token infos:', error);
+        return undefined;
+    }
 }
 
 export function getCurrentTokenScaledUiAmountMultiplier(extensions: Array<TokenExtension> | undefined): string {

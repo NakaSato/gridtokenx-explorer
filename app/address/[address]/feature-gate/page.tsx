@@ -9,19 +9,25 @@ import { fetchFeatureGateInformation } from '@/app/features/feature-gate';
 import { getFeatureInfo } from '@/app/utils/feature-gate/utils';
 
 type Props = Readonly<{
-    params: {
+    params: Promise<{
         address: string;
-    };
+    }>;
+    searchParams: Promise<{
+        cluster: string;
+        customUrl?: string;
+    }>;
 }>;
 
 export async function generateMetadata(props: AddressPageMetadataProps): Promise<Metadata> {
+    const { address } = await props.params;
     return {
-        description: `Feature information for address ${props.params.address} on Solana`,
-        title: `Feature Gate | ${await getReadableTitleFromAddress(props)} | Solana`,
+        description: `Feature information for address ${address} on Solana`,
+        title: `Feature Gate | ${address} | Solana`,
     };
 }
 
-export default async function FeatureGatePage({ params: { address } }: Props) {
+export default async function FeatureGatePage(props: Props) {
+    const { address } = await props.params;
     const feature = getFeatureInfo(address);
     const data = await fetchFeatureGateInformation(feature);
 

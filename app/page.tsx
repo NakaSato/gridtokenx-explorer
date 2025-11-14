@@ -1,9 +1,14 @@
 'use client';
 
-import { Epoch } from '@components/common/Epoch';
+import React, { Suspense } from 'react';
+
+// Force dynamic rendering to avoid static generation issues
+export const dynamic = 'force-dynamic';
+
+import { Epoch } from '@components/common/EpochWrapper';
 import { ErrorCard } from '@components/common/ErrorCard';
 import { LoadingCard } from '@components/common/LoadingCard';
-import { Slot } from '@components/common/Slot';
+import { Slot } from '@components/common/SlotWrapper';
 import { TableCardBody } from '@components/common/TableCardBody';
 import { TimestampToggle } from '@components/common/TimestampToggle';
 import { LiveTransactionStatsCard } from '@components/LiveTransactionStatsCard';
@@ -21,30 +26,31 @@ import { Status, SupplyProvider, useFetchSupply, useSupply } from '@providers/su
 import { ClusterStatus } from '@utils/cluster';
 import { abbreviatedNumber, lamportsToSol, slotsToHumanString } from '@utils/index';
 import { percentage } from '@utils/math';
-import React from 'react';
 
 import { UpcomingFeatures } from './utils/feature-gate/UpcomingFeatures';
 
 export default function Page() {
     return (
-        <StatsProvider>
-            <SupplyProvider>
-                <div className="container mt-4">
-                    <StakingComponent />
+        <Suspense fallback={<div className="container mt-4"><div className="spinner-border" role="status"><span className="visually-hidden">Loading...</span></div></div>}>
+            <StatsProvider>
+                <SupplyProvider>
+                    <div className="container mt-4">
+                        <StakingComponent />
 
-                    <div className="row d-flex">
-                        <div className="col-md-6 d-flex">
-                            <StatsCardBody />
+                        <div className="row d-flex">
+                            <div className="col-md-6 d-flex">
+                                <StatsCardBody />
+                            </div>
+                            <div className="col-md-6 d-flex">
+                                <LiveTransactionStatsCard />
+                            </div>
                         </div>
-                        <div className="col-md-6 d-flex">
-                            <LiveTransactionStatsCard />
-                        </div>
+
+                        <UpcomingFeatures />
                     </div>
-
-                    <UpcomingFeatures />
-                </div>
-            </SupplyProvider>
-        </StatsProvider>
+                </SupplyProvider>
+            </StatsProvider>
+        </Suspense>
     );
 }
 

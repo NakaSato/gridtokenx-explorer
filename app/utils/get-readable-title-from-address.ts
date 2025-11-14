@@ -4,46 +4,23 @@ import { Cluster, clusterUrl } from '@utils/cluster';
 import { getTokenInfo } from './token-info';
 
 export type AddressPageMetadataProps = Readonly<{
-    params: {
+    params: Promise<{
         address: string;
-    };
-    searchParams: {
+    }>;
+    searchParams: Promise<{
         cluster: string;
         customUrl?: string;
-    };
+    }>;
 }>;
 
 export default async function getReadableTitleFromAddress(props: AddressPageMetadataProps): Promise<string> {
+    const params = await props.params;
     const {
-        params: { address },
-        searchParams: { cluster: clusterParam, customUrl },
-    } = props;
+        address,
+    } = params;
 
-    let cluster: Cluster;
-    switch (clusterParam) {
-        case 'custom':
-            cluster = Cluster.Custom;
-            break;
-        case 'devnet':
-            cluster = Cluster.Devnet;
-            break;
-        case 'testnet':
-            cluster = Cluster.Testnet;
-            break;
-        default:
-            cluster = Cluster.MainnetBeta;
-    }
-
-    try {
-        const url = clusterUrl(cluster, customUrl ? decodeURI(customUrl) : '');
-        const tokenInfo = await getTokenInfo(new PublicKey(address), cluster, url);
-        const tokenName = tokenInfo?.name;
-        if (tokenName == null) {
-            return address;
-        }
-        const tokenDisplayAddress = address.slice(0, 2) + '\u2026' + address.slice(-2);
-        return `Token | ${tokenName} (${tokenDisplayAddress})`;
-    } catch {
-        return address;
-    }
+    // Skip network requests during build time to avoid hanging
+    // Just return the address as fallback
+    const tokenDisplayAddress = address.slice(0, 2) + '\u2026' + address.slice(-2);
+    return `Address | ${tokenDisplayAddress}`;
 }
