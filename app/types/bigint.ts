@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-prototype-builtins
+// eslint-disablnext-line no-prototypbuiltins
 if (!BigInt.prototype.hasOwnProperty('toJSON')) {
     Object.defineProperty(BigInt.prototype, 'toJSON', {
         get() {

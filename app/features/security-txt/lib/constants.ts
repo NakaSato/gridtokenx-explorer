@@ -3,9 +3,9 @@ import type { PmpSecurityTXT } from './types';
 export const NO_SECURITY_TXT_ERROR = 'Program has no security.txt';
 
 export const PMP_SECURITY_TXT_DOC_LINK =
-    'https://github.com/solana-program/program-metadata/tree/main?tab=readme-ov-file#securitytxt-file-format';
+    'https://github.com/solana-program/program-metadata/tree/main?tab=readmov-file#securitytxt-filformat';
 
-export const NEODYME_SECURITY_TXT_DOC_LINK = 'https://github.com/neodyme-labs/solana-security-txt';
+export const NEODYME_SECURITY_TXT_DOC_LINK = 'https://github.com/neodymlabs/solana-security-txt';
 
 export const PMP_SECURITY_TXT_KEYS: (keyof PmpSecurityTXT)[] = [
     'name',

@@ -31,17 +31,17 @@ import { UpcomingFeatures } from './utils/feature-gate/UpcomingFeatures';
 
 export default function Page() {
     return (
-        <Suspense fallback={<div className="container mt-4"><div className="spinner-border" role="status"><span className="visually-hidden">Loading...</span></div></div>}>
+        <Suspense fallback={<div className="container mx-auto px-4 mt-4"><div className="animatspin rounded-full h-12 w-12 border-b-2 border-primary" role="status"><span className="sr-only">Loading...</span></div></div>}>
             <StatsProvider>
                 <SupplyProvider>
-                    <div className="container mt-4">
+                    <div className="container mx-auto px-4 mt-4">
                         <StakingComponent />
 
-                        <div className="row d-flex">
-                            <div className="col-md-6 d-flex">
+                        <div className="flex flex-wrap -mx-2">
+                            <div className="w-full md:w-1/2 px-2 flex">
                                 <StatsCardBody />
                             </div>
-                            <div className="col-md-6 d-flex">
+                            <div className="w-full md:w-1/2 px-2 flex">
                                 <LiveTransactionStatsCard />
                             </div>
                         </div>
@@ -69,18 +69,18 @@ function StakingComponent() {
         if (status === ClusterStatus.Connected) {
             fetchData();
         }
-    }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [status]); // eslint-disablline react-hooks/exhaustivdeps
 
     const delinquentStake = React.useMemo(() => {
         if (voteAccounts) {
-            return voteAccounts.delinquent.reduce((prev, current) => prev + current.activatedStake, BigInt(0));
+            return voteAccounts.delinquent.reduce((prev: bigint, current: any) => prev + current.activatedStake, BigInt(0));
         }
     }, [voteAccounts]);
 
     const activeStake = React.useMemo(() => {
         if (voteAccounts && delinquentStake) {
             return (
-                voteAccounts.current.reduce((prev, current) => prev + current.activatedStake, BigInt(0)) +
+                voteAccounts.current.reduce((prev: bigint, current: any) => prev + current.activatedStake, BigInt(0)) +
                 delinquentStake
             );
         }
@@ -111,10 +111,10 @@ function StakingComponent() {
     }
 
     return (
-        <div className="row staking-card">
-            <div className="col-6 col-xl">
+        <div className="flex flex-wrap -mx-2 staking-card">
+            <div className="w-1/2 xl:w-auto px-2">
                 <div className="card">
-                    <div className="card-body">
+                    <div className="p-6">
                         <h4>Circulating Supply</h4>
                         <h1>
                             <em>{displayLamports(supply.circulating)}</em> /{' '}
@@ -126,9 +126,9 @@ function StakingComponent() {
                     </div>
                 </div>
             </div>
-            <div className="col-6 col-xl">
+            <div className="w-1/2 xl:w-auto px-2">
                 <div className="card">
-                    <div className="card-body">
+                    <div className="p-6">
                         <h4>Active Stake</h4>
                         {activeStake ? (
                             <h1>
@@ -177,58 +177,58 @@ function StatsCardBody() {
     const { blockHeight, absoluteSlot } = epochInfo;
 
     return (
-        <div className="card flex-grow-1">
+        <div className="card flex-grow">
             <div className="card-header">
-                <div className="row align-items-center">
-                    <div className="col">
+                <div className="flex flex-wrap -mx-2 items-center">
+                    <div className="flex-1 px-2">
                         <h4 className="card-header-title">Live Cluster Stats</h4>
                     </div>
                 </div>
             </div>
             <TableCardBody>
                 <tr>
-                    <td className="w-100">Slot</td>
-                    <td className="text-lg-end font-monospace">
+                    <td className="w-full">Slot</td>
+                    <td className="lg:text-right font-mono">
                         <Slot slot={absoluteSlot} link />
                     </td>
                 </tr>
                 {blockHeight !== undefined && (
                     <tr>
-                        <td className="w-100">Block height</td>
-                        <td className="text-lg-end font-monospace">
+                        <td className="w-full">Block height</td>
+                        <td className="lg:text-right font-mono">
                             <Slot slot={blockHeight} />
                         </td>
                     </tr>
                 )}
                 {blockTime && (
                     <tr>
-                        <td className="w-100">Cluster time</td>
-                        <td className="text-lg-end font-monospace">
+                        <td className="w-full">Cluster time</td>
+                        <td className="lg:text-right font-mono">
                             <TimestampToggle unixTimestamp={blockTime} shorter></TimestampToggle>
                         </td>
                     </tr>
                 )}
                 <tr>
-                    <td className="w-100">Slot time (1min average)</td>
-                    <td className="text-lg-end font-monospace">{averageSlotTime}ms</td>
+                    <td className="w-full">Slot time (1min average)</td>
+                    <td className="lg:text-right font-mono">{averageSlotTime}ms</td>
                 </tr>
                 <tr>
-                    <td className="w-100">Slot time (1hr average)</td>
-                    <td className="text-lg-end font-monospace">{hourlySlotTime}ms</td>
+                    <td className="w-full">Slot time (1hr average)</td>
+                    <td className="lg:text-right font-mono">{hourlySlotTime}ms</td>
                 </tr>
                 <tr>
-                    <td className="w-100">Epoch</td>
-                    <td className="text-lg-end font-monospace">
+                    <td className="w-full">Epoch</td>
+                    <td className="lg:text-right font-mono">
                         <Epoch epoch={epochInfo.epoch} link />
                     </td>
                 </tr>
                 <tr>
-                    <td className="w-100">Epoch progress</td>
-                    <td className="text-lg-end font-monospace">{epochProgress}</td>
+                    <td className="w-full">Epoch progress</td>
+                    <td className="lg:text-right font-mono">{epochProgress}</td>
                 </tr>
                 <tr>
-                    <td className="w-100">Epoch time remaining (approx.)</td>
-                    <td className="text-lg-end font-monospace">~{epochTimeRemaining}</td>
+                    <td className="w-full">Epoch time remaining (approx.)</td>
+                    <td className="lg:text-right font-mono">~{epochTimeRemaining}</td>
                 </tr>
             </TableCardBody>
         </div>

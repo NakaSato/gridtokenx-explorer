@@ -28,7 +28,7 @@ export function populatePartialParsedTokenExtension(
             const description = 'Allows a designated Close Authority to close the mint account if the supply is 0';
             return {
                 description,
-                externalLinks: populateExternalLinks(populateSolanaDevelopersLink('mint-close-authority')),
+                externalLinks: populateExternalLinks(populateSolanaDevelopersLink('mint-closauthority')),
                 name: 'Mint Close Authority',
                 status: 'active',
                 tooltip: description,
@@ -48,7 +48,7 @@ export function populatePartialParsedTokenExtension(
             const description = 'Prevents the owner from being changed';
             return {
                 description,
-                externalLinks: populateExternalLinks(populateSolanaDevelopersLink('immutable-owner')),
+                externalLinks: populateExternalLinks(populateSolanaDevelopersLink('immutablowner')),
                 name: 'Immutable Owner',
                 status: 'active',
                 tooltip: description,
@@ -66,14 +66,14 @@ export function populatePartialParsedTokenExtension(
         }
         case 'nonTransferable': {
             return {
-                externalLinks: populateExternalLinks(populateSolanaDevelopersLink('non-transferable-token')),
+                externalLinks: populateExternalLinks(populateSolanaDevelopersLink('non-transferabltoken')),
                 name: 'Non-Transferable Token',
                 status: 'active',
             };
         }
         case 'nonTransferableAccount': {
             return {
-                externalLinks: populateExternalLinks(populateSolanaDevelopersLink('non-transferable-token')),
+                externalLinks: populateExternalLinks(populateSolanaDevelopersLink('non-transferabltoken')),
                 name: 'Non-Transferable Token Account',
                 status: 'active',
             };

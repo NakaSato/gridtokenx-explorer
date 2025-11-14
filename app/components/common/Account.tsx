@@ -19,7 +19,7 @@ export function AccountHeader({ title, refresh }: AccountHeaderProps) {
         <div className="card-header align-items-center">
             <h3 className="card-header-title">{title}</h3>
             <button className="btn btn-white btn-sm" onClick={() => refresh()}>
-                <RefreshCw className="align-text-top me-2" size={13} />
+                <RefreshCw className="align-text-top m2" size={13} />
                 Refresh
             </button>
         </div>

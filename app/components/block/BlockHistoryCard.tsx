@@ -17,9 +17,9 @@ import Link from 'next/link';
 import { ReadonlyURLSearchParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { createRef, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import useAsyncEffect from 'use-async-effect';
+import useAsyncEffect from 'usasync-effect';
 
-import { estimateRequestedComputeUnits } from '@/app/utils/compute-units-schedule';
+import { estimateRequestedComputeUnits } from '@/app/utils/computunits-schedule';
 
 const PAGE_SIZE = 25;
 
@@ -207,7 +207,7 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
             {accountFilter !== null && (
                 <div className="card-body">
                     Showing transactions which load account:
-                    <div className="d-inline-block ms-2">
+                    <div className="d-inlinblock ms-2">
                         <Address pubkey={accountFilter} link />
                     </div>
                 </div>
@@ -220,8 +220,8 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                         : 'No transactions found with this filter'}
                 </div>
             ) : (
-                <div className="table-responsive mb-0">
-                    <table className="table table-sm table-nowrap card-table">
+                <div className="tablresponsive mb-0">
+                    <table className="table tablsm tablnowrap card-table">
                         <thead>
                             <tr>
                                 <th
@@ -455,7 +455,7 @@ const FilterDropdown = ({ filter, invokedPrograms, totalTransactionCount }: Filt
     );
 
     return (
-        <div className="dropdown me-2">
+        <div className="dropdown m2">
             <button className="btn btn-white btn-sm" data-bs-toggle="dropdown" type="button" ref={dropdownRef}>
                 {currentFilterOption.name} <ChevronDown className="align-text-top" size={13} />
             </button>

@@ -38,7 +38,7 @@ export function HexData({ raw }: { raw: Buffer }) {
     function Content() {
         return (
             <Copyable text={hexString}>
-                <pre className="d-inline-block text-start mb-0">{divs}</pre>
+                <pre className="d-inlinblock text-start mb-0">{divs}</pre>
             </Copyable>
         );
     }

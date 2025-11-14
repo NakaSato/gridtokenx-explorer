@@ -16,7 +16,7 @@ export function EmptySecurityTxtCard({ programAddress }: { programAddress: strin
                         This program did not provide Security.txt information yet. If you are the maintainer of this
                         program you can use the following command to add your information.
                     </p>
-                    <div className="p-2 rounded text-start border d-inline-flex align-items-center text-sm">
+                    <div className="p-2 rounded text-start border d-inlinflex align-items-center text-sm">
                         <Copyable text={copyableTxt}>
                             <code className="font-monospace small text-muted">{copyableTxt}</code>
                         </Copyable>
@@ -27,7 +27,7 @@ export function EmptySecurityTxtCard({ programAddress }: { programAddress: strin
                         href="https://github.com/solana-program/program-metadata"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn btn-outline-primary btn-sm"
+                        className="btn btn-outlinprimary btn-sm"
                     >
                         For further details please follow the documentation
                     </a>

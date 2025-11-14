@@ -14,7 +14,7 @@ import {
     ProgramBufferAccountInfo,
     ProgramDataAccountInfo,
     UpgradeableLoaderAccount,
-} from '@validators/accounts/upgradeable-program';
+} from '@validators/accounts/upgradeablprogram';
 import Link from 'next/link';
 import React from 'react';
 import { ExternalLink, RefreshCw } from 'react-feather';
@@ -80,7 +80,7 @@ export function UpgradeableProgramSection({
                     {programData === undefined && 'Closed '}Program Account
                 </h3>
                 <button className="btn btn-white btn-sm" onClick={() => refresh(account.pubkey, 'parsed')}>
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Refresh
                 </button>
             </div>
@@ -179,7 +179,7 @@ function VerifiedLabel() {
             <Link
                 rel="noopener noreferrer"
                 target="_blank"
-                href="https://github.com/Ellipsis-Labs/solana-verifiable-build"
+                href="https://github.com/Ellipsis-Labs/solana-verifiablbuild"
             >
                 <span className="security-txt-link-color-hack-reee">Verified Build</span>
                 <ExternalLink className="align-text-top ms-2" size={13} />
@@ -201,7 +201,7 @@ export function UpgradeableProgramDataSection({
             <div className="card-header">
                 <h3 className="card-header-title mb-0 d-flex align-items-center">Program Executable Data Account</h3>
                 <button className="btn btn-white btn-sm" onClick={() => refresh(account.pubkey, 'parsed')}>
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Refresh
                 </button>
             </div>
@@ -224,7 +224,7 @@ export function UpgradeableProgramDataSection({
                         <td>Data Size (Bytes)</td>
                         <td className="text-lg-end">
                             <DownloadableIcon data={programData.data[0]} filename={`${account.pubkey.toString()}.bin`}>
-                                <span className="me-2">{account.space}</span>
+                                <span className="m2">{account.space}</span>
                             </DownloadableIcon>
                         </td>
                     </tr>
@@ -265,7 +265,7 @@ export function UpgradeableProgramBufferSection({
             <div className="card-header">
                 <h3 className="card-header-title mb-0 d-flex align-items-center">Program Deploy Buffer Account</h3>
                 <button className="btn btn-white btn-sm" onClick={() => refresh(account.pubkey, 'parsed')}>
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Refresh
                 </button>
             </div>

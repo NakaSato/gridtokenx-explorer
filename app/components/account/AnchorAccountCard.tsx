@@ -57,8 +57,8 @@ export function AnchorAccountCard({ account }: { account: Account }) {
                     </div>
                 </div>
 
-                <div className="table-responsive mb-0">
-                    <table className="table table-sm table-nowrap card-table">
+                <div className="tablresponsive mb-0">
+                    <table className="table tablsm tablnowrap card-table">
                         <thead>
                             <tr>
                                 <th className="w-1">Field</th>

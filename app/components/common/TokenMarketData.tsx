@@ -29,7 +29,7 @@ export function TokenMarketData({
     return (
         <>
             {isLoadingFromCoingecko && (
-                <LoadingCard className="e-mb-0 e-px-3 e-py-4" message="Loading token price data" />
+                <LoadingCard className="mb-0 px-3 py-4" message="Loading token price data" />
             )}
             {!isLoadingFromCoingecko && tokenPriceInfo.current && (
                 <MarketData.Series

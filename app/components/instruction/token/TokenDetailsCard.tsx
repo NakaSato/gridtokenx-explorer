@@ -66,7 +66,7 @@ function TokenInstruction(props: InfoProps) {
             mintAddress,
             tokenAddress,
         };
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disablline react-hooks/exhaustivdeps
 
     const tokenInfo = useTokenAccountInfo(tokenAddress);
     const mintAddress = infoMintAddress || tokenInfo?.mint.toBase58();
@@ -77,13 +77,13 @@ function TokenInstruction(props: InfoProps) {
         if (tokenAddress && !tokenInfo) {
             fetchAccountInfo(new PublicKey(tokenAddress), 'parsed');
         }
-    }, [fetchAccountInfo, tokenAddress]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [fetchAccountInfo, tokenAddress]); // eslint-disablline react-hooks/exhaustivdeps
 
     React.useEffect(() => {
         if (mintAddress && !mintInfo) {
             fetchAccountInfo(new PublicKey(mintAddress), 'parsed');
         }
-    }, [fetchAccountInfo, mintAddress]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [fetchAccountInfo, mintAddress]); // eslint-disablline react-hooks/exhaustivdeps
 
     const { cluster, url } = useCluster();
     const { data: tokenDetails } = useSWR(

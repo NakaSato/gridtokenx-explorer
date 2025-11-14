@@ -4,7 +4,7 @@ import useSWRImmutable from 'swr/immutable';
 
 import { useAnchorProgram } from '../providers/anchor';
 import { useCluster } from '../providers/cluster';
-import { ProgramDataAccountInfo } from '../validators/accounts/upgradeable-program';
+import { ProgramDataAccountInfo } from '../validators/accounts/upgradeablprogram';
 import { Cluster } from './cluster';
 
 const OSEC_REGISTRY_URL = 'https://verify.osec.io';

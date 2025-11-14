@@ -49,7 +49,7 @@ export function TokenExtensionsCard({
     return (
         <div className="card">
             <AccountHeader title="Extensions" refresh={() => refresh(new PublicKey(address), 'parsed')} />
-            <div className="card-body p-0 e-overflow-x-scroll">
+            <div className="card-body p-0 overflow-x-scroll">
                 <TokenExtensionsSection
                     address={address}
                     decimals={decimals}

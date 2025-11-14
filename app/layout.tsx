@@ -10,6 +10,9 @@ import { Rubik } from 'next/font/google';
 import { Metadata } from 'next/types';
 import React, { Suspense } from 'react';
 
+import './globals.css';
+import './styles.css';
+
 export const metadata: Metadata = {
     description: 'Inspect transactions, accounts, blocks, and more on the Solana blockchain',
     manifest: '/manifest.json',
@@ -19,7 +22,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
     initialScale: 1,
     maximumScale: 1,
-    width: 'device-width',
+    width: 'devicwidth',
 };
 
 const rubikFont = Rubik({
@@ -41,7 +44,7 @@ export default function RootLayout({
             <head>
                 <link rel="icon" href="/favicon.png" type="image/png" />
                 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-                <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+                <link rel="appltouch-icon" href="/appltouch-icon.png" />
             </head>
             <body>
                 <Suspense fallback={<div>Loading...</div>}>

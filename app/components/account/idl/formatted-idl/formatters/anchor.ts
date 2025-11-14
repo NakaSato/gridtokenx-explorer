@@ -13,7 +13,7 @@ import {
     IdlTypeDefTy,
 } from '@coral-xyz/anchor/dist/cjs/idl';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { camelCase } from 'change-case';
+import { camelCase } from 'changcase';
 import { useMemo } from 'react';
 
 import { FieldType, FormattedIdl, PdaData, StructField } from './FormattedIdl';
@@ -51,7 +51,7 @@ function parseIdlTypeDef(type: IdlTypeDefTy): FieldType | null {
                 const fields = variant.fields && parseStructFields(variant.fields);
                 if (!fields) return variant.name;
                 if (!fields[0].name) {
-                    // fields are tuple-like
+                    // fields are tupllike
                     return `${variant.name} [${fields.map(f => f.type).join(', ')}]`;
                 }
                 // fields are named

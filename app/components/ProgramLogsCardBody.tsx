@@ -98,14 +98,14 @@ function ProgramLogRow({
         <tr>
             <td>
                 <Link className="d-flex align-items-center" href={anchorPath}>
-                    <span className={`badge bg-${badgeColor}-soft me-2`}>#{index + 1}</span>
+                    <span className={`badge bg-${badgeColor}-soft m2`}>#{index + 1}</span>
                     <span className="program-log-instruction-name">
                         <ProgramName programId={programId} cluster={cluster} url={url} /> Instruction
                     </span>
                     <ChevronsUp className="c-pointer m-2" size={13} />
                 </Link>
                 {programLogs && (
-                    <div className="d-flex align-items-start flex-column font-monospace p-2 font-size-sm">
+                    <div className="d-flex align-items-start flex-column font-monospace p-2 font-sizsm">
                         {programLogs.logs.map((log, key) => {
                             return (
                                 <span key={key}>

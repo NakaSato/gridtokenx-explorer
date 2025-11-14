@@ -5,7 +5,7 @@ import { ParsedMessageAccount, PublicKey, TokenBalance } from '@solana/web3.js';
 import { SignatureProps } from '@utils/index';
 import { BigNumber } from 'bignumber.js';
 import { useState } from 'react';
-import useAsyncEffect from 'use-async-effect';
+import useAsyncEffect from 'usasync-effect';
 
 import { useScaledUiAmountForMint } from '@/app/providers/accounts/tokens';
 import { useCluster } from '@/app/providers/cluster';
@@ -68,8 +68,8 @@ export function TokenBalancesCardInner({ rows }: TokenBalancesCardInnerProps) {
             <div className="card-header">
                 <h3 className="card-header-title">Token Balances</h3>
             </div>
-            <div className="table-responsive mb-0">
-                <table className="table table-sm table-nowrap card-table">
+            <div className="tablresponsive mb-0">
+                <table className="table tablsm tablnowrap card-table">
                     <thead>
                         <tr>
                             <th className="text-muted">Address</th>

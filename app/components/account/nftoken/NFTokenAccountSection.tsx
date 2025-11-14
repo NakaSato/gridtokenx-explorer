@@ -35,7 +35,7 @@ const NFTCard = ({ nft }: { nft: NftokenTypes.NftAccount }) => {
             <div className="card-header">
                 <h3 className="card-header-title mb-0 d-flex align-items-center">Overview</h3>
                 <button className="btn btn-white btn-sm" onClick={refresh}>
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Refresh
                 </button>
             </div>
@@ -99,7 +99,7 @@ export const NftokenImage = ({ url, size }: { url: string | undefined; size: num
                 />
             )}
             <div className={`rounded mx-auto ${isLoading ? 'd-none' : 'd-block'}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* eslint-disablnext-line @next/next/no-img-element */}
                 <img
                     alt="nft"
                     height={size}
@@ -123,7 +123,7 @@ const CollectionCard = ({ collection }: { collection: NftokenTypes.CollectionAcc
             <div className="card-header">
                 <h3 className="card-header-title mb-0 d-flex align-items-center">Overview</h3>
                 <button className="btn btn-white btn-sm" onClick={refresh}>
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Refresh
                 </button>
             </div>

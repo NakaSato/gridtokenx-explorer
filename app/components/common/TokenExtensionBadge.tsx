@@ -1,4 +1,4 @@
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variancauthority';
 import { useCallback } from 'react';
 
 import { ParsedTokenExtension } from '@/app/components/account/types';
@@ -11,7 +11,7 @@ const badgeVariants = cva('', {
     },
     variants: {
         size: {
-            sm: 'e-text-14',
+            sm: 'text-14',
         },
     },
 });
@@ -34,12 +34,12 @@ export function TokenExtensionBadge({
 
     return (
         <Tooltip>
-            <TooltipTrigger className="e-border-0 e-bg-transparent e-p-0" onClick={handleClick}>
+            <TooltipTrigger className="border-0 bg-transparent p-0" onClick={handleClick}>
                 <StatusBadge status={status} label={label} className={badgeVariants({ size })} />
             </TooltipTrigger>
             {tooltip && (
                 <TooltipContent>
-                    <div className="e-min-w-36 e-max-w-16">{tooltip}</div>
+                    <div className="min-w-36 max-w-16">{tooltip}</div>
                 </TooltipContent>
             )}
         </Tooltip>

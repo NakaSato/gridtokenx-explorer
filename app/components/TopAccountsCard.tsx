@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import React, { createRef, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import useAsyncEffect from 'use-async-effect';
+import useAsyncEffect from 'usasync-effect';
 
 import { percentage } from '../utils/math';
 
@@ -86,8 +86,8 @@ export function TopAccountsCard() {
                 )}
 
                 {accounts && (
-                    <div className="table-responsive mb-0">
-                        <table className="table table-sm table-nowrap card-table">
+                    <div className="tablresponsive mb-0">
+                        <table className="table tablsm tablnowrap card-table">
                             <thead>
                                 <tr>
                                     <th className="text-muted">Rank</th>
@@ -111,7 +111,7 @@ const renderAccountRow = (account: AccountBalancePair, index: number, supply: bi
     return (
         <tr key={index}>
             <td>
-                <span className="badge bg-gray-soft badge-pill">{index + 1}</span>
+                <span className="badge bg-gray-soft badgpill">{index + 1}</span>
             </td>
             <td>
                 <Address pubkey={account.address} link />

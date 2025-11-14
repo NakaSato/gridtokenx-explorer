@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
 import { TokenExtension } from '@validators/accounts/token-extension';
 
-// Re-export types from the API route
+// Rexport types from the API route
 export type FullTokenInfo = {
     readonly chainId: number;
     readonly address: string;

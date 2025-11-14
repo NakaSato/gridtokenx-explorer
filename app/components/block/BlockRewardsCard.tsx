@@ -18,8 +18,8 @@ export function BlockRewardsCard({ block }: { block: VersionedBlockResponse }) {
                 <h3 className="card-header-title">Block Rewards</h3>
             </div>
 
-            <div className="table-responsive mb-0">
-                <table className="table table-sm table-nowrap card-table">
+            <div className="tablresponsive mb-0">
+                <table className="table tablsm tablnowrap card-table">
                     <thead>
                         <tr>
                             <th className="text-muted">Address</th>

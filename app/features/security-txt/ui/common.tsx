@@ -104,8 +104,8 @@ export function StringCell({ value }: { value: string }) {
 
 export function RenderCode({ value }: { value: any }) {
     return (
-        <div className="d-flex e-items-end">
-            <pre className="e-max-w-[500px] e-overflow-x-auto lg:e-ml-auto">{parseCodeValue(value)}</pre>
+        <div className="d-flex items-end">
+            <pre className="max-w-[500px] overflow-x-auto lg:ml-auto">{parseCodeValue(value)}</pre>
         </div>
     );
 }

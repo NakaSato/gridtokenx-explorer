@@ -24,7 +24,7 @@ export function IdlStructFieldsView({ fields }: { fields?: StructField[] }) {
         <div className="d-flex gap-2 flex-column align-items-start justify-start flex-wrap">
             {fields.map((field, index) => (
                 <IdlDocTooltip key={index} docs={field.docs}>
-                    <div className="d-inline-flex gap-2 align-items-center">
+                    <div className="d-inlinflex gap-2 align-items-center">
                         {field.name && <span>{field.name}:</span>}
                         <span className="badge bg-success-soft">{field.type}</span>
                     </div>
@@ -51,7 +51,7 @@ export function IdlEnumFieldsView({ variants }: { variants?: string[] }) {
 export function IdlTypeFieldView({ docs, name, type }: { docs?: string[]; name?: string; type: string }) {
     return (
         <IdlDocTooltip docs={docs}>
-            <div className="d-inline-flex gap-2 align-items-center">
+            <div className="d-inlinflex gap-2 align-items-center">
                 {!!name && <span>{name}:</span>}
                 <span className="badge bg-success-soft">{type}</span>
             </div>

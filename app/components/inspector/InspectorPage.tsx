@@ -475,8 +475,8 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
                             <div className="d-flex align-items-start flex-column">
                                 Fee payer
                                 <span className="mt-1">
-                                    <span className="badge bg-info-soft me-2">Signer</span>
-                                    <span className="badge bg-danger-soft me-2">Writable</span>
+                                    <span className="badge bg-info-soft m2">Signer</span>
+                                    <span className="badge bg-danger-soft m2">Writable</span>
                                 </span>
                             </div>
                         </td>

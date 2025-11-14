@@ -36,7 +36,7 @@ export function RewardsCard({ address }: { address: string }) {
         if (!rewards) {
             fetchRewards(pubkey, highestEpoch);
         }
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disablline react-hooks/exhaustivdeps
 
     if (!rewards) {
         return null;
@@ -84,8 +84,8 @@ export function RewardsCard({ address }: { address: string }) {
                 </div>
 
                 {rewardsFound ? (
-                    <div className="table-responsive mb-0">
-                        <table className="table table-sm table-nowrap card-table">
+                    <div className="tablresponsive mb-0">
+                        <table className="table tablsm tablnowrap card-table">
                             <thead>
                                 <tr>
                                     <th className="w-1 text-muted">Epoch</th>
@@ -110,7 +110,7 @@ export function RewardsCard({ address }: { address: string }) {
                         <button className="btn btn-primary w-100" onClick={() => loadMore()} disabled={fetching}>
                             {fetching ? (
                                 <>
-                                    <span className="align-text-top spinner-grow-sm me-2"></span>
+                                    <span className="align-text-top spinner-grow-sm m2"></span>
                                     Loading
                                 </>
                             ) : (

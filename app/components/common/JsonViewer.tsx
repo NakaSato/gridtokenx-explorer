@@ -20,7 +20,7 @@ export function JsonViewer(props: JsonViewerProps) {
 }
 
 /**
- * Pre-configured JsonViewer with the solarized theme
+ * Prconfigured JsonViewer with the solarized theme
  * commonly used across the application
  */
 export function SolarizedJsonViewer(props: Omit<JsonViewerProps, 'theme'>) {

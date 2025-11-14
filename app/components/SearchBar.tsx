@@ -39,7 +39,7 @@ export function SearchBar() {
     const searchParams = useSearchParams();
     const selectRef = useRef<SelectInstance<SearchElement> | null>(null);
 
-    const onChange = (option: SearchElement, meta: ActionMeta<any>) => {
+    const onChange = (option: SearchElement | null, meta: ActionMeta<any>) => {
         if (option === null || typeof option?.pathname !== 'string') {
             setSearch('');
             return;
@@ -99,7 +99,7 @@ export function SearchBar() {
 
                 return (
                     <components.Control {...props}>
-                        <Search className="me-3" size={15} />
+                        <Search className="m3" size={15} />
                         {children}
                         {hasValue ? (
                             <ClearIndicator onClick={clearHandler} onTouchStart={clearHandler} />

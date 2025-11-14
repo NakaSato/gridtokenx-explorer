@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { notFound, useSelectedLayoutSegment } from 'next/navigation';
 import React, { PropsWithChildren } from 'react';
 
-import { estimateRequestedComputeUnits } from '@/app/utils/compute-units-schedule';
+import { estimateRequestedComputeUnits } from '@/app/utils/computunits-schedule';
 import { getEpochForSlot, getMaxComputeUnitsInBlock } from '@/app/utils/epoch-schedule';
 
 type Props = PropsWithChildren<{ params: { slot: string } }>;
@@ -33,7 +33,7 @@ function BlockLayoutInner({ children, params: { slot } }: Props) {
     // Fetch block on load
     React.useEffect(() => {
         if (!confirmedBlock && status === ClusterStatus.Connected) refresh();
-    }, [slotNumber, status]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [slotNumber, status]); // eslint-disablline react-hooks/exhaustivdeps
 
     let content;
     if (!confirmedBlock || confirmedBlock.status === FetchStatus.Fetching) {

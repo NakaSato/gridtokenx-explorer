@@ -61,10 +61,10 @@ function renderDetails<T extends object>(props: InstructionDetailsProps, parsed:
 
         if (key === 'vote') {
             attributes.push(
-                <tr key="vote-hash">
+                <tr key="vothash">
                     <td>Vote Hash</td>
                     <td className="text-lg-end">
-                        <pre className="d-inline-block text-start mb-0">{value.hash}</pre>
+                        <pre className="d-inlinblock text-start mb-0">{value.hash}</pre>
                     </td>
                 </tr>
             );
@@ -79,10 +79,10 @@ function renderDetails<T extends object>(props: InstructionDetailsProps, parsed:
             }
 
             attributes.push(
-                <tr key="vote-slots">
+                <tr key="votslots">
                     <td>Slots</td>
                     <td className="text-lg-end font-monospace">
-                        <pre className="d-inline-block text-start mb-0">{value.slots.join('\n')}</pre>
+                        <pre className="d-inlinblock text-start mb-0">{value.slots.join('\n')}</pre>
                     </td>
                 </tr>
             );

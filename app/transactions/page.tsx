@@ -239,7 +239,7 @@ export default function RealtimeTransactionsPage() {
                                 )}
                                 {!isPaused && (
                                     <span className="badge bg-success-soft">
-                                        <span className="spinner-grow spinner-grow-sm me-2" role="status" />
+                                        <span className="spinner-grow spinner-grow-sm m2" role="status" />
                                         Live
                                     </span>
                                 )}
@@ -257,8 +257,8 @@ export default function RealtimeTransactionsPage() {
                         seconds when not paused.
                     </p>
                 </div>
-                <div className="table-responsive mb-0">
-                    <table className="table table-sm table-nowrap card-table">
+                <div className="tablresponsive mb-0">
+                    <table className="table tablsm tablnowrap card-table">
                         <thead>
                             <tr>
                                 <th className="text-muted">Signature</th>
@@ -308,7 +308,7 @@ export default function RealtimeTransactionsPage() {
                                             disabled={detailsLoading}
                                         >
                                             {detailsLoading && selectedTx?.signature === tx.signature ? (
-                                                <span className="spinner-border spinner-border-sm me-2" />
+                                                <span className="spinner-border spinner-border-sm m2" />
                                             ) : null}
                                             Inspect
                                         </button>
@@ -392,7 +392,7 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                     <h5 className="border-bottom pb-2">Overview</h5>
                     <div className="row">
                         <div className="col-md-6">
-                            <table className="table table-sm">
+                            <table className="table tablsm">
                                 <tbody>
                                     <tr>
                                         <td className="w-50">
@@ -420,7 +420,7 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                             </table>
                         </div>
                         <div className="col-md-6">
-                            <table className="table table-sm">
+                            <table className="table tablsm">
                                 <tbody>
                                     <tr>
                                         <td className="w-50">
@@ -504,7 +504,7 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                                                 <ul className="list-group mt-2">
                                                     {instruction.accountKeyIndexes.map((accountIdx, i) => (
                                                         <li key={i} className="list-group-item">
-                                                            <span className="badge bg-secondary me-2">#{i}</span>
+                                                            <span className="badge bg-secondary m2">#{i}</span>
                                                             <Address pubkey={accountKeys[accountIdx]} link />
                                                         </li>
                                                     ))}
@@ -527,8 +527,8 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                 {/* Account Keys */}
                 <div className="mb-4">
                     <h5 className="border-bottom pb-2">All Accounts ({accountKeys.length})</h5>
-                    <div className="table-responsive">
-                        <table className="table table-sm">
+                    <div className="tablresponsive">
+                        <table className="table tablsm">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -591,8 +591,8 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                 {details.meta?.preBalances && details.meta?.postBalances && (
                     <div>
                         <h5 className="border-bottom pb-2">Balance Changes</h5>
-                        <div className="table-responsive">
-                            <table className="table table-sm">
+                        <div className="tablresponsive">
+                            <table className="table tablsm">
                                 <thead>
                                     <tr>
                                         <th>Account</th>

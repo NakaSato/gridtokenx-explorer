@@ -3,7 +3,7 @@
 import { Address } from '@components/common/Address';
 import { ErrorCard } from '@components/common/ErrorCard';
 import { LoadingCard } from '@components/common/LoadingCard';
-import { useUserDomains } from '@utils/name-service';
+import { useUserDomains } from '@utils/namservice';
 import React from 'react';
 
 import { DomainInfo } from '@/app/utils/domain-info';
@@ -40,8 +40,8 @@ export function DomainsCard({ address }: { address: string }) {
             <div className="card-header align-items-center">
                 <h3 className="card-header-title">Owned Domain Names</h3>
             </div>
-            <div className="table-responsive mb-0">
-                <table className="table table-sm table-nowrap card-table">
+            <div className="tablresponsive mb-0">
+                <table className="table tablsm tablnowrap card-table">
                     <thead>
                         <tr>
                             <th className="text-muted">Domain Name</th>

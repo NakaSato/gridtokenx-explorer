@@ -43,22 +43,22 @@ export function MessageBanner() {
     if (estimate || start || end) {
         timeframe = (
             <div>
-                <hr className="text-gray-500 w-100 my-3 opacity-50" />
+                <hr className="text-gray-500 w-full my-3 opacity-50" />
                 {estimate && (
-                    <h5 className="font-sm text-gray-200">
-                        <span className="text-uppercase">Estimated Duration: </span>
+                    <h5 className="text-sm text-gray-200">
+                        <span className="uppercase">Estimated Duration: </span>
                         {estimate}
                     </h5>
                 )}
                 {start && (
-                    <h5 className="font-sm text-gray-200">
-                        <span className="text-uppercase">Started at: </span>
+                    <h5 className="text-sm text-gray-200">
+                        <span className="uppercase">Started at: </span>
                         {displayTimestamp(start.getTime())}
                     </h5>
                 )}
                 {end && (
-                    <h5 className="font-sm text-gray-200">
-                        <span className="text-uppercase">End: </span>
+                    <h5 className="text-sm text-gray-200">
+                        <span className="uppercase">End: </span>
                         {displayTimestamp(end.getTime())}
                     </h5>
                 )}
@@ -67,11 +67,11 @@ export function MessageBanner() {
     }
 
     return (
-        <div className="bg-info">
-            <div className="container">
-                <div className="d-flex flex-column align-items-center justify-content-center text-center py-3">
-                    <h3 className="mb-0 line-height-md">
-                        <AlertCircle className="me-2" size={15} />
+        <div className="bg-blu600">
+            <div className="container mx-auto px-4">
+                <div className="flex flex-col items-center justify-center text-center py-3">
+                    <h3 className="mb-0 leading-normal">
+                        <AlertCircle className="mr-2" size={15} />
                         {message}
                     </h3>
                     {timeframe}

@@ -5,7 +5,7 @@ import { useCluster } from '@/app/providers/cluster';
 import { Cluster } from '@/app/utils/cluster';
 import { useClusterPath } from '@/app/utils/url';
 import { useIsProgramVerified } from '@/app/utils/verified-builds';
-import { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeable-program';
+import { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeablprogram';
 
 export function VerifiedProgramBadge({
     programData,

@@ -13,8 +13,8 @@ export function BlockhashesCard({ blockhashes }: { blockhashes: RecentBlockhashe
                     </div>
                 </div>
 
-                <div className="table-responsive mb-0">
-                    <table className="table table-sm table-nowrap card-table">
+                <div className="tablresponsive mb-0">
+                    <table className="table tablsm tablnowrap card-table">
                         <thead>
                             <tr>
                                 <th className="w-1 text-muted">Recency</th>

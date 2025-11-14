@@ -107,7 +107,7 @@ function RenderEntry({ value, type }: { value: NeodymeSecurityTXT[keyof NeodymeS
         case DisplayType.Contacts:
             return (
                 <td className="font-monospace">
-                    <ul className="text-lg-end security-contacts [&.security-contacts]:e-text-left">
+                    <ul className="text-lg-end security-contacts [&.security-contacts]:text-left">
                         {value?.split(',').map((c, i) => {
                             const idx = c.indexOf(':');
                             if (idx < 0) {
@@ -142,7 +142,7 @@ function RenderEntry({ value, type }: { value: NeodymeSecurityTXT[keyof NeodymeS
             }
             return (
                 <td>
-                    <ul className="security-txt-auditors text-lg-end [&.security-txt-auditors]:e-text-left">
+                    <ul className="security-txt-auditors text-lg-end [&.security-txt-auditors]:text-left">
                         {value?.split(',').map((c, idx) => {
                             return <li key={idx}>{c}</li>;
                         })}

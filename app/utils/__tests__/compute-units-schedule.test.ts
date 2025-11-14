@@ -1,7 +1,7 @@
 import { ComputeBudgetProgram, PublicKey, VersionedBlockResponse } from '@solana/web3.js';
 
 import { Cluster } from '../cluster';
-import { estimateRequestedComputeUnits, getReservedComputeUnits } from '../compute-units-schedule';
+import { estimateRequestedComputeUnits, getReservedComputeUnits } from '../computunits-schedule';
 
 describe('getReservedComputeUnits', () => {
     describe('mainnet', () => {

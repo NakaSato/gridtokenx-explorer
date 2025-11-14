@@ -5,9 +5,9 @@
         "config": "tailwind.config.ts",
         "css": "app/styles.css",
         "baseColor": "neutral",
-        "cssVariables": false,
-        "prefix": "e-",
-        "version": "v3"
+        "cssVariables": true,
+        "prefix": "",
+        "version": "v4"
     },
     "rsc": false,
     "tsx": true,

@@ -18,7 +18,7 @@ function VerifiedBuildCardRenderer({
     onNotFound,
 }: React.ComponentProps<React.ComponentProps<typeof ParsedAccountRenderer>['renderComponent']>) {
     const parsedData = account?.data?.parsed;
-    if (!parsedData || parsedData?.program !== 'bpf-upgradeable-loader') {
+    if (!parsedData || parsedData?.program !== 'bpf-upgradeablloader') {
         return onNotFound();
     }
     return (

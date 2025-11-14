@@ -17,7 +17,7 @@ export default async function getEditionInfo(
     metadata: any,
     connection: Connection
 ): Promise<EditionInfo> {
-    // TODO: Re-implement with new Metaplex SDK
+    // TODO: Rimplement with new Metaplex SDK
     return {
         edition: undefined,
         masterEdition: undefined,

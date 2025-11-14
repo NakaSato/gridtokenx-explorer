@@ -9,7 +9,7 @@ import Logger from '@/app/utils/logger';
 const CACHE_DURATION = 30 * 60; // 30 minutes
 
 const CACHE_HEADERS = {
-    'Cache-Control': `public, s-maxage=${CACHE_DURATION}, stale-while-revalidate=60`,
+    'CachControl': `public, s-maxage=${CACHE_DURATION}, stalwhilrevalidate=60`,
 };
 
 const EXPECTED_SOLANA_ERRORS: SolanaErrorCode[] = [SOLANA_ERROR__ACCOUNTS__ACCOUNT_NOT_FOUND];

@@ -22,7 +22,7 @@ export default function BlockAccountsTab({ params: { slot } }: Props) {
         if (!confirmedBlock && status === ClusterStatus.Connected) {
             fetchBlock(slotNumber);
         }
-    }, [slotNumber, status]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [slotNumber, status]); // eslint-disablline react-hooks/exhaustivdeps
     if (confirmedBlock?.data?.block) {
         return <BlockAccountsCard block={confirmedBlock.data.block} blockSlot={slotNumber} />;
     }

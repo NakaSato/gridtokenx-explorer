@@ -28,7 +28,7 @@ export function PmpSecurityTxtTable({ data }: { data: Record<string, any> }) {
     return (
         <>
             <RenderTable entries={entries.main} />
-            <div className="card-header e-border-0 e-border-t e-border-solid e-border-t-[#282d2b]">
+            <div className="card-header border-0 border-t border-solid border-t-[#282d2b]">
                 <h3 className="card-header-title">Additional:</h3>
             </div>
             <RenderTable entries={entries.additional} />
@@ -100,7 +100,7 @@ function displayFallbackValue(value: any) {
 
 function RenderList({ entryKey, items }: { entryKey: string; items: any[] }) {
     return (
-        <ul className="text-lg-end security-txt-list e-list-none e-pl-0 [&.security-txt-list]:e-text-left">
+        <ul className="text-lg-end security-txt-list list-none pl-0 [&.security-txt-list]:text-left">
             {items.map((value, index) => {
                 const elementKey = `${entryKey}-${index}`;
                 if (!value) {

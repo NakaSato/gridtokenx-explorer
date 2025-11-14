@@ -95,7 +95,7 @@ function BaseCard({ tabs }: { tabs: MetadataTab[] }) {
                     </TabsList>
                     {tabs.map(tab => (
                         <TabsContent key={tab.id} value={tab.id}>
-                            <div className="metadata-json-viewer e-mt-5">
+                            <div className="metadata-json-viewer mt-5">
                                 <ReactJson
                                     src={tab.data}
                                     style={{ padding: 25 }}

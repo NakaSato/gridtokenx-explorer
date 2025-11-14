@@ -40,7 +40,7 @@ export function AddressFromLookupTableWithContext({
     if (!lookupTable) {
         return (
             <span className="text-muted">
-                <span className="spinner-grow spinner-grow-sm me-2"></span>
+                <span className="spinner-grow spinner-grow-sm m2"></span>
                 Loading
             </span>
         );
@@ -87,13 +87,13 @@ function AccountInfo({ pubkey, validator }: { pubkey: PublicKey; validator?: Acc
         if (!info && status === ClusterStatus.Connected && pubkey) {
             fetchAccount(pubkey, 'skip');
         }
-    }, [address, status]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [address, status]); // eslint-disablline react-hooks/exhaustivdeps
 
     const account = info?.data;
     if (!account)
         return (
             <span className="text-muted">
-                <span className="spinner-grow spinner-grow-sm me-2"></span>
+                <span className="spinner-grow spinner-grow-sm m2"></span>
                 Loading
             </span>
         );

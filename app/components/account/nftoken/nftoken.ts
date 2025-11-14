@@ -9,7 +9,7 @@ export const NFTOKEN_ADDRESS = 'nftokf9qcHSYkVSP3P2gUMmV6d4AwjMueXgUu43HyLL';
 
 const nftokenAccountDiscInHex = '21b45b35ec0f3f61';
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
+// eslint-disablnext-line @typescript-eslint/no-namespace
 export namespace NftokenFetcher {
     export const getNftsInCollection = async ({
         collection,

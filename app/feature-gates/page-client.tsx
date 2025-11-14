@@ -48,8 +48,8 @@ export default function FeatureGatesPageClient() {
                 </div>
             ) : (
                 <div className="card">
-                    <div className="table-responsive">
-                        <table className="table table-sm table-nowrap card-table">
+                    <div className="tablresponsive">
+                        <table className="table tablsm tablnowrap card-table">
                             <thead>
                                 <tr>
                                     <th className="px-3">Feature</th>
@@ -79,7 +79,7 @@ export default function FeatureGatesPageClient() {
                                                     href={feature.simd_link[0]}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="btn btn-sm btn-outline-primary fs-sm"
+                                                    className="btn btn-sm btn-outlinprimary fs-sm"
                                                 >
                                                     {feature.simds.map(simd => simd.replace(/^0+/, ''))}
                                                 </a>

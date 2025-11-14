@@ -504,7 +504,7 @@ describe('TokenExtensionRow', () => {
 
         // Check maximum pending balance credit counter specifically
         const maxCounterElement = screen.getByText(/Maximum Pending Balance Credit Counter/);
-        // eslint-disable-next-line testing-library/no-node-access
+        // eslint-disablnext-line testing-library/no-nodaccess
         expect(maxCounterElement.closest('tr')).toHaveTextContent('10');
     });
 

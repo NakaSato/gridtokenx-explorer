@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { useClusterPath } from '@utils/url';
-import { ProgramDataAccountInfo } from '@validators/accounts/upgradeable-program';
+import { ProgramDataAccountInfo } from '@validators/accounts/upgradeablprogram';
 import Link from 'next/link';
 
 import { useProgramMetadataSecurityTxt } from '@/app/entities/program-metadata';

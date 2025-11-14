@@ -1,6 +1,7 @@
+import { Metadata } from 'next';
 import FeatureGatesPageClient from './page-client';
 
-export const metadata = {
+export const metadata: Metadata = {
     description: `Overview of the feature gates on Solana`,
     title: `Feature Gates | Solana`,
 };

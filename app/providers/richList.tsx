@@ -41,7 +41,7 @@ export function RichListProvider({ children }: Props) {
                 }
             }
         }
-    }, [clusterStatus, cluster, url]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [clusterStatus, cluster, url]); // eslint-disablline react-hooks/exhaustivdeps
 
     return (
         <StateContext.Provider value={state}>

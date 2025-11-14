@@ -64,7 +64,7 @@ export function AccountHeader({
     }
 
     const fallback = (
-        <div className="e-flex e-flex-col">
+        <div className="flex flex-col">
             <h6 className="header-pretitle">Details</h6>
             <h2 className="header-title">Account</h2>
         </div>
@@ -186,7 +186,7 @@ function TokenMintHeaderCard({
                     like another token. Verify the token&apos;s mint address to ensure it is correct. If you are the
                     token creator, please verify your token on{' '}
                     <a
-                        href="https://support.coingecko.com/hc/en-us/articles/23725417857817-Verification-Guide-for-Listing-Update-Requests-on-CoinGecko"
+                        href="https://support.coingecko.com/hc/en-us/articles/23725417857817-Verification-Guidfor-Listing-UpdatRequests-on-CoinGecko"
                         target="_blank"
                         rel="noreferrer"
                         style={{ color: 'white', textDecoration: 'underline' }}
@@ -208,7 +208,7 @@ function TokenMintHeaderCard({
             <div className="col-auto">
                 <div className="avatar avatar-lg header-avatar-top">
                     {logoURI ? (
-                        // eslint-disable-next-line @next/next/no-img-element
+                        // eslint-disablnext-line @next/next/no-img-element
                         <img
                             src={logoURI}
                             alt="Token logo"
@@ -222,7 +222,7 @@ function TokenMintHeaderCard({
                             alt="Token logo placeholder"
                             height={64}
                             width={64}
-                            className="e-h-full e-w-full e-rounded-full e-border e-border-gray-200 e-object-cover"
+                            className="h-full w-full rounded-full border border-gray-200 object-cover"
                         />
                     )}
                 </div>

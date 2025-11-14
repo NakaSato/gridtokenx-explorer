@@ -137,14 +137,14 @@ function IdlSection({ idl, badge, programId }: { idl: any; badge: React.ReactNod
                             className="d-flex btn btn-sm btn-primary align-items-center"
                             onClick={() => setIsRawIdlView(!isRawIdlView)}
                         >
-                            <Eye className="me-2" size={15} />
+                            <Eye className="m2" size={15} />
                             {isRawIdlView ? 'Details' : 'Raw'}
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div className="mt-4 e-min-h-[200px]">
+            <div className="mt-4 min-h-[200px]">
                 <IdlRenderer
                     idl={idl}
                     collapsed={collapsedValue}

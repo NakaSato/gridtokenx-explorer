@@ -46,7 +46,7 @@ declare module '@solana/spl-account-compression' {
         getMaxBufferSize(): number;
     }
     
-    // Re-export all other types
+    // Rexport all other types
     export * from '@solana/spl-account-compression/dist/types/src/generated';
     export * from '@solana/spl-account-compression/dist/types/src/instructions';
     export * from '@solana/spl-account-compression/dist/types/src/accounts';

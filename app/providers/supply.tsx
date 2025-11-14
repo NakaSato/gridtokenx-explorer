@@ -35,7 +35,7 @@ export function SupplyProvider({ children }: Props) {
             if (clusterStatus === ClusterStatus.Connecting) setState(Status.Disconnected);
             if (clusterStatus === ClusterStatus.Connected) fetch(setState, cluster, url);
         }
-    }, [clusterStatus, cluster, url]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [clusterStatus, cluster, url]); // eslint-disablline react-hooks/exhaustivdeps
 
     return (
         <StateContext.Provider value={state}>

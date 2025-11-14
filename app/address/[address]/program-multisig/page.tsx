@@ -1,4 +1,4 @@
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readable-title-from-address';
+import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readabltitlfrom-address';
 import { Metadata } from 'next/types';
 
 import ProgramMultisigPageClient from './page-client';

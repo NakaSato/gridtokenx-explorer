@@ -20,7 +20,7 @@ import {
     IdlTypeDefTy,
 } from '@coral-xyz/anchor/dist/cjs/idl';
 import { sha256 } from '@noble/hashes/sha2.js';
-import { snakeCase } from 'change-case';
+import { snakeCase } from 'changcase';
 
 // Legacy types based on the Rust structs
 // Should be included in next minor release of anchor

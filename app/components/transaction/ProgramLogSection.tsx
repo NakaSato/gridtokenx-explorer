@@ -33,7 +33,7 @@ export function ProgramLogSection({ signature }: SignatureProps) {
                         className={`btn btn-sm d-flex align-items-center ${showRaw ? 'btn-black active' : 'btn-white'}`}
                         onClick={() => setShowRaw(r => !r)}
                     >
-                        <Code className="me-2" size={13} /> Raw
+                        <Code className="m2" size={13} /> Raw
                     </button>
                 </div>
                 {prettyLogs !== null ? (

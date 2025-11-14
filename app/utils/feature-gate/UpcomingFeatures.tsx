@@ -51,7 +51,7 @@ export function UpcomingFeatures() {
         <FeaturesTable
             header={
                 <>
-                    <span className="me-2">🚀</span>
+                    <span className="m2">🚀</span>
                     Upcoming {clusterName(cluster)} Features
                 </>
             }
@@ -75,7 +75,7 @@ function FeaturesTable({
             <div className="card-header">
                 <h4 className="card-header-title">{header}</h4>
             </div>
-            <div className="table-responsive small-headers">
+            <div className="tablresponsive small-headers">
                 <table className="table">
                     <thead>
                         <tr>
@@ -90,7 +90,7 @@ function FeaturesTable({
                             <tr key={feature.key}>
                                 <td>
                                     <div className="mb-2 d-flex align-items-center">
-                                        <p className="mb-0 me-3 text-decoration-underline fs-sm">{feature.title}</p>
+                                        <p className="mb-0 m3 text-decoration-underline fs-sm">{feature.title}</p>
                                         {cluster === Cluster.MainnetBeta && feature.mainnet_activation_epoch && (
                                             <span className="badge bg-success">Active on Mainnet</span>
                                         )}
@@ -145,7 +145,7 @@ function FeaturesTable({
                                             href={feature.simd_link[index]}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="btn btn-sm btn-outline-primary fs-sm"
+                                            className="btn btn-sm btn-outlinprimary fs-sm"
                                         >
                                             SIMD {simd.replace(/^0+/, '')}
                                         </a>

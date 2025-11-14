@@ -151,7 +151,7 @@ function TabInstructions() {
                 {tabs.map(tab => (
                     <button
                         key={tab.id}
-                        className={`me-3 nav-link ${activeTab === tab.id ? 'active' : ''}`}
+                        className={`m3 nav-link ${activeTab === tab.id ? 'active' : ''}`}
                         onClick={() => setActiveTab(tab.id)}
                     >
                         {tab.label}
@@ -280,7 +280,7 @@ export function RawInput({
             input.value = value;
             onInput();
         }
-    }, [value, onInput]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [value, onInput]); // eslint-disablline react-hooks/exhaustivdeps
 
     const placeholder = 'Paste a raw base58/base64 encoded transaction message or Squads vault transaction account';
     return (
@@ -306,8 +306,8 @@ export function RawInput({
                     <div className="col d-flex align-items-center">
                         {error && (
                             <>
-                                <span className="text-warning small me-2">
-                                    <i className="fe fe-alert-circle"></i>
+                                <span className="text-warning small m2">
+                                    <i className="fe falert-circle"></i>
                                 </span>
 
                                 <span className="text-warning">{error}</span>

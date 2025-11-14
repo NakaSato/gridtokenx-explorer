@@ -175,7 +175,7 @@ function RenderEntry({ value, type }: { value: OsecRegistryInfo[keyof OsecRegist
                     style={{
                         overflowWrap: 'break-word',
                         position: 'relative',
-                        whiteSpace: 'pre-wrap',
+                        whiteSpace: 'prwrap',
                         wordWrap: 'break-word',
                     }}
                 >

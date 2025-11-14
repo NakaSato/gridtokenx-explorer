@@ -31,7 +31,7 @@ export function StatsNotReady({ error }: { error: boolean }) {
                         retry();
                     }}
                 >
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Try Again
                 </button>
             </div>
@@ -40,7 +40,7 @@ export function StatsNotReady({ error }: { error: boolean }) {
 
     return (
         <div className="card-body text-center">
-            <span className="align-text-top spinner-grow spinner-grow-sm me-2"></span>
+            <span className="align-text-top spinner-grow spinner-grow-sm m2"></span>
             Loading
         </div>
     );

@@ -101,7 +101,7 @@ function TokenHistoryTable({ tokens }: { tokens: TokenInfoWithPubkey[] }) {
                 fetchAccountHistory(token.pubkey, true);
             }
         });
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disablline react-hooks/exhaustivdeps
 
     const allFoundOldest = filteredTokens.every(token => {
         const history = accountHistories[token.pubkey.toBase58()];
@@ -197,20 +197,20 @@ function TokenHistoryTable({ tokens }: { tokens: TokenInfoWithPubkey[] }) {
                 <button className="btn btn-white btn-sm" disabled={fetching} onClick={() => fetchHistories(true)}>
                     {fetching ? (
                         <>
-                            <span className="align-text-top spinner-grow spinner-grow-sm me-2"></span>
+                            <span className="align-text-top spinner-grow spinner-grow-sm m2"></span>
                             Loading
                         </>
                     ) : (
                         <>
-                            <RefreshCw className="align-text-top me-2" size={13} />
+                            <RefreshCw className="align-text-top m2" size={13} />
                             Refresh
                         </>
                     )}
                 </button>
             </div>
 
-            <div className="table-responsive mb-0">
-                <table className="table table-sm table-nowrap card-table">
+            <div className="tablresponsive mb-0">
+                <table className="table tablsm tablnowrap card-table">
                     <thead>
                         <tr>
                             <th className="text-muted w-1">Slot</th>
@@ -240,7 +240,7 @@ function TokenHistoryTable({ tokens }: { tokens: TokenInfoWithPubkey[] }) {
                     <button className="btn btn-primary w-100" onClick={() => fetchHistories()} disabled={fetching}>
                         {fetching ? (
                             <>
-                                <span className="align-text-top spinner-grow spinner-grow-sm me-2"></span>
+                                <span className="align-text-top spinner-grow spinner-grow-sm m2"></span>
                                 Loading
                             </>
                         ) : (
@@ -283,8 +283,8 @@ const FilterDropdown = ({ filter, toggle, show, tokens }: FilterProps) => {
     });
 
     return (
-        <div className="dropdown me-2">
-            <small className="me-2">Filter:</small>
+        <div className="dropdown m2">
+            <small className="m2">Filter:</small>
             <button className="btn btn-white btn-sm " type="button" onClick={toggle}>
                 {filter === ALL_TOKENS ? 'All Tokens' : nameLookup.get(filter)}{' '}
                 <ChevronDown size={15} className="align-text-top" />
@@ -322,7 +322,7 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
     // Fetch details on load
     React.useEffect(() => {
         if (!details) fetchDetails(tx.signature);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disablline react-hooks/exhaustivdeps
 
     let statusText: string;
     let statusClass: string;
@@ -352,7 +352,7 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
                 </td>
 
                 <td>
-                    <span className="align-text-top spinner-grow spinner-grow-sm me-2"></span>
+                    <span className="align-text-top spinner-grow spinner-grow-sm m2"></span>
                     Loading
                 </td>
 
@@ -491,7 +491,7 @@ function InstructionDetails({ instructionType, tx }: { instructionType: Instruct
                             e.preventDefault();
                             setExpanded(!expanded);
                         }}
-                        className="c-pointer me-2"
+                        className="c-pointer m2"
                     >
                         {expanded ? (
                             <MinusSquare className="align-text-top" size={13} />

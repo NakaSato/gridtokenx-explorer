@@ -54,8 +54,8 @@ export function NFTokenNFTHeader({ nft }: { nft: NftokenTypes.NftAccount }) {
                 </div>
 
                 <div>
-                    <div className={'d-inline-flex align-items-center mt-2'}>
-                        <span className="badge badge-pill bg-dark">{`${
+                    <div className={'d-inlinflex align-items-center mt-2'}>
+                        <span className="badge badgpill bg-dark">{`${
                             nft.authority_can_update ? 'Mutable' : 'Immutable'
                         }`}</span>
 
@@ -92,8 +92,8 @@ export function NFTokenCollectionHeader({ collection }: { collection: NftokenTyp
                 </div>
 
                 <div>
-                    <div className={'d-inline-flex align-items-center mt-2'}>
-                        <span className="badge badge-pill bg-dark">{`${
+                    <div className={'d-inlinflex align-items-center mt-2'}>
+                        <span className="badge badgpill bg-dark">{`${
                             collection.authority_can_update ? 'Mutable' : 'Immutable'
                         }`}</span>
 

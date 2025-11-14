@@ -12,7 +12,7 @@ export function SupplyCard() {
     // Fetch supply on load
     React.useEffect(() => {
         if (supply === Status.Idle) fetchSupply();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disablline react-hooks/exhaustivdeps
 
     if (supply === Status.Disconnected) {
         return <ErrorCard text="Not connected to the cluster" />;
@@ -30,22 +30,22 @@ export function SupplyCard() {
 
             <TableCardBody>
                 <tr>
-                    <td className="w-100">Total Supply (SOL)</td>
-                    <td className="text-lg-end">
+                    <td className="w-full">Total Supply (SOL)</td>
+                    <td className="lg:text-right">
                         <SolBalance lamports={supply.total} maximumFractionDigits={0} />
                     </td>
                 </tr>
 
                 <tr>
-                    <td className="w-100">Circulating Supply (SOL)</td>
-                    <td className="text-lg-end">
+                    <td className="w-full">Circulating Supply (SOL)</td>
+                    <td className="lg:text-right">
                         <SolBalance lamports={supply.circulating} maximumFractionDigits={0} />
                     </td>
                 </tr>
 
                 <tr>
-                    <td className="w-100">Non-Circulating Supply (SOL)</td>
-                    <td className="text-lg-end">
+                    <td className="w-full">Non-Circulating Supply (SOL)</td>
+                    <td className="lg:text-right">
                         <SolBalance lamports={supply.nonCirculating} maximumFractionDigits={0} />
                     </td>
                 </tr>
@@ -57,8 +57,8 @@ export function SupplyCard() {
 const renderHeader = () => {
     return (
         <div className="card-header">
-            <div className="row align-items-center">
-                <div className="col">
+            <div className="flex flex-wrap -mx-2 items-center">
+                <div className="flex-1 px-2">
                     <h4 className="card-header-title">Supply Overview</h4>
                 </div>
             </div>

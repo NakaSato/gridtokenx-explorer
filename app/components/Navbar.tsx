@@ -25,59 +25,59 @@ export function Navbar({ children }: INavbarProps) {
     const selectedLayoutSegment = useSelectedLayoutSegment();
     const selectedLayoutSegments = useSelectedLayoutSegments();
     return (
-        <nav className="navbar navbar-expand-lg navbar-light">
-            <div className="container px-4">
+        <nav className="w-full bg-background border-b">
+            <div className="container mx-auto px-4">
                 <Link href={homePath}>
                     <Image alt="Solana Explorer" height={22} src={Logo} width={214} priority />
                 </Link>
 
-                <button className="navbar-toggler" type="button" onClick={navHandlers.toggle}>
-                    <span className="navbar-toggler-icon"></span>
+                <button className="p-2 text-gray-500 lg:hidden" type="button" onClick={navHandlers.toggle}>
+                    <span className="block w-5 h-5"></span>
                 </button>
 
-                <div className="navbar-children d-flex align-items-center flex-grow-1 w-100 h-100 d-none d-lg-block">
+                <div className="navbar-children flex items-center flex-grow w-full h-full hidden lg:block">
                     {children}
                 </div>
 
-                <div className={`collapse navbar-collapse ms-auto ${navOpened ? 'show' : ''} flex-shrink-0`}>
-                    <ul className="navbar-nav me-auto">
-                        <li className="nav-item">
+                <div className={`${navOpened ? 'block' : 'hidden'} w-full lg:flex lg:w-auto ml-auto shrink-0`}>
+                    <ul className="flex flex-col lg:flex-row gap-1 mr-auto">
+                        <li className="block">
                             <Link
-                                className={`nav-link${selectedLayoutSegment === 'transactions' ? ' active' : ''}`}
+                                className={`block px-3 py-2 text-gray-700 hover:text-gray-900 ${selectedLayoutSegment === 'transactions' ? 'text-primary font-semibold' : ''}`}
                                 href={transactionsPath}
                             >
                                 Transactions
                             </Link>
                         </li>
-                        <li className="nav-item">
+                        <li className="block">
                             <Link
-                                className={`nav-link${selectedLayoutSegment === 'anchor-public-keys' ? ' active' : ''}`}
+                                className={`block px-3 py-2 text-gray-700 hover:text-gray-900 ${selectedLayoutSegment === 'anchor-public-keys' ? 'text-primary font-semibold' : ''}`}
                                 href={anchorPublicKeysPath}
                             >
                                 🔗 Anchor Keys
                             </Link>
                         </li>
-                        <li className="nav-item">
+                        <li className="block">
                             <Link
-                                className={`nav-link${selectedLayoutSegment === 'feature-gates' ? ' active' : ''}`}
+                                className={`block px-3 py-2 text-gray-700 hover:text-gray-900 ${selectedLayoutSegment === 'feature-gates' ? 'text-primary font-semibold' : ''}`}
                                 href={featureGatesPath}
                             >
                                 Feature Gates
                             </Link>
                         </li>
-                        <li className="nav-item">
+                        <li className="block">
                             <Link
-                                className={`nav-link${selectedLayoutSegment === 'supply' ? ' active' : ''}`}
+                                className={`block px-3 py-2 text-gray-700 hover:text-gray-900 ${selectedLayoutSegment === 'supply' ? 'text-primary font-semibold' : ''}`}
                                 href={supplyPath}
                             >
                                 Supply
                             </Link>
                         </li>
-                        <li className="nav-item">
+                        <li className="block">
                             <Link
-                                className={`nav-link${
+                                className={`block px-3 py-2 text-gray-700 hover:text-gray-900 ${
                                     selectedLayoutSegments[0] === 'tx' && selectedLayoutSegments[1] === '(inspector)'
-                                        ? ' active'
+                                        ? 'text-primary font-semibold'
                                         : ''
                                 }`}
                                 href={inspectorPath}
@@ -88,7 +88,7 @@ export function Navbar({ children }: INavbarProps) {
                     </ul>
                 </div>
 
-                <div className="d-none d-lg-block flex-shrink-0 ms-1">
+                <div className="hidden lg:block shrink-0 ml-1">
                     <ClusterStatusButton />
                 </div>
             </div>

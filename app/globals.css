@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* Global styles */
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}

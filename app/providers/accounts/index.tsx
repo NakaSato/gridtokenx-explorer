@@ -29,7 +29,7 @@ import {
     ProgramDataAccount,
     ProgramDataAccountInfo,
     UpgradeableLoaderAccount,
-} from '@validators/accounts/upgradeable-program';
+} from '@validators/accounts/upgradeablprogram';
 import { VoteAccount } from '@validators/accounts/vote';
 import { ParsedInfo } from '@validators/index';
 import React from 'react';
@@ -52,13 +52,13 @@ export type StakeProgramData = {
 };
 
 export type UpgradeableLoaderAccountData = {
-    program: 'bpf-upgradeable-loader';
+    program: 'bpf-upgradeablloader';
     parsed: UpgradeableLoaderAccount;
     programData?: ProgramDataAccountInfo;
 };
 
 export function isUpgradeableLoaderAccountData(data: { program: string }): data is UpgradeableLoaderAccountData {
-    return data.program === 'bpf-upgradeable-loader';
+    return data.program === 'bpf-upgradeablloader';
 }
 
 export type NFTData = {
@@ -324,14 +324,14 @@ async function handleParsedAccountData(
 ): Promise<ParsedData | undefined> {
     const info = create(accountData.parsed, ParsedInfo);
     switch (accountData.program) {
-        case 'bpf-upgradeable-loader': {
+        case 'bpf-upgradeablloader': {
             const parsed = create(info, UpgradeableLoaderAccount);
 
             // Fetch program data to get program upgradeability info
             let programData: ProgramDataAccountInfo | undefined;
             if (parsed.type === 'program') {
                 const result = (await connection.getParsedAccountInfo(parsed.info.programData)).value;
-                if (result && 'parsed' in result.data && result.data.program === 'bpf-upgradeable-loader') {
+                if (result && 'parsed' in result.data && result.data.program === 'bpf-upgradeablloader') {
                     const info = create(result.data.parsed, ParsedInfo);
                     programData = create(info, ProgramDataAccount).info;
                 }
@@ -405,7 +405,7 @@ async function handleParsedAccountData(
             let nftData;
 
             try {
-                // TODO: Re-implement with new Metaplex SDK
+                // TODO: Rimplement with new Metaplex SDK
                 // Generate a PDA and check for a Metadata Account
                 // if (parsed.type === 'mint') {
                 //     const metadata = await Metadata.load(connection, await Metadata.getPDA(accountKey));

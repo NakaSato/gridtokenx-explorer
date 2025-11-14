@@ -408,7 +408,7 @@ function SimpleRow({
             <td className="d-flex flex-row">
                 {nestingLevel > 0 && (
                     <span style={{ paddingLeft: `${15 * nestingLevel}px` }}>
-                        <CornerDownRight className="me-2" size={15} />
+                        <CornerDownRight className="m2" size={15} />
                     </span>
                 )}
                 <div>{itemKey}</div>
@@ -441,7 +441,7 @@ export function ExpandableRow({
                 <td className="d-flex flex-row">
                     {nestingLevel > 0 && (
                         <div style={{ paddingLeft: `${15 * nestingLevel}px` }}>
-                            <CornerDownRight className="me-2" size={15} />
+                            <CornerDownRight className="m2" size={15} />
                         </div>
                     )}
                     <div>{fieldName}</div>
@@ -451,12 +451,12 @@ export function ExpandableRow({
                     <div className="c-pointer">
                         {expanded ? (
                             <>
-                                <span className="text-info me-2">Collapse</span>
+                                <span className="text-info m2">Collapse</span>
                                 <ChevronUp size={15} />
                             </>
                         ) : (
                             <>
-                                <span className="text-info me-2">Expand</span>
+                                <span className="text-info m2">Expand</span>
                                 <ChevronDown size={15} />
                             </>
                         )}

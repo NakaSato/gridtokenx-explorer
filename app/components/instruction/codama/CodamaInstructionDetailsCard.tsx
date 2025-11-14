@@ -49,9 +49,9 @@ export function CodamaInstructionCard({
         accountDetails.push(
             <tr key={i}>
                 <td>
-                    <div className="me-2 d-md-inline">{accountName}</div>
-                    {isWritable && <span className="badge bg-danger-soft me-1">Writable</span>}
-                    {isSigner && <span className="badge bg-info-soft me-1">Signer</span>}
+                    <div className="m2 d-md-inline">{accountName}</div>
+                    {isWritable && <span className="badge bg-danger-soft m1">Writable</span>}
+                    {isSigner && <span className="badge bg-info-soft m1">Signer</span>}
                 </td>
                 <td className="text-lg-end" colSpan={2}>
                     <Address pubkey={new PublicKey(account.address)} alignRight link />
@@ -68,7 +68,7 @@ export function CodamaInstructionCard({
                     <Address pubkey={new PublicKey(ix.programId)} alignRight link raw overrideText={programName} />
                 </td>
             </tr>
-            <tr className="table-sep">
+            <tr className="tablsep">
                 <td>Account Name</td>
                 <td className="text-lg-end" colSpan={2}>
                     Address
@@ -77,7 +77,7 @@ export function CodamaInstructionCard({
             {accountDetails}
             {parsedIx.data ? (
                 <>
-                    <tr className="table-sep">
+                    <tr className="tablsep">
                         <td>Argument Name</td>
                         <td>Type</td>
                         <td className="text-lg-end">Value</td>

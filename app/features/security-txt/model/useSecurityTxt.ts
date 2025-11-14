@@ -2,7 +2,7 @@
 
 import { useProgramMetadataSecurityTxt } from '@/app/entities/program-metadata';
 import { useCluster } from '@/app/providers/cluster';
-import type { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeable-program';
+import type { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeablprogram';
 
 import { fromProgramData } from '../lib/fromProgramData';
 import type { NeodymeSecurityTXT, PmpSecurityTXT } from '../lib/types';

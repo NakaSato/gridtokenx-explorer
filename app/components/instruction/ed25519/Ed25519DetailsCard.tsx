@@ -119,7 +119,7 @@ export function Ed25519DetailsCard(props: DetailsProps) {
 
                 return (
                     <React.Fragment key={index}>
-                        <tr className="table-sep">
+                        <tr className="tablsep">
                             <td colSpan={2} className="text-lg-start" align="left">
                                 Signature #{index + 1}
                             </td>

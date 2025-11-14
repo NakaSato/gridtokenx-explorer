@@ -102,7 +102,7 @@ export function SolanaAttestationDetailsCard({
                     <Address pubkey={new PublicKey(SAS_PROGRAM_ID)} alignRight link raw />
                 </td>
             </tr>
-            <tr className="table-sep">
+            <tr className="tablsep">
                 <td>Account Name</td>
                 <td className="text-lg-end" colSpan={2}>
                     Address
@@ -122,7 +122,7 @@ export function SolanaAttestationDetailsCard({
             {/* Need to make sure there's one other field besides the discriminator */}
             {parsed.data && Object.keys(parsed.data).length > 2 && (
                 <>
-                    <tr className="table-sep">
+                    <tr className="tablsep">
                         <td>Argument Name</td>
                         <td>Type</td>
                         <td className="text-lg-end">Value</td>

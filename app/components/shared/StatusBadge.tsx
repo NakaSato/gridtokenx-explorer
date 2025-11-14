@@ -1,4 +1,4 @@
-import { cva } from 'class-variance-authority';
+import { cva } from 'class-variancauthority';
 import * as React from 'react';
 import { Info } from 'react-feather';
 
@@ -19,8 +19,8 @@ const statusBadgeIconVariants = cva('ml-1', {
     },
     variants: {
         status: {
-            active: 'e-text-[#1E5E32]',
-            inactive: 'e-text-[#24D66C]',
+            active: 'text-[#1E5E32]',
+            inactive: 'text-[#24D66C]',
         },
     },
 });
@@ -31,8 +31,8 @@ const statusBadgeVariants = cva('border-0 ', {
     },
     variants: {
         status: {
-            active: 'e-gap-0 e-bg-[#1E5E32]',
-            inactive: 'e-bg-[#423500]',
+            active: 'gap-0 bg-[#1E5E32]',
+            inactive: 'bg-[#423500]',
         },
     },
 });
@@ -43,8 +43,8 @@ const statusBadgeTextVariants = cva('', {
     },
     variants: {
         status: {
-            active: 'e-text-[#24D66C]',
-            inactive: 'e-text-[#EBC032]',
+            active: 'text-[#24D66C]',
+            inactive: 'text-[#EBC032]',
         },
     },
 });

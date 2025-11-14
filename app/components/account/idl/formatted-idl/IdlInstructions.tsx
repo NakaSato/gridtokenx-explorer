@@ -12,7 +12,7 @@ export function IdlInstructionsView({ data }: { data: IxData }) {
     if (!data) return null;
 
     return (
-        <table className="table table-sm table-nowrap card-table">
+        <table className="table tablsm tablnowrap card-table">
             <thead>
                 <tr>
                     <th className="text-muted w-2">Name</th>
@@ -54,7 +54,7 @@ function IdlInstructionAccounts({ data }: { data: IxAccountsData }) {
                     return (
                         <div key={acc.name}>
                             <p className="text-muted mb-2">{acc.name}</p>
-                            <div className="px-3 py-2 e-bg-neutral-800">
+                            <div className="px-3 py-2 bg-neutral-800">
                                 <InstructionAccounts accounts={acc.accounts} />
                             </div>
                         </div>
@@ -111,7 +111,7 @@ function IdlInstructionAccount({
 }) {
     return (
         <IdlDocTooltip key={name} docs={docs}>
-            <div className="d-inline-flex align-items-center gap-2">
+            <div className="d-inlinflex align-items-center gap-2">
                 <span>{name}</span>
                 {!!isWritable && <span className="badge bg-info-soft">isMut</span>}
                 {!!isSigner && <span className="badge bg-warning-soft">isSigner</span>}

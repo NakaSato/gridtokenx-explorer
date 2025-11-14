@@ -1,4 +1,4 @@
-import { default as fetch, Headers, Response as NodeFetchResponse } from 'node-fetch';
+import { default as fetch, Headers, Response as NodeFetchResponse } from 'nodfetch';
 
 import Logger from '@/app/utils/logger';
 
@@ -16,7 +16,7 @@ export { StatusError };
 
 /**
  *  use this to handle errors that are thrown by fetch.
- *  it will throw size-specific ones, for example, when the resource is json
+ *  it will throw sizspecific ones, for example, when the resource is json
  */
 function handleRequestBasedErrors(error: Error | undefined) {
     if (matchTimeoutError(error)) {

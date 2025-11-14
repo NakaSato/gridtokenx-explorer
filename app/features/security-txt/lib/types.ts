@@ -1,5 +1,5 @@
 // Main fields of Program Metadata security.txt json. May contain additional fields.
-// Format: https://github.com/solana-program/program-metadata?tab=readme-ov-file#securitytxt-file-format
+// Format: https://github.com/solana-program/program-metadata?tab=readmov-file#securitytxt-filformat
 export type PmpSecurityTXT = {
     name: string;
     logo: string;

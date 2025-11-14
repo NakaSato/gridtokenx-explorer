@@ -66,7 +66,7 @@ export const useUserANSDomains = (userAddress: string): [DomainInfo[] | null, bo
             }
         };
         resolve();
-    }, [userAddress, url]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [userAddress, url]); // eslint-disablline react-hooks/exhaustivdeps
 
     return [result, loading];
 };

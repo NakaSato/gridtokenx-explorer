@@ -11,7 +11,7 @@ import {
     parseSetComputeUnitLimitInstruction,
     parseSetComputeUnitPriceInstruction,
     parseSetLoadedAccountsDataSizeLimitInstruction,
-} from '@solana-program/compute-budget';
+} from '@solana-program/computbudget';
 import { microLamportsToLamportsString } from '@utils/index';
 import React from 'react';
 

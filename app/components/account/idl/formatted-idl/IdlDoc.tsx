@@ -14,9 +14,9 @@ export function IdlDocTooltip({ docs, children }: { docs?: string[]; children: R
 
     return (
         <Tooltip>
-            <TooltipTrigger className="e-border-0 e-bg-transparent e-p-0 e-text-inherit">{children}</TooltipTrigger>
+            <TooltipTrigger className="border-0 bg-transparent p-0 text-inherit">{children}</TooltipTrigger>
             <TooltipContent>
-                <div className="e-min-w-36 e-max-w-16">{docs.join(' ')}</div>
+                <div className="min-w-36 max-w-16">{docs.join(' ')}</div>
             </TooltipContent>
         </Tooltip>
     );

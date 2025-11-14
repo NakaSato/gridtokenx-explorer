@@ -31,7 +31,7 @@ export function InstructionDetails({
                             e.preventDefault();
                             setExpanded(!expanded);
                         }}
-                        className="c-pointer me-2"
+                        className="c-pointer m2"
                     >
                         {expanded ? (
                             <MinusSquare className="align-text-top" size={13} />

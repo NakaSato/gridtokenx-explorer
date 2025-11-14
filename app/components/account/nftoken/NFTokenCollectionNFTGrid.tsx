@@ -19,7 +19,7 @@ export function NFTokenCollectionNFTGrid({ collection }: { collection: string })
                 <h3 className="card-header-title">NFTs</h3>
 
                 <button className="btn btn-white btn-sm" onClick={() => mutate()}>
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Refresh
                 </button>
             </div>

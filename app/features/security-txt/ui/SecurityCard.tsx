@@ -73,13 +73,13 @@ export function ProgramSecurityTxtCard({
     ) : null;
 
     return (
-        <div className="card security-txt e-overflow-hidden">
-            <div className="card-header e-flex e-h-auto e-min-h-[60px] e-items-center">
-                <h3 className="card-header-title mb-0 d-flex align-items-center gap-3 e-mr-4">
+        <div className="card security-txt overflow-hidden">
+            <div className="card-header flex h-auto min-h-[60px] items-center">
+                <h3 className="card-header-title mb-0 d-flex align-items-center gap-3 mr-4">
                     Security.txt
                     <SecurityTxtVersionBadge version={pmpSecurityTxt ? 'pmp' : 'neodyme'} />
                 </h3>
-                <div className="btn btn-sm btn-white e-flex">
+                <div className="btn btn-sm btn-white flex">
                     <DownloadableButton
                         data={downloadData}
                         filename={`${programAddress}-security-txt.json`}
@@ -89,9 +89,9 @@ export function ProgramSecurityTxtCard({
                     </DownloadableButton>
                 </div>
             </div>
-            <div className="e-px-6 e-py-4">
-                <small className="text-warning e-flex e-gap-1">
-                    <AlertCircle size={16} className="e-mt-0.5" />
+            <div className="px-6 py-4">
+                <small className="text-warning flex gap-1">
+                    <AlertCircle size={16} className="mt-0.5" />
                     Note that this is self-reported by the author of the program and might not be accurate
                 </small>
             </div>

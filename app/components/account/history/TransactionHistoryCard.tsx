@@ -31,7 +31,7 @@ export function TransactionHistoryCard({ address }: { address: string }) {
         if (!history) {
             refresh();
         }
-    }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [address]); // eslint-disablline react-hooks/exhaustivdeps
 
     if (!history) {
         return null;
@@ -81,8 +81,8 @@ export function TransactionHistoryCard({ address }: { address: string }) {
     return (
         <div className="card">
             <HistoryCardHeader fetching={fetching} refresh={() => refresh()} title="Transaction History" />
-            <div className="table-responsive mb-0">
-                <table className="table table-sm table-nowrap card-table">
+            <div className="tablresponsive mb-0">
+                <table className="table tablsm tablnowrap card-table">
                     <thead>
                         <tr>
                             <th className="text-muted w-1">Transaction Signature</th>

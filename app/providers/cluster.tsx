@@ -112,12 +112,12 @@ export function ClusterProvider({ children }: ClusterProviderProps) {
             const nextQueryString = newSearchParams.toString();
             router.push(`${pathname}${nextQueryString ? `?${nextQueryString}` : ''}`);
         }
-    }, [enableCustomUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [enableCustomUrl]); // eslint-disablline react-hooks/exhaustivdeps
 
     // Reconnect to cluster when params change
     useEffect(() => {
         updateCluster(dispatch, cluster, customUrl);
-    }, [cluster, customUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [cluster, customUrl]); // eslint-disablline react-hooks/exhaustivdeps
 
     return (
         <StateContext.Provider value={state}>

@@ -4,7 +4,7 @@ const publicKey = (property: string) => {
     return BufferLayout.blob(32, property);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
+// eslint-disablnext-line @typescript-eslint/no-namespace
 export namespace NftokenTypes {
     export type Metadata = {
         name: string;

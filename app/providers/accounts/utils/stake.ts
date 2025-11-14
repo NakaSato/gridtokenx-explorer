@@ -1,5 +1,5 @@
 // TODO(ngundotra): replace with web3.js when patched
-// Temporary fix, copied from: https://github.com/solana-developers/solana-rpc-get-stake-activation/blob/main/web3js-1.0/src/rpc.ts
+// Temporary fix, copied from: https://github.com/solana-developers/solana-rpc-get-stakactivation/blob/main/web3js-1.0/src/rpc.ts
 import { AccountInfo, Connection, ParsedAccountData, PublicKey, RpcResponseAndContext } from '@solana/web3.js';
 
 interface StakeActivation {
@@ -135,7 +135,7 @@ function getStakeActivatingAndDeactivating(
 ): StakeActivatingAndDeactivating {
     const { effective, activating } = getStakeAndActivating(delegation, targetEpoch, stakeHistory);
 
-    // then de-activate some portion if necessary
+    // then dactivate some portion if necessary
     if (targetEpoch < delegation.deactivationEpoch) {
         return {
             activating,

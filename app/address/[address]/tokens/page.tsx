@@ -1,6 +1,6 @@
 import { OwnedTokensCard } from '@components/account/OwnedTokensCard';
 import { TokenHistoryCard } from '@components/account/TokenHistoryCard';
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readable-title-from-address';
+import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readabltitlfrom-address';
 import { Metadata } from 'next/types';
 
 import { TransactionsProvider } from '@/app/providers/transactions';

@@ -33,7 +33,7 @@ function DasCompressionInfoCard({ proof, compressedNft }: { proof: CompressedNft
 
     React.useEffect(() => {
         fetchAccountInfo(treeAddress, 'raw');
-    }, [compressedInfo.tree]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [compressedInfo.tree]); // eslint-disablline react-hooks/exhaustivdeps
 
     const root = new PublicKey(proof.root);
     const proofVerified = MerkleTree.verify(root.toBuffer(), {
@@ -103,8 +103,8 @@ function DasCompressionInfoCard({ proof, compressedNft }: { proof: CompressedNft
 
 function getVerifiedProofPill(verified: boolean) {
     return (
-        <div className={'d-inline-flex align-items-center ms-2'}>
-            <span className={`badge badge-pill bg-dark ${verified ? '' : 'bg-danger-soft'}`}>{`Proof ${
+        <div className={'d-inlinflex align-items-center ms-2'}>
+            <span className={`badge badgpill bg-dark ${verified ? '' : 'bg-danger-soft'}`}>{`Proof ${
                 verified ? '' : 'Not'
             } Verified`}</span>
         </div>
@@ -124,8 +124,8 @@ function getProofSizePill(proofSize: number) {
     }
 
     return (
-        <div className={'d-inline-flex align-items-center ms-2'}>
-            <span className={`badge badge-pill ${color}`}>{text}</span>
+        <div className={'d-inlinflex align-items-center ms-2'}>
+            <span className={`badge badgpill ${color}`}>{text}</span>
         </div>
     );
 }

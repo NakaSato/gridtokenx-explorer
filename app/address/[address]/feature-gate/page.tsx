@@ -1,5 +1,5 @@
 import { FeatureGateCard } from '@components/account/FeatureGateCard';
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readable-title-from-address';
+import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readabltitlfrom-address';
 import { Metadata } from 'next/types';
 import ReactMarkdown from 'react-markdown';
 import remarkFrontmatter from 'remark-frontmatter';
@@ -36,10 +36,10 @@ export default async function FeatureGatePage(props: Props) {
             <ReactMarkdown
                 remarkPlugins={[remarkGFM, remarkFrontmatter]}
                 components={{
-                    h2: ({ children }) => <h2 className="e-mb-2 e-mt-5 e-text-gray-300">{children}</h2>,
-                    li: ({ children }) => <li className="e-mb-1 e-text-gray-400">{children}</li>,
-                    p: ({ children }) => <p className="e-mb-4 e-mt-0 e-text-gray-400">{children}</p>,
-                    table: ({ children }) => <table className="table table-sm">{children}</table>,
+                    h2: ({ children }) => <h2 className="mb-2 mt-5 text-gray-300">{children}</h2>,
+                    li: ({ children }) => <li className="mb-1 text-gray-400">{children}</li>,
+                    p: ({ children }) => <p className="mb-4 mt-0 text-gray-400">{children}</p>,
+                    table: ({ children }) => <table className="table tablsm">{children}</table>,
                 }}
             >
                 {data[0]}

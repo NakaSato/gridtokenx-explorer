@@ -46,7 +46,7 @@ export function SimulatorCard({
                     <h3 className="card-header-title">Transaction Simulation</h3>
                 </div>
                 <div className="card-body text-center">
-                    <span className="spinner-grow spinner-grow-sm me-2"></span>
+                    <span className="spinner-grow spinner-grow-sm m2"></span>
                     Simulating
                 </div>
             </div>

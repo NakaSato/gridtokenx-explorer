@@ -85,11 +85,11 @@ export function AnchorEventDecoder({ logs, programId }: AnchorEventDecoderProps)
                         <div className="d-flex justify-content-between align-items-start mb-2">
                             <div>
                                 {event.type === 'instruction' && (
-                                    <span className="badge bg-primary me-2">Instruction</span>
+                                    <span className="badge bg-primary m2">Instruction</span>
                                 )}
-                                {event.type === 'event' && <span className="badge bg-success me-2">Event</span>}
-                                {event.type === 'custom' && <span className="badge bg-warning me-2">Custom Log</span>}
-                                {event.type === 'data' && <span className="badge bg-info me-2">Data</span>}
+                                {event.type === 'event' && <span className="badge bg-success m2">Event</span>}
+                                {event.type === 'custom' && <span className="badge bg-warning m2">Custom Log</span>}
+                                {event.type === 'data' && <span className="badge bg-info m2">Data</span>}
                                 <small className="text-muted">Log #{event.index}</small>
                             </div>
                         </div>

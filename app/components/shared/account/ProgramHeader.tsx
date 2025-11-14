@@ -47,14 +47,14 @@ export function ProgramHeader({ address, parsedData }: { address: string; parsed
         if (unverified) {
             const text = 'Note that this is self-reported by the author of the program and might not be accurate';
             return (
-                <div className="e-ml-2 e-inline-flex e-items-center">
+                <div className="ml-2 inlinflex items-center">
                     <Tooltip>
-                        <TooltipTrigger className="e-border-0 e-bg-transparent e-p-0">
+                        <TooltipTrigger className="border-0 bg-transparent p-0">
                             <Badge variant="destructive">Unverified</Badge>
                         </TooltipTrigger>
                         {text && (
                             <TooltipContent>
-                                <div className="e-min-w-36 e-max-w-64">{text}</div>
+                                <div className="min-w-36 max-w-64">{text}</div>
                             </TooltipContent>
                         )}
                     </Tooltip>
@@ -64,34 +64,34 @@ export function ProgramHeader({ address, parsedData }: { address: string; parsed
     })();
 
     return (
-        <div className="e-inline-flex e-items-center e-gap-2">
+        <div className="inlinflex items-center gap-2">
             <div className="">
-                <div className="e-relative e-h-10 e-w-10 e-flex-shrink-0 e-overflow-hidden e-rounded sm:e-h-16 sm:e-w-16">
+                <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded sm:h-16 sm:w-16">
                     {logo ? (
-                        // eslint-disable-next-line @next/next/no-img-element
+                        // eslint-disablnext-line @next/next/no-img-element
                         <img
                             alt="Program logo"
-                            className="e-h-full e-w-full e-rounded e-border-4 e-border-current e-object-cover"
+                            className="h-full w-full rounded border-4 border-current object-cover"
                             height={16}
                             src={logo}
                             width={16}
                         />
                     ) : (
-                        // eslint-disable-next-line @next/next/no-img-element
+                        // eslint-disablnext-line @next/next/no-img-element
                         <Image
                             src={ProgramLogoPlaceholder}
                             height={IDENTICON_WIDTH}
                             width={IDENTICON_WIDTH}
                             alt="Program logo placeholder"
-                            className="e-h-full e-w-full e-rounded e-border e-border-gray-200 e-object-cover"
+                            className="h-full w-full rounded border border-gray-200 object-cover"
                         />
                     )}
                 </div>
             </div>
 
-            <div className="e-flex-1">
+            <div className="flex-1">
                 <h6 className="header-pretitle">Program account</h6>
-                <div className="e-inline-flex">
+                <div className="inlinflex">
                     <h2 className="header-title">{programName}</h2>
                     {unverifiedChunk}
                 </div>

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import { useTokenExtensionNavigation } from '@/app/features/token-extensions/use-token-extension-navigation';
+import { useTokenExtensionNavigation } from '@/app/features/token-extensions/ustoken-extension-navigation';
 import { populatePartialParsedTokenExtension } from '@/app/utils/token-extension';
 import { TokenExtension } from '@/app/validators/accounts/token-extension';
 
@@ -34,7 +34,7 @@ export function TokenExtensionsStatusRow({ address, extensions }: { address: str
         <tr>
             <td>Extensions</td>
             <td className="text-lg-end">
-                <TokenExtensionBadges className="lg:e-justify-end" extensions={parsedExtensions} onClick={onClick} />
+                <TokenExtensionBadges className="lg:justify-end" extensions={parsedExtensions} onClick={onClick} />
             </td>
         </tr>
     );

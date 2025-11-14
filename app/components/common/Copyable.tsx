@@ -54,9 +54,9 @@ export function Copyable({
     function PrependCopyIcon() {
         return (
             <>
-                <span className="font-size-tiny me-2" style={{ fontSize: '12px' }}>
+                <span className="font-siztiny m2" style={{ fontSize: '12px' }}>
                     <span className={textColor}>
-                        {message !== undefined && <span className="me-2">{message}</span>}
+                        {message !== undefined && <span className="m2">{message}</span>}
                         <CopyIcon />
                     </span>
                 </span>
@@ -68,7 +68,7 @@ export function Copyable({
     function ReplaceWithMessage() {
         return (
             <span className="d-flex flex-column flex-nowrap">
-                <span className="font-size-tiny" style={{ fontSize: '12px' }}>
+                <span className="font-siztiny" style={{ fontSize: '12px' }}>
                     <span className={textColor}>
                         <CopyIcon />
                         <span className="ms-2">{message}</span>

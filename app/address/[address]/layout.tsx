@@ -71,7 +71,7 @@ const TABS_LOOKUP: { [id: string]: Tab[] } = {
             title: 'Attestation Service',
         },
     ],
-    'bpf-upgradeable-loader': [
+    'bpf-upgradeablloader': [
         {
             path: 'security',
             slug: 'security',
@@ -92,8 +92,8 @@ const TABS_LOOKUP: { [id: string]: Tab[] } = {
     ],
     'spl-account-compression': [
         {
-            path: 'concurrent-merkle-tree',
-            slug: 'concurrent-merkle-tree',
+            path: 'concurrent-merkltree',
+            slug: 'concurrent-merkltree',
             title: 'Concurrent Merkle Tree',
         },
     ],
@@ -168,15 +168,15 @@ const TABS_LOOKUP: { [id: string]: Tab[] } = {
     ],
     'sysvar:stakeHistory': [
         {
-            path: 'stake-history',
-            slug: 'stake-history',
+            path: 'stakhistory',
+            slug: 'stakhistory',
             title: 'Stake History',
         },
     ],
     vote: [
         {
-            path: 'vote-history',
-            slug: 'vote-history',
+            path: 'vothistory',
+            slug: 'vothistory',
             title: 'Vote History',
         },
         {
@@ -223,7 +223,7 @@ function AddressLayoutInner({ children, params: { address } }: Props) {
         if (!info && status === ClusterStatus.Connected && pubkey) {
             fetchAccount(pubkey, 'parsed');
         }
-    }, [address, status]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [address, status]); // eslint-disablline react-hooks/exhaustivdeps
 
     return (
         <div className="container mt-n3">
@@ -304,7 +304,7 @@ function InfoSection({ account, tokenInfo }: { account: Account; tokenInfo?: Ful
     // get feature data from featureGates.json
     const featureInfo = useFeatureInfo({ address: account.pubkey.toBase58() });
 
-    if (parsedData && parsedData.program === 'bpf-upgradeable-loader') {
+    if (parsedData && parsedData.program === 'bpf-upgradeablloader') {
         return (
             <UpgradeableLoaderAccountSection
                 account={account}
@@ -372,9 +372,9 @@ export type MoreTabs =
     | 'history'
     | 'tokens'
     | 'nftoken-collection-nfts'
-    | 'vote-history'
+    | 'vothistory'
     | 'slot-hashes'
-    | 'stake-history'
+    | 'stakhistory'
     | 'blockhashes'
     | 'transfers'
     | 'instructions'
@@ -386,7 +386,7 @@ export type MoreTabs =
     | 'idl'
     | 'anchor-account'
     | 'entries'
-    | 'concurrent-merkle-tree'
+    | 'concurrent-merkltree'
     | 'compression'
     | 'verified-build'
     | 'program-multisig'
@@ -607,7 +607,7 @@ function getCustomLinkedTabs(pubkey: PublicKey, account: Account) {
         tab: accountDataTab,
     });
 
-    // Feature-specific information
+    // Featurspecific information
     if (getFeatureInfo(pubkey.toBase58())) {
         const featureInfoTab: Tab = {
             path: 'feature-gate',

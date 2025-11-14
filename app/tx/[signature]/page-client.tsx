@@ -29,14 +29,14 @@ import { SignatureProps } from '@utils/index';
 import { getTransactionInstructionError } from '@utils/program-err';
 import { intoTransactionInstruction } from '@utils/tx';
 import { useClusterPath } from '@utils/url';
-import useTabVisibility from '@utils/use-tab-visibility';
+import useTabVisibility from '@utils/ustab-visibility';
 import { BigNumber } from 'bignumber.js';
 import bs58 from 'bs58';
 import Link from 'next/link';
 import React, { Suspense, useEffect, useState } from 'react';
 import { RefreshCw, Settings } from 'react-feather';
 
-import { estimateRequestedComputeUnitsForParsedTransaction } from '@/app/utils/compute-units-schedule';
+import { estimateRequestedComputeUnitsForParsedTransaction } from '@/app/utils/computunits-schedule';
 import { getEpochForSlot } from '@/app/utils/epoch-schedule';
 
 const AUTO_REFRESH_INTERVAL = 2000;
@@ -155,7 +155,7 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
         if (!status && clusterStatus === ClusterStatus.Connected) {
             fetchStatus(signature);
         }
-    }, [signature, clusterStatus]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [signature, clusterStatus]); // eslint-disablline react-hooks/exhaustivdeps
 
     // Effect to set and clear interval for auto-refresh
     useEffect(() => {
@@ -237,15 +237,15 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
         <div className="card">
             <div className="card-header align-items-center">
                 <h3 className="card-header-title">Overview</h3>
-                <Link className="btn btn-white btn-sm me-2" href={inspectPath}>
-                    <Settings className="align-text-top me-2" size={13} />
+                <Link className="btn btn-white btn-sm m2" href={inspectPath}>
+                    <Settings className="align-text-top m2" size={13} />
                     Inspect
                 </Link>
                 {autoRefresh === AutoRefresh.Active ? (
                     <span className="spinner-grow spinner-grow-sm"></span>
                 ) : (
                     <button className="btn btn-white btn-sm" onClick={() => fetchStatus(signature)}>
-                        <RefreshCw className="align-text-top me-2" size={13} />
+                        <RefreshCw className="align-text-top m2" size={13} />
                         Refresh
                     </button>
                 )}
@@ -386,7 +386,7 @@ function DetailsSection({ signature }: SignatureProps) {
         if (!details && clusterStatus === ClusterStatus.Connected && status?.status === FetchStatus.Fetched) {
             fetchDetails(signature);
         }
-    }, [signature, clusterStatus, status]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [signature, clusterStatus, status]); // eslint-disablline react-hooks/exhaustivdeps
 
     if (!status?.data?.info) {
         return null;
@@ -443,14 +443,14 @@ function AccountsCard({ signature }: SignatureProps) {
                     <SolBalance lamports={post} />
                 </td>
                 <td>
-                    {index === 0 && <span className="badge bg-info-soft me-1">Fee Payer</span>}
-                    {account.signer && <span className="badge bg-info-soft me-1">Signer</span>}
-                    {account.writable && <span className="badge bg-danger-soft me-1">Writable</span>}
+                    {index === 0 && <span className="badge bg-info-soft m1">Fee Payer</span>}
+                    {account.signer && <span className="badge bg-info-soft m1">Signer</span>}
+                    {account.writable && <span className="badge bg-danger-soft m1">Writable</span>}
                     {message.instructions.find(ix => ix.programId.equals(pubkey)) && (
-                        <span className="badge bg-warning-soft me-1">Program</span>
+                        <span className="badge bg-warning-soft m1">Program</span>
                     )}
                     {account.source === 'lookupTable' && (
-                        <span className="badge bg-gray-soft me-1">Address Table Lookup</span>
+                        <span className="badge bg-gray-soft m1">Address Table Lookup</span>
                     )}
                 </td>
             </tr>
@@ -462,8 +462,8 @@ function AccountsCard({ signature }: SignatureProps) {
             <div className="card-header">
                 <h3 className="card-header-title">Account Input(s)</h3>
             </div>
-            <div className="table-responsive mb-0">
-                <table className="table table-sm table-nowrap card-table">
+            <div className="tablresponsive mb-0">
+                <table className="table tablsm tablnowrap card-table">
                     <thead>
                         <tr>
                             <th className="text-muted">#</th>

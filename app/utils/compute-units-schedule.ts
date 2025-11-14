@@ -5,7 +5,7 @@ import {
     identifyComputeBudgetInstruction,
     parseRequestUnitsInstruction,
     parseSetComputeUnitLimitInstruction,
-} from '@solana-program/compute-budget';
+} from '@solana-program/computbudget';
 import bs58 from 'bs58';
 
 import { Cluster } from '@/app/utils/cluster';
@@ -13,7 +13,7 @@ import { Cluster } from '@/app/utils/cluster';
 /**
  * Built-in programs that have minimal reserved compute units (3k)
  * This list is based on the feature gate C9oAhLxDBm3ssWtJx1yBGzPY55r2rArHmN1pbQn6HogH
- * Source: https://solana.com/docs/references/feature-gates/reserve-minimal-cus-for-builtins
+ * Source: https://solana.com/docs/references/feature-gates/reservminimal-cus-for-builtins
  */
 const BUILTIN_PROGRAMS_3K: readonly string[] = [
     '11111111111111111111111111111111', // System Program

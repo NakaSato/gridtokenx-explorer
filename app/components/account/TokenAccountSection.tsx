@@ -40,7 +40,7 @@ import {
     TransferHookAccount,
 } from '@validators/accounts/token-extension';
 import { BigNumber } from 'bignumber.js';
-import { capitalCase } from 'change-case';
+import { capitalCase } from 'changcase';
 import { useEffect, useMemo, useState } from 'react';
 import { ExternalLink, RefreshCw } from 'react-feather';
 import { create } from 'superstruct';
@@ -146,7 +146,7 @@ function FungibleTokenMintAccountCard({
                         : 'Token Mint'}
                 </h3>
                 <button className="btn btn-white btn-sm" onClick={refresh}>
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Refresh
                 </button>
             </div>
@@ -261,7 +261,7 @@ function NonFungibleTokenMintAccountCard({
             <div className="card-header">
                 <h3 className="card-header-title mb-0 d-flex align-items-center">Overview</h3>
                 <button className="btn btn-white btn-sm" onClick={refresh}>
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Refresh
                 </button>
             </div>
@@ -390,7 +390,7 @@ function TokenAccountCard({ account, info }: { account: Account; info: TokenAcco
                     Token{account.owner.toBase58() === TOKEN_2022_PROGRAM_ID.toBase58() && '-2022'} Account
                 </h3>
                 <button className="btn btn-white btn-sm" onClick={() => refresh(account.pubkey, 'parsed')}>
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Refresh
                 </button>
             </div>
@@ -572,8 +572,8 @@ function cmpExtension(a: TokenExtension, b: TokenExtension) {
 function HHeader({ name }: { name: string }) {
     return (
         <tr>
-            {/*use important here as there is rule from .table-sm that affects all the underline elements*/}
-            <th colSpan={2} className="e-mb-2 !e-p-4 e-text-[15px] e-font-normal">
+            {/*use important here as there is rule from .tablsm that affects all the underline elements*/}
+            <th colSpan={2} className="mb-2 !p-4 text-[15px] font-normal">
                 {name}
             </th>
         </tr>
@@ -788,7 +788,7 @@ export function TokenExtensionRow(
                         <td className="text-lg-end">{`${extension.currentRate / 100}%`}</td>
                     </tr>
                     <tr>
-                        <td>Pre-Current Average Rate</td>
+                        <td>PrCurrent Average Rate</td>
                         <td className="text-lg-end">{`${extension.preUpdateAverageRate / 100}%`}</td>
                     </tr>
                     <tr>
@@ -1012,8 +1012,8 @@ export function TokenExtensionRow(
                     {extension.additionalMetadata?.length > 0 && (
                         <>
                             <tr>
-                                {/*use important here as there is rule from .table-sm that affects all the underline elements*/}
-                                <th colSpan={2} className="e-mb-2 e-h-5 !e-pl-6 e-font-normal e-italic">
+                                {/*use important here as there is rule from .tablsm that affects all the underline elements*/}
+                                <th colSpan={2} className="mb-2 h-5 !pl-6 font-normal italic">
                                     Additional Metadata
                                 </th>
                             </tr>

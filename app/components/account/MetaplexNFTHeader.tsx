@@ -9,7 +9,7 @@ import { useClusterPath } from '@utils/url';
 import Link from 'next/link';
 import React, { createRef } from 'react';
 import { AlertOctagon, Check, ChevronDown } from 'react-feather';
-import useAsyncEffect from 'use-async-effect';
+import useAsyncEffect from 'usasync-effect';
 
 export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; address: string }) {
     const collection = nftData.metadata.collection;
@@ -21,7 +21,7 @@ export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; addr
         if (collectionAddress && !collectionMintInfo) {
             fetchAccountInfo(new PublicKey(collectionAddress), 'parsed');
         }
-    }, [fetchAccountInfo, collectionAddress]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [fetchAccountInfo, collectionAddress]); // eslint-disablline react-hooks/exhaustivdeps
 
     const metadata = nftData.metadata;
     const data = nftData.json;
@@ -104,18 +104,18 @@ export function getCreatorDropdownItems(creators: Creator[] | null) {
     };
 
     const getVerifiedIcon = (isVerified: boolean) => {
-        return isVerified ? <Check className="ms-3" size={15} /> : <AlertOctagon className="me-3" size={15} />;
+        return isVerified ? <Check className="ms-3" size={15} /> : <AlertOctagon className="m3" size={15} />;
     };
 
     const CreatorEntry = (creator: Creator) => {
         const creatorPath = useClusterPath({ pathname: `/address/${creator.address}` });
         return (
-            <div className={'d-flex align-items-center font-monospace creator-dropdown-entry ms-3 me-3'}>
+            <div className={'d-flex align-items-center font-monospace creator-dropdown-entry ms-3 m3'}>
                 {getVerifiedIcon(creator.verified)}
                 <Link className="dropdown-item font-monospace creator-dropdown-entry-address" href={creatorPath}>
                     {creator.address}
                 </Link>
-                <div className="me-3"> {`${creator.share}%`}</div>
+                <div className="m3"> {`${creator.share}%`}</div>
             </div>
         );
     };
@@ -133,7 +133,7 @@ export function getCreatorDropdownItems(creators: Creator[] | null) {
 
     return (
         <div className={'dropdown-item font-monospace'}>
-            <div className="me-3">No creators are associated with this NFT.</div>
+            <div className="m3">No creators are associated with this NFT.</div>
         </div>
     );
 }
@@ -143,8 +143,8 @@ function getEditionPill(editionInfo: EditionInfo) {
     const edition = editionInfo.edition;
 
     return (
-        <div className={'d-inline-flex ms-2'}>
-            <span className="badge badge-pill bg-dark">{`${
+        <div className={'d-inlinflex ms-2'}>
+            <span className="badge badgpill bg-dark">{`${
                 edition && masterEdition
                     ? `Edition ${edition.edition.toNumber()} / ${masterEdition.supply.toNumber()}`
                     : masterEdition
@@ -162,8 +162,8 @@ function getSaleTypePill(hasPrimarySaleHappened: boolean) {
         'Creator(s) split the Seller Fee when this NFT is sold. The owner receives the remaining proceeds.';
 
     return (
-        <div className={'d-inline-flex align-items-center'}>
-            <span className="badge badge-pill bg-dark">{`${
+        <div className={'d-inlinflex align-items-center'}>
+            <span className="badge badgpill bg-dark">{`${
                 hasPrimarySaleHappened ? 'Secondary Market' : 'Primary Market'
             }`}</span>
             <InfoTooltip bottom text={hasPrimarySaleHappened ? secondaryMarketTooltip : primaryMarketTooltip} />
@@ -172,15 +172,15 @@ function getSaleTypePill(hasPrimarySaleHappened: boolean) {
 }
 
 export function getIsMutablePill(isMutable: boolean) {
-    return <span className="badge badge-pill bg-dark">{`${isMutable ? 'Mutable' : 'Immutable'}`}</span>;
+    return <span className="badge badgpill bg-dark">{`${isMutable ? 'Mutable' : 'Immutable'}`}</span>;
 }
 
 export function getVerifiedCollectionPill() {
     const onchainVerifiedToolTip =
         'This NFT has been verified as a member of an on-chain collection. This tag guarantees authenticity.';
     return (
-        <div className={'d-inline-flex align-items-center ms-2'}>
-            <span className="badge badge-pill bg-dark">{'Verified Collection'}</span>
+        <div className={'d-inlinflex align-items-center ms-2'}>
+            <span className="badge badgpill bg-dark">{'Verified Collection'}</span>
             <InfoTooltip bottom text={onchainVerifiedToolTip} />
         </div>
     );

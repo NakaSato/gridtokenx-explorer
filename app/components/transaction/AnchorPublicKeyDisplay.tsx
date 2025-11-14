@@ -115,7 +115,7 @@ export function AnchorPublicKeyDisplay({
                     <div className="mt-3">
                         <div className="btn-group" role="group">
                             <button
-                                className="btn btn-sm btn-outline-primary"
+                                className="btn btn-sm btn-outlinprimary"
                                 onClick={() => {
                                     navigator.clipboard.writeText(pubkeyString);
                                     // You could add a toast notification here
@@ -124,7 +124,7 @@ export function AnchorPublicKeyDisplay({
                                 📋 Copy Key
                             </button>
                             <button
-                                className="btn btn-sm btn-outline-info"
+                                className="btn btn-sm btn-outlininfo"
                                 onClick={() => {
                                     window.open(`/address/${pubkeyString}`, '_blank');
                                 }}
@@ -132,7 +132,7 @@ export function AnchorPublicKeyDisplay({
                                 🔍 View Details
                             </button>
                             <button
-                                className="btn btn-sm btn-outline-secondary"
+                                className="btn btn-sm btn-outlinsecondary"
                                 onClick={() => {
                                     // Generate keypair for testing (only on localhost)
                                     if (url.includes('localhost')) {

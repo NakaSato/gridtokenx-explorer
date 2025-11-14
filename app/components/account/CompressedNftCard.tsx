@@ -2,7 +2,7 @@ import { Account } from '@providers/accounts';
 import { PublicKey } from '@solana/web3.js';
 import { createRef, Suspense } from 'react';
 import { ChevronDown, ExternalLink } from 'react-feather';
-import useAsyncEffect from 'use-async-effect';
+import useAsyncEffect from 'usasync-effect';
 
 import { getProxiedUri } from '@/app/features/metadata';
 import { useCluster } from '@/app/providers/cluster';
@@ -159,8 +159,8 @@ function getCompressedNftPill() {
     const onchainVerifiedToolTip =
         'This NFT does not have a corresponding account, but uses verified ledger data to allow for transfers and trades. The existence of this tag ensures that the compressed NFT is verifiably up-to-date with the chain.';
     return (
-        <div className={'d-inline-flex align-items-center ms-2'}>
-            <span className="badge badge-pill bg-dark">{'Compressed'}</span>
+        <div className={'d-inlinflex align-items-center ms-2'}>
+            <span className="badge badgpill bg-dark">{'Compressed'}</span>
             <InfoTooltip bottom text={onchainVerifiedToolTip} />
         </div>
     );

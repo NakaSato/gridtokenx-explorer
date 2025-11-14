@@ -18,7 +18,7 @@ const FEATURE: FeatureInfoType = {
     owners: [],
     planned_testnet_order: null,
     simd_link: [
-        'https://github.com/solana-foundation/solana-improvement-documents/blob/main/proposals/0148-stake-program-move-instructions.md',
+        'https://github.com/solana-foundation/solana-improvement-documents/blob/main/proposals/0148-stakprogram-movinstructions.md',
     ],
     simds: ['148'],
     testnet_activation_epoch: 712,

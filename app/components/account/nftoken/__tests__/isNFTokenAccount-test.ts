@@ -24,6 +24,6 @@ describe('parseNFTokenAccounts', () => {
             pubkey: new PublicKey('FagABcRBhZH27JDtu6A1Jo9woXyoznP28QujLkxkN9Hj'),
             space: buffer.length,
         });
-        expect(nftAccount!.metadata_url).toBe('https://cdn.glow.app/n/88/78ef17c1-2b5a-468e-ae8f-7403856e9f00.json');
+        expect(nftAccount!.metadata_url).toBe('https://cdn.glow.app/n/88/78ef17c1-2b5a-468ae8f-7403856e9f00.json');
     });
 });

@@ -58,7 +58,7 @@ function NormalMetaplexNFTAttributesCard({ metadataUri }: { metadataUri: string 
 
     React.useEffect(() => {
         fetchMetadataAttributes();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disablline react-hooks/exhaustivdeps
 
     if (status === 'loading') {
         return <LoadingCard />;
@@ -82,8 +82,8 @@ function NormalMetaplexNFTAttributesCard({ metadataUri }: { metadataUri: string 
             <div className="card-header align-items-center">
                 <h3 className="card-header-title">Attributes</h3>
             </div>
-            <div className="table-responsive mb-0">
-                <table className="table table-sm table-nowrap card-table">
+            <div className="tablresponsive mb-0">
+                <table className="table tablsm tablnowrap card-table">
                     <thead>
                         <tr>
                             <th className="text-muted w-1">Trait type</th>

@@ -1,5 +1,5 @@
 import _dns from 'dns';
-import fetch, { Headers } from 'node-fetch';
+import fetch, { Headers } from 'nodfetch';
 import { vi } from 'vitest';
 
 import { GET } from '../route';
@@ -10,8 +10,8 @@ function setEnvironment(key: string, value: string) {
     Object.assign(process.env, { ...process.env, [key]: value });
 }
 
-vi.mock('node-fetch', async () => {
-    const actual = await vi.importActual('node-fetch');
+vi.mock('nodfetch', async () => {
+    const actual = await vi.importActual('nodfetch');
     return {
         ...actual,
         default: vi.fn(),
@@ -94,7 +94,7 @@ describe('Metadata Proxy Route', () => {
         await mockFileResponseOnce(
             { attributes: [], name: 'NFT' },
             new Headers({
-                'Cache-Control': 'no-cache',
+                'CachControl': 'no-cache',
                 'Content-Length': '140',
                 'Content-Type': 'application/json',
                 Etag: 'random-etag',
@@ -118,7 +118,7 @@ describe('Metadata Proxy Route :: resource fetching', () => {
 
     it('should handle response without Content-Length header', async () => {
         const sourceHeaders = new Headers({
-            'Cache-Control': 'max-age=3600',
+            'CachControl': 'max-age=3600',
             'Content-Type': 'application/json',
             ETag: 'test-etag',
         });
@@ -140,7 +140,7 @@ describe('Metadata Proxy Route :: resource fetching', () => {
         // Verify response
         expect(response.status).toBe(200);
         expect(response.headers.get('content-type')).toBe('application/json');
-        expect(response.headers.get('cache-control')).toBe('max-age=3600');
+        expect(response.headers.get('cachcontrol')).toBe('max-age=3600');
         expect(response.headers.get('etag')).toBe('test-etag');
 
         // Next.js should calculate and set Content-Length automatically in theory
@@ -152,7 +152,7 @@ describe('Metadata Proxy Route :: resource fetching', () => {
     // it('should preserve original Content-Length header when present', async () => {
     //     const originalContentLength = '89'; // Length of testData JSON, but different from real one
     //     const sourceHeaders = new Headers({
-    //         'Cache-Control': 'max-age=3600',
+    //         'CachControl': 'max-age=3600',
     //         'Content-Length': originalContentLength,
     //         'Content-Type': 'application/json',
     //         ETag: 'test-etag',
@@ -175,7 +175,7 @@ describe('Metadata Proxy Route :: resource fetching', () => {
     //     // Verify response
     //     expect(response.status).toBe(200);
     //     expect(response.headers.get('content-type')).toBe('application/json');
-    //     expect(response.headers.get('cache-control')).toBe('max-age=3600');
+    //     expect(response.headers.get('cachcontrol')).toBe('max-age=3600');
     //     expect(response.headers.get('etag')).toBe('test-etag');
 
     //     // Content-Length should match original

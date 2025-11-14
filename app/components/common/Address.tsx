@@ -8,7 +8,7 @@ import { useClusterPath } from '@utils/url';
 import Link from 'next/link';
 import React from 'react';
 import { useState } from 'react';
-import useAsyncEffect from 'use-async-effect';
+import useAsyncEffect from 'usasync-effect';
 
 import { getTokenInfoWithoutOnChainFallback } from '@/app/utils/token-info';
 
@@ -114,7 +114,7 @@ export function Address({
     );
 }
 const useTokenMetadata = (useMetadata: boolean | undefined, pubkey: string) => {
-    // TODO: Re-implement with @metaplex-foundation/mpl-token-metadata v3
+    // TODO: Rimplement with @metaplex-foundation/mpl-token-metadata v3
     // const [data, setData] = useState<any>();
     // const { url } = useCluster();
 

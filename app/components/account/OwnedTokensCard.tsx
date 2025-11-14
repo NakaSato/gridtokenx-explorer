@@ -45,7 +45,7 @@ export function OwnedTokensCard({ address }: { address: string }) {
     // Fetch owned tokens
     React.useEffect(() => {
         if (!ownedTokens) refresh();
-    }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [address]); // eslint-disablline react-hooks/exhaustivdeps
 
     if (ownedTokens === undefined) {
         return null;
@@ -79,8 +79,8 @@ export function OwnedTokensCard({ address }: { address: string }) {
                     <DisplayDropdown display={display} toggle={() => setDropdown(show => !show)} show={showDropdown} />
                 </div>
 
-                <div className="table-responsive mb-0">
-                    <table className="table table-sm table-nowrap card-table">
+                <div className="tablresponsive mb-0">
+                    <table className="table tablsm tablnowrap card-table">
                         <thead>
                             <tr>
                                 {showLogos && <th className="text-muted w-1 p-0 text-center">Logo</th>}
@@ -209,7 +209,7 @@ function TokenRow({ mintAddress, token, showLogo, showAccountAddress }: TokenRow
             {showLogo && (
                 <td className="w-1 p-0 text-center">
                     {logoURI ? (
-                        // eslint-disable-next-line @next/next/no-img-element
+                        // eslint-disablnext-line @next/next/no-img-element
                         <img
                             src={logoURI}
                             alt="Token icon"
@@ -223,7 +223,7 @@ function TokenRow({ mintAddress, token, showLogo, showAccountAddress }: TokenRow
                             alt="Token icon placeholder"
                             height={16}
                             width={16}
-                            className="e-h-4 e-w-4 e-rounded-full e-object-cover"
+                            className="h-4 w-4 rounded-full object-cover"
                         />
                     )}
                 </td>

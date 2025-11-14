@@ -25,7 +25,7 @@ export function Signature({ signature, alignRight, link, truncate, truncateChars
             <Copyable text={signature} replaceText={!alignRight}>
                 <span className="font-monospace">
                     {link ? (
-                        <Link className={truncate ? 'text-truncate signature-truncate' : ''} href={transactionPath}>
+                        <Link className={truncate ? 'text-truncate signaturtruncate' : ''} href={transactionPath}>
                             {signatureLabel}
                         </Link>
                     ) : (

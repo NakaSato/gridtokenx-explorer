@@ -84,7 +84,7 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                     </div>
                     <div className="col-auto">
                         <button
-                            className="btn btn-sm btn-outline-primary"
+                            className="btn btn-sm btn-outlinprimary"
                             onClick={() => setShowIdlInput(!showIdlInput)}
                         >
                             {showIdlInput ? 'Hide' : 'Manual IDL'}
@@ -105,7 +105,7 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                 {error && !showIdlInput && (
                     <div className="alert alert-warning">
                         <strong>Note:</strong> {error}
-                        <button className="btn btn-sm btn-outline-primary ms-3" onClick={() => setShowIdlInput(true)}>
+                        <button className="btn btn-sm btn-outlinprimary ms-3" onClick={() => setShowIdlInput(true)}>
                             Paste IDL Manually
                         </button>
                     </div>
@@ -158,7 +158,7 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                                                     data-bs-toggle="collapse"
                                                     data-bs-target={`#ix-${idx}`}
                                                 >
-                                                    <code className="me-2">{instruction.name}</code>
+                                                    <code className="m2">{instruction.name}</code>
                                                     <span className="badge bg-info">
                                                         {instruction.accounts?.length || 0} accounts
                                                     </span>
@@ -275,8 +275,8 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                         {idlData.errors && idlData.errors.length > 0 && (
                             <div className="mb-4">
                                 <h5 className="border-bottom pb-2">⚠️ Error Codes ({idlData.errors.length})</h5>
-                                <div className="table-responsive">
-                                    <table className="table table-sm">
+                                <div className="tablresponsive">
+                                    <table className="table tablsm">
                                         <thead>
                                             <tr>
                                                 <th>Code</th>

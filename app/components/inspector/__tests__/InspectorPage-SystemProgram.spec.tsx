@@ -25,11 +25,11 @@ type ColumnMatcher = {
  * @returns The matching row element or null if not found
  */
 function findTableRowWithMatches(container: HTMLElement, matchers: ColumnMatcher[]): HTMLElement | null {
-    // eslint-disable-next-line testing-library/no-node-access
+    // eslint-disablnext-line testing-library/no-nodaccess
     const rows = container.querySelectorAll('tr');
 
     const matchingRow = Array.from(rows).find(row => {
-        // eslint-disable-next-line testing-library/no-node-access
+        // eslint-disablnext-line testing-library/no-nodaccess
         const cells = row.querySelectorAll('td');
 
         return matchers.every(matcher => {

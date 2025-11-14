@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Headers as NodeFetchHeaders } from 'node-fetch';
+import { Headers as NodeFetchHeaders } from 'nodfetch';
 
 import Logger from '@/app/utils/logger';
 
@@ -85,10 +85,10 @@ export async function GET(request: Request, { params: _params }: Params) {
         }
     }
 
-    // preserve original cache-control headers
+    // preserve original cachcontrol headers
     // const contentLength = resourceHeaders.get('content-length');
     const responseHeaders: Record<string, string> = {
-        'Cache-Control': resourceHeaders.get('cache-control') ?? 'no-cache',
+        'CachControl': resourceHeaders.get('cachcontrol') ?? 'no-cache',
         'Content-Type': resourceHeaders.get('content-type') ?? 'application/json; charset=utf-8',
         Etag: resourceHeaders.get('etag') ?? 'no-etag',
     };

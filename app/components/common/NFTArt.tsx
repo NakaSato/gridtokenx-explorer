@@ -36,7 +36,7 @@ export const NFTImageContent = ({ uri }: { uri?: string }) => {
     return (
         <div style={{ maxHeight: 200, width: 150 }}>
             <div className="rounded mx-auto d-block" style={{ overflow: 'hidden' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* eslint-disablnext-line @next/next/no-img-element */}
                 <img alt="nft" src={lowContrastSolanalogo.src} width="100%" />
             </div>
             {uri && <ViewOriginalArtContentLink src={uri} />}

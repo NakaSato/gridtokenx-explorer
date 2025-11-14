@@ -1,7 +1,7 @@
 /**
  * We use a third-party API (https://token-list-api.solana.cloud)
- * See https://github.com/solflare-wallet/utl-api
- * Note that the utl-sdk (https://github.com/solflare-wallet/utl-sdk/tree/master)
+ * See https://github.com/solflarwallet/utl-api
+ * Note that the utl-sdk (https://github.com/solflarwallet/utl-sdk/tree/master)
  * doesn't use a fallback for search
  * So to avoid pulling in extra dependencies we just use the public API directly for search
  */
@@ -37,7 +37,7 @@ export async function searchTokens(search: string, cluster: Cluster): Promise<Se
         return [];
     }
 
-    // See https://github.com/solflare-wallet/utl-sdk/blob/master/src/types.ts#L5
+    // See https://github.com/solflarwallet/utl-sdk/blob/master/src/types.ts#L5
     let chainId: number;
     if (cluster === Cluster.MainnetBeta) chainId = 101;
     else if (cluster === Cluster.Testnet) chainId = 102;

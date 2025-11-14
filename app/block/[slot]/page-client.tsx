@@ -32,7 +32,7 @@ export default function BlockTransactionsTabClient({ params: { slot } }: Props) 
         if (!confirmedBlock && status === ClusterStatus.Connected) {
             fetchBlock(slotNumber);
         }
-    }, [slotNumber, status]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [slotNumber, status]); // eslint-disablline react-hooks/exhaustivdeps
     if (confirmedBlock?.data?.block) {
         return <BlockHistoryCard block={confirmedBlock.data.block} epoch={epoch} />;
     }

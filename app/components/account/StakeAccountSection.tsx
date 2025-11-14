@@ -97,7 +97,7 @@ function OverviewCard({
             <div className="card-header">
                 <h3 className="card-header-title mb-0 d-flex align-items-center">Stake Account</h3>
                 <button className="btn btn-white btn-sm" onClick={() => refresh(account.pubkey, 'parsed')}>
-                    <RefreshCw className="align-text-top me-2" size={13} />
+                    <RefreshCw className="align-text-top m2" size={13} />
                     Refresh
                 </button>
             </div>

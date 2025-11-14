@@ -1,6 +1,7 @@
+import { Metadata } from 'next';
 import SupplyPageClient from './page-client';
 
-export const metadata = {
+export const metadata: Metadata = {
     description: `Overview of native token supply on Solana`,
     title: `Supply Overview | Solana`,
 };

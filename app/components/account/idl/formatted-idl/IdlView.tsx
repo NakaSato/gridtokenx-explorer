@@ -111,7 +111,7 @@ export function FormattedIdlView({ idl }: { idl: FormattedIdl | null }) {
                     </button>
                 ))}
             </div>
-            <div className="table-responsive mb-0 e-min-h-[200px]">{activeTab.component}</div>
+            <div className="tablresponsive mb-0 min-h-[200px]">{activeTab.component}</div>
         </div>
     );
 }

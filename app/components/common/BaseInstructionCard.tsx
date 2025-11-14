@@ -52,7 +52,7 @@ export function BaseInstructionCard({
         <div className="card" ref={scrollAnchorRef}>
             <div className="card-header">
                 <h3 className="card-header-title mb-0 d-flex align-items-center">
-                    <span className={`badge bg-${resultClass}-soft me-2`}>
+                    <span className={`badge bg-${resultClass}-soft m2`}>
                         #{index + 1}
                         {childIndex !== undefined ? `.${childIndex + 1}` : ''}
                     </span>
@@ -64,11 +64,11 @@ export function BaseInstructionCard({
                     className={`btn btn-sm d-flex align-items-center ${showRaw ? 'btn-black active' : 'btn-white'}`}
                     onClick={rawClickHandler}
                 >
-                    <Code className="me-2" size={13} /> Raw
+                    <Code className="m2" size={13} /> Raw
                 </button>
             </div>
-            <div className="table-responsive mb-0">
-                <table className="table table-sm table-nowrap card-table">
+            <div className="tablresponsive mb-0">
+                <table className="table tablsm tablnowrap card-table">
                     <tbody className="list">
                         {showRaw ? (
                             <>
@@ -91,7 +91,7 @@ export function BaseInstructionCard({
                         )}
                         {innerCards && innerCards.length > 0 && (
                             <>
-                                <tr className="table-sep">
+                                <tr className="tablsep">
                                     <td colSpan={3}>Inner Instructions</td>
                                 </tr>
                                 <tr>

@@ -114,7 +114,7 @@ export function TokenTransfersCard({ address }: { address: string }) {
         if (!history || !history.data?.transactionMap?.size) {
             refresh();
         }
-    }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [address]); // eslint-disablline react-hooks/exhaustivdeps
 
     const { allTransfers, hasTimestamps } = React.useMemo(() => {
         const detailedHistoryMap = history?.data?.transactionMap || new Map<string, ParsedTransactionWithMeta>();
@@ -237,8 +237,8 @@ export function TokenTransfersCard({ address }: { address: string }) {
     return (
         <div className="card">
             <HistoryCardHeader fetching={fetching} refresh={() => refresh()} title="Token Transfers" />
-            <div className="table-responsive mb-0">
-                <table className="table table-sm table-nowrap card-table">
+            <div className="tablresponsive mb-0">
+                <table className="table tablsm tablnowrap card-table">
                     <thead>
                         <tr>
                             <th className="text-muted">Transaction Signature</th>

@@ -1,6 +1,6 @@
 'use client';
 
-import { getAllDomains, NAME_PROGRAM_ID, reverseLookup } from '@bonfida/spl-name-service';
+import { getAllDomains, NAME_PROGRAM_ID, reverseLookup } from '@bonfida/spl-namservice';
 import { useCluster } from '@providers/cluster';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
@@ -46,7 +46,7 @@ export const useUserDomains = (userAddress: string): [DomainInfo[] | null, boole
             }
         };
         resolve();
-    }, [userAddress, url]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [userAddress, url]); // eslint-disablline react-hooks/exhaustivdeps
 
     return [result, loading];
 };

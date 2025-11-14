@@ -42,8 +42,8 @@ export function AddressTableLookupsCard({ message }: { message: VersionedMessage
                 </button>
             </div>
             {expanded && (
-                <div className="table-responsive mb-0">
-                    <table className="table table-sm table-nowrap card-table">
+                <div className="tablresponsive mb-0">
+                    <table className="table tablsm tablnowrap card-table">
                         <thead>
                             <tr>
                                 <th className="text-muted">Address Lookup Table Address</th>
@@ -83,7 +83,7 @@ function LookupRow({
 
     const loadingComponent = (
         <span className="text-muted">
-            <span className="spinner-grow spinner-grow-sm me-2"></span>
+            <span className="spinner-grow spinner-grow-sm m2"></span>
             Loading
         </span>
     );
@@ -114,7 +114,7 @@ function LookupRow({
             </td>
             <td className="text-lg-end">{lookupTableIndex}</td>
             <td className="text-lg-end">{resolvedKeyComponent}</td>
-            <td>{!readOnly && <span className="badge bg-danger-soft me-1">Writable</span>}</td>
+            <td>{!readOnly && <span className="badge bg-danger-soft m1">Writable</span>}</td>
         </tr>
     );
 }

@@ -8,7 +8,7 @@ import { Badge } from '@/app/components/shared/ui/badge';
 import {
     getAnchorId,
     useTokenExtensionNavigation,
-} from '@/app/features/token-extensions/use-token-extension-navigation';
+} from '@/app/features/token-extensions/ustoken-extension-navigation';
 import { TokenExtension } from '@/app/validators/accounts/token-extension';
 
 import { TokenExtensionBadge } from '../common/TokenExtensionBadge';
@@ -50,7 +50,7 @@ export function TokenExtensionsSection({
     );
 
     return (
-        <Accordion type="single" value={selectedExtension} collapsible className="e-px-0">
+        <Accordion type="single" value={selectedExtension} collapsible className="px-0">
             {parsedExtensions.map(ext => {
                 const extension = extensions.find(({ extension }) => {
                     return extension === ext.extension;
@@ -106,18 +106,18 @@ function TokenExtensionAccordionItem({
 
     return (
         <>
-            <AccordionTrigger className="e-items-center" ref={accordionTriggerRef}>
+            <AccordionTrigger className="items-center" ref={accordionTriggerRef}>
                 <ExtensionListItem ext={parsedExtension} onToggleRaw={handleToggleRaw} raw={showRaw} />
             </AccordionTrigger>
             <AccordionContent>
                 {!showRaw ? (
-                    <div className="card e-m-4">
+                    <div className="card m-4">
                         <TableCardBodyHeaded headerComponent={tableHeaderComponent}>
                             {TokenExtensionRow(extension, undefined, decimals, symbol, 'omit')}
                         </TableCardBodyHeaded>
                     </div>
                 ) : (
-                    <div className="e-p-4">
+                    <div className="p-4">
                         <ReactJson src={parsedExtension.parsed || {}} style={{ padding: 25 }} />
                     </div>
                 )}
@@ -153,23 +153,23 @@ function ExtensionListItem({
     );
 
     return (
-        <div className="w-100 e-w-100 text-white e-grid e-grid-cols-12-ext e-items-center e-gap-2 e-text-sm">
+        <div className="w-100 w-100 text-white grid grid-cols-12-ext items-center gap-2 text-sm">
             {/* Name */}
-            <div className="e-flex e-min-w-80 e-items-center e-gap-2 e-whitespace-nowrap e-font-normal max-sm:e-col-span-6 sm:e-col-span-6 md:e-col-span-6 lg:e-col-span-4 xl:e-col-span-3">
+            <div className="flex min-w-80 items-center gap-2 whitespacnowrap font-normal max-sm:col-span-6 sm:col-span-6 md:col-span-6 lg:col-span-4 xl:col-span-3">
                 <div>{ext.name}</div>
                 <TokenExtensionBadge extension={ext} />
             </div>
 
             {/* Description */}
-            <span className="e-text-[0.75rem] e-text-[#8E9090] e-underline e-decoration-[#1e2423] max-lg:e-hidden lg:e-col-span-6 lg:e-pl-12 xl:e-col-span-7">
+            <span className="text-[0.75rem] text-[#8E9090] underline decoration-[#1e2423] max-lg:hidden lg:col-span-6 lg:pl-12 xl:col-span-7">
                 {ext.description ?? null}
             </span>
 
             {/* External links badges */}
-            <div className="text-white e-flex e-justify-end e-gap-1 max-sm:e-col-span-6 sm:e-col-span-6 md:e-col-span-6 lg:e-col-span-2 xl:e-col-span-2">
+            <div className="text-white flex justify-end gap-1 max-sm:col-span-6 sm:col-span-6 md:col-span-6 lg:col-span-2 xl:col-span-2">
                 <a key="raw" href="javascript:void(0)" onClick={handleToggleRaw}>
                     <Badge
-                        className="text-white e-font-normal"
+                        className="text-white font-normal"
                         as="link"
                         size="sm"
                         status={raw ? 'active' : 'inactive'}
@@ -180,7 +180,7 @@ function ExtensionListItem({
                 </a>
                 {ext.externalLinks.map((link, index) => (
                     <a key={index} href={link.url} target="_blank" rel="noopener noreferrer">
-                        <Badge variant="transparent" size="sm" as="link" className="text-white e-font-normal">
+                        <Badge variant="transparent" size="sm" as="link" className="text-white font-normal">
                             <ExternalLink size={16} />
                             {link.label}
                         </Badge>

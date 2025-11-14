@@ -6,7 +6,7 @@ import { Address as AddressComponent } from './Address';
 import { TokenLabelInfo } from '@utils/tx';
 
 type Props = {
-    pubkey: PublicKey;
+    pubkey: PublicKey | string;
     alignRight?: boolean;
     link?: boolean;
     raw?: boolean;
@@ -20,9 +20,12 @@ type Props = {
 };
 
 export function Address(props: Props) {
+    const pubkey = typeof props.pubkey === 'string' ? new PublicKey(props.pubkey) : props.pubkey;
+    const fallback = typeof props.pubkey === 'string' ? props.pubkey : props.pubkey.toBase58();
+    
     return (
-        <Suspense fallback={<span className="font-monospace">{props.pubkey.toBase58()}</span>}>
-            <AddressComponent {...props} />
+        <Suspense fallback={<span className="font-monospace">{fallback}</span>}>
+            <AddressComponent {...props} pubkey={pubkey} />
         </Suspense>
     );
 }

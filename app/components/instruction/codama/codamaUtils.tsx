@@ -87,7 +87,7 @@ export function mapCodamaIxArgsToRows(data: any, nestingLevel = 0) {
                     <div className="d-flex flex-row">
                         {nestingLevel > 0 && (
                             <span style={{ paddingLeft: `${15 * nestingLevel}px` }}>
-                                <CornerDownRight className="me-2" size={15} />
+                                <CornerDownRight className="m2" size={15} />
                             </span>
                         )}
                         <div>{key}</div>

@@ -25,7 +25,7 @@ export function UnknownDetailsCard({
         <div className="card" ref={scrollAnchorRef}>
             <div className={`card-header${!expanded ? ' border-bottom-none' : ''}`}>
                 <h3 className="card-header-title mb-0 d-flex align-items-center">
-                    <span className={`badge bg-info-soft me-2`}>#{index + 1}</span>
+                    <span className={`badge bg-info-soft m2`}>#{index + 1}</span>
                     {programName} Instruction
                 </h3>
 

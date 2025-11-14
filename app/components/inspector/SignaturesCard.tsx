@@ -45,8 +45,8 @@ export function TransactionSignatures({
             <div className="card-header">
                 <h3 className="card-header-title">Signatures</h3>
             </div>
-            <div className="table-responsive mb-0">
-                <table className="table table-sm table-nowrap card-table">
+            <div className="tablresponsive mb-0">
+                <table className="table tablsm tablnowrap card-table">
                     <thead>
                         <tr>
                             <th className="text-muted">#</th>
@@ -89,7 +89,7 @@ function SignatureRow({
     return (
         <tr>
             <td>
-                <span className="badge bg-info-soft me-1">{index + 1}</span>
+                <span className="badge bg-info-soft m1">{index + 1}</span>
             </td>
             <td>{signature ? <Signature signature={signature} truncateChars={40} /> : 'Missing Signature'}</td>
             <td>
@@ -99,12 +99,12 @@ function SignatureRow({
                 {verified === undefined ? (
                     'N/A'
                 ) : verified ? (
-                    <span className="badge bg-success-soft me-1">Valid</span>
+                    <span className="badge bg-success-soft m1">Valid</span>
                 ) : (
-                    <span className="badge bg-warning-soft me-1">Invalid</span>
+                    <span className="badge bg-warning-soft m1">Invalid</span>
                 )}
             </td>
-            <td>{index === 0 && <span className="badge bg-info-soft me-1">Fee Payer</span>}</td>
+            <td>{index === 0 && <span className="badge bg-info-soft m1">Fee Payer</span>}</td>
         </tr>
     );
 }
