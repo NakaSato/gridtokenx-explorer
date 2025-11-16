@@ -1,4 +1,3 @@
-import '../../styles.css';
 
 import { SignatureProps } from '@utils/index';
 import { Metadata } from 'next/types';

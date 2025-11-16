@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Headers as NodeFetchHeaders } from 'nodfetch';
+import { Headers as NodeFetchHeaders } from 'node-fetch';
 
 import Logger from '@/app/utils/logger';
 

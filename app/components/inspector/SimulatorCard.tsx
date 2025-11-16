@@ -41,11 +41,11 @@ export function SimulatorCard({
     } = useSimulator(message);
     if (simulating) {
         return (
-            <div className="card">
-                <div className="card-header">
-                    <h3 className="card-header-title">Transaction Simulation</h3>
+            <div className="bg-card border rounded-lg shadow-sm">
+                <div className="px-6 py-4 border-b">
+                    <h3 className="text-lg font-semibold">Transaction Simulation</h3>
                 </div>
-                <div className="card-body text-center">
+                <div className="p-6 text-center">
                     <span className="spinner-grow spinner-grow-sm m2"></span>
                     Simulating
                 </div>
@@ -53,21 +53,21 @@ export function SimulatorCard({
         );
     } else if (!logs) {
         return (
-            <div className="card">
-                <div className="card-header">
-                    <h3 className="card-header-title">Transaction Simulation</h3>
+            <div className="bg-card border rounded-lg shadow-sm">
+                <div className="px-6 py-4 border-b">
+                    <h3 className="text-lg font-semibold">Transaction Simulation</h3>
                     <button className="btn btn-sm d-flex btn-white" onClick={simulate}>
                         {simulationError ? 'Retry' : 'Simulate'}
                     </button>
                 </div>
-                <div className="card-body">
+                <div className="p-6">
                     {simulationError ? (
                         <>
                             Simulation Failure:
                             <span className="text-warning ms-2">{simulationError}</span>
                         </>
                     ) : (
-                        <ul className="text-muted">
+                        <ul className="text-muted-foreground">
                             <li>
                                 Simulation is free and will run this transaction against the latest confirmed ledger
                                 state.
@@ -82,9 +82,9 @@ export function SimulatorCard({
 
     return (
         <>
-            <div className="card">
-                <div className="card-header">
-                    <h3 className="card-header-title">Transaction Simulation</h3>
+            <div className="bg-card border rounded-lg shadow-sm">
+                <div className="px-6 py-4 border-b">
+                    <h3 className="text-lg font-semibold">Transaction Simulation</h3>
                     <button className="btn btn-sm d-flex btn-white" onClick={simulate}>
                         Retry
                     </button>

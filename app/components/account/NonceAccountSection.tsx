@@ -17,21 +17,21 @@ export function NonceAccountSection({ account, nonceAccount }: { account: Accoun
 
                 <tr>
                     <td>Authority</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Address pubkey={nonceAccount.info.authority} alignRight raw link />
                     </td>
                 </tr>
 
                 <tr>
                     <td>Blockhash</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <code>{nonceAccount.info.blockhash}</code>
                     </td>
                 </tr>
 
                 <tr>
                     <td>Fee</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         {nonceAccount.info.feeCalculator.lamportsPerSignature} lamports per signature
                     </td>
                 </tr>

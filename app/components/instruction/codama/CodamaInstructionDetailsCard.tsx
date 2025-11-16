@@ -49,14 +49,22 @@ export function CodamaInstructionCard({
         accountDetails.push(
             <tr key={i}>
                 <td>
-                    <div className="m2 d-md-inline">{accountName}</div>
-                    {isWritable && <span className="badge bg-danger-soft m1">Writable</span>}
-                    {isSigner && <span className="badge bg-info-soft m1">Signer</span>}
+                    <div className="d-md-inline mr-2">{accountName}</div>
+                    {isWritable && (
+                        <span className="mr-1 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                            Writable
+                        </span>
+                    )}
+                    {isSigner && (
+                        <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                            Signer
+                        </span>
+                    )}
                 </td>
-                <td className="text-lg-end" colSpan={2}>
+                <td className="lg:text-right" colSpan={2}>
                     <Address pubkey={new PublicKey(account.address)} alignRight link />
                 </td>
-            </tr>
+            </tr>,
         );
     }
 
@@ -64,13 +72,13 @@ export function CodamaInstructionCard({
         <InstructionCard title={ixTitle} ix={ix} result={result} index={index} innerCards={innerCards}>
             <tr>
                 <td>Program</td>
-                <td className="text-lg-end" colSpan={2}>
+                <td className="lg:text-right" colSpan={2}>
                     <Address pubkey={new PublicKey(ix.programId)} alignRight link raw overrideText={programName} />
                 </td>
             </tr>
             <tr className="tablsep">
                 <td>Account Name</td>
-                <td className="text-lg-end" colSpan={2}>
+                <td className="lg:text-right" colSpan={2}>
                     Address
                 </td>
             </tr>
@@ -80,7 +88,7 @@ export function CodamaInstructionCard({
                     <tr className="tablsep">
                         <td>Argument Name</td>
                         <td>Type</td>
-                        <td className="text-lg-end">Value</td>
+                        <td className="lg:text-right">Value</td>
                     </tr>
                     {mapCodamaIxArgsToRows(parsedIx.data)}
                 </>

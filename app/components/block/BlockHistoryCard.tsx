@@ -17,9 +17,9 @@ import Link from 'next/link';
 import { ReadonlyURLSearchParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { createRef, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import useAsyncEffect from 'usasync-effect';
+import useAsyncEffect from 'use-async-effect';
 
-import { estimateRequestedComputeUnits } from '@/app/utils/computunits-schedule';
+import { estimateRequestedComputeUnits } from '@/app/utils/compute-units-schedule';
 
 const PAGE_SIZE = 25;
 
@@ -85,7 +85,7 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                 .concat(
                     tx.meta?.innerInstructions?.flatMap(ix => {
                         return ix.instructions.map(ix => ix.programIdIndex);
-                    }) || []
+                    }) || [],
                 );
 
             const indexMap = new Map<number, number>();
@@ -194,9 +194,9 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
     }
 
     return (
-        <div className="card">
-            <div className="card-header align-items-center">
-                <h3 className="card-header-title">{title}</h3>
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="flex items-center border-b px-6 py-4">
+                <h3 className="text-lg font-semibold">{title}</h3>
                 <FilterDropdown
                     filter={programFilter}
                     invokedPrograms={invokedPrograms}
@@ -205,58 +205,58 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
             </div>
 
             {accountFilter !== null && (
-                <div className="card-body">
+                <div className="p-6">
                     Showing transactions which load account:
-                    <div className="d-inlinblock ms-2">
+                    <div className="ml-2 inline-block">
                         <Address pubkey={accountFilter} link />
                     </div>
                 </div>
             )}
 
             {filteredTransactions.length === 0 ? (
-                <div className="card-body">
+                <div className="p-6">
                     {accountFilter === null && programFilter === HIDE_VOTES
                         ? "This block doesn't contain any non-vote transactions"
                         : 'No transactions found with this filter'}
                 </div>
             ) : (
-                <div className="tablresponsive mb-0">
-                    <table className="table tablsm tablnowrap card-table">
+                <div className="mb-0 overflow-x-auto">
+                    <table className="w-full text-sm">
                         <thead>
                             <tr>
                                 <th
-                                    className="text-muted c-pointer"
+                                    className="text-muted-foreground cursor-pointer"
                                     onClick={() => {
                                         const additionalParams = new URLSearchParams(currentSearchParams?.toString());
                                         additionalParams.delete('sort');
                                         router.push(
-                                            pickClusterParams(currentPathname, currentSearchParams, additionalParams)
+                                            pickClusterParams(currentPathname, currentSearchParams, additionalParams),
                                         );
                                     }}
                                 >
                                     #
                                 </th>
-                                <th className="text-muted">Result</th>
-                                <th className="text-muted">Transaction Signature</th>
+                                <th className="text-muted-foreground">Result</th>
+                                <th className="text-muted-foreground">Transaction Signature</th>
                                 <th
-                                    className="text-muted c-pointer"
+                                    className="text-muted-foreground cursor-pointer"
                                     onClick={() => {
                                         const additionalParams = new URLSearchParams(currentSearchParams?.toString());
                                         additionalParams.set('sort', 'fee');
                                         router.push(
-                                            pickClusterParams(currentPathname, currentSearchParams, additionalParams)
+                                            pickClusterParams(currentPathname, currentSearchParams, additionalParams),
                                         );
                                     }}
                                 >
                                     Fee
                                 </th>
                                 <th
-                                    className="text-muted c-pointer"
+                                    className="text-muted-foreground cursor-pointer"
                                     onClick={() => {
                                         const additionalParams = new URLSearchParams(currentSearchParams?.toString());
                                         additionalParams.set('sort', 'reservedCUs');
                                         router.push(
-                                            pickClusterParams(currentPathname, currentSearchParams, additionalParams)
+                                            pickClusterParams(currentPathname, currentSearchParams, additionalParams),
                                         );
                                     }}
                                 >
@@ -264,18 +264,18 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                                 </th>
                                 {showComputeUnits && (
                                     <th
-                                        className="text-muted c-pointer"
+                                        className="text-muted-foreground cursor-pointer"
                                         onClick={() => {
                                             const additionalParams = new URLSearchParams(
-                                                currentSearchParams?.toString()
+                                                currentSearchParams?.toString(),
                                             );
                                             additionalParams.set('sort', 'compute');
                                             router.push(
                                                 pickClusterParams(
                                                     currentPathname,
                                                     currentSearchParams,
-                                                    additionalParams
-                                                )
+                                                    additionalParams,
+                                                ),
                                             );
                                         }}
                                     >
@@ -283,18 +283,18 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                                     </th>
                                 )}
                                 <th
-                                    className="text-muted c-pointer"
+                                    className="text-muted-foreground cursor-pointer"
                                     onClick={() => {
                                         const additionalParams = new URLSearchParams(currentSearchParams?.toString());
                                         additionalParams.set('sort', 'txnCost');
                                         router.push(
-                                            pickClusterParams(currentPathname, currentSearchParams, additionalParams)
+                                            pickClusterParams(currentPathname, currentSearchParams, additionalParams),
                                         );
                                     }}
                                 >
                                     Txn Cost
                                 </th>
-                                <th className="text-muted">Invoked Programs</th>
+                                <th className="text-muted-foreground">Invoked Programs</th>
                             </tr>
                         </thead>
                         <tbody className="list">
@@ -303,10 +303,10 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                                 let statusClass;
                                 let signature: React.ReactNode;
                                 if (tx.meta?.err || !tx.signature) {
-                                    statusClass = 'warning';
+                                    statusClass = 'bg-yellow-100 text-yellow-800';
                                     statusText = 'Failed';
                                 } else {
-                                    statusClass = 'success';
+                                    statusClass = 'bg-green-100 text-green-800';
                                     statusText = 'Success';
                                 }
 
@@ -321,7 +321,11 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                                     <tr key={i}>
                                         <td>{tx.index + 1}</td>
                                         <td>
-                                            <span className={`badge bg-${statusClass}-soft`}>{statusText}</span>
+                                            <span
+                                                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusClass}`}
+                                            >
+                                                {statusText}
+                                            </span>
                                         </td>
 
                                         <td>{signature}</td>
@@ -352,9 +356,9 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                                                 ? 'NA'
                                                 : entries.map(([programId, count], i) => {
                                                       return (
-                                                          <div key={i} className="d-flex align-items-center">
+                                                          <div key={i} className="flex items-center">
                                                               <Address pubkey={new PublicKey(programId)} link />
-                                                              <span className="ms-2 text-muted">{`(${count})`}</span>
+                                                              <span className="text-muted-foreground ml-2">{`(${count})`}</span>
                                                           </div>
                                                       );
                                                   })}
@@ -368,9 +372,9 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
             )}
 
             {filteredTransactions.length > numDisplayed && (
-                <div className="card-footer">
+                <div className="border-t px-6 py-4">
                     <button
-                        className="btn btn-primary w-100"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-md px-4 py-2"
                         onClick={() => setNumDisplayed(displayed => displayed + PAGE_SIZE)}
                     >
                         Load More
@@ -451,15 +455,20 @@ const FilterDropdown = ({ filter, invokedPrograms, totalTransactionCount }: Filt
                 dropdown.dispose();
             }
         },
-        [dropdownRef]
+        [dropdownRef],
     );
 
     return (
-        <div className="dropdown m2">
-            <button className="btn btn-white btn-sm" data-bs-toggle="dropdown" type="button" ref={dropdownRef}>
+        <div className="relative mr-2">
+            <button
+                className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                data-bs-toggle="dropdown"
+                type="button"
+                ref={dropdownRef}
+            >
                 {currentFilterOption.name} <ChevronDown className="align-text-top" size={13} />
             </button>
-            <div className="token-filter dropdown-menu-end dropdown-menu">
+            <div className="absolute right-0 z-10 mt-2 max-h-96 min-w-[200px] overflow-y-auto rounded-md border bg-white shadow-lg">
                 {filterOptions.map(({ name, programId, transactionCount }) => (
                     <FilterLink
                         currentFilter={filter}
@@ -498,7 +507,11 @@ function FilterLink({
         return `${currentPathname}${nextQueryString ? `?${nextQueryString}` : ''}`;
     }, [currentPathname, currentSearchParams, name, programId]);
     return (
-        <Link className={`dropdown-item${programId === currentFilter ? ' active' : ''}`} href={href} key={programId}>
+        <Link
+            className={`block px-4 py-2 hover:bg-gray-100${programId === currentFilter ? ' bg-gray-100 font-semibold' : ''}`}
+            href={href}
+            key={programId}
+        >
             {`${name} (${transactionCount})`}
         </Link>
     );

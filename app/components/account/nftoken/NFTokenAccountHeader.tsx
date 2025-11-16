@@ -30,8 +30,8 @@ export function NFTokenAccountHeader({ account }: { account: Account }) {
 
     return (
         <>
-            <h6 className="header-pretitle">Details</h6>
-            <h2 className="header-title">Account</h2>
+            <h6 className="text-muted-foreground text-xs uppercase">Details</h6>
+            <h2 className="text-2xl font-bold">Account</h2>
         </>
     );
 }
@@ -40,22 +40,22 @@ export function NFTokenNFTHeader({ nft }: { nft: NftokenTypes.NftAccount }) {
     const { data: metadata } = useNftokenMetadata(nft.metadata_url);
 
     return (
-        <div className="row">
-            <div className="col-auto ms-2 d-flex align-items-center">
+        <div className="-mx-2 flex flex-wrap">
+            <div className="ml-2 flex flex-none items-center">
                 <NFTImageContent uri={metadata?.image.trim()} />
             </div>
 
-            <div className="col mb-3 ms-0.5 mt-3">
-                {<h6 className="header-pretitle ms-1">NFToken NFT</h6>}
-                <div className="d-flex align-items-center">
-                    <h2 className="header-title ms-1 align-items-center no-overflow-with-ellipsis">
+            <div className="mt-3 mb-3 ml-0.5 flex-1">
+                {<h6 className="text-muted-foreground ml-1 text-xs uppercase">NFToken NFT</h6>}
+                <div className="flex items-center">
+                    <h2 className="ml-1 items-center truncate text-2xl font-bold">
                         {metadata ? metadata.name || 'No NFT name was found' : 'Loading...'}
                     </h2>
                 </div>
 
                 <div>
-                    <div className={'d-inlinflex align-items-center mt-2'}>
-                        <span className="badge badgpill bg-dark">{`${
+                    <div className={'mt-2 inline-flex items-center'}>
+                        <span className="rounded-full bg-gray-800 px-2 py-1 text-xs text-white">{`${
                             nft.authority_can_update ? 'Mutable' : 'Immutable'
                         }`}</span>
 
@@ -78,22 +78,22 @@ export function NFTokenCollectionHeader({ collection }: { collection: NftokenTyp
     const { data: metadata } = useNftokenMetadata(collection.metadata_url);
 
     return (
-        <div className="row">
-            <div className="col-auto ms-2 d-flex align-items-center">
+        <div className="-mx-2 flex flex-wrap">
+            <div className="ml-2 flex flex-none items-center">
                 <NFTImageContent uri={metadata?.image} />
             </div>
 
-            <div className="col mb-3 ms-0.5 mt-3">
-                {<h6 className="header-pretitle ms-1">NFToken Collection</h6>}
-                <div className="d-flex align-items-center">
-                    <h2 className="header-title ms-1 align-items-center no-overflow-with-ellipsis">
+            <div className="mt-3 mb-3 ml-0.5 flex-1">
+                {<h6 className="text-muted-foreground ml-1 text-xs uppercase">NFToken Collection</h6>}
+                <div className="flex items-center">
+                    <h2 className="ml-1 items-center truncate text-2xl font-bold">
                         {metadata ? metadata.name || 'No collection name was found' : 'Loading...'}
                     </h2>
                 </div>
 
                 <div>
-                    <div className={'d-inlinflex align-items-center mt-2'}>
-                        <span className="badge badgpill bg-dark">{`${
+                    <div className={'mt-2 inline-flex items-center'}>
+                        <span className="rounded-full bg-gray-800 px-2 py-1 text-xs text-white">{`${
                             collection.authority_can_update ? 'Mutable' : 'Immutable'
                         }`}</span>
 

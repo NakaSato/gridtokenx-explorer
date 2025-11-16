@@ -1,4 +1,4 @@
-import { cva, type VariantProps } from 'class-variancauthority';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { useCallback } from 'react';
 
 import { ParsedTokenExtension } from '@/app/components/account/types';

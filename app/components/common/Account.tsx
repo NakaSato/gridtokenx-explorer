@@ -16,10 +16,10 @@ type AccountProps = {
 
 export function AccountHeader({ title, refresh }: AccountHeaderProps) {
     return (
-        <div className="card-header align-items-center">
-            <h3 className="card-header-title">{title}</h3>
-            <button className="btn btn-white btn-sm" onClick={() => refresh()}>
-                <RefreshCw className="align-text-top m2" size={13} />
+        <div className="px-6 py-4 border-b flex items-center">
+            <h3 className="text-lg font-semibold">{title}</h3>
+            <button className="bg-white text-black border px-3 py-1.5 rounded-md hover:bg-gray-100 text-sm" onClick={() => refresh()}>
+                <RefreshCw className="align-text-top mr-2" size={13} />
                 Refresh
             </button>
         </div>
@@ -30,7 +30,7 @@ export function AccountAddressRow({ account }: AccountProps) {
     return (
         <tr>
             <td>Address</td>
-            <td className="text-lg-end">
+            <td className="lg:text-right">
                 <Address pubkey={account.pubkey} alignRight raw />
             </td>
         </tr>
@@ -42,7 +42,7 @@ export function AccountBalanceRow({ account }: AccountProps) {
     return (
         <tr>
             <td>Balance (SOL)</td>
-            <td className="text-lg-end text-uppercase">
+            <td className="lg:text-right uppercase">
                 <SolBalance lamports={lamports} />
             </td>
         </tr>

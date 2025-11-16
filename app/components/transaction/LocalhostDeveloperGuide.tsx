@@ -14,57 +14,60 @@ export function LocalhostDeveloperGuide({ isLocalhost }: LocalhostDeveloperGuide
     }
 
     return (
-        <div className="card mb-4 border-primary">
+        <div className="card border-primary mb-4">
             <div className="card-header bg-primary text-white">
-                <div className="row align-items-center">
-                    <div className="col">
+                <div className="flex items-center">
+                    <div className="flex-1">
                         <h5 className="mb-0">🚀 Localhost Development Mode</h5>
                     </div>
-                    <div className="col-auto">
-                        <button className="btn btn-sm btn-light" onClick={() => setIsExpanded(!isExpanded)}>
+                    <div className="flex-shrink-0">
+                        <button
+                            className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                            onClick={() => setIsExpanded(!isExpanded)}
+                        >
                             {isExpanded ? 'Hide Guide' : 'Show Guide'}
                         </button>
                     </div>
                 </div>
             </div>
             {isExpanded && (
-                <div className="card-body">
-                    <div className="alert alert-success mb-3">
+                <div className="p-6">
+                    <div className="mb-3 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-800">
                         <strong>✅ Connected to Localhost!</strong> You're monitoring your local Solana test validator.
                     </div>
 
-                    <h6 className="border-bottom pb-2 mb-3">Quick Start Commands</h6>
+                    <h6 className="border-bottom mb-3 pb-2">Quick Start Commands</h6>
                     <div className="mb-4">
-                        <div className="bg-dark text-light p-3 rounded mb-2">
+                        <div className="bg-dark text-light mb-2 rounded p-3">
                             <div className="mb-2">
-                                <small className="text-muted"># Start local validator</small>
+                                <small className="text-muted-foreground"># Start local validator</small>
                             </div>
                             <code>solana-test-validator</code>
                         </div>
-                        <div className="bg-dark text-light p-3 rounded mb-2">
+                        <div className="bg-dark text-light mb-2 rounded p-3">
                             <div className="mb-2">
-                                <small className="text-muted"># Build your Anchor program</small>
+                                <small className="text-muted-foreground"># Build your Anchor program</small>
                             </div>
                             <code>anchor build</code>
                         </div>
-                        <div className="bg-dark text-light p-3 rounded mb-2">
+                        <div className="bg-dark text-light mb-2 rounded p-3">
                             <div className="mb-2">
-                                <small className="text-muted"># Deploy to localhost</small>
+                                <small className="text-muted-foreground"># Deploy to localhost</small>
                             </div>
                             <code>anchor deploy</code>
                         </div>
-                        <div className="bg-dark text-light p-3 rounded">
+                        <div className="bg-dark text-light rounded p-3">
                             <div className="mb-2">
-                                <small className="text-muted"># Get your program ID</small>
+                                <small className="text-muted-foreground"># Get your program ID</small>
                             </div>
                             <code>solana address -k target/deploy/your_program-keypair.json</code>
                         </div>
                     </div>
 
-                    <h6 className="border-bottom pb-2 mb-3">Energy Trading Platform Development Tips</h6>
+                    <h6 className="border-bottom mb-3 pb-2">Energy Trading Platform Development Tips</h6>
                     <div className="row mb-3">
                         <div className="col-md-6">
-                            <div className="p-3 bg-light rounded h-100">
+                            <div className="bg-light h-100 rounded p-3">
                                 <h6 className="text-primary">📝 Testing Energy Trades</h6>
                                 <ul className="small mb-0">
                                     <li>Create test buyer/seller accounts</li>
@@ -75,7 +78,7 @@ export function LocalhostDeveloperGuide({ isLocalhost }: LocalhostDeveloperGuide
                             </div>
                         </div>
                         <div className="col-md-6">
-                            <div className="p-3 bg-light rounded h-100">
+                            <div className="bg-light h-100 rounded p-3">
                                 <h6 className="text-primary">🐛 Debugging</h6>
                                 <ul className="small mb-0">
                                     <li>Check program logs in Inspector</li>
@@ -87,9 +90,9 @@ export function LocalhostDeveloperGuide({ isLocalhost }: LocalhostDeveloperGuide
                         </div>
                     </div>
 
-                    <h6 className="border-bottom pb-2 mb-3">Anchor Program Structure</h6>
-                    <div className="bg-light p-3 rounded mb-3">
-                        <pre className="mb-0 small">
+                    <h6 className="border-bottom mb-3 pb-2">Anchor Program Structure</h6>
+                    <div className="bg-light mb-3 rounded p-3">
+                        <pre className="small mb-0">
                             {`programs/
   └── your_energy_program/
       ├── src/
@@ -106,7 +109,7 @@ Anchor.toml                    # Cluster config`}
                         </pre>
                     </div>
 
-                    <h6 className="border-bottom pb-2 mb-3">Common Localhost Issues & Solutions</h6>
+                    <h6 className="border-bottom mb-3 pb-2">Common Localhost Issues & Solutions</h6>
                     <div className="accordion" id="localhostIssues">
                         <div className="accordion-item">
                             <h2 className="accordion-header">
@@ -221,7 +224,7 @@ Anchor.toml                    # Cluster config`}
 
                     <div className="alert alert-warning mt-4 mb-0">
                         <h6 className="alert-heading">⚡ Pro Tips for Energy Trading Development:</h6>
-                        <ul className="mb-0 small">
+                        <ul className="small mb-0">
                             <li>
                                 <strong>Test with realistic data:</strong> Use actual energy amounts in your tests
                                 (e.g., kWh values)

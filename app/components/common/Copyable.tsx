@@ -67,7 +67,7 @@ export function Copyable({
 
     function ReplaceWithMessage() {
         return (
-            <span className="d-flex flex-column flex-nowrap">
+            <span className="flex flex-col flex-nowrap">
                 <span className="font-siztiny" style={{ fontSize: '12px' }}>
                     <span className={textColor}>
                         <CopyIcon />

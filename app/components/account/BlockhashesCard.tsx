@@ -4,22 +4,22 @@ import React from 'react';
 export function BlockhashesCard({ blockhashes }: { blockhashes: RecentBlockhashesInfo }) {
     return (
         <>
-            <div className="card">
-                <div className="card-header">
-                    <div className="row align-items-center">
-                        <div className="col">
-                            <h3 className="card-header-title">Blockhashes</h3>
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="border-b px-6 py-4">
+                    <div className="flex items-center">
+                        <div className="flex-1">
+                            <h3 className="text-lg font-semibold">Blockhashes</h3>
                         </div>
                     </div>
                 </div>
 
-                <div className="tablresponsive mb-0">
-                    <table className="table tablsm tablnowrap card-table">
+                <div className="mb-0 overflow-x-auto">
+                    <table className="w-full text-sm">
                         <thead>
                             <tr>
-                                <th className="w-1 text-muted">Recency</th>
-                                <th className="w-1 text-muted">Blockhash</th>
-                                <th className="text-muted">Fee Calculator</th>
+                                <th className="text-muted-foreground w-1">Recency</th>
+                                <th className="text-muted-foreground w-1">Blockhash</th>
+                                <th className="text-muted-foreground">Fee Calculator</th>
                             </tr>
                         </thead>
                         <tbody className="list">
@@ -31,8 +31,10 @@ export function BlockhashesCard({ blockhashes }: { blockhashes: RecentBlockhashe
                     </table>
                 </div>
 
-                <div className="card-footer">
-                    <div className="text-muted text-center">{blockhashes.length > 0 ? '' : 'No blockhashes found'}</div>
+                <div className="border-t px-6 py-4">
+                    <div className="text-muted-foreground text-center">
+                        {blockhashes.length > 0 ? '' : 'No blockhashes found'}
+                    </div>
                 </div>
             </div>
         </>
@@ -43,7 +45,7 @@ const renderAccountRow = (entry: RecentBlockhashesEntry, index: number) => {
     return (
         <tr key={index}>
             <td className="w-1">{index + 1}</td>
-            <td className="w-1 font-monospace">{entry.blockhash}</td>
+            <td className="w-1 font-mono">{entry.blockhash}</td>
             <td className="">{entry.feeCalculator.lamportsPerSignature} lamports per signature</td>
         </tr>
     );

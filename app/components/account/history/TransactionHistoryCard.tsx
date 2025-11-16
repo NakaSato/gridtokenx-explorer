@@ -60,40 +60,46 @@ export function TransactionHistoryCard({ address }: { address: string }) {
 
                     {hasTimestamps && (
                         <>
-                            <td className="text-muted">
+                            <td className="text-muted-foreground">
                                 {blockTime ? <Moment date={blockTime * 1000} fromNow /> : '---'}
                             </td>
-                            <td className="text-muted">
+                            <td className="text-muted-foreground">
                                 {blockTime ? displayTimestampUtc(blockTime * 1000, true) : '---'}
                             </td>
                         </>
                     )}
 
                     <td>
-                        <span className={`badge bg-${statusClass}-soft`}>{statusText}</span>
+                        <span
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                                statusClass === 'success' ? 'bg-green-100 text-green-800' : 'bg-gray-800 text-white'
+                            }`}
+                        >
+                            {statusText}
+                        </span>
                     </td>
                 </tr>
             );
-        }
+        },
     );
 
     const fetching = history.status === FetchStatus.Fetching;
     return (
-        <div className="card">
+        <div className="bg-card rounded-lg border shadow-sm">
             <HistoryCardHeader fetching={fetching} refresh={() => refresh()} title="Transaction History" />
-            <div className="tablresponsive mb-0">
-                <table className="table tablsm tablnowrap card-table">
+            <div className="mb-0 overflow-x-auto">
+                <table className="w-full text-sm">
                     <thead>
                         <tr>
-                            <th className="text-muted w-1">Transaction Signature</th>
-                            <th className="text-muted w-1">Block</th>
+                            <th className="text-muted-foreground w-1">Transaction Signature</th>
+                            <th className="text-muted-foreground w-1">Block</th>
                             {hasTimestamps && (
                                 <>
-                                    <th className="text-muted w-1">Age</th>
-                                    <th className="text-muted w-1">Timestamp</th>
+                                    <th className="text-muted-foreground w-1">Age</th>
+                                    <th className="text-muted-foreground w-1">Timestamp</th>
                                 </>
                             )}
-                            <th className="text-muted">Result</th>
+                            <th className="text-muted-foreground">Result</th>
                         </tr>
                     </thead>
                     <tbody className="list">{detailsList}</tbody>

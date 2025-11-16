@@ -81,7 +81,7 @@ function TokenHistoryTable({ tokens }: { tokens: TokenInfoWithPubkey[] }) {
                 }
                 return token.info.mint.toBase58() === filter;
             }),
-        [tokens, filter]
+        [tokens, filter],
     );
 
     const fetchHistories = React.useCallback(
@@ -90,7 +90,7 @@ function TokenHistoryTable({ tokens }: { tokens: TokenInfoWithPubkey[] }) {
                 fetchAccountHistory(token.pubkey, refresh);
             });
         },
-        [filteredTokens, fetchAccountHistory]
+        [filteredTokens, fetchAccountHistory],
     );
 
     // Fetch histories on load
@@ -150,7 +150,7 @@ function TokenHistoryTable({ tokens }: { tokens: TokenInfoWithPubkey[] }) {
             (history?.data?.fetched as ConfirmedSignatureInfo[]).map(tx => ({
                 mint,
                 tx,
-            }))
+            })),
         )
         .filter(({ tx }) => {
             if (sigSet.has(tx.signature)) return false;
@@ -185,39 +185,43 @@ function TokenHistoryTable({ tokens }: { tokens: TokenInfoWithPubkey[] }) {
     });
 
     return (
-        <div className="card">
-            <div className="card-header align-items-center">
-                <h3 className="card-header-title">Token History</h3>
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="flex items-center border-b px-6 py-4">
+                <h3 className="text-lg font-semibold">Token History</h3>
                 <FilterDropdown
                     filter={filter}
                     toggle={() => setDropdown(show => !show)}
                     show={showDropdown}
                     tokens={tokens}
                 ></FilterDropdown>
-                <button className="btn btn-white btn-sm" disabled={fetching} onClick={() => fetchHistories(true)}>
+                <button
+                    className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                    disabled={fetching}
+                    onClick={() => fetchHistories(true)}
+                >
                     {fetching ? (
                         <>
-                            <span className="align-text-top spinner-grow spinner-grow-sm m2"></span>
+                            <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current align-text-top"></span>
                             Loading
                         </>
                     ) : (
                         <>
-                            <RefreshCw className="align-text-top m2" size={13} />
+                            <RefreshCw className="mr-2 align-text-top" size={13} />
                             Refresh
                         </>
                     )}
                 </button>
             </div>
 
-            <div className="tablresponsive mb-0">
-                <table className="table tablsm tablnowrap card-table">
+            <div className="mb-0 overflow-x-auto">
+                <table className="w-full text-sm">
                     <thead>
                         <tr>
-                            <th className="text-muted w-1">Slot</th>
-                            <th className="text-muted">Result</th>
-                            <th className="text-muted">Token</th>
-                            <th className="text-muted">Instruction Type</th>
-                            <th className="text-muted">Transaction Signature</th>
+                            <th className="text-muted-foreground w-1">Slot</th>
+                            <th className="text-muted-foreground">Result</th>
+                            <th className="text-muted-foreground">Token</th>
+                            <th className="text-muted-foreground">Instruction Type</th>
+                            <th className="text-muted-foreground">Transaction Signature</th>
                         </tr>
                     </thead>
                     <tbody className="list">
@@ -233,14 +237,18 @@ function TokenHistoryTable({ tokens }: { tokens: TokenInfoWithPubkey[] }) {
                 </table>
             </div>
 
-            <div className="card-footer">
+            <div className="border-t px-6 py-4">
                 {allFoundOldest ? (
-                    <div className="text-muted text-center">Fetched full history</div>
+                    <div className="text-muted-foreground text-center">Fetched full history</div>
                 ) : (
-                    <button className="btn btn-primary w-100" onClick={() => fetchHistories()} disabled={fetching}>
+                    <button
+                        className="bg-primary hover:bg-primary/90 w-full rounded-md px-4 py-2 text-white disabled:opacity-50"
+                        onClick={() => fetchHistories()}
+                        disabled={fetching}
+                    >
                         {fetching ? (
                             <>
-                                <span className="align-text-top spinner-grow spinner-grow-sm m2"></span>
+                                <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current align-text-top"></span>
                                 Loading
                             </>
                         ) : (
@@ -268,7 +276,7 @@ const FilterDropdown = ({ filter, toggle, show, tokens }: FilterProps) => {
             const nextQueryString = params.toString();
             return `${currentPathname}${nextQueryString ? `?${nextQueryString}` : ''}`;
         },
-        [currentPathname, currentSearchParams]
+        [currentPathname, currentSearchParams],
     );
 
     const filterOptions: string[] = [ALL_TOKENS];
@@ -283,19 +291,25 @@ const FilterDropdown = ({ filter, toggle, show, tokens }: FilterProps) => {
     });
 
     return (
-        <div className="dropdown m2">
-            <small className="m2">Filter:</small>
-            <button className="btn btn-white btn-sm " type="button" onClick={toggle}>
+        <div className="relative mr-2">
+            <small className="mr-2">Filter:</small>
+            <button
+                className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                type="button"
+                onClick={toggle}
+            >
                 {filter === ALL_TOKENS ? 'All Tokens' : nameLookup.get(filter)}{' '}
                 <ChevronDown size={15} className="align-text-top" />
             </button>
-            <div className={`token-filter dropdown-menu-end dropdown-menu${show ? ' show' : ''}`}>
+            <div
+                className={`absolute right-0 z-10 mt-2 rounded-md border bg-white shadow-lg min-w-[200px]${show ? 'block' : 'hidden'}`}
+            >
                 {filterOptions.map(filterOption => {
                     return (
                         <Link
                             key={filterOption}
                             href={buildLocation(filterOption)}
-                            className={`dropdown-item${filterOption === filter ? ' active' : ''}`}
+                            className={`block px-4 py-2 hover:bg-gray-100${filterOption === filter ? 'bg-gray-100 font-semibold' : ''}`}
                             onClick={toggle}
                         >
                             {filterOption === ALL_TOKENS ? 'All Tokens' : nameLookup.get(filterOption) || filterOption}
@@ -327,10 +341,10 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
     let statusText: string;
     let statusClass: string;
     if (tx.err) {
-        statusClass = 'warning';
+        statusClass = 'bg-yellow-100 text-yellow-800';
         statusText = 'Failed';
     } else {
-        statusClass = 'success';
+        statusClass = 'bg-green-100 text-green-800';
         statusText = 'Success';
     }
 
@@ -344,7 +358,11 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
                 </td>
 
                 <td>
-                    <span className={`badge bg-${statusClass}-soft`}>{statusText}</span>
+                    <span
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusClass}`}
+                    >
+                        {statusText}
+                    </span>
                 </td>
 
                 <td>
@@ -352,7 +370,7 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
                 </td>
 
                 <td>
-                    <span className="align-text-top spinner-grow spinner-grow-sm m2"></span>
+                    <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current align-text-top"></span>
                     Loading
                 </td>
 
@@ -449,7 +467,11 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
                         </td>
 
                         <td>
-                            <span className={`badge bg-${statusClass}-soft`}>{statusText}</span>
+                            <span
+                                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusClass}`}
+                            >
+                                {statusText}
+                            </span>
                         </td>
 
                         <td className="forced-truncate">
@@ -491,7 +513,7 @@ function InstructionDetails({ instructionType, tx }: { instructionType: Instruct
                             e.preventDefault();
                             setExpanded(!expanded);
                         }}
-                        className="c-pointer m2"
+                        className="mr-2 cursor-pointer"
                     >
                         {expanded ? (
                             <MinusSquare className="align-text-top" size={13} />

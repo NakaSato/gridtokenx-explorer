@@ -8,19 +8,19 @@ export function IdlTypesView({ data }: { data: FormattedIdl['types'] }) {
     if (!data) return null;
 
     return (
-        <table className="table tablsm tablnowrap card-table">
+        <table className="w-full text-sm">
             <thead>
                 <tr>
-                    <th className="text-muted w-2">Name</th>
-                    <th className="text-muted">Fields</th>
+                    <th className="text-muted-foreground w-2">Name</th>
+                    <th className="text-muted-foreground">Fields</th>
                 </tr>
             </thead>
             <tbody className="list">
                 {data.map(typeItem => (
                     <tr key={typeItem.name}>
                         <td>
-                            <span className="d-flex align-items-center gap-2">
-                                <i className="text-muted">{typeItem.fieldType?.kind}</i>
+                            <span className="flex items-center gap-2">
+                                <i className="text-muted-foreground">{typeItem.fieldType?.kind}</i>
                                 {typeItem.name}
                             </span>
                             <IdlDoc docs={typeItem.docs} />

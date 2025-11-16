@@ -49,11 +49,11 @@ export function TransactionAnalytics({ transactions }: TransactionAnalyticsProps
     }, [transactions]);
 
     return (
-        <div className="card mb-4">
-            <div className="card-header">
-                <h4 className="card-header-title">Transaction Analytics</h4>
+        <div className="bg-card border rounded-lg shadow-sm mb-4">
+            <div className="px-6 py-4 border-b">
+                <h4 className="text-lg font-semibold">Transaction Analytics</h4>
             </div>
-            <div className="card-body">
+            <div className="p-6">
                 <div className="row">
                     <div className="col-md-3">
                         <div className="text-center mb-3">
@@ -67,7 +67,7 @@ export function TransactionAnalytics({ transactions }: TransactionAnalyticsProps
                             <h2 className="mb-0 text-success">
                                 {stats.total > 0 ? ((stats.successCount / stats.total) * 100).toFixed(1) : 0}%
                             </h2>
-                            <small className="text-muted">
+                            <small className="text-muted-foreground">
                                 {stats.successCount} / {stats.total}
                             </small>
                         </div>
@@ -76,21 +76,21 @@ export function TransactionAnalytics({ transactions }: TransactionAnalyticsProps
                         <div className="text-center mb-3">
                             <h6 className="text-muted mb-1">Avg Fee</h6>
                             <h2 className="mb-0">{Math.round(stats.avgFee).toLocaleString()}</h2>
-                            <small className="text-muted">lamports</small>
+                            <small className="text-muted-foreground">lamports</small>
                         </div>
                     </div>
                     <div className="col-md-3">
                         <div className="text-center mb-3">
                             <h6 className="text-muted mb-1">Avg Compute Units</h6>
                             <h2 className="mb-0">{Math.round(stats.avgComputeUnits).toLocaleString()}</h2>
-                            <small className="text-muted">CU</small>
+                            <small className="text-muted-foreground">CU</small>
                         </div>
                     </div>
                 </div>
 
                 <div className="row mt-3">
                     <div className="col-md-4">
-                        <div className="d-flex justify-content-between align-items-center p-3 bg-success-soft rounded">
+                        <div className="flex justify-between align-items-center p-3 bg-success-soft rounded">
                             <div>
                                 <div className="text-muted small">Successful</div>
                                 <div className="h4 mb-0">{stats.successCount}</div>
@@ -103,7 +103,7 @@ export function TransactionAnalytics({ transactions }: TransactionAnalyticsProps
                         </div>
                     </div>
                     <div className="col-md-4">
-                        <div className="d-flex justify-content-between align-items-center p-3 bg-danger-soft rounded">
+                        <div className="flex justify-between align-items-center p-3 bg-danger-soft rounded">
                             <div>
                                 <div className="text-muted small">Failed</div>
                                 <div className="h4 mb-0">{stats.failureCount}</div>
@@ -116,7 +116,7 @@ export function TransactionAnalytics({ transactions }: TransactionAnalyticsProps
                         </div>
                     </div>
                     <div className="col-md-4">
-                        <div className="d-flex justify-content-between align-items-center p-3 bg-info-soft rounded">
+                        <div className="flex justify-between align-items-center p-3 bg-info-soft rounded">
                             <div>
                                 <div className="text-muted small">Total Fees</div>
                                 <div className="h4 mb-0">{(stats.totalFees / 1e9).toFixed(6)} SOL</div>

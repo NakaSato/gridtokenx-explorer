@@ -93,10 +93,10 @@ function TokenMintHeader({
     parsedData?: TokenProgramData;
 }): JSX.Element {
     const metadataExtension = mintInfo?.extensions?.find(
-        ({ extension }: { extension: string }) => extension === 'tokenMetadata'
+        ({ extension }: { extension: string }) => extension === 'tokenMetadata',
     );
     const metadataPointerExtension = mintInfo?.extensions?.find(
-        ({ extension }: { extension: string }) => extension === 'metadataPointer'
+        ({ extension }: { extension: string }) => extension === 'metadataPointer',
     );
 
     const defaultCard = useMemo(
@@ -106,7 +106,7 @@ function TokenMintHeader({
                 unverified={tokenInfo ? !tokenInfo.verified : false}
             />
         ),
-        [tokenInfo]
+        [tokenInfo],
     );
 
     if (metadataPointerExtension && metadataExtension) {
@@ -179,9 +179,12 @@ function TokenMintHeaderCard({
 }) {
     const logoURI = token.logoURI ? getProxiedUri(token.logoURI) : undefined;
     return (
-        <div className="row align-items-center">
+        <div className="flex items-center">
             {unverified && (
-                <div className="alert alert-warning alert-scam" role="alert">
+                <div
+                    className="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-900"
+                    role="alert"
+                >
                     Warning! Token names and logos are not unique. This token may have spoofed its name and logo to look
                     like another token. Verify the token&apos;s mint address to ensure it is correct. If you are the
                     token creator, please verify your token on{' '}
@@ -205,7 +208,7 @@ function TokenMintHeaderCard({
                     .
                 </div>
             )}
-            <div className="col-auto">
+            <div className="flex-shrink-0">
                 <div className="avatar avatar-lg header-avatar-top">
                     {logoURI ? (
                         // eslint-disablnext-line @next/next/no-img-element
@@ -214,7 +217,7 @@ function TokenMintHeaderCard({
                             alt="Token logo"
                             height={64}
                             width={64}
-                            className="avatar-img rounded-circle border border-4 border-body"
+                            className="avatar-img rounded-circle border-body border border-4"
                         />
                     ) : (
                         <Image

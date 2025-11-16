@@ -10,12 +10,12 @@ vi.mock('react-feather', () => ({
 
 vi.mock('../../InstructionCard', () => ({
     InstructionCard: ({ children, title }: { children: React.ReactNode; title: string }) => (
-        <div data-testid="instruction-card" className="card">
-            <div className="card-header">
+        <div data-testid="instruction-card" className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
                 <div>{title}</div>
             </div>
-            <div className="tablresponsive mb-0">
-                <table className="table tablsm tablnowrap card-table">
+            <div className="overflow-x-auto mb-0">
+                <table className="w-full text-sm">
                     <tbody className="list">{children}</tbody>
                 </table>
             </div>
@@ -59,7 +59,7 @@ vi.mock('../../../../utils/anchor', () => ({
     ),
 }));
 
-vi.mock('changcase', () => ({
+vi.mock('change-case', () => ({
     split: jest.fn(() => 'mocked-split'),
 }));
 

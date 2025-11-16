@@ -73,20 +73,22 @@ export function OwnedTokensCard({ address }: { address: string }) {
         <>
             {showDropdown && <div className="dropdown-exit" onClick={() => setDropdown(false)} />}
 
-            <div className="card">
-                <div className="card-header align-items-center">
-                    <h3 className="card-header-title">Token Holdings</h3>
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="flex items-center border-b px-6 py-4">
+                    <h3 className="text-lg font-semibold">Token Holdings</h3>
                     <DisplayDropdown display={display} toggle={() => setDropdown(show => !show)} show={showDropdown} />
                 </div>
 
-                <div className="tablresponsive mb-0">
-                    <table className="table tablsm tablnowrap card-table">
+                <div className="mb-0 overflow-x-auto">
+                    <table className="w-full text-sm">
                         <thead>
                             <tr>
-                                {showLogos && <th className="text-muted w-1 p-0 text-center">Logo</th>}
-                                {display === 'detail' && <th className="text-muted">Account Address</th>}
-                                <th className="text-muted">Mint Address</th>
-                                <th className="text-muted">{display === 'detail' ? 'Total Balance' : 'Balance'}</th>
+                                {showLogos && <th className="text-muted-foreground w-1 p-0 text-center">Logo</th>}
+                                {display === 'detail' && <th className="text-muted-foreground">Account Address</th>}
+                                <th className="text-muted-foreground">Mint Address</th>
+                                <th className="text-muted-foreground">
+                                    {display === 'detail' ? 'Total Balance' : 'Balance'}
+                                </th>
                             </tr>
                         </thead>
                         {display === 'detail' ? (
@@ -215,7 +217,7 @@ function TokenRow({ mintAddress, token, showLogo, showAccountAddress }: TokenRow
                             alt="Token icon"
                             height={16}
                             width={16}
-                            className="token-icon rounded-circle border border-4 border-gray-dark"
+                            className="h-4 w-4 rounded-full border-4 border-gray-800"
                         />
                     ) : (
                         <Image
@@ -267,22 +269,28 @@ const DisplayDropdown = ({ display, toggle, show }: DropdownProps) => {
             const nextQueryString = params.toString();
             return `${currentPath}${nextQueryString ? `?${nextQueryString}` : ''}`;
         },
-        [currentPath, currentSearchParams]
+        [currentPath, currentSearchParams],
     );
 
     const DISPLAY_OPTIONS: Display[] = [null, 'detail'];
     return (
-        <div className="dropdown">
-            <button className="btn btn-white btn-sm" type="button" onClick={toggle}>
+        <div className="relative">
+            <button
+                className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                type="button"
+                onClick={toggle}
+            >
                 {display === 'detail' ? 'Detailed' : 'Summary'} <ChevronDown size={15} className="align-text-top" />
             </button>
-            <div className={`dropdown-menu-end dropdown-menu${show ? ' show' : ''}`}>
+            <div
+                className={`absolute right-0 mt-2 rounded-md border bg-white shadow-lg z-10${show ? 'block' : 'hidden'}`}
+            >
                 {DISPLAY_OPTIONS.map(displayOption => {
                     return (
                         <Link
                             key={displayOption || 'null'}
                             href={buildLocation(displayOption)}
-                            className={`dropdown-item${displayOption === display ? ' active' : ''}`}
+                            className={`block px-4 py-2 hover:bg-gray-100${displayOption === display ? 'bg-gray-100 font-semibold' : ''}`}
                             onClick={toggle}
                         >
                             {displayOption === 'detail' ? 'Detailed' : 'Summary'}

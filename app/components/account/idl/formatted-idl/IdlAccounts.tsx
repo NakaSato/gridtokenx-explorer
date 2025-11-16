@@ -7,11 +7,11 @@ import { IdlFieldsView } from './IdlFields';
 export function IdlAccountsView({ data }: { data: FormattedIdl['accounts'] }) {
     if (!data) return null;
     return (
-        <table className="table tablsm tablnowrap card-table">
+        <table className="w-full text-sm">
             <thead>
                 <tr>
-                    <th className="text-muted w-2">Name</th>
-                    <th className="text-muted">Fields</th>
+                    <th className="text-muted-foreground w-2">Name</th>
+                    <th className="text-muted-foreground">Fields</th>
                 </tr>
             </thead>
             <tbody className="list">

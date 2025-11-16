@@ -18,13 +18,13 @@ export function ClusterModal() {
 
     return (
         <>
-            <div className={`offcanvas offcanvas-end${show ? ' show' : ''}`}>
-                <div className="modal-body" onClick={e => e.stopPropagation()}>
-                    <span className="c-pointer" onClick={onClose}>
-                        &times;
+            <div className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${show ? 'translate-x-0' : 'translate-x-full'} z-50`}>
+                <div className="p-6 h-full overflow-y-auto" onClick={e => e.stopPropagation()}>
+                    <span className="cursor-pointer text-gray-500 hover:text-gray-700 text-2xl" onClick={onClose}>
+                        ×
                     </span>
 
-                    <h2 className="text-center mb-4 mt-4">Choose a Cluster</h2>
+                    <h2 className="text-center mb-4 mt-4 text-lg font-semibold">Choose a Cluster</h2>
                     <ClusterToggle />
                     <ClusterModalDeveloperSettings />
                 </div>
@@ -46,7 +46,7 @@ function CustomClusterInput({ activeSuffix, active }: InputProps) {
     const pathname = usePathname();
     const router = useRouter();
 
-    const btnClass = active ? `border-${activeSuffix} text-${activeSuffix}` : 'btn-white';
+    const btnClass = active ? `border-blue-500 text-blue-500 bg-blue-50` : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50';
 
     const onUrlInput = useDebounceCallback((url: string) => {
         updateCustomUrl(url);
@@ -58,11 +58,11 @@ function CustomClusterInput({ activeSuffix, active }: InputProps) {
         }
     }, 500);
 
-    const inputTextClass = editing ? '' : 'text-muted';
+    const inputTextClass = editing ? '' : 'text-gray-500';
     return (
         <>
             <Link
-                className={`btn col-12 mb-3 ${btnClass}`}
+                className={`w-full py-2 px-4 mb-3 rounded-md border ${btnClass} text-center block transition-colors duration-200`}
                 href={{ query: { cluster: 'custom', ...(customUrl.length > 0 ? { customUrl } : null) } }}
             >
                 Custom RPC URL
@@ -71,7 +71,7 @@ function CustomClusterInput({ activeSuffix, active }: InputProps) {
                 <input
                     type="url"
                     defaultValue={customUrl}
-                    className={`form-control ${inputTextClass}`}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${inputTextClass}`}
                     onFocus={() => setEditing(true)}
                     onBlur={() => setEditing(false)}
                     onInput={e => onUrlInput(e.currentTarget.value)}
@@ -88,16 +88,20 @@ function assertUnreachable(_x: never): never {
 function ClusterToggle() {
     const { status, cluster } = useCluster();
 
-    let activeSuffix = '';
+    let activeColor = '';
+    let activeBg = '';
     switch (status) {
         case ClusterStatus.Connected:
-            activeSuffix = 'primary';
+            activeColor = 'border-blue-500 text-blue-500 bg-blue-50';
+            activeBg = 'bg-blue-50';
             break;
         case ClusterStatus.Connecting:
-            activeSuffix = 'warning';
+            activeColor = 'border-yellow-500 text-yellow-500 bg-yellow-50';
+            activeBg = 'bg-yellow-50';
             break;
         case ClusterStatus.Failure:
-            activeSuffix = 'danger';
+            activeColor = 'border-red-500 text-red-500 bg-red-50';
+            activeBg = 'bg-red-50';
             break;
         default:
             assertUnreachable(status);
@@ -105,13 +109,13 @@ function ClusterToggle() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     return (
-        <div className="btn-group-toggle d-flex flex-wrap mb-4">
+        <div className="flex flex-wrap mb-4 gap-2">
             {CLUSTERS.map((net, index) => {
                 const active = net === cluster;
                 if (net === Cluster.Custom)
-                    return <CustomClusterInput key={index} activeSuffix={activeSuffix} active={active} />;
+                    return <CustomClusterInput key={index} activeSuffix={activeColor} active={active} />;
 
-                const btnClass = active ? `border-${activeSuffix} text-${activeSuffix}` : 'btn-white';
+                const btnClass = active ? activeColor : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50';
 
                 const nextSearchParams = new URLSearchParams(searchParams?.toString());
                 const slug = clusterSlug(net);
@@ -123,7 +127,7 @@ function ClusterToggle() {
                 const nextQueryString = nextSearchParams.toString();
                 const clusterUrl = `${pathname}${nextQueryString ? `?${nextQueryString}` : ''}`;
                 return (
-                    <Link key={index} className={`btn col-12 mb-3 ${btnClass}`} href={clusterUrl}>
+                    <Link key={index} className={`w-full py-2 px-4 mb-2 rounded-md border ${btnClass} text-center block transition-colors duration-200`} href={clusterUrl}>
                         {clusterName(net)}
                     </Link>
                 );

@@ -41,19 +41,19 @@ export function TransactionSignatures({
     }, [signatures, message, rawMessage]);
 
     return (
-        <div className="card">
-            <div className="card-header">
-                <h3 className="card-header-title">Signatures</h3>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold">Signatures</h3>
             </div>
-            <div className="tablresponsive mb-0">
-                <table className="table tablsm tablnowrap card-table">
+            <div className="overflow-x-auto mb-0">
+                <table className="w-full text-sm">
                     <thead>
                         <tr>
-                            <th className="text-muted">#</th>
-                            <th className="text-muted">Signature</th>
-                            <th className="text-muted">Signer</th>
-                            <th className="text-muted">Validity</th>
-                            <th className="text-muted">Details</th>
+                            <th className="text-muted-foreground">#</th>
+                            <th className="text-muted-foreground">Signature</th>
+                            <th className="text-muted-foreground">Signer</th>
+                            <th className="text-muted-foreground">Validity</th>
+                            <th className="text-muted-foreground">Details</th>
                         </tr>
                     </thead>
                     <tbody className="list">{signatureRows}</tbody>

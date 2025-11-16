@@ -27,49 +27,49 @@ export function RecoverNestedDetailsCard(props: {
         >
             <tr>
                 <td>Destination</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.destination} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Nested Mint</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.nestedMint} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Nested Owner</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.nestedOwner} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Nested Source</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.nestedSource} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Owner Mint</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.ownerMint} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Owner</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.wallet} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Token Program</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.tokenProgram} alignRight link />
                 </td>
             </tr>

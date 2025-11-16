@@ -21,12 +21,12 @@ export function IdlStructFieldsView({ fields }: { fields?: StructField[] }) {
     if (!fields) return null;
 
     return (
-        <div className="d-flex gap-2 flex-column align-items-start justify-start flex-wrap">
+        <div className="flex flex-col flex-wrap items-start justify-start gap-2">
             {fields.map((field, index) => (
                 <IdlDocTooltip key={index} docs={field.docs}>
-                    <div className="d-inlinflex gap-2 align-items-center">
+                    <div className="inline-flex items-center gap-2">
                         {field.name && <span>{field.name}:</span>}
-                        <span className="badge bg-success-soft">{field.type}</span>
+                        <span className="rounded-full bg-green-50 px-2 py-1 text-xs text-green-700">{field.type}</span>
                     </div>
                 </IdlDocTooltip>
             ))}
@@ -38,9 +38,12 @@ export function IdlEnumFieldsView({ variants }: { variants?: string[] }) {
     if (!variants?.length) return null;
 
     return (
-        <div className="d-flex gap-2 flex-column align-items-start flex-wrap">
+        <div className="flex flex-col flex-wrap items-start gap-2">
             {variants.map((variant, index) => (
-                <span className="badge bg-secondary-soft" key={index}>
+                <span
+                    className="inline-flex items-center rounded-full bg-gray-500 px-2 py-0.5 text-xs font-medium text-white"
+                    key={index}
+                >
                     {variant}
                 </span>
             ))}
@@ -51,9 +54,9 @@ export function IdlEnumFieldsView({ variants }: { variants?: string[] }) {
 export function IdlTypeFieldView({ docs, name, type }: { docs?: string[]; name?: string; type: string }) {
     return (
         <IdlDocTooltip docs={docs}>
-            <div className="d-inlinflex gap-2 align-items-center">
+            <div className="inline-flex items-center gap-2">
                 {!!name && <span>{name}:</span>}
-                <span className="badge bg-success-soft">{type}</span>
+                <span className="rounded-full bg-green-50 px-2 py-1 text-xs text-green-700">{type}</span>
             </div>
         </IdlDocTooltip>
     );

@@ -78,16 +78,16 @@ function NormalMetaplexNFTAttributesCard({ metadataUri }: { metadataUri: string 
     });
 
     return (
-        <div className="card">
-            <div className="card-header align-items-center">
-                <h3 className="card-header-title">Attributes</h3>
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="flex items-center border-b px-6 py-4">
+                <h3 className="text-lg font-semibold">Attributes</h3>
             </div>
-            <div className="tablresponsive mb-0">
-                <table className="table tablsm tablnowrap card-table">
+            <div className="mb-0 overflow-x-auto">
+                <table className="w-full text-sm">
                     <thead>
                         <tr>
-                            <th className="text-muted w-1">Trait type</th>
-                            <th className="text-muted w-1">Value</th>
+                            <th className="text-muted-foreground w-1">Trait type</th>
+                            <th className="text-muted-foreground w-1">Value</th>
                         </tr>
                     </thead>
                     <tbody className="list">{attributesList}</tbody>

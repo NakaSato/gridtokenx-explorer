@@ -34,11 +34,11 @@ export function AttestationDataCard({ account, onNotFound }: { account?: Account
 function SchemaCard({ schema }: { schema: SasSchema }) {
     const borshSchema = convertSasSchemaToBorshSchema(schema);
     return (
-        <div className="card">
-            <div className="card-header">
-                <div className="row align-items-center">
-                    <div className="col">
-                        <h3 className="card-header-title">Schema Layout (Borsh)</h3>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
+                <div className="flex items-center">
+                    <div className="flex-1">
+                        <h3 className="text-lg font-semibold">Schema Layout (Borsh)</h3>
                     </div>
                 </div>
             </div>
@@ -70,11 +70,11 @@ function AttestationCard({ attestation }: { attestation: SasAttestation }) {
     }
 
     return (
-        <div className="card">
-            <div className="card-header">
-                <div className="row align-items-center">
-                    <div className="col">
-                        <h3 className="card-header-title">Attestation Data {decoded ? '' : 'Raw (Base64)'}</h3>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
+                <div className="flex items-center">
+                    <div className="flex-1">
+                        <h3 className="text-lg font-semibold">Attestation Data {decoded ? '' : 'Raw (Base64)'}</h3>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@ function AttestationCard({ attestation }: { attestation: SasAttestation }) {
                 </div>
             ) : (
                 <div
-                    className="font-monospace"
+                    className="font-mono"
                     style={{
                         fontSize: '0.85rem',
                         lineHeight: '1.2',

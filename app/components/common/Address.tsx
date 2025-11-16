@@ -8,7 +8,7 @@ import { useClusterPath } from '@utils/url';
 import Link from 'next/link';
 import React from 'react';
 import { useState } from 'react';
-import useAsyncEffect from 'usasync-effect';
+import useAsyncEffect from 'use-async-effect';
 
 import { getTokenInfoWithoutOnChainFallback } from '@/app/utils/token-info';
 
@@ -89,7 +89,7 @@ export function Address({
         <Copyable text={address} replaceText={!alignRight}>
             <span
                 data-address={address}
-                className="font-monospace"
+                className="font-mono"
                 onMouseEnter={() => handleMouseEnter(address)}
                 onMouseLeave={() => handleMouseLeave(address)}
             >
@@ -106,10 +106,8 @@ export function Address({
 
     return (
         <>
-            <div className={`d-none d-lg-flex align-items-center ${alignRight ? 'justify-content-end' : ''}`}>
-                {content}
-            </div>
-            <div className="d-flex d-lg-none align-items-center">{content}</div>
+            <div className={`hidden items-center lg:flex ${alignRight ? 'justify-end' : ''}`}>{content}</div>
+            <div className="flex items-center lg:hidden">{content}</div>
         </>
     );
 }
@@ -159,7 +157,7 @@ const useTokenInfo = (fetchTokenLabelInfo: boolean | undefined, pubkey: string) 
                 }
             }
         },
-        [fetchTokenLabelInfo, pubkey, cluster, url, info, setInfo]
+        [fetchTokenLabelInfo, pubkey, cluster, url, info, setInfo],
     );
 
     return info;

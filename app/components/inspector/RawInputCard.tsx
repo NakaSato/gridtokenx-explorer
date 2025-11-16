@@ -284,26 +284,26 @@ export function RawInput({
 
     const placeholder = 'Paste a raw base58/base64 encoded transaction message or Squads vault transaction account';
     return (
-        <div className="card">
-            <div className="card-header">
-                <div className="d-flex justify-content-between align-items-center">
-                    <h3 className="card-header-title">Inspector Input</h3>
-                    <button className="btn btn-sm btn-white" onClick={clearInput} type="button">
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
+                <div className="flex justify-between align-items-center">
+                    <h3 className="text-lg font-semibold">Inspector Input</h3>
+                    <button className="px-3 py-1.5 text-sm bg-white text-black border rounded-md hover:bg-gray-100" onClick={clearInput} type="button">
                         Clear
                     </button>
                 </div>
             </div>
-            <div className="card-body">
+            <div className="p-6">
                 <textarea
                     rows={rows}
                     onInput={onInput}
                     ref={rawInput}
-                    className="form-control form-control-flush form-control-auto font-monospace"
+                    className="form-control form-control-flush form-control-auto font-mono"
                     placeholder={placeholder}
                     name="tx-inspector-input"
                 ></textarea>
-                <div className="row align-items-center">
-                    <div className="col d-flex align-items-center">
+                <div className="flex items-center">
+                    <div className="col flex items-center">
                         {error && (
                             <>
                                 <span className="text-warning small m2">
@@ -316,7 +316,7 @@ export function RawInput({
                     </div>
                 </div>
             </div>
-            <div className="card-footer">
+            <div className="px-6 py-4 border-t">
                 <h3>Instructions</h3>
                 <TabInstructions />
             </div>

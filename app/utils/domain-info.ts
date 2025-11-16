@@ -1,4 +1,4 @@
-import { getHashedName, getNameAccountKey, getNameOwner } from '@bonfida/spl-namservice';
+import { getHashedName, getNameAccountKey, getNameOwner } from '@bonfida/spl-name-service';
 import { getDomainKey as getANSDomainKey, getNameOwner as getANSNameOwner } from '@onsol/tldparser';
 import { Connection, PublicKey } from '@solana/web3.js';
 

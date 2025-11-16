@@ -170,7 +170,7 @@ function setup(): { account: Account; mockAddress: string } {
             },
             type: 'program',
         },
-        program: 'bpf-upgradeablloader',
+        program: 'bpf-upgradeable-loader',
     };
 
     return {

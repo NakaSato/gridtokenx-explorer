@@ -1,5 +1,5 @@
 import { PublicKey, TransactionSignature } from '@solana/web3.js';
-import { HumanizeDuration, HumanizeDurationLanguage } from 'humanizduration-ts';
+import { HumanizeDuration, HumanizeDurationLanguage } from 'humanize-duration-ts';
 
 // Switch to web3 constant when web3 updates superstruct
 export const LAMPORTS_PER_SOL = 1_000_000_000;

@@ -62,8 +62,8 @@ const BaseFeatureCard = ({
     if (activatedAt) {
         activatedAtSlot = (
             <tr>
-                <td className="text-nowrap">Activated At Slot</td>
-                <td className="text-lg-end">
+                <td className="whitespace-nowrap">Activated At Slot</td>
+                <td className="lg:text-right">
                     <Slot slot={activatedAt} link />
                 </td>
             </tr>
@@ -73,7 +73,7 @@ const BaseFeatureCard = ({
         simdLink = (
             <tr>
                 <td>SIMDs</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     {featureInfo.simds.map((simd, index) => (
                         <div key={index}>
                             {simd && featureInfo.simd_link[index] ? (
@@ -96,9 +96,9 @@ const BaseFeatureCard = ({
     }
 
     return (
-        <div className="card">
-            <div className="card-header">
-                <h3 className="card-header-title mb-0 d-flex align-items-center">
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="border-b px-6 py-4">
+                <h3 className="mb-0 flex items-center text-lg font-semibold">
                     {featureInfo?.title ?? 'Feature Activation'}
                 </h3>
             </div>
@@ -112,10 +112,12 @@ const BaseFeatureCard = ({
                 </tr>
 
                 <tr>
-                    <td className="text-nowrap">Activated?</td>
-                    <td className="text-lg-end">
+                    <td className="whitespace-nowrap">Activated?</td>
+                    <td className="lg:text-right">
                         {activatedAt !== null ? (
-                            <span className="badge bg-success">Active on {clusterName(cluster)}</span>
+                            <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                                Active on {clusterName(cluster)}
+                            </span>
                         ) : (
                             <code>Not yet activated on {clusterName(cluster)}</code>
                         )}
@@ -126,7 +128,7 @@ const BaseFeatureCard = ({
 
                 <tr>
                     <td className="text-nowrap">Cluster Activation</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <ClusterActivationEpochAtCluster
                             cluster={cluster}
                             clusterInfo={clusterInfo}
@@ -138,7 +140,7 @@ const BaseFeatureCard = ({
                 {featureInfo?.description && (
                     <tr>
                         <td>Description</td>
-                        <td className="text-lg-end">{featureInfo?.description}</td>
+                        <td className="lg:text-right">{featureInfo?.description}</td>
                     </tr>
                 )}
 

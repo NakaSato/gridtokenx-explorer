@@ -5,7 +5,7 @@ import {
     identifyComputeBudgetInstruction,
     parseRequestUnitsInstruction,
     parseSetComputeUnitLimitInstruction,
-} from '@solana-program/computbudget';
+} from '@solana-program/compute-budget';
 import bs58 from 'bs58';
 
 import { Cluster } from '@/app/utils/cluster';

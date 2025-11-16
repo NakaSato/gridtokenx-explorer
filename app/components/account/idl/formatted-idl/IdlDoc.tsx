@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/app/components/shared
 export function IdlDoc({ docs }: { docs: string[] }) {
     if (!docs?.length) return null;
 
-    return <p className="text-muted mb-0">{docs.join(' ')}</p>;
+    return <p className="text-muted-foreground mb-0">{docs.join(' ')}</p>;
 }
 
 // TODO: improve Tooltip. Vurrent version renders additional button element inside another one
@@ -16,7 +16,7 @@ export function IdlDocTooltip({ docs, children }: { docs?: string[]; children: R
         <Tooltip>
             <TooltipTrigger className="border-0 bg-transparent p-0 text-inherit">{children}</TooltipTrigger>
             <TooltipContent>
-                <div className="min-w-36 max-w-16">{docs.join(' ')}</div>
+                <div className="max-w-16 min-w-36">{docs.join(' ')}</div>
             </TooltipContent>
         </Tooltip>
     );

@@ -11,27 +11,27 @@ export function UnknownAccountCard({ account }: { account: Account }) {
 
     const label = addressLabel(account.pubkey.toBase58(), cluster);
     return (
-        <div className="card">
-            <div className="card-header align-items-center">
-                <h3 className="card-header-title">Overview</h3>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b flex items-center">
+                <h3 className="text-lg font-semibold">Overview</h3>
             </div>
 
             <TableCardBody>
                 <tr>
                     <td>Address</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Address pubkey={account.pubkey} alignRight raw />
                     </td>
                 </tr>
                 {label && (
                     <tr>
                         <td>Address Label</td>
-                        <td className="text-lg-end">{label}</td>
+                        <td className="lg:text-right">{label}</td>
                     </tr>
                 )}
                 <tr>
                     <td>Balance (SOL)</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         {account.lamports === 0 ? 'Account does not exist' : <SolBalance lamports={account.lamports} />}
                     </td>
                 </tr>
@@ -39,20 +39,20 @@ export function UnknownAccountCard({ account }: { account: Account }) {
                 {account.space !== undefined && (
                     <tr>
                         <td>Allocated Data Size</td>
-                        <td className="text-lg-end">{account.space} byte(s)</td>
+                        <td className="lg:text-right">{account.space} byte(s)</td>
                     </tr>
                 )}
 
                 <tr>
                     <td>Assigned Program Id</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Address pubkey={account.owner} alignRight link />
                     </td>
                 </tr>
 
                 <tr>
                     <td>Executable</td>
-                    <td className="text-lg-end">{account.executable ? 'Yes' : 'No'}</td>
+                    <td className="lg:text-right">{account.executable ? 'Yes' : 'No'}</td>
                 </tr>
             </TableCardBody>
         </div>

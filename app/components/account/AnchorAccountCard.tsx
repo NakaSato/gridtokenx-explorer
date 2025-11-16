@@ -46,19 +46,19 @@ export function AnchorAccountCard({ account }: { account: Account }) {
 
     return (
         <div>
-            <div className="card">
-                <div className="card-header">
-                    <div className="row align-items-center">
-                        <div className="col">
-                            <h3 className="card-header-title">
+            <div className="bg-card border rounded-lg shadow-sm">
+                <div className="px-6 py-4 border-b">
+                    <div className="flex items-center">
+                        <div className="flex-1">
+                            <h3 className="text-lg font-semibold">
                                 {programName}: {accountDef.name.charAt(0).toUpperCase() + accountDef.name.slice(1)}
                             </h3>
                         </div>
                     </div>
                 </div>
 
-                <div className="tablresponsive mb-0">
-                    <table className="table tablsm tablnowrap card-table">
+                <div className="overflow-x-auto mb-0">
+                    <table className="w-full text-sm">
                         <thead>
                             <tr>
                                 <th className="w-1">Field</th>

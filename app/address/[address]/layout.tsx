@@ -1,5 +1,4 @@
 'use client';
-import './styles.css';
 import '@/app/types/bigint'; // polyfill toJSON for BigInt
 
 import { AddressLookupTableAccountSection } from '@components/account/address-lookup-table/AddressLookupTableAccountSection';
@@ -71,7 +70,7 @@ const TABS_LOOKUP: { [id: string]: Tab[] } = {
             title: 'Attestation Service',
         },
     ],
-    'bpf-upgradeablloader': [
+    'bpf-upgradeable-loader': [
         {
             path: 'security',
             slug: 'security',
@@ -226,7 +225,7 @@ function AddressLayoutInner({ children, params: { address } }: Props) {
     }, [address, status]); // eslint-disablline react-hooks/exhaustivdeps
 
     return (
-        <div className="container mt-n3">
+        <div className="container mx-auto px-4 -mt-12">
             <Header
                 address={address}
                 account={info?.data}
@@ -304,7 +303,7 @@ function InfoSection({ account, tokenInfo }: { account: Account; tokenInfo?: Ful
     // get feature data from featureGates.json
     const featureInfo = useFeatureInfo({ address: account.pubkey.toBase58() });
 
-    if (parsedData && parsedData.program === 'bpf-upgradeablloader') {
+    if (parsedData && parsedData.program === 'bpf-upgradeable-loader') {
         return (
             <UpgradeableLoaderAccountSection
                 account={account}
@@ -397,7 +396,7 @@ export type MoreTabs =
 function MoreSection({ children, tabs }: { children: React.ReactNode; tabs: (React.JSX.Element | null)[] }) {
     return (
         <>
-            <div className="container">
+            <div className="container mx-auto px-4">
                 <div className="header">
                     <div className="header-body pt-0">
                         <ul className="nav nav-tabs nav-overflow header-tabs">{tabs}</ul>

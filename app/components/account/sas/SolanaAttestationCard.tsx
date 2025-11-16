@@ -14,17 +14,17 @@ function SolanaCredentialCard({ credential }: { credential: SasCredential }) {
         <>
             <tr>
                 <td>Credential Name</td>
-                <td className="text-lg-end">{decodeString(credential.name)}</td>
+                <td className="lg:text-right">{decodeString(credential.name)}</td>
             </tr>
             <tr>
                 <td>Credential Authority</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={mapToPublicKey(credential.authority)} alignRight raw link />
                 </td>
             </tr>
             <tr>
                 <td>Authorized Signers</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     {credential.authorizedSigners.map((signer, idx) => (
                         <Address key={idx} pubkey={mapToPublicKey(signer)} alignRight raw link />
                     ))}
@@ -39,25 +39,25 @@ function SolanaSchemaCard({ schema }: { schema: SasSchema }) {
         <>
             <tr>
                 <td>Schema Name</td>
-                <td className="text-lg-end">{decodeString(schema.name)}</td>
+                <td className="lg:text-right">{decodeString(schema.name)}</td>
             </tr>
             <tr>
                 <td>Credential</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={mapToPublicKey(schema.credential)} alignRight raw link />
                 </td>
             </tr>
             <tr>
                 <td>Description</td>
-                <td className="text-lg-end">{decodeString(schema.description)}</td>
+                <td className="lg:text-right">{decodeString(schema.description)}</td>
             </tr>
             <tr>
                 <td>Is Paused</td>
-                <td className="text-lg-end">{schema.isPaused ? 'Yes' : 'No'}</td>
+                <td className="lg:text-right">{schema.isPaused ? 'Yes' : 'No'}</td>
             </tr>
             <tr>
                 <td>Version</td>
-                <td className="text-lg-end">{schema.version}</td>
+                <td className="lg:text-right">{schema.version}</td>
             </tr>
         </>
     );
@@ -68,31 +68,31 @@ function SolanaAttestationCard({ attestation }: { attestation: SasAttestation })
         <>
             <tr>
                 <td>Nonce</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={mapToPublicKey(attestation.nonce)} alignRight raw link />
                 </td>
             </tr>
             <tr>
                 <td>Credential</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={mapToPublicKey(attestation.credential)} alignRight raw link />
                 </td>
             </tr>
             <tr>
                 <td>Schema</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={mapToPublicKey(attestation.schema)} alignRight raw link />
                 </td>
             </tr>
             <tr>
                 <td>Signer</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={mapToPublicKey(attestation.signer)} alignRight raw link />
                 </td>
             </tr>
             <tr>
                 <td>Token Account</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     {attestation.tokenAccount.toString() === SystemProgram.programId.toBase58() ? (
                         'Not Initialized'
                     ) : (
@@ -102,7 +102,7 @@ function SolanaAttestationCard({ attestation }: { attestation: SasAttestation })
             </tr>
             <tr>
                 <td>Expiry</td>
-                <td className="text-lg-end">{Number(attestation.expiry)}</td>
+                <td className="lg:text-right">{Number(attestation.expiry)}</td>
             </tr>
         </>
     );

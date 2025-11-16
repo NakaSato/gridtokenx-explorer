@@ -1,4 +1,4 @@
-import type { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeablprogram';
+import type { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeable-program';
 
 import { NO_SECURITY_TXT_ERROR } from './constants';
 import type { NeodymeSecurityTXT } from './types';

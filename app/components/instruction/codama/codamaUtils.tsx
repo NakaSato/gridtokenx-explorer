@@ -62,7 +62,7 @@ export function mapCodamaIxArgsToRows(data: any, nestingLevel = 0) {
         } else if (type === 'string') {
             displayValue = (
                 <td
-                    className="text-lg-end"
+                    className="lg:text-right"
                     style={{
                         fontSize: '0.85rem',
                         lineHeight: '1.2',
@@ -73,7 +73,7 @@ export function mapCodamaIxArgsToRows(data: any, nestingLevel = 0) {
                     }}
                 >
                     <Copyable text={value as string}>
-                        <span className="font-monospace">{value as string}</span>
+                        <span className="font-mono">{value as string}</span>
                     </Copyable>
                 </td>
             );
@@ -87,7 +87,7 @@ export function mapCodamaIxArgsToRows(data: any, nestingLevel = 0) {
                     <div className="d-flex flex-row">
                         {nestingLevel > 0 && (
                             <span style={{ paddingLeft: `${15 * nestingLevel}px` }}>
-                                <CornerDownRight className="m2" size={15} />
+                                <CornerDownRight className="mr-2" size={15} />
                             </span>
                         )}
                         <div>{key}</div>
@@ -96,7 +96,7 @@ export function mapCodamaIxArgsToRows(data: any, nestingLevel = 0) {
                 <td>{type}</td>
                 {type === 'string' ? (
                     <td
-                        className="text-lg-end"
+                        className="lg:text-right"
                         style={{
                             fontSize: '0.85rem',
                             lineHeight: '1.2',
@@ -107,11 +107,11 @@ export function mapCodamaIxArgsToRows(data: any, nestingLevel = 0) {
                         }}
                     >
                         <Copyable text={value as string}>
-                            <span className="font-monospace">{value as string}</span>
+                            <span className="font-mono">{value as string}</span>
                         </Copyable>
                     </td>
                 ) : (
-                    <td className="text-lg-end">{displayValue}</td>
+                    <td className="lg:text-right">{displayValue}</td>
                 )}
             </tr>
         );

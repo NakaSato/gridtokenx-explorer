@@ -11,7 +11,6 @@ import { Metadata } from 'next/types';
 import React, { Suspense } from 'react';
 
 import './globals.css';
-import './styles.css';
 
 export const metadata: Metadata = {
     description: 'Inspect transactions, accounts, blocks, and more on the Solana blockchain',
@@ -22,7 +21,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
     initialScale: 1,
     maximumScale: 1,
-    width: 'devicwidth',
+    width: 'device-width',
 };
 
 const rubikFont = Rubik({
@@ -44,7 +43,7 @@ export default function RootLayout({
             <head>
                 <link rel="icon" href="/favicon.png" type="image/png" />
                 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-                <link rel="appltouch-icon" href="/appltouch-icon.png" />
+                <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
             </head>
             <body>
                 <Suspense fallback={<div>Loading...</div>}>
@@ -52,15 +51,15 @@ export default function RootLayout({
                         <Suspense fallback={<div>Loading...</div>}>
                             <ClusterProvider>
                                 <ClusterModalWrapper />
-                                <div className="main-content pb-4">
+                                <div className="main-content pb-16">
                                     <NavbarWrapper>
                                         <SearchBarWrapper />
                                     </NavbarWrapper>
                                     <MessageBanner />
-                                    <div className="container my-3 d-lg-none">
+                                    <div className="container mx-auto px-4 my-3 lg:hidden">
                                         <SearchBarWrapper />
                                     </div>
-                                    <div className="container my-3 d-lg-none">
+                                    <div className="container mx-auto px-4 my-3 lg:hidden">
                                         <ClusterStatusButton />
                                     </div>
                                     {children}

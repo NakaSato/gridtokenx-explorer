@@ -22,9 +22,9 @@ export function UnknownDetailsCard({
     const scrollAnchorRef = useScrollAnchor(getInstructionCardScrollAnchorId([index + 1]));
 
     return (
-        <div className="card" ref={scrollAnchorRef}>
+        <div className="bg-card border rounded-lg shadow-sm" ref={scrollAnchorRef}>
             <div className={`card-header${!expanded ? ' border-bottom-none' : ''}`}>
-                <h3 className="card-header-title mb-0 d-flex align-items-center">
+                <h3 className="text-lg font-semibold mb-0 flex items-center">
                     <span className={`badge bg-info-soft m2`}>#{index + 1}</span>
                     {programName} Instruction
                 </h3>
@@ -40,7 +40,7 @@ export function UnknownDetailsCard({
                 <TableCardBody>
                     <tr>
                         <td>Program</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <AddressWithContext pubkey={ix.programId} validator={programValidator} />
                         </td>
                     </tr>

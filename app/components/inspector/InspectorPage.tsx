@@ -439,9 +439,9 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
 
     return (
         <>
-            <div className="card">
-                <div className="card-header">
-                    <h3 className="card-header-title">Transaction Overview</h3>
+            <div className="bg-card border rounded-lg shadow-sm">
+                <div className="px-6 py-4 border-b">
+                    <h3 className="text-lg font-semibold">Transaction Overview</h3>
                     <button className="btn btn-sm d-flex btn-white" onClick={onClear}>
                         Clear
                     </button>
@@ -449,7 +449,7 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
                 <TableCardBody>
                     <tr>
                         <td>Serialized Size</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <div className="d-flex align-items-end flex-column">
                                 {size} bytes
                                 <span className={size <= PACKET_DATA_SIZE ? 'text-muted' : 'text-warning'}>
@@ -460,10 +460,10 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
                     </tr>
                     <tr>
                         <td>Fees</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <div className="d-flex align-items-end flex-column">
                                 <SolBalance lamports={fee} />
-                                <span className="text-muted">
+                                <span className="text-muted-foreground">
                                     {`Each signature costs ${DEFAULT_FEES.lamportsPerSignature} lamports`}
                                 </span>
                             </div>
@@ -480,7 +480,7 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
                                 </span>
                             </div>
                         </td>
-                        <td className="text-end">
+                        <td className="text-right">
                             {message.staticAccountKeys.length === 0 ? (
                                 'No Fee Payer'
                             ) : (

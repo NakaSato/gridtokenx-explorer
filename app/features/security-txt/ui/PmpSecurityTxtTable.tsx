@@ -29,7 +29,7 @@ export function PmpSecurityTxtTable({ data }: { data: Record<string, any> }) {
         <>
             <RenderTable entries={entries.main} />
             <div className="card-header border-0 border-t border-solid border-t-[#282d2b]">
-                <h3 className="card-header-title">Additional:</h3>
+                <h3 className="text-lg font-semibold">Additional:</h3>
             </div>
             <RenderTable entries={entries.additional} />
         </>
@@ -42,7 +42,7 @@ function RenderTable({ entries }: { entries: [string, any][] }) {
             {entries.map(([entryKey, value], index) => {
                 return (
                     <tr key={index}>
-                        <td className="w-100">{entryKey}</td>
+                        <td className="w-full">{entryKey}</td>
                         <RenderEntry key={entryKey} entryKey={entryKey} value={value} />
                     </tr>
                 );
@@ -84,7 +84,7 @@ function displayStringValue(value: string) {
 
 function displayArrayValue(entryKey: string, value: any[]) {
     return (
-        <td className="font-monospace">
+        <td className="font-mono">
             <RenderList entryKey={entryKey} items={value} />
         </td>
     );
@@ -100,7 +100,7 @@ function displayFallbackValue(value: any) {
 
 function RenderList({ entryKey, items }: { entryKey: string; items: any[] }) {
     return (
-        <ul className="text-lg-end security-txt-list list-none pl-0 [&.security-txt-list]:text-left">
+        <ul className="lg:text-right security-txt-list list-none pl-0 [&.security-txt-list]:text-left">
             {items.map((value, index) => {
                 const elementKey = `${entryKey}-${index}`;
                 if (!value) {

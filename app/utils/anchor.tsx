@@ -105,7 +105,7 @@ export function mapIxArgsToRows(ixArgs: any, ixType: IdlInstruction, idl: Idl) {
             return (
                 <tr key={key}>
                     <td>{key}</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <td className="metadata-json-viewer m-4">
                             <ReactJson src={ixArgs} />
                         </td>
@@ -144,7 +144,7 @@ export function mapAccountToRows(accountData: any, accountType: IdlTypeDef, idl:
             return (
                 <tr key={key}>
                     <td>{key}</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <td className="metadata-json-viewer m-4">
                             <ReactJson src={accountData} />
                         </td>
@@ -375,7 +375,7 @@ function mapField(key: string, value: any, type: IdlType, idl: Idl, keySuffix?: 
             <tr key={keySuffix ? `${key}-${keySuffix}` : key}>
                 <td>{camelToTitleCase(key)}</td>
                 <td></td>
-                <td className="text-lg-end">???</td>
+                <td className="lg:text-right">???</td>
             </tr>
         );
     }
@@ -414,7 +414,7 @@ function SimpleRow({
                 <div>{itemKey}</div>
             </td>
             <td>{typeDisplayName(type)}</td>
-            <td className="text-lg-end">{children}</td>
+            <td className="lg:text-right">{children}</td>
         </tr>
     );
 }
@@ -447,7 +447,7 @@ export function ExpandableRow({
                     <div>{fieldName}</div>
                 </td>
                 <td>{fieldType}</td>
-                <td className="text-lg-end" onClick={() => setExpanded(current => !current)}>
+                <td className="lg:text-right" onClick={() => setExpanded(current => !current)}>
                     <div className="c-pointer">
                         {expanded ? (
                             <>

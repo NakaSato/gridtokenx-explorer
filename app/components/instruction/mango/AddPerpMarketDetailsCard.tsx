@@ -25,47 +25,47 @@ export function AddPerpMarketDetailsCard(props: {
         >
             <tr>
                 <td>Market index</td>
-                <td className="text-lg-end">{info.marketIndex}</td>
+                <td className="lg:text-right">{info.marketIndex}</td>
             </tr>
             <tr>
                 <td>Maintenance leverage</td>
-                <td className="text-lg-end">{info.maintLeverage}</td>
+                <td className="lg:text-right">{info.maintLeverage}</td>
             </tr>
             <tr>
                 <td>Initial leverage</td>
-                <td className="text-lg-end">{info.initLeverage}</td>
+                <td className="lg:text-right">{info.initLeverage}</td>
             </tr>
             <tr>
                 <td>Liquidation fee</td>
-                <td className="text-lg-end">{info.liquidationFee}</td>
+                <td className="lg:text-right">{info.liquidationFee}</td>
             </tr>
             <tr>
                 <td>Maker fee</td>
-                <td className="text-lg-end">{info.makerFee}</td>
+                <td className="lg:text-right">{info.makerFee}</td>
             </tr>
             <tr>
                 <td>Taker fee</td>
-                <td className="text-lg-end">{info.takerFee}</td>
+                <td className="lg:text-right">{info.takerFee}</td>
             </tr>
             <tr>
                 <td>Base lot size</td>
-                <td className="text-lg-end">{info.baseLotSize}</td>
+                <td className="lg:text-right">{info.baseLotSize}</td>
             </tr>
             <tr>
                 <td>Quote lot size</td>
-                <td className="text-lg-end">{info.quoteLotSize}</td>
+                <td className="lg:text-right">{info.quoteLotSize}</td>
             </tr>
             <tr>
                 <td>Rate</td>
-                <td className="text-lg-end">{info.rate}</td>
+                <td className="lg:text-right">{info.rate}</td>
             </tr>
             <tr>
                 <td>Max depth bps</td>
-                <td className="text-lg-end">{info.maxDepthBps}</td>
+                <td className="lg:text-right">{info.maxDepthBps}</td>
             </tr>
             <tr>
                 <td>MNGO per {moment.duration(info.targetPeriodLength, 'seconds').humanize()}</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     {info.mngoPerPeriod} {}
                 </td>
             </tr>

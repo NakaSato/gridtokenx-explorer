@@ -73,31 +73,45 @@ export function AnchorEventDecoder({ logs, programId }: AnchorEventDecoderProps)
 
     return (
         <div className="mb-4">
-            <h5 className="border-bottom pb-2">🎯 Decoded Events & Instructions ({decodedEvents.length})</h5>
-            <div className="alert alert-info">
+            <h5 className="border-bottom pb-2">Decoded Events & Instructions ({decodedEvents.length})</h5>
+            <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-800">
                 <strong>Energy Trading Events:</strong> Monitor your platform's energy trades, settlements, and user
                 actions
             </div>
 
             {decodedEvents.map((event, idx) => (
                 <div key={idx} className="card mb-2">
-                    <div className="card-body">
-                        <div className="d-flex justify-content-between align-items-start mb-2">
+                    <div className="p-6">
+                        <div className="mb-2 flex items-start justify-between">
                             <div>
                                 {event.type === 'instruction' && (
-                                    <span className="badge bg-primary m2">Instruction</span>
+                                    <span className="mr-2 inline-flex items-center rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white">
+                                        Instruction
+                                    </span>
                                 )}
-                                {event.type === 'event' && <span className="badge bg-success m2">Event</span>}
-                                {event.type === 'custom' && <span className="badge bg-warning m2">Custom Log</span>}
-                                {event.type === 'data' && <span className="badge bg-info m2">Data</span>}
-                                <small className="text-muted">Log #{event.index}</small>
+                                {event.type === 'event' && (
+                                    <span className="mr-2 inline-flex items-center rounded-full bg-green-600 px-2 py-0.5 text-xs font-medium text-white">
+                                        Event
+                                    </span>
+                                )}
+                                {event.type === 'custom' && (
+                                    <span className="mr-2 inline-flex items-center rounded-full bg-yellow-600 px-2 py-0.5 text-xs font-medium text-white">
+                                        Custom Log
+                                    </span>
+                                )}
+                                {event.type === 'data' && (
+                                    <span className="mr-2 inline-flex items-center rounded-full bg-blue-500 px-2 py-0.5 text-xs font-medium text-white">
+                                        Data
+                                    </span>
+                                )}
+                                <small className="text-muted-foreground">Log #{event.index}</small>
                             </div>
                         </div>
 
                         {typeof event.data === 'object' ? (
-                            <pre className="bg-light p-2 rounded mb-0">{JSON.stringify(event.data, null, 2)}</pre>
+                            <pre className="bg-light mb-0 rounded p-2">{JSON.stringify(event.data, null, 2)}</pre>
                         ) : (
-                            <div className="font-monospace small">
+                            <div className="small font-mono">
                                 <code>{event.data}</code>
                             </div>
                         )}
@@ -108,10 +122,10 @@ export function AnchorEventDecoder({ logs, programId }: AnchorEventDecoderProps)
                             event.data.toString().toLowerCase().includes('kwh') ||
                             event.data.toString().toLowerCase().includes('seller') ||
                             event.data.toString().toLowerCase().includes('buyer')) && (
-                            <div className="alert alert-success mt-2 mb-0">
+                            <div className="mt-2 mb-0 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-800">
                                 <small>
-                                    <strong>⚡ Energy Trading Event Detected!</strong> This log likely represents a
-                                    trade, settlement, or platform action in your P2P energy marketplace.
+                                    <strong>Energy Trading Event Detected!</strong> This log likely represents a trade,
+                                    settlement, or platform action in your P2P energy marketplace.
                                 </small>
                             </div>
                         )}
@@ -119,9 +133,9 @@ export function AnchorEventDecoder({ logs, programId }: AnchorEventDecoderProps)
                 </div>
             ))}
 
-            <div className="alert alert-secondary mt-3">
-                <h6 className="alert-heading">💡 Tips for Energy Trading Developers:</h6>
-                <ul className="mb-0 small">
+            <div className="mt-3 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800">
+                <h6 className="alert-heading">Tips for Energy Trading Developers:</h6>
+                <ul className="small mb-0">
                     <li>
                         Use <code>msg!</code> macro in Rust to emit custom logs
                     </li>

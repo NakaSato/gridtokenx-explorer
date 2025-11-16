@@ -33,9 +33,9 @@ const SERIES_INFO = {
 export function LiveTransactionStatsCard() {
     const [series, setSeries] = React.useState<Series>('short');
     return (
-        <div className="card flex-grow-1 d-flex flex-column">
-            <div className="card-header">
-                <h4 className="card-header-title">Live Transaction Stats</h4>
+        <div className="card flex flex-grow flex-col">
+            <div className="border-b px-6 py-4">
+                <h4 className="text-lg font-semibold">Live Transaction Stats</h4>
             </div>
             <TpsCardBody series={series} setSeries={setSeries} />
         </div>
@@ -172,32 +172,35 @@ function TpsBarChart({ performanceInfo, series, setSeries }: TpsBarChartProps) {
     };
 
     return (
-        <div className="d-flex flex-column flex-grow-1">
+        <div className="flex flex-grow flex-col">
             <TableCardBody>
                 <tr>
-                    <td className="w-100">Transaction count</td>
-                    <td className="text-lg-end font-monospace">{transactionCount} </td>
+                    <td className="w-full">Transaction count</td>
+                    <td className="font-mono lg:text-right">{transactionCount} </td>
                 </tr>
                 <tr>
-                    <td className="w-100">Transactions per second (TPS)</td>
-                    <td className="text-lg-end font-monospace">{averageTps} </td>
+                    <td className="w-full">Transactions per second (TPS)</td>
+                    <td className="font-mono lg:text-right">{averageTps} </td>
                 </tr>
             </TableCardBody>
 
             <hr className="my-0" />
 
-            <div className="card-body py-3 d-flex flex-column flex-grow-1">
-                <div className="d-flex justify-content-between w-100">
-                    <span className="mb-0 font-sizsm">TPS history</span>
+            <div className="flex flex-grow flex-col px-6 py-3">
+                <div className="flex w-100 justify-between">
+                    <span className="mb-0 text-sm">TPS history</span>
 
-                    <div className="font-sizsm">
+                    <div className="text-sm">
                         {SERIES.map(key => (
                             <button
                                 key={key}
                                 onClick={() => setSeries(key)}
-                                className={classNames('btn btn-sm btn-white ms-2', {
-                                    active: series === key,
-                                })}
+                                className={classNames(
+                                    'ml-2 rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100',
+                                    {
+                                        active: series === key,
+                                    },
+                                )}
                             >
                                 {SERIES_INFO[key].interval}
                             </button>
@@ -205,11 +208,11 @@ function TpsBarChart({ performanceInfo, series, setSeries }: TpsBarChartProps) {
                     </div>
                 </div>
 
-                <div id="perf-history" className="mt-3 flex-grow-1" style={{ minHeight: '200px' }}>
+                <div id="perf-history" className="mt-3 flex-grow" style={{ minHeight: '200px' }}>
                     <Bar data={chartData} options={chartOptions} style={{ height: '100%' }} />
                 </div>
 
-                <div className="text-center text-muted mt-3">
+                <div className="text-muted-foreground mt-3 text-center">
                     <p className="mb-0">
                         For transaction confirmation time statistics, please visit{' '}
                         <a href="https://www.validators.app" target="_blank" rel="noopener noreferrer">

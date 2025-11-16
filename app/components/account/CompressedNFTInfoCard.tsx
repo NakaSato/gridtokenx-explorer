@@ -48,9 +48,9 @@ function DasCompressionInfoCard({ proof, compressedNft }: { proof: CompressedNft
             : 0;
     const proofSize = proof.proof.length - canopyDepth;
     return (
-        <div className="card">
-            <div className="card-header align-items-center">
-                <h3 className="card-header-title">Compression Info</h3>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b flex items-center">
+                <h3 className="text-lg font-semibold">Compression Info</h3>
             </div>
 
             <TableCardBody>
@@ -68,15 +68,15 @@ function DasCompressionInfoCard({ proof, compressedNft }: { proof: CompressedNft
                 </tr>
                 <tr>
                     <td>Proof Size {getProofSizePill(proofSize)}</td>
-                    <td className="text-lg-end">{proofSize}</td>
+                    <td className="lg:text-right">{proofSize}</td>
                 </tr>
                 <tr>
                     <td>Leaf Number</td>
-                    <td className="text-lg-end">{compressedInfo.leaf_id}</td>
+                    <td className="lg:text-right">{compressedInfo.leaf_id}</td>
                 </tr>
                 <tr>
                     <td>Sequence Number of Last Update</td>
-                    <td className="text-lg-end">{compressedInfo.seq}</td>
+                    <td className="lg:text-right">{compressedInfo.seq}</td>
                 </tr>
                 <tr>
                     <td>Compressed Nft Hash</td>
@@ -103,8 +103,8 @@ function DasCompressionInfoCard({ proof, compressedNft }: { proof: CompressedNft
 
 function getVerifiedProofPill(verified: boolean) {
     return (
-        <div className={'d-inlinflex align-items-center ms-2'}>
-            <span className={`badge badgpill bg-dark ${verified ? '' : 'bg-danger-soft'}`}>{`Proof ${
+        <div className={'inline-flex items-center ml-2'}>
+            <span className={`px-2 py-1 rounded-full text-xs ${verified ? 'bg-gray-800 text-white' : 'bg-red-50 text-red-700'}`}>{`Proof ${
                 verified ? '' : 'Not'
             } Verified`}</span>
         </div>
@@ -124,8 +124,8 @@ function getProofSizePill(proofSize: number) {
     }
 
     return (
-        <div className={'d-inlinflex align-items-center ms-2'}>
-            <span className={`badge badgpill ${color}`}>{text}</span>
+        <div className={'inline-flex items-center ml-2'}>
+            <span className={`px-2 py-1 rounded-full text-xs ${color === 'bg-dark' ? 'bg-gray-800 text-white' : 'bg-red-50 text-red-700'}`}>{text}</span>
         </div>
     );
 }

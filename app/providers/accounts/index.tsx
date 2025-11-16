@@ -29,7 +29,7 @@ import {
     ProgramDataAccount,
     ProgramDataAccountInfo,
     UpgradeableLoaderAccount,
-} from '@validators/accounts/upgradeablprogram';
+} from '@validators/accounts/upgradeable-program';
 import { VoteAccount } from '@validators/accounts/vote';
 import { ParsedInfo } from '@validators/index';
 import React from 'react';
@@ -52,13 +52,13 @@ export type StakeProgramData = {
 };
 
 export type UpgradeableLoaderAccountData = {
-    program: 'bpf-upgradeablloader';
+    program: 'bpf-upgradeable-loader';
     parsed: UpgradeableLoaderAccount;
     programData?: ProgramDataAccountInfo;
 };
 
 export function isUpgradeableLoaderAccountData(data: { program: string }): data is UpgradeableLoaderAccountData {
-    return data.program === 'bpf-upgradeablloader';
+    return data.program === 'bpf-upgradeable-loader';
 }
 
 export type NFTData = {
@@ -324,14 +324,14 @@ async function handleParsedAccountData(
 ): Promise<ParsedData | undefined> {
     const info = create(accountData.parsed, ParsedInfo);
     switch (accountData.program) {
-        case 'bpf-upgradeablloader': {
+        case 'bpf-upgradeable-loader': {
             const parsed = create(info, UpgradeableLoaderAccount);
 
             // Fetch program data to get program upgradeability info
             let programData: ProgramDataAccountInfo | undefined;
             if (parsed.type === 'program') {
                 const result = (await connection.getParsedAccountInfo(parsed.info.programData)).value;
-                if (result && 'parsed' in result.data && result.data.program === 'bpf-upgradeablloader') {
+                if (result && 'parsed' in result.data && result.data.program === 'bpf-upgradeable-loader') {
                     const info = create(result.data.parsed, ParsedInfo);
                     programData = create(info, ProgramDataAccount).info;
                 }

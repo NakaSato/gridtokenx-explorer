@@ -26,7 +26,7 @@ export default function UpdateProductDetailsCard({
     function Content() {
         return (
             <Copyable text={attrsJSON}>
-                <pre className="d-inlinblock text-start mb-0">{attrsJSON}</pre>
+                <pre className="d-inlinblock mb-0 text-start">{attrsJSON}</pre>
             </Copyable>
         );
     }
@@ -42,34 +42,34 @@ export default function UpdateProductDetailsCard({
         >
             <tr>
                 <td>Program</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={ix.programId} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Funding Account</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.fundingPubkey} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Product Account</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.productPubkey} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>
-                    Attributes <span className="text-muted">(JSON)</span>
+                    Attributes <span className="text-muted-foreground">(JSON)</span>
                 </td>
-                <td className="text-lg-end">
-                    <div className="d-none d-lg-flex align-items-center justify-content-end">
+                <td className="lg:text-right">
+                    <div className="hidden items-center justify-end lg:flex">
                         <Content />
                     </div>
-                    <div className="d-flex d-lg-none align-items-center">
+                    <div className="flex items-center lg:hidden">
                         <Content />
                     </div>
                 </td>

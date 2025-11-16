@@ -5,21 +5,21 @@ import React from 'react';
 export function SlotHashesCard({ sysvarAccount }: { sysvarAccount: SysvarAccount }) {
     const slotHashes = sysvarAccount.info as SlotHashesInfo;
     return (
-        <div className="card">
-            <div className="card-header">
-                <div className="row align-items-center">
-                    <div className="col">
-                        <h3 className="card-header-title">Slot Hashes</h3>
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="border-b px-6 py-4">
+                <div className="flex items-center">
+                    <div className="flex-1">
+                        <h3 className="text-lg font-semibold">Slot Hashes</h3>
                     </div>
                 </div>
             </div>
 
-            <div className="tablresponsive mb-0">
-                <table className="table tablsm tablnowrap card-table">
+            <div className="mb-0 overflow-x-auto">
+                <table className="w-full text-sm">
                     <thead>
                         <tr>
-                            <th className="w-1 text-muted">Slot</th>
-                            <th className="text-muted">Hash</th>
+                            <th className="text-muted-foreground w-1">Slot</th>
+                            <th className="text-muted-foreground">Hash</th>
                         </tr>
                     </thead>
                     <tbody className="list">
@@ -31,8 +31,10 @@ export function SlotHashesCard({ sysvarAccount }: { sysvarAccount: SysvarAccount
                 </table>
             </div>
 
-            <div className="card-footer">
-                <div className="text-muted text-center">{slotHashes.length > 0 ? '' : 'No hashes found'}</div>
+            <div className="border-t px-6 py-4">
+                <div className="text-muted-foreground text-center">
+                    {slotHashes.length > 0 ? '' : 'No hashes found'}
+                </div>
             </div>
         </div>
     );
@@ -41,10 +43,10 @@ export function SlotHashesCard({ sysvarAccount }: { sysvarAccount: SysvarAccount
 const renderAccountRow = (entry: SlotHashEntry, index: number) => {
     return (
         <tr key={index}>
-            <td className="w-1 font-monospace">
+            <td className="w-1 font-mono">
                 <Slot slot={entry.slot} link />
             </td>
-            <td className="font-monospace">{entry.hash}</td>
+            <td className="font-mono">{entry.hash}</td>
         </tr>
     );
 };

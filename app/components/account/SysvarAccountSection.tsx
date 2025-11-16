@@ -49,7 +49,7 @@ function SysvarAccountRecentBlockhashesCard({
 }) {
     const refresh = useFetchAccountInfo();
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             <AccountHeader title="Sysvar: Recent Blockhashes" refresh={() => refresh(account.pubkey, 'parsed')} />
 
             <TableCardBody>
@@ -63,7 +63,7 @@ function SysvarAccountRecentBlockhashesCard({
 function SysvarAccountSlotHashes({ account }: { account: Account; sysvarAccount: SysvarSlotHashesAccount }) {
     const refresh = useFetchAccountInfo();
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             <AccountHeader title="Sysvar: Slot Hashes" refresh={() => refresh(account.pubkey, 'parsed')} />
 
             <TableCardBody>
@@ -89,7 +89,7 @@ function SysvarAccountSlotHistory({
         (v, k) => sysvarAccount.info.nextSlot - k
     );
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             <AccountHeader title="Sysvar: Slot History" refresh={() => refresh(account.pubkey, 'parsed')} />
 
             <TableCardBody>
@@ -98,9 +98,9 @@ function SysvarAccountSlotHistory({
 
                 <tr>
                     <td className="align-top">
-                        Slot History <span className="text-muted">(previous 100 slots)</span>
+                        Slot History <span className="text-muted-foreground">(previous 100 slots)</span>
                     </td>
-                    <td className="text-lg-end font-monospace">
+                    <td className="lg:text-right font-mono">
                         {history.map(val => (
                             <p key={val} className="mb-0">
                                 <Slot slot={val} link />
@@ -116,7 +116,7 @@ function SysvarAccountSlotHistory({
 function SysvarAccountStakeHistory({ account }: { account: Account; sysvarAccount: SysvarStakeHistoryAccount }) {
     const refresh = useFetchAccountInfo();
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             <AccountHeader title="Sysvar: Stake History" refresh={() => refresh(account.pubkey, 'parsed')} />
 
             <TableCardBody>
@@ -130,7 +130,7 @@ function SysvarAccountStakeHistory({ account }: { account: Account; sysvarAccoun
 function SysvarAccountFeesCard({ account, sysvarAccount }: { account: Account; sysvarAccount: SysvarFeesAccount }) {
     const refresh = useFetchAccountInfo();
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             <AccountHeader title="Sysvar: Fees" refresh={() => refresh(account.pubkey, 'parsed')} />
 
             <TableCardBody>
@@ -139,7 +139,7 @@ function SysvarAccountFeesCard({ account, sysvarAccount }: { account: Account; s
 
                 <tr>
                     <td>Lamports Per Signature</td>
-                    <td className="text-lg-end">{sysvarAccount.info.feeCalculator.lamportsPerSignature}</td>
+                    <td className="lg:text-right">{sysvarAccount.info.feeCalculator.lamportsPerSignature}</td>
                 </tr>
             </TableCardBody>
         </div>
@@ -155,7 +155,7 @@ function SysvarAccountEpochScheduleCard({
 }) {
     const refresh = useFetchAccountInfo();
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             <AccountHeader title="Sysvar: Epoch Schedule" refresh={() => refresh(account.pubkey, 'parsed')} />
 
             <TableCardBody>
@@ -164,29 +164,29 @@ function SysvarAccountEpochScheduleCard({
 
                 <tr>
                     <td>Slots Per Epoch</td>
-                    <td className="text-lg-end">{sysvarAccount.info.slotsPerEpoch}</td>
+                    <td className="lg:text-right">{sysvarAccount.info.slotsPerEpoch}</td>
                 </tr>
 
                 <tr>
                     <td>Leader Schedule Slot Offset</td>
-                    <td className="text-lg-end">{sysvarAccount.info.leaderScheduleSlotOffset}</td>
+                    <td className="lg:text-right">{sysvarAccount.info.leaderScheduleSlotOffset}</td>
                 </tr>
 
                 <tr>
                     <td>Epoch Warmup Enabled</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <code>{sysvarAccount.info.warmup ? 'true' : 'false'}</code>
                     </td>
                 </tr>
 
                 <tr>
                     <td>First Normal Epoch</td>
-                    <td className="text-lg-end">{sysvarAccount.info.firstNormalEpoch}</td>
+                    <td className="lg:text-right">{sysvarAccount.info.firstNormalEpoch}</td>
                 </tr>
 
                 <tr>
                     <td>First Normal Slot</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Slot slot={sysvarAccount.info.firstNormalSlot} />
                     </td>
                 </tr>
@@ -198,7 +198,7 @@ function SysvarAccountEpochScheduleCard({
 function SysvarAccountClockCard({ account, sysvarAccount }: { account: Account; sysvarAccount: SysvarClockAccount }) {
     const refresh = useFetchAccountInfo();
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             <AccountHeader title="Sysvar: Clock" refresh={() => refresh(account.pubkey, 'parsed')} />
 
             <TableCardBody>
@@ -207,28 +207,28 @@ function SysvarAccountClockCard({ account, sysvarAccount }: { account: Account; 
 
                 <tr>
                     <td>Timestamp</td>
-                    <td className="text-lg-end font-monospace">
+                    <td className="lg:text-right font-mono">
                         {displayTimestamp(sysvarAccount.info.unixTimestamp * 1000)}
                     </td>
                 </tr>
 
                 <tr>
                     <td>Epoch</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Epoch epoch={sysvarAccount.info.epoch} link />
                     </td>
                 </tr>
 
                 <tr>
                     <td>Leader Schedule Epoch</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Epoch epoch={sysvarAccount.info.leaderScheduleEpoch} link />
                     </td>
                 </tr>
 
                 <tr>
                     <td>Slot</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Slot slot={sysvarAccount.info.slot} link />
                     </td>
                 </tr>
@@ -240,7 +240,7 @@ function SysvarAccountClockCard({ account, sysvarAccount }: { account: Account; 
 function SysvarAccountRentCard({ account, sysvarAccount }: { account: Account; sysvarAccount: SysvarRentAccount }) {
     const refresh = useFetchAccountInfo();
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             <AccountHeader title="Sysvar: Rent" refresh={() => refresh(account.pubkey, 'parsed')} />
 
             <TableCardBody>
@@ -249,17 +249,17 @@ function SysvarAccountRentCard({ account, sysvarAccount }: { account: Account; s
 
                 <tr>
                     <td>Burn Percent</td>
-                    <td className="text-lg-end">{sysvarAccount.info.burnPercent + '%'}</td>
+                    <td className="lg:text-right">{sysvarAccount.info.burnPercent + '%'}</td>
                 </tr>
 
                 <tr>
                     <td>Exemption Threshold</td>
-                    <td className="text-lg-end">{sysvarAccount.info.exemptionThreshold} years</td>
+                    <td className="lg:text-right">{sysvarAccount.info.exemptionThreshold} years</td>
                 </tr>
 
                 <tr>
                     <td>Lamports Per Byte Year</td>
-                    <td className="text-lg-end">{sysvarAccount.info.lamportsPerByteYear}</td>
+                    <td className="lg:text-right">{sysvarAccount.info.lamportsPerByteYear}</td>
                 </tr>
             </TableCardBody>
         </div>
@@ -280,7 +280,7 @@ function SysvarAccountRewardsCard({
     }).format(sysvarAccount.info.validatorPointValue);
 
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             <AccountHeader title="Sysvar: Rewards" refresh={() => refresh(account.pubkey, 'parsed')} />
 
             <TableCardBody>
@@ -289,7 +289,7 @@ function SysvarAccountRewardsCard({
 
                 <tr>
                     <td>Validator Point Value</td>
-                    <td className="text-lg-end font-monospace">{validatorPointValueFormatted} lamports</td>
+                    <td className="lg:text-right font-mono">{validatorPointValueFormatted} lamports</td>
                 </tr>
             </TableCardBody>
         </div>

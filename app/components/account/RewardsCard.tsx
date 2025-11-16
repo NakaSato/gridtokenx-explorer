@@ -74,43 +74,47 @@ export function RewardsCard({ address }: { address: string }) {
 
     return (
         <>
-            <div className="card">
-                <div className="card-header">
-                    <div className="row align-items-center">
-                        <div className="col">
-                            <h3 className="card-header-title">Rewards</h3>
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="border-b px-6 py-4">
+                    <div className="flex items-center">
+                        <div className="flex-1">
+                            <h3 className="text-lg font-semibold">Rewards</h3>
                         </div>
                     </div>
                 </div>
 
                 {rewardsFound ? (
-                    <div className="tablresponsive mb-0">
-                        <table className="table tablsm tablnowrap card-table">
+                    <div className="mb-0 overflow-x-auto">
+                        <table className="w-full text-sm">
                             <thead>
                                 <tr>
-                                    <th className="w-1 text-muted">Epoch</th>
-                                    <th className="text-muted">Effective Slot</th>
-                                    <th className="text-muted">Reward Amount</th>
-                                    <th className="text-muted">Post Balance</th>
+                                    <th className="text-muted-foreground w-1">Epoch</th>
+                                    <th className="text-muted-foreground">Effective Slot</th>
+                                    <th className="text-muted-foreground">Reward Amount</th>
+                                    <th className="text-muted-foreground">Post Balance</th>
                                 </tr>
                             </thead>
                             <tbody className="list">{rewardsList}</tbody>
                         </table>
                     </div>
                 ) : (
-                    <div className="card-body">
+                    <div className="p-6">
                         No rewards issued between epochs {lowestFetchedEpoch} and {highestFetchedEpoch}
                     </div>
                 )}
 
-                <div className="card-footer">
+                <div className="border-t px-6 py-4">
                     {foundOldest ? (
-                        <div className="text-muted text-center">Fetched full reward history</div>
+                        <div className="text-muted-foreground text-center">Fetched full reward history</div>
                     ) : (
-                        <button className="btn btn-primary w-100" onClick={() => loadMore()} disabled={fetching}>
+                        <button
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-md px-4 py-2"
+                            onClick={() => loadMore()}
+                            disabled={fetching}
+                        >
                             {fetching ? (
                                 <>
-                                    <span className="align-text-top spinner-grow-sm m2"></span>
+                                    <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent align-text-top"></span>
                                     Loading
                                 </>
                             ) : (

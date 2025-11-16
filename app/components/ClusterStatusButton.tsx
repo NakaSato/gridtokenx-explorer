@@ -28,13 +28,14 @@ export const ClusterStatusButton = () => {
         return `btn d-block btn-${variant}`;
     };
 
-    const spinnerClasses = 'align-text-top spinner-grow spinner-grow-sm m2';
+    const spinnerClasses =
+        'inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin align-text-top mr-2';
 
     switch (status) {
         case ClusterStatus.Connected:
             return (
                 <span className={btnClasses('primary')} onClick={onClickHandler}>
-                    <CheckCircle className="fe m2" size={15} />
+                    <CheckCircle className="fe mr-2" size={15} />
                     {statusName}
                 </span>
             );
@@ -50,7 +51,7 @@ export const ClusterStatusButton = () => {
         case ClusterStatus.Failure:
             return (
                 <span className={btnClasses('danger')} onClick={onClickHandler}>
-                    <AlertCircle className="m2" size={15} />
+                    <AlertCircle className="mr-2" size={15} />
                     {statusName}
                 </span>
             );

@@ -30,8 +30,10 @@ export function InfoTooltip({ bottom, right, text, children }: Props) {
             onMouseOver={() => setState('show')}
             onMouseOut={() => setState('hide')}
         >
-            <div className={`d-flex align-items-center justify-content-${justify}`}>
-                {children} <HelpCircle className="ms-2" size={13} />
+            <div className={`flex items-center ${
+                justify === 'start' ? 'justify-start' : justify === 'end' ? 'justify-end' : 'justify-center'
+            }`}>
+                {children} <HelpCircle className="ml-2" size={13} />
             </div>
             <Popover bottom={bottom} right={right} state={state} text={text} />
         </div>

@@ -28,28 +28,28 @@ export function InitializeDetailsCard(props: {
         >
             <tr>
                 <td>Program</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={StakeProgram.programId} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Stake Address</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.stakeAccount} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Stake Authority Address</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.authorized.staker} alignRight link />
                 </td>
             </tr>
 
             <tr>
                 <td>Withdraw Authority Address</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={info.authorized.withdrawer} alignRight link />
                 </td>
             </tr>
@@ -57,7 +57,7 @@ export function InitializeDetailsCard(props: {
             {info.lockup.epoch > 0 && (
                 <tr>
                     <td>Lockup Expiry Epoch</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Epoch epoch={info.lockup.epoch} link />
                     </td>
                 </tr>
@@ -66,7 +66,7 @@ export function InitializeDetailsCard(props: {
             {info.lockup.unixTimestamp > 0 && (
                 <tr>
                     <td>Lockup Expiry Timestamp</td>
-                    <td className="text-lg-end font-monospace">
+                    <td className="lg:text-right font-mono">
                         {displayTimestampUtc(info.lockup.unixTimestamp * 1000)}
                     </td>
                 </tr>
@@ -75,7 +75,7 @@ export function InitializeDetailsCard(props: {
             {!info.lockup.custodian.equals(SystemProgram.programId) && (
                 <tr>
                     <td>Lockup Custodian Address</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Address pubkey={info.lockup.custodian} alignRight link />
                     </td>
                 </tr>

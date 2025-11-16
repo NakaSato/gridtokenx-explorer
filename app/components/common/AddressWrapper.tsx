@@ -24,7 +24,7 @@ export function Address(props: Props) {
     const fallback = typeof props.pubkey === 'string' ? props.pubkey : props.pubkey.toBase58();
     
     return (
-        <Suspense fallback={<span className="font-monospace">{fallback}</span>}>
+        <Suspense fallback={<span className="font-mono">{fallback}</span>}>
             <AddressComponent {...props} pubkey={pubkey} />
         </Suspense>
     );

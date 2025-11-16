@@ -11,7 +11,7 @@ import {
     parseSetComputeUnitLimitInstruction,
     parseSetComputeUnitPriceInstruction,
     parseSetLoadedAccountsDataSizeLimitInstruction,
-} from '@solana-program/computbudget';
+} from '@solana-program/compute-budget';
 import { microLamportsToLamportsString } from '@utils/index';
 import React from 'react';
 
@@ -55,21 +55,21 @@ export function ComputeBudgetDetailsCard({
                     >
                         <tr>
                             <td>Program</td>
-                            <td className="text-lg-end">
+                            <td className="lg:text-right">
                                 <Address pubkey={ix.programId} alignRight link />
                             </td>
                         </tr>
 
                         <tr>
                             <td>Requested Compute Units</td>
-                            <td className="text-lg-end font-monospace">{`${new Intl.NumberFormat('en-US').format(
+                            <td className="lg:text-right font-mono">{`${new Intl.NumberFormat('en-US').format(
                                 units
                             )} compute units`}</td>
                         </tr>
 
                         <tr>
                             <td>Additional Fee (SOL)</td>
-                            <td className="text-lg-end">
+                            <td className="lg:text-right">
                                 <SolBalance lamports={additionalFee} />
                             </td>
                         </tr>
@@ -91,14 +91,14 @@ export function ComputeBudgetDetailsCard({
                     >
                         <tr>
                             <td>Program</td>
-                            <td className="text-lg-end">
+                            <td className="lg:text-right">
                                 <Address pubkey={ix.programId} alignRight link />
                             </td>
                         </tr>
 
                         <tr>
                             <td>Requested Heap Frame (Bytes)</td>
-                            <td className="text-lg-end font-monospace">
+                            <td className="lg:text-right font-mono">
                                 {new Intl.NumberFormat('en-US').format(bytes)}
                             </td>
                         </tr>
@@ -120,14 +120,14 @@ export function ComputeBudgetDetailsCard({
                     >
                         <tr>
                             <td>Program</td>
-                            <td className="text-lg-end">
+                            <td className="lg:text-right">
                                 <Address pubkey={ix.programId} alignRight link />
                             </td>
                         </tr>
 
                         <tr>
                             <td>Compute Unit Limit</td>
-                            <td className="text-lg-end font-monospace">{`${new Intl.NumberFormat('en-US').format(
+                            <td className="lg:text-right font-mono">{`${new Intl.NumberFormat('en-US').format(
                                 units
                             )} compute units`}</td>
                         </tr>
@@ -152,14 +152,14 @@ export function ComputeBudgetDetailsCard({
                     >
                         <tr>
                             <td>Program</td>
-                            <td className="text-lg-end">
+                            <td className="lg:text-right">
                                 <Address pubkey={ix.programId} alignRight link />
                             </td>
                         </tr>
 
                         <tr>
                             <td>Compute Unit Price</td>
-                            <td className="text-lg-end font-monospace">{`${microLamportsToLamportsString(
+                            <td className="lg:text-right font-mono">{`${microLamportsToLamportsString(
                                 microLamports
                             )} lamports per compute unit`}</td>
                         </tr>
@@ -184,14 +184,14 @@ export function ComputeBudgetDetailsCard({
                     >
                         <tr>
                             <td>Program</td>
-                            <td className="text-lg-end">
+                            <td className="lg:text-right">
                                 <Address pubkey={ix.programId} alignRight link />
                             </td>
                         </tr>
 
                         <tr>
                             <td>Account Data Size Limit</td>
-                            <td className="text-lg-end font-monospace">{`${accountDataSizeLimit} bytes`}</td>
+                            <td className="lg:text-right font-mono">{`${accountDataSizeLimit} bytes`}</td>
                         </tr>
                     </InstructionCardComponent>
                 );

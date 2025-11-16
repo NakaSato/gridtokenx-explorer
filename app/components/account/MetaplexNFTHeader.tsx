@@ -9,7 +9,7 @@ import { useClusterPath } from '@utils/url';
 import Link from 'next/link';
 import React, { createRef } from 'react';
 import { AlertOctagon, Check, ChevronDown } from 'react-feather';
-import useAsyncEffect from 'usasync-effect';
+import useAsyncEffect from 'use-async-effect';
 
 export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; address: string }) {
     const collection = nftData.metadata.collection;
@@ -43,30 +43,30 @@ export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; addr
                 dropdown.dispose();
             }
         },
-        [dropdownRef]
+        [dropdownRef],
     );
     return (
-        <div className="row">
-            <div className="col-auto ms-2 d-flex align-items-center">
+        <div className="-mx-2 flex flex-wrap">
+            <div className="ml-2 flex flex-none items-center">
                 <ArtContent pubkey={address} data={data} />
             </div>
-            <div className="col mb-3 ms-0.5 mt-3">
-                {<h6 className="header-pretitle ms-1">Metaplex NFT</h6>}
-                <div className="d-flex align-items-center">
-                    <h2 className="header-title ms-1 align-items-center no-overflow-with-ellipsis">
+            <div className="mt-3 mb-3 ml-0.5 flex-1">
+                {<h6 className="text-muted-foreground ml-1 text-xs uppercase">Metaplex NFT</h6>}
+                <div className="flex items-center">
+                    <h2 className="ml-1 items-center truncate text-2xl font-bold">
                         {metadata.data.name !== '' ? metadata.data.name : 'No NFT name was found'}
                     </h2>
                     {getEditionPill(nftData.editionInfo)}
                     {isVerifiedCollection ? getVerifiedCollectionPill() : null}
                 </div>
-                <h4 className="header-pretitle ms-1 mt-1 no-overflow-with-ellipsis">
+                <h4 className="text-muted-foreground mt-1 ml-1 truncate text-xs uppercase">
                     {metadata.data.symbol !== '' ? metadata.data.symbol : 'No Symbol was found'}
                 </h4>
-                <div className="mb-2 mt-2">{getSaleTypePill(metadata.primarySaleHappened)}</div>
-                <div className="mb-3 mt-2">{getIsMutablePill(metadata.isMutable)}</div>
-                <div className="btn-group">
+                <div className="mt-2 mb-2">{getSaleTypePill(metadata.primarySaleHappened)}</div>
+                <div className="mt-2 mb-3">{getIsMutablePill(metadata.isMutable)}</div>
+                <div className="inline-flex">
                     <button
-                        className="btn btn-dark btn-sm creators-dropdown-button-width"
+                        className="min-w-[120px] rounded-md bg-gray-800 px-3 py-1.5 text-sm text-white hover:bg-gray-700"
                         type="button"
                         aria-haspopup="true"
                         aria-expanded="false"
@@ -75,7 +75,9 @@ export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; addr
                     >
                         Creators <ChevronDown size={15} className="align-text-top" />
                     </button>
-                    <div className="dropdown-menu mt-2">{getCreatorDropdownItems(metadata.data.creators)}</div>
+                    <div className="absolute z-10 mt-12 rounded-md border bg-white shadow-lg">
+                        {getCreatorDropdownItems(metadata.data.creators)}
+                    </div>
                 </div>
             </div>
         </div>
@@ -90,13 +92,13 @@ export function getCreatorDropdownItems(creators: Creator[] | null) {
         const shareTooltip = 'The percentage of the proceeds a creator receives when this NFT is sold.';
 
         return (
-            <div className={'d-flex align-items-center dropdown-header creator-dropdown-entry'}>
-                <div className="d-flex font-monospace creator-dropdown-header">
+            <div className={'flex items-center border-b px-4 py-2'}>
+                <div className="flex font-mono font-semibold">
                     <span>Creator Address</span>
                     <InfoTooltip bottom text={creatorTooltip} />
                 </div>
-                <div className="d-flex font-monospace">
-                    <span className="font-monospace">Royalty</span>
+                <div className="flex font-mono">
+                    <span className="font-mono">Royalty</span>
                     <InfoTooltip bottom text={shareTooltip} />
                 </div>
             </div>
@@ -104,18 +106,18 @@ export function getCreatorDropdownItems(creators: Creator[] | null) {
     };
 
     const getVerifiedIcon = (isVerified: boolean) => {
-        return isVerified ? <Check className="ms-3" size={15} /> : <AlertOctagon className="m3" size={15} />;
+        return isVerified ? <Check className="ml-3" size={15} /> : <AlertOctagon className="mr-3" size={15} />;
     };
 
     const CreatorEntry = (creator: Creator) => {
         const creatorPath = useClusterPath({ pathname: `/address/${creator.address}` });
         return (
-            <div className={'d-flex align-items-center font-monospace creator-dropdown-entry ms-3 m3'}>
+            <div className={'mr-3 flex items-center px-4 py-2 font-mono'}>
                 {getVerifiedIcon(creator.verified)}
-                <Link className="dropdown-item font-monospace creator-dropdown-entry-address" href={creatorPath}>
+                <Link className="block flex-1 px-4 py-2 font-mono hover:bg-gray-100" href={creatorPath}>
                     {creator.address}
                 </Link>
-                <div className="m3"> {`${creator.share}%`}</div>
+                <div className="mr-3"> {`${creator.share}%`}</div>
             </div>
         );
     };
@@ -132,8 +134,8 @@ export function getCreatorDropdownItems(creators: Creator[] | null) {
     }
 
     return (
-        <div className={'dropdown-item font-monospace'}>
-            <div className="m3">No creators are associated with this NFT.</div>
+        <div className={'px-4 py-2 font-mono'}>
+            <div className="mr-3">No creators are associated with this NFT.</div>
         </div>
     );
 }
@@ -143,13 +145,13 @@ function getEditionPill(editionInfo: EditionInfo) {
     const edition = editionInfo.edition;
 
     return (
-        <div className={'d-inlinflex ms-2'}>
-            <span className="badge badgpill bg-dark">{`${
+        <div className={'ml-2 inline-flex'}>
+            <span className="rounded-full bg-gray-800 px-2 py-1 text-xs text-white">{`${
                 edition && masterEdition
                     ? `Edition ${edition.edition.toNumber()} / ${masterEdition.supply.toNumber()}`
                     : masterEdition
-                    ? 'Master Edition'
-                    : 'No Master Edition Information'
+                      ? 'Master Edition'
+                      : 'No Master Edition Information'
             }`}</span>
         </div>
     );
@@ -162,8 +164,8 @@ function getSaleTypePill(hasPrimarySaleHappened: boolean) {
         'Creator(s) split the Seller Fee when this NFT is sold. The owner receives the remaining proceeds.';
 
     return (
-        <div className={'d-inlinflex align-items-center'}>
-            <span className="badge badgpill bg-dark">{`${
+        <div className={'inline-flex items-center'}>
+            <span className="rounded-full bg-gray-800 px-2 py-1 text-xs text-white">{`${
                 hasPrimarySaleHappened ? 'Secondary Market' : 'Primary Market'
             }`}</span>
             <InfoTooltip bottom text={hasPrimarySaleHappened ? secondaryMarketTooltip : primaryMarketTooltip} />
@@ -172,15 +174,17 @@ function getSaleTypePill(hasPrimarySaleHappened: boolean) {
 }
 
 export function getIsMutablePill(isMutable: boolean) {
-    return <span className="badge badgpill bg-dark">{`${isMutable ? 'Mutable' : 'Immutable'}`}</span>;
+    return (
+        <span className="rounded-full bg-gray-800 px-2 py-1 text-xs text-white">{`${isMutable ? 'Mutable' : 'Immutable'}`}</span>
+    );
 }
 
 export function getVerifiedCollectionPill() {
     const onchainVerifiedToolTip =
         'This NFT has been verified as a member of an on-chain collection. This tag guarantees authenticity.';
     return (
-        <div className={'d-inlinflex align-items-center ms-2'}>
-            <span className="badge badgpill bg-dark">{'Verified Collection'}</span>
+        <div className={'ml-2 inline-flex items-center'}>
+            <span className="rounded-full bg-gray-800 px-2 py-1 text-xs text-white">{'Verified Collection'}</span>
             <InfoTooltip bottom text={onchainVerifiedToolTip} />
         </div>
     );

@@ -22,17 +22,21 @@ export function HistoryCardHeader({
     fetching: boolean;
 }) {
     return (
-        <div className="card-header align-items-center">
-            <h3 className="card-header-title">{title}</h3>
-            <button className="btn btn-white btn-sm" disabled={fetching} onClick={() => refresh()}>
+        <div className="flex items-center border-b px-6 py-4">
+            <h3 className="text-lg font-semibold">{title}</h3>
+            <button
+                className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                disabled={fetching}
+                onClick={() => refresh()}
+            >
                 {fetching ? (
                     <>
-                        <span className="align-text-top spinner-grow spinner-grow-sm m2"></span>
+                        <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current align-text-top"></span>
                         Loading
                     </>
                 ) : (
                     <>
-                        <RefreshCw className="align-text-top m2" size={13} />
+                        <RefreshCw className="mr-2 align-text-top" size={13} />
                         Refresh
                     </>
                 )}
@@ -51,14 +55,18 @@ export function HistoryCardFooter({
     loadMore: () => void;
 }) {
     return (
-        <div className="card-footer">
+        <div className="border-t px-6 py-4">
             {foundOldest ? (
-                <div className="text-muted text-center">Fetched full history</div>
+                <div className="text-muted-foreground text-center">Fetched full history</div>
             ) : (
-                <button className="btn btn-primary w-100" onClick={() => loadMore()} disabled={fetching}>
+                <button
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-md px-4 py-2"
+                    onClick={() => loadMore()}
+                    disabled={fetching}
+                >
                     {fetching ? (
                         <>
-                            <span className="align-text-top spinner-grow spinner-grow-sm m2"></span>
+                            <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current align-text-top"></span>
                             Loading
                         </>
                     ) : (
@@ -85,10 +93,10 @@ export function getTransactionRows(transactions: ConfirmedSignatureInfo[]): Tran
             let statusText;
             let statusClass;
             if (slotTransaction.err) {
-                statusClass = 'warning';
+                statusClass = 'bg-yellow-100 text-yellow-800';
                 statusText = 'Failed';
             } else {
-                statusClass = 'success';
+                statusClass = 'bg-green-100 text-green-800';
                 statusText = 'Success';
             }
             transactionRows.push({

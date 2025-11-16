@@ -10,7 +10,7 @@ export function BalanceDelta({ delta, isSol = false }: { delta: BigNumber; isSol
     }
 
     if (delta.gt(0)) {
-        return <span className="badge bg-success-soft">+{isSol ? sols : delta.toString()}</span>;
+        return <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs">+{isSol ? sols : delta.toString()}</span>;
     } else if (delta.lt(0)) {
         return <span className="badge bg-warning-soft">{isSol ? <>-{sols}</> : delta.toString()}</span>;
     }

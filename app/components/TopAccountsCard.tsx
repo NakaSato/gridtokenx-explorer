@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import React, { createRef, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import useAsyncEffect from 'usasync-effect';
+import useAsyncEffect from 'use-async-effect';
 
 import { percentage } from '../utils/math';
 
@@ -64,36 +64,39 @@ export function TopAccountsCard() {
 
     return (
         <>
-            <div className="card">
-                <div className="card-header">
-                    <div className="row align-items-center">
-                        <div className="col">
-                            <h4 className="card-header-title">Largest Accounts</h4>
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="border-b px-6 py-4">
+                    <div className="flex items-center">
+                        <div className="flex-1">
+                            <h4 className="text-lg font-semibold">Largest Accounts</h4>
                         </div>
 
-                        <div className="col-auto">
+                        <div className="flex-shrink-0">
                             <FilterDropdown filter={filter} />
                         </div>
                     </div>
                 </div>
 
                 {richList === Status.Idle && (
-                    <div className="card-body">
-                        <span className="btn btn-white ms-3 d-none d-md-inline" onClick={fetchRichList}>
+                    <div className="p-6">
+                        <span
+                            className="ml-3 hidden cursor-pointer items-center rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100 md:inline-flex"
+                            onClick={fetchRichList}
+                        >
                             Load Largest Accounts
                         </span>
                     </div>
                 )}
 
                 {accounts && (
-                    <div className="tablresponsive mb-0">
-                        <table className="table tablsm tablnowrap card-table">
+                    <div className="mb-0 overflow-x-auto">
+                        <table className="w-full text-sm">
                             <thead>
                                 <tr>
-                                    <th className="text-muted">Rank</th>
-                                    <th className="text-muted">Address</th>
-                                    <th className="text-muted text-end">Balance (SOL)</th>
-                                    <th className="text-muted text-end">% of {header} Supply</th>
+                                    <th className="text-muted-foreground">Rank</th>
+                                    <th className="text-muted-foreground">Address</th>
+                                    <th className="text-muted-foreground text-right">Balance (SOL)</th>
+                                    <th className="text-muted-foreground text-right">% of {header} Supply</th>
                                 </tr>
                             </thead>
                             <tbody className="list">
@@ -111,15 +114,15 @@ const renderAccountRow = (account: AccountBalancePair, index: number, supply: bi
     return (
         <tr key={index}>
             <td>
-                <span className="badge bg-gray-soft badgpill">{index + 1}</span>
+                <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700">{index + 1}</span>
             </td>
             <td>
                 <Address pubkey={account.address} link />
             </td>
-            <td className="text-end">
+            <td className="text-right">
                 <SolBalance lamports={account.lamports} maximumFractionDigits={0} />
             </td>
-            <td className="text-end">{percentage(BigInt(100 * account.lamports), supply, 4).toFixed(3) + '%'}</td>
+            <td className="text-right">{percentage(BigInt(100 * account.lamports), supply, 4).toFixed(3) + '%'}</td>
         </tr>
     );
 };
@@ -172,14 +175,19 @@ const FilterDropdown = ({ filter }: DropdownProps) => {
                 dropdown.dispose();
             }
         },
-        [dropdownRef]
+        [dropdownRef],
     );
     return (
         <div className="dropdown">
-            <button className="btn btn-white btn-sm" type="button" data-bs-toggle="dropdown" ref={dropdownRef}>
+            <button
+                className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                type="button"
+                data-bs-toggle="dropdown"
+                ref={dropdownRef}
+            >
                 {filterTitle(filter)} <ChevronDown size={13} className="align-text-top" />
             </button>
-            <div className="dropdown-menu-end dropdown-menu">
+            <div className="absolute right-0 mt-2 rounded-md border bg-white shadow-lg">
                 {FILTERS.map(filterOption => (
                     <FilterLink currentFilter={filter} filterOption={filterOption} key={filterOption} />
                 ))}
@@ -205,7 +213,7 @@ function FilterLink({ currentFilter, filterOption }: { currentFilter: Filter; fi
         <Link
             key={filterOption || 'null'}
             href={href}
-            className={`dropdown-item${filterOption === currentFilter ? ' active' : ''}`}
+            className={`block px-4 py-2 hover:bg-gray-100${filterOption === currentFilter ? 'bg-gray-100 font-semibold' : ''}`}
         >
             {filterTitle(filterOption)}
         </Link>

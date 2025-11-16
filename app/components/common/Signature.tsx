@@ -21,9 +21,9 @@ export function Signature({ signature, alignRight, link, truncate, truncateChars
     }
     const transactionPath = useClusterPath({ pathname: `/tx/${signature}` });
     return (
-        <div className={`d-flex align-items-center ${alignRight ? 'justify-content-end' : ''}`}>
+        <div className={`flex items-center ${alignRight ? 'justify-end' : ''}`}>
             <Copyable text={signature} replaceText={!alignRight}>
-                <span className="font-monospace">
+                <span className="font-mono">
                     {link ? (
                         <Link className={truncate ? 'text-truncate signaturtruncate' : ''} href={transactionPath}>
                             {signatureLabel}

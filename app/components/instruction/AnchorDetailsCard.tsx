@@ -54,7 +54,7 @@ function AnchorDetails({ ix, anchorProgram }: { ix: TransactionInstruction; anch
                 coder = new BorshEventCoder(anchorProgram.idl);
                 decodedIxData = coder.decode(ix.data.slice(8).toString('base64'));
                 const ixEventDef = anchorProgram.idl.events?.find(
-                    ixDef => ixDef.name === decodedIxData?.name
+                    ixDef => ixDef.name === decodedIxData?.name,
                 ) as IdlEvent;
 
                 const ixEventFields = anchorProgram.idl.types?.find((type: any) => type.name === ixEventDef.name);
@@ -104,13 +104,13 @@ function AnchorDetails({ ix, anchorProgram }: { ix: TransactionInstruction; anch
         <>
             <tr>
                 <td>Program</td>
-                <td className="text-lg-end" colSpan={2}>
+                <td className="lg:text-right" colSpan={2}>
                     <Address pubkey={ix.programId} alignRight link raw overrideText={programName} />
                 </td>
             </tr>
             <tr className="tablsep">
                 <td>Account Name</td>
-                <td className="text-lg-end" colSpan={2}>
+                <td className="lg:text-right" colSpan={2}>
                     Address
                 </td>
             </tr>
@@ -118,17 +118,25 @@ function AnchorDetails({ ix, anchorProgram }: { ix: TransactionInstruction; anch
                 return (
                     <tr key={keyIndex}>
                         <td>
-                            <div className="m2 d-md-inline">
+                            <div className="d-md-inline mr-2">
                                 {ixAccounts
                                     ? keyIndex < ixAccounts.length
                                         ? `${camelToTitleCase(ixAccounts[keyIndex].name)}`
                                         : `Remaining Account #${keyIndex + 1 - ixAccounts.length}`
                                     : `Account #${keyIndex + 1}`}
                             </div>
-                            {isWritable && <span className="badge bg-danger-soft m1">Writable</span>}
-                            {isSigner && <span className="badge bg-info-soft m1">Signer</span>}
+                            {isWritable && (
+                                <span className="mr-1 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                                    Writable
+                                </span>
+                            )}
+                            {isSigner && (
+                                <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                                    Signer
+                                </span>
+                            )}
                         </td>
-                        <td className="text-lg-end" colSpan={2}>
+                        <td className="lg:text-right" colSpan={2}>
                             <Address pubkey={pubkey} alignRight link />
                         </td>
                     </tr>
@@ -140,7 +148,7 @@ function AnchorDetails({ ix, anchorProgram }: { ix: TransactionInstruction; anch
                     <tr className="tablsep">
                         <td>Argument Name</td>
                         <td>Type</td>
-                        <td className="text-lg-end">Value</td>
+                        <td className="lg:text-right">Value</td>
                     </tr>
                     {mapIxArgsToRows(decodedIxData.data, ixDef, anchorProgram.idl)}
                 </>

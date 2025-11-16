@@ -29,8 +29,8 @@ export function VerifiedBuildCard({ data, pubkey }: { data: UpgradeableLoaderAcc
 
     if (!registryInfo) {
         return (
-            <div className="card">
-                <div className="card-body text-center">
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="p-6 text-center">
                     Verified build information not yet uploaded by the program authority. For more information, see the{' '}
                     <Link href="https://solana.com/developers/guides/advanced/verified-builds" target="_blank">
                         Verified Build Guide
@@ -56,12 +56,12 @@ export function VerifiedBuildCard({ data, pubkey }: { data: UpgradeableLoaderAcc
     }
 
     return (
-        <div className="card security-txt">
-            <div className="card-header">
-                <h3 className="card-header-title mb-0 d-flex align-items-center">Verified Build</h3>
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="border-b px-6 py-4">
+                <h3 className="mb-0 flex items-center text-lg font-semibold">Verified Build</h3>
                 <small>{verificationMessage}</small>
             </div>
-            <div className="alert mt-2 mb-2">
+            <div className="mt-2 mb-2 rounded-md px-4 py-3">
                 A verified build badge indicates that this program was built from source code that is publicly
                 available, but does not imply that this program has been audited. For more details, refer to the{' '}
                 <a
@@ -69,7 +69,7 @@ export function VerifiedBuildCard({ data, pubkey }: { data: UpgradeableLoaderAcc
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    Verified Builds Guide <ExternalLink className="align-text-top ms-1" size={13} />
+                    Verified Builds Guide <ExternalLink className="ms-1 align-text-top" size={13} />
                 </a>
                 .
             </div>
@@ -77,7 +77,7 @@ export function VerifiedBuildCard({ data, pubkey }: { data: UpgradeableLoaderAcc
                 {ROWS.filter(x => x.key in registryInfo).map((x, idx) => {
                     return (
                         <tr key={idx}>
-                            <td className="w-100">{x.display}</td>
+                            <td className="w-full">{x.display}</td>
                             <RenderEntry value={registryInfo[x.key]} type={x.type} />
                         </tr>
                     );
@@ -149,29 +149,40 @@ function RenderEntry({ value, type }: { value: OsecRegistryInfo[keyof OsecRegist
     switch (type) {
         case DisplayType.Boolean:
             return (
-                <td className={'text-lg-end font-monospace'}>
-                    <span className={`badge bg-${value ? 'success' : 'warning'}-soft`}>{new String(value)}</span>
+                <td className={'font-mono lg:text-right'}>
+                    <span
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                            value ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                        }`}
+                    >
+                        {new String(value)}
+                    </span>
                 </td>
             );
         case DisplayType.String:
             if (Object.values(VerificationStatus).includes(value as VerificationStatus)) {
-                const badgeClass = value === VerificationStatus.Verified ? 'bg-success-soft' : 'bg-warning-soft';
-                const badgeValue = value === VerificationStatus.Verified ? 'true' : 'false';
+                const isVerified = value === VerificationStatus.Verified;
+                const badgeClass = isVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                const badgeValue = isVerified ? 'true' : 'false';
                 return (
-                    <td className="text-lg-end font-monospace">
-                        <span className={`badge ${badgeClass}`}>{badgeValue}</span>
+                    <td className="font-mono lg:text-right">
+                        <span
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${badgeClass}`}
+                        >
+                            {badgeValue}
+                        </span>
                     </td>
                 );
             }
             return (
-                <td className="text-lg-end font-monospace" style={{ whiteSpace: 'pre' }}>
+                <td className="font-mono lg:text-right" style={{ whiteSpace: 'pre' }}>
                     {value && (value as string).length > 1 ? value : '-'}
                 </td>
             );
         case DisplayType.LongString:
             return (
                 <td
-                    className="text-lg-end font-monospace"
+                    className="font-mono lg:text-right"
                     style={{
                         overflowWrap: 'break-word',
                         position: 'relative',
@@ -192,30 +203,30 @@ function RenderEntry({ value, type }: { value: OsecRegistryInfo[keyof OsecRegist
         case DisplayType.URL:
             if (isValidLink(value as string)) {
                 return (
-                    <td className="text-lg-end">
-                        <span className="font-monospace">
+                    <td className="lg:text-right">
+                        <span className="font-mono">
                             <a rel="noopener noreferrer" target="_blank" href={value as string}>
                                 {value}
-                                <ExternalLink className="align-text-top ms-2" size={13} />
+                                <ExternalLink className="ms-2 align-text-top" size={13} />
                             </a>
                         </span>
                     </td>
                 );
             }
             return (
-                <td className="text-lg-end font-monospace">
+                <td className="font-mono lg:text-right">
                     {value && (value as string).length > 1 ? (value as string).trim() : '-'}
                 </td>
             );
         case DisplayType.Date:
             return (
-                <td className="text-lg-end font-monospace">
+                <td className="font-mono lg:text-right">
                     {value && (value as string).length > 1 ? new Date(value as string).toUTCString() : '-'}
                 </td>
             );
         case DisplayType.PublicKey:
             return (
-                <td className="text-lg-end font-monospace">
+                <td className="font-mono lg:text-right">
                     <Address pubkey={new PublicKey(value as string)} link alignRight />
                 </td>
             );

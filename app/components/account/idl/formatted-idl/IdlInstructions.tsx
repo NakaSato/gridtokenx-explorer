@@ -12,12 +12,12 @@ export function IdlInstructionsView({ data }: { data: IxData }) {
     if (!data) return null;
 
     return (
-        <table className="table tablsm tablnowrap card-table">
+        <table className="w-full text-sm">
             <thead>
                 <tr>
-                    <th className="text-muted w-2">Name</th>
-                    <th className="text-muted">Arguments</th>
-                    <th className="text-muted">Accounts</th>
+                    <th className="text-muted-foreground w-2">Name</th>
+                    <th className="text-muted-foreground">Arguments</th>
+                    <th className="text-muted-foreground">Accounts</th>
                 </tr>
             </thead>
             <tbody className="list">
@@ -47,14 +47,14 @@ function IdlInstructionArguments({ data }: { data: IxArgsData }) {
 
 function IdlInstructionAccounts({ data }: { data: IxAccountsData }) {
     return (
-        <div className="d-flex gap-1 flex-column align-items-start justify-start flex-wrap">
+        <div className="flex flex-col flex-wrap items-start justify-start gap-1">
             {data.map(acc => {
                 // nested accs
                 if ('accounts' in acc) {
                     return (
                         <div key={acc.name}>
-                            <p className="text-muted mb-2">{acc.name}</p>
-                            <div className="px-3 py-2 bg-neutral-800">
+                            <p className="text-muted-foreground mb-2">{acc.name}</p>
+                            <div className="bg-neutral-800 px-3 py-2">
                                 <InstructionAccounts accounts={acc.accounts} />
                             </div>
                         </div>
@@ -78,7 +78,7 @@ function IdlInstructionAccounts({ data }: { data: IxAccountsData }) {
 
 function InstructionAccounts({ accounts }: { accounts: InstructionAccountData[] }) {
     return (
-        <div className="d-flex gap-1 flex-column align-items-start justify-start flex-wrap">
+        <div className="flex flex-col flex-wrap items-start justify-start gap-1">
             {accounts.map(({ docs, name, writable, signer, pda, optional }) => (
                 <IdlInstructionAccount
                     key={name}
@@ -111,12 +111,24 @@ function IdlInstructionAccount({
 }) {
     return (
         <IdlDocTooltip key={name} docs={docs}>
-            <div className="d-inlinflex align-items-center gap-2">
+            <div className="inline-flex items-center gap-2">
                 <span>{name}</span>
-                {!!isWritable && <span className="badge bg-info-soft">isMut</span>}
-                {!!isSigner && <span className="badge bg-warning-soft">isSigner</span>}
-                {!!isPda && <span className="badge bg-light-soft">pda</span>}
-                {!!isOptional && <span className="badge bg-secondary-soft">optional</span>}
+                {!!isWritable && <span className="rounded-full bg-blue-50 px-2 py-1 text-xs text-blue-700">isMut</span>}
+                {!!isSigner && (
+                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                        isSigner
+                    </span>
+                )}
+                {!!isPda && (
+                    <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800">
+                        pda
+                    </span>
+                )}
+                {!!isOptional && (
+                    <span className="inline-flex items-center rounded-full bg-gray-500 px-2 py-0.5 text-xs font-medium text-white">
+                        optional
+                    </span>
+                )}
             </div>
         </IdlDocTooltip>
     );

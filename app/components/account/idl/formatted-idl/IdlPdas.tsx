@@ -8,11 +8,11 @@ export function IdlPdasView({ data }: { data: FormattedIdl['pdas'] }) {
     if (!data) return null;
 
     return (
-        <table className="table tablsm tablnowrap card-table">
+        <table className="w-full text-sm">
             <thead>
                 <tr>
-                    <th className="text-muted w-2">Name</th>
-                    <th className="text-muted">Seeds</th>
+                    <th className="text-muted-foreground w-2">Name</th>
+                    <th className="text-muted-foreground">Seeds</th>
                 </tr>
             </thead>
             <tbody className="list">
@@ -23,7 +23,7 @@ export function IdlPdasView({ data }: { data: FormattedIdl['pdas'] }) {
                             <IdlDoc docs={pda.docs} />
                         </td>
                         <td>
-                            <div className="d-flex gap-2 flex-column items-center flex-wrap">
+                            <div className="d-flex flex-column flex-wrap items-center gap-2">
                                 {pda.seeds.map((seed, i) => (
                                     <div key={i} className="d-flex">
                                         {/*<IdlDocTooltip docs={seed.docs}>*/}

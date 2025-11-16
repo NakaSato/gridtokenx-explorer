@@ -59,7 +59,7 @@ function TransferRow({
     const { signature, blockTime, statusText, statusClass, transfer, index, childIndex, amountString, units } = data;
     const [amountWithScaledUiAmountMultiplier, scaledUiAmountMultiplier] = useScaledUiAmountForMint(
         tokenAddress,
-        amountString
+        amountString,
     );
 
     return (
@@ -68,7 +68,9 @@ function TransferRow({
                 <Signature signature={signature} link truncateChars={24} />
             </td>
 
-            {hasTimestamps && <td className="text-muted">{blockTime && <Moment date={blockTime * 1000} fromNow />}</td>}
+            {hasTimestamps && (
+                <td className="text-muted-foreground">{blockTime && <Moment date={blockTime * 1000} fromNow />}</td>
+            )}
 
             <td>
                 <Address pubkey={transfer.source} link truncateChars={16} />
@@ -87,7 +89,13 @@ function TransferRow({
             </td>
 
             <td>
-                <span className={`badge bg-${statusClass}-soft`}>{statusText}</span>
+                <span
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                        statusClass === 'success' ? 'bg-green-100 text-green-800' : 'bg-gray-800 text-white'
+                    }`}
+                >
+                    {statusText}
+                </span>
             </td>
         </tr>
     );
@@ -235,18 +243,18 @@ export function TokenTransfersCard({ address }: { address: string }) {
 
     const fetching = history.status === FetchStatus.Fetching;
     return (
-        <div className="card">
+        <div className="bg-card rounded-lg border shadow-sm">
             <HistoryCardHeader fetching={fetching} refresh={() => refresh()} title="Token Transfers" />
-            <div className="tablresponsive mb-0">
-                <table className="table tablsm tablnowrap card-table">
+            <div className="mb-0 overflow-x-auto">
+                <table className="w-full text-sm">
                     <thead>
                         <tr>
-                            <th className="text-muted">Transaction Signature</th>
-                            {hasTimestamps && <th className="text-muted">Age</th>}
-                            <th className="text-muted">Source</th>
-                            <th className="text-muted">Destination</th>
-                            <th className="text-muted">Amount</th>
-                            <th className="text-muted">Result</th>
+                            <th className="text-muted-foreground">Transaction Signature</th>
+                            {hasTimestamps && <th className="text-muted-foreground">Age</th>}
+                            <th className="text-muted-foreground">Source</th>
+                            <th className="text-muted-foreground">Destination</th>
+                            <th className="text-muted-foreground">Amount</th>
+                            <th className="text-muted-foreground">Result</th>
                         </tr>
                     </thead>
                     <tbody className="list">
@@ -269,7 +277,7 @@ export function TokenTransfersCard({ address }: { address: string }) {
 function getTransfer(
     instruction: ParsedInstruction | PartiallyDecodedInstruction,
     cluster: Cluster,
-    signature: string
+    signature: string,
 ): Transfer | TransferChecked | undefined {
     if ('parsed' in instruction && isTokenProgramData(instruction)) {
         try {

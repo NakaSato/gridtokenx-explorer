@@ -8,7 +8,7 @@ import { Badge } from '@/app/components/shared/ui/badge';
 import {
     getAnchorId,
     useTokenExtensionNavigation,
-} from '@/app/features/token-extensions/ustoken-extension-navigation';
+} from '@/app/features/token-extensions/use-token-extension-navigation';
 import { TokenExtension } from '@/app/validators/accounts/token-extension';
 
 import { TokenExtensionBadge } from '../common/TokenExtensionBadge';
@@ -35,7 +35,7 @@ export function TokenExtensionsSection({
         (id: string) => {
             setSelectedExtension(id === selectedExtension ? undefined : id);
         },
-        [selectedExtension, setSelectedExtension]
+        [selectedExtension, setSelectedExtension],
     );
 
     // handle accordion item click to change the selected extension
@@ -46,7 +46,7 @@ export function TokenExtensionsSection({
                 setSelectedExtension(undefined);
             }
         },
-        [selectedExtension, setSelectedExtension]
+        [selectedExtension, setSelectedExtension],
     );
 
     return (
@@ -129,8 +129,8 @@ function TokenExtensionAccordionItem({
 function TokenExtensionStateHeader({ name }: { name: string }) {
     return (
         <tr>
-            <th className="text-muted w-1">{name}</th>
-            <th className="text-muted"></th>
+            <th className="text-muted-foreground w-1">{name}</th>
+            <th className="text-muted-foreground"></th>
         </tr>
     );
 }
@@ -149,13 +149,13 @@ function ExtensionListItem({
             e.stopPropagation();
             onToggleRaw();
         },
-        [onToggleRaw]
+        [onToggleRaw],
     );
 
     return (
-        <div className="w-100 w-100 text-white grid grid-cols-12-ext items-center gap-2 text-sm">
+        <div className="grid-cols-12-ext grid w-100 items-center gap-2 text-sm text-white">
             {/* Name */}
-            <div className="flex min-w-80 items-center gap-2 whitespacnowrap font-normal max-sm:col-span-6 sm:col-span-6 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <div className="whitespacnowrap flex min-w-80 items-center gap-2 font-normal max-sm:col-span-6 sm:col-span-6 md:col-span-6 lg:col-span-4 xl:col-span-3">
                 <div>{ext.name}</div>
                 <TokenExtensionBadge extension={ext} />
             </div>
@@ -166,10 +166,10 @@ function ExtensionListItem({
             </span>
 
             {/* External links badges */}
-            <div className="text-white flex justify-end gap-1 max-sm:col-span-6 sm:col-span-6 md:col-span-6 lg:col-span-2 xl:col-span-2">
+            <div className="flex justify-end gap-1 text-white max-sm:col-span-6 sm:col-span-6 md:col-span-6 lg:col-span-2 xl:col-span-2">
                 <a key="raw" href="javascript:void(0)" onClick={handleToggleRaw}>
                     <Badge
-                        className="text-white font-normal"
+                        className="font-normal text-white"
                         as="link"
                         size="sm"
                         status={raw ? 'active' : 'inactive'}
@@ -180,7 +180,7 @@ function ExtensionListItem({
                 </a>
                 {ext.externalLinks.map((link, index) => (
                     <a key={index} href={link.url} target="_blank" rel="noopener noreferrer">
-                        <Badge variant="transparent" size="sm" as="link" className="text-white font-normal">
+                        <Badge variant="transparent" size="sm" as="link" className="font-normal text-white">
                             <ExternalLink size={16} />
                             {link.label}
                         </Badge>

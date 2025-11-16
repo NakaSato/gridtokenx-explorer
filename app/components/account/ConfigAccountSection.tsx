@@ -40,12 +40,12 @@ function StakeConfigCard({ account, configAccount }: { account: Account; configA
 
                 <tr>
                     <td>Warmup / Cooldown Rate</td>
-                    <td className="text-lg-end">{warmupCooldownFormatted}</td>
+                    <td className="lg:text-right">{warmupCooldownFormatted}</td>
                 </tr>
 
                 <tr>
                     <td>Slash Penalty</td>
-                    <td className="text-lg-end">{slashPenaltyFormatted}</td>
+                    <td className="lg:text-right">{slashPenaltyFormatted}</td>
                 </tr>
             </TableCardBody>
         </div>
@@ -65,21 +65,21 @@ function ValidatorInfoCard({ account, configAccount }: { account: Account; confi
                 {configAccount.info.configData.name && (
                     <tr>
                         <td>Name</td>
-                        <td className="text-lg-end">{configAccount.info.configData.name}</td>
+                        <td className="lg:text-right">{configAccount.info.configData.name}</td>
                     </tr>
                 )}
 
                 {configAccount.info.configData.keybaseUsername && (
                     <tr>
                         <td>Keybase Username</td>
-                        <td className="text-lg-end">{configAccount.info.configData.keybaseUsername}</td>
+                        <td className="lg:text-right">{configAccount.info.configData.keybaseUsername}</td>
                     </tr>
                 )}
 
                 {configAccount.info.configData.website && (
                     <tr>
                         <td>Website</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <a href={configAccount.info.configData.website} target="_blank" rel="noopener noreferrer">
                                 {configAccount.info.configData.website}
                             </a>
@@ -90,14 +90,14 @@ function ValidatorInfoCard({ account, configAccount }: { account: Account; confi
                 {configAccount.info.configData.details && (
                     <tr>
                         <td>Details</td>
-                        <td className="text-lg-end">{configAccount.info.configData.details}</td>
+                        <td className="lg:text-right">{configAccount.info.configData.details}</td>
                     </tr>
                 )}
 
                 {configAccount.info.keys && configAccount.info.keys.length > 1 && (
                     <tr>
                         <td>Signer</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <Address pubkey={new PublicKey(configAccount.info.keys[1].pubkey)} link alignRight />
                         </td>
                     </tr>

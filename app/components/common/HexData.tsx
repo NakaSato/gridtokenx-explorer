@@ -24,7 +24,7 @@ export function HexData({ raw }: { raw: Buffer }) {
         spans.push(
             <span key={i} className={color}>
                 {chunks.slice(i, i + SPAN_SIZE).join(' ')}&emsp;
-            </span>
+            </span>,
         );
 
         if (i % ROW_SIZE === ROW_SIZE - SPAN_SIZE || i >= chunks.length - SPAN_SIZE) {
@@ -38,17 +38,17 @@ export function HexData({ raw }: { raw: Buffer }) {
     function Content() {
         return (
             <Copyable text={hexString}>
-                <pre className="d-inlinblock text-start mb-0">{divs}</pre>
+                <pre className="d-inlinblock mb-0 text-start">{divs}</pre>
             </Copyable>
         );
     }
 
     return (
         <>
-            <div className="d-none d-lg-flex align-items-center justify-content-end">
+            <div className="hidden items-center justify-end lg:flex">
                 <Content />
             </div>
-            <div className="d-flex d-lg-none align-items-center">
+            <div className="flex items-center lg:hidden">
                 <Content />
             </div>
         </>

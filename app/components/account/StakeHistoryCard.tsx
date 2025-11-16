@@ -7,23 +7,23 @@ export function StakeHistoryCard({ sysvarAccount }: { sysvarAccount: SysvarAccou
     const stakeHistory = sysvarAccount.info as StakeHistoryInfo;
     return (
         <>
-            <div className="card">
-                <div className="card-header">
-                    <div className="row align-items-center">
-                        <div className="col">
-                            <h3 className="card-header-title">Stake History</h3>
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="border-b px-6 py-4">
+                    <div className="flex items-center">
+                        <div className="flex-1">
+                            <h3 className="text-lg font-semibold">Stake History</h3>
                         </div>
                     </div>
                 </div>
 
-                <div className="tablresponsive mb-0">
-                    <table className="table tablsm tablnowrap card-table">
+                <div className="mb-0 overflow-x-auto">
+                    <table className="w-full text-sm">
                         <thead>
                             <tr>
-                                <th className="w-1 text-muted">Epoch</th>
-                                <th className="text-muted">Effective (SOL)</th>
-                                <th className="text-muted">Activating (SOL)</th>
-                                <th className="text-muted">Deactivating (SOL)</th>
+                                <th className="text-muted-foreground w-1">Epoch</th>
+                                <th className="text-muted-foreground">Effective (SOL)</th>
+                                <th className="text-muted-foreground">Activating (SOL)</th>
+                                <th className="text-muted-foreground">Deactivating (SOL)</th>
                             </tr>
                         </thead>
                         <tbody className="list">
@@ -35,8 +35,8 @@ export function StakeHistoryCard({ sysvarAccount }: { sysvarAccount: SysvarAccou
                     </table>
                 </div>
 
-                <div className="card-footer">
-                    <div className="text-muted text-center">
+                <div className="border-t px-6 py-4">
+                    <div className="text-muted-foreground text-center">
                         {stakeHistory.length > 0 ? '' : 'No stake history found'}
                     </div>
                 </div>
@@ -48,16 +48,16 @@ export function StakeHistoryCard({ sysvarAccount }: { sysvarAccount: SysvarAccou
 const renderAccountRow = (entry: StakeHistoryEntry, index: number) => {
     return (
         <tr key={index}>
-            <td className="w-1 font-monospace">
+            <td className="w-1 font-mono">
                 <Epoch epoch={entry.epoch} link />
             </td>
-            <td className="font-monospace">
+            <td className="font-mono">
                 <SolBalance lamports={entry.stakeHistory.effective} />
             </td>
-            <td className="font-monospace">
+            <td className="font-mono">
                 <SolBalance lamports={entry.stakeHistory.activating} />
             </td>
-            <td className="font-monospace">
+            <td className="font-mono">
                 <SolBalance lamports={entry.stakeHistory.deactivating} />
             </td>
         </tr>

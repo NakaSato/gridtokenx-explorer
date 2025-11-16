@@ -25,7 +25,7 @@ export function SupplyCard() {
     }
 
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             {renderHeader()}
 
             <TableCardBody>
@@ -56,10 +56,10 @@ export function SupplyCard() {
 
 const renderHeader = () => {
     return (
-        <div className="card-header">
+        <div className="px-6 py-4 border-b">
             <div className="flex flex-wrap -mx-2 items-center">
                 <div className="flex-1 px-2">
-                    <h4 className="card-header-title">Supply Overview</h4>
+                    <h4 className="text-lg font-semibold">Supply Overview</h4>
                 </div>
             </div>
         </div>

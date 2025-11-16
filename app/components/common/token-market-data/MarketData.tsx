@@ -1,5 +1,5 @@
 import { displayTimestampWithoutDate } from '@utils/date';
-import { cva } from 'class-variancauthority';
+import { cva } from 'class-variance-authority';
 import { HelpCircle } from 'react-feather';
 
 import { abbreviatedNumber } from '@/app/utils';

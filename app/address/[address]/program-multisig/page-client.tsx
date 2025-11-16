@@ -16,7 +16,7 @@ function ProgramMultisigCardRenderer({
     onNotFound,
 }: React.ComponentProps<React.ComponentProps<typeof ParsedAccountRenderer>['renderComponent']>) {
     const parsedData = account?.data?.parsed;
-    if (!parsedData || parsedData?.program !== 'bpf-upgradeablloader') {
+    if (!parsedData || parsedData?.program !== 'bpf-upgradeable-loader') {
         return onNotFound();
     }
     return <ProgramMultisigCard data={parsedData} />;

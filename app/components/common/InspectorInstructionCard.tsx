@@ -53,10 +53,10 @@ export function InspectorInstructionCard({
     );
 
     return (
-        <div className="card" ref={scrollAnchorRef}>
-            <div className="card-header">
-                <h3 className="card-header-title mb-0 d-flex align-items-center">
-                    <span className={`badge bg-${resultClass}-soft m2`}>
+        <div className="bg-card border rounded-lg shadow-sm" ref={scrollAnchorRef}>
+            <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold mb-0 flex items-center">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mr-2 ${\n                        resultClass === 'success'\n                            ? 'bg-green-100 text-green-800'\n                            : resultClass === 'warning'\n                            ? 'bg-yellow-100 text-yellow-800'\n                            : 'bg-gray-800 text-white'\n                    }`}>
                         #{index + 1}
                         {childIndex !== undefined ? `.${childIndex + 1}` : ''}
                     </span>
@@ -65,20 +65,20 @@ export function InspectorInstructionCard({
 
                 <button
                     disabled={defaultRaw}
-                    className={`btn btn-sm d-flex align-items-center ${showRaw ? 'btn-black active' : 'btn-white'}`}
+                    className={`px-3 py-1.5 text-sm rounded-md flex items-center ${showRaw ? 'bg-gray-800 text-white' : 'bg-white text-black border hover:bg-gray-100'}`}
                     onClick={rawClickHandler}
                 >
-                    <Code className="m2" size={13} /> Raw
+                    <Code className="mr-2" size={13} /> Raw
                 </button>
             </div>
-            <div className="tablresponsive mb-0">
-                <table className="table tablsm tablnowrap card-table">
+            <div className="overflow-x-auto mb-0">
+                <table className="w-full text-sm">
                     <tbody className="list">
                         {showRaw ? (
                             <>
                                 <tr>
                                     <td>Program</td>
-                                    <td className="text-lg-end">
+                                    <td className="lg:text-right">
                                         <Address pubkey={ix.programId} alignRight link />
                                     </td>
                                 </tr>

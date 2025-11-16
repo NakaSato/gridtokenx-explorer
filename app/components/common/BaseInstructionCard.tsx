@@ -49,9 +49,9 @@ export function BaseInstructionCard({
         getInstructionCardScrollAnchorId(childIndex != null ? [index + 1, childIndex + 1] : [index + 1])
     );
     return (
-        <div className="card" ref={scrollAnchorRef}>
-            <div className="card-header">
-                <h3 className="card-header-title mb-0 d-flex align-items-center">
+        <div className="bg-card border rounded-lg shadow-sm" ref={scrollAnchorRef}>
+            <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold mb-0 flex items-center">
                     <span className={`badge bg-${resultClass}-soft m2`}>
                         #{index + 1}
                         {childIndex !== undefined ? `.${childIndex + 1}` : ''}
@@ -61,20 +61,20 @@ export function BaseInstructionCard({
 
                 <button
                     disabled={defaultRaw}
-                    className={`btn btn-sm d-flex align-items-center ${showRaw ? 'btn-black active' : 'btn-white'}`}
+                    className={`btn btn-sm flex items-center ${showRaw ? 'btn-black active' : 'btn-white'}`}
                     onClick={rawClickHandler}
                 >
                     <Code className="m2" size={13} /> Raw
                 </button>
             </div>
-            <div className="tablresponsive mb-0">
-                <table className="table tablsm tablnowrap card-table">
+            <div className="overflow-x-auto mb-0">
+                <table className="w-full text-sm">
                     <tbody className="list">
                         {showRaw ? (
                             <>
                                 <tr>
                                     <td>Program</td>
-                                    <td className="text-lg-end">
+                                    <td className="lg:text-right">
                                         <Address pubkey={ix.programId} alignRight link />
                                     </td>
                                 </tr>

@@ -47,9 +47,9 @@ export function TokenExtensionsCard({
         mintExtensions.find(({ extension }) => extension === 'tokenMetadata')?.state.symbol || tokenInfo?.symbol;
 
     return (
-        <div className="card">
+        <div className="bg-card border rounded-lg shadow-sm">
             <AccountHeader title="Extensions" refresh={() => refresh(new PublicKey(address), 'parsed')} />
-            <div className="card-body p-0 overflow-x-scroll">
+            <div className="p-0 overflow-x-scroll">
                 <TokenExtensionsSection
                     address={address}
                     decimals={decimals}

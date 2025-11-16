@@ -1,0 +1,274 @@
+'use client';
+
+import { PublicKey, Keypair } from '@solana/web3.js';
+import React from 'react';
+import { useCluster } from '@providers/cluster';
+import { Cluster, ClusterStatus } from '@utils/cluster';
+import { Address } from '@components/common/Address';
+
+interface AnchorPublicKeyDisplayProps {
+    publicKey: string | PublicKey;
+    label?: string;
+    showCopyButton?: boolean;
+    showLink?: boolean;
+    truncate?: boolean;
+    truncateChars?: number;
+    customStyle?: React.CSSProperties;
+    showClusterInfo?: boolean;
+}
+
+export function AnchorPublicKeyDisplay({
+    publicKey,
+    label = 'Public Key',
+    showCopyButton = true,
+    showLink = true,
+    truncate = false,
+    truncateChars = 12,
+    customStyle,
+    showClusterInfo = true,
+}: AnchorPublicKeyDisplayProps) {
+    const { cluster, url, status } = useCluster();
+
+    // Convert string to PublicKey if needed
+    const pubkey = typeof publicKey === 'string' ? new PublicKey(publicKey) : publicKey;
+    const pubkeyString = pubkey.toBase58();
+
+    const isAnchorNetwork = url.includes('localhost') || url.includes('127.0.0.1') || cluster === Cluster.Custom;
+
+    const getClusterBadge = () => {
+        switch (cluster) {
+            case Cluster.MainnetBeta:
+                return <span className="badge bg-primary">Mainnet</span>;
+            case Cluster.Testnet:
+                return <span className="badge bg-info">Testnet</span>;
+            case Cluster.Devnet:
+                return <span className="badge bg-warning">Devnet</span>;
+            case Cluster.Custom:
+                return <span className="badge bg-success">Custom RPC</span>;
+            default:
+                return null;
+        }
+    };
+
+    const getNetworkInfo = () => {
+        if (!showClusterInfo) return null;
+
+        return (
+            <div className="flex items-center gap-2 mb-2">
+                {getClusterBadge()}
+                {isAnchorNetwork && <span className="badge bg-secondary">🔧 Anchor Network</span>}
+                <span className="text-muted small">
+                    Status:{' '}
+                    {status === ClusterStatus.Connected ? '🟢' : status === ClusterStatus.Connecting ? '🟡' : '🔴'}{' '}
+                    {status}
+                </span>
+            </div>
+        );
+    };
+
+    return (
+        <div className="card" style={customStyle}>
+            <div className="card-header">
+                <div className="flex justify-between align-items-center">
+                    <h6 className="card-title mb-0">{label}</h6>
+                    {isAnchorNetwork && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-success small">🔗</span>
+                            <span className="text-muted small">Anchor RPC</span>
+                        </div>
+                    )}
+                </div>
+            </div>
+            <div className="card-body">
+                {getNetworkInfo()}
+
+                <div className="flex items-center gap-3">
+                    <div className="flex-grow">
+                        <Address
+                            pubkey={pubkey}
+                            link={showLink}
+                            truncate={truncate}
+                            truncateChars={truncateChars}
+                            alignRight={false}
+                        />
+                    </div>
+                </div>
+
+                {/* Additional information for Anchor networks */}
+                {isAnchorNetwork && (
+                    <div className="mt-3 pt-3 border-top">
+                        <div className="row">
+                            <div className="col-md-6">
+                                <small className="text-muted">Network URL:</small>
+                                <div className="font-mono small text-break">{url}</div>
+                            </div>
+                            <div className="col-md-6">
+                                <small className="text-muted">Key Length:</small>
+                                <div className="font-mono small">{pubkeyString.length} characters</div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Quick actions for Anchor developers */}
+                {isAnchorNetwork && (
+                    <div className="mt-3">
+                        <div className="btn-group" role="group">
+                            <button
+                                className="btn btn-sm btn-outlinprimary"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(pubkeyString);
+                                    // You could add a toast notification here
+                                }}
+                            >
+                                📋 Copy Key
+                            </button>
+                            <button
+                                className="btn btn-sm btn-outlininfo"
+                                onClick={() => {
+                                    window.open(`/address/${pubkeyString}`, '_blank');
+                                }}
+                            >
+                                🔍 View Details
+                            </button>
+                            <button
+                                className="btn btn-sm btn-outlinsecondary"
+                                onClick={() => {
+                                    // Generate keypair for testing (only on localhost)
+                                    if (url.includes('localhost')) {
+                                        const testKeypair = Keypair.generate().publicKey.toBase58();
+                                        console.log('Generated test keypair:', testKeypair);
+                                    }
+                                }}
+                            >
+                                🎲 Generate Test
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// Specialized component for displaying multiple public keys
+interface AnchorPublicKeyListProps {
+    publicKeys: Array<{
+        key: string | PublicKey;
+        label?: string;
+        description?: string;
+    }>;
+    title?: string;
+    showClusterInfo?: boolean;
+}
+
+export function AnchorPublicKeyList({
+    publicKeys,
+    title = 'Public Keys',
+    showClusterInfo = true,
+}: AnchorPublicKeyListProps) {
+    const { cluster, url } = useCluster();
+    const isAnchorNetwork = url.includes('localhost') || url.includes('127.0.0.1') || cluster === Cluster.Custom;
+
+    if (!publicKeys || publicKeys.length === 0) {
+        return (
+            <div className="alert alert-info">
+                <strong>No public keys provided</strong>
+                <p className="mb-0 small">Add public keys to display them on the Anchor network.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="card">
+            <div className="card-header">
+                <h5 className="card-title mb-0">
+                    {title}
+                    {isAnchorNetwork && <span className="badge bg-success ms-2">🔧 Anchor Network</span>}
+                </h5>
+            </div>
+            <div className="card-body">
+                {publicKeys.map((item, index) => (
+                    <div key={index} className={index > 0 ? 'mt-3 pt-3 border-top' : ''}>
+                        <AnchorPublicKeyDisplay
+                            publicKey={item.key}
+                            label={item.label || `Key ${index + 1}`}
+                            showClusterInfo={showClusterInfo && index === 0} // Only show cluster info for first item
+                            truncate={true}
+                            truncateChars={16}
+                        />
+                        {item.description && <p className="text-muted small mt-2 mb-0">{item.description}</p>}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+// Component for displaying a program's public key with special Anchor features
+interface AnchorProgramKeyDisplayProps {
+    programId: string | PublicKey;
+    programName?: string;
+    showIdlStatus?: boolean;
+    onFetchIdl?: () => void;
+}
+
+export function AnchorProgramKeyDisplay({
+    programId,
+    programName,
+    showIdlStatus = true,
+    onFetchIdl,
+}: AnchorProgramKeyDisplayProps) {
+    const { url, cluster } = useCluster();
+    const isAnchorNetwork = url.includes('localhost') || url.includes('127.0.0.1') || cluster === Cluster.Custom;
+
+    return (
+        <div className="card border-primary">
+            <div className="card-header bg-primary text-white">
+                <div className="flex justify-between align-items-center">
+                    <h6 className="card-title mb-0">{programName || 'Anchor Program'}</h6>
+                    {isAnchorNetwork && <span className="badge bg-light text-primary">🔧 Custom RPC</span>}
+                </div>
+            </div>
+            <div className="card-body">
+                <div className="mb-3">
+                    <small className="text-muted">Program ID:</small>
+                    <div className="flex items-center gap-2 mt-1">
+                        <Address
+                            pubkey={typeof programId === 'string' ? new PublicKey(programId) : programId}
+                            link={true}
+                            truncate={false}
+                            alignRight={false}
+                        />
+                    </div>
+                </div>
+
+                {showIdlStatus && (
+                    <div className="alert alert-info">
+                        <div className="flex justify-between align-items-center">
+                            <div>
+                                <strong>IDL Status:</strong>
+                                <span className="ms-2">Available on-chain</span>
+                            </div>
+                            {onFetchIdl && (
+                                <button className="btn btn-sm btn-primary" onClick={onFetchIdl}>
+                                    Fetch IDL
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {isAnchorNetwork && (
+                    <div className="text-muted small">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span>🔧</span>
+                            <span>This program is running on a custom Anchor RPC network</span>
+                        </div>
+                        <div className="font-mono text-break">{url}</div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}

@@ -63,7 +63,7 @@ function renderDetails<T extends object>(props: InstructionDetailsProps, parsed:
             attributes.push(
                 <tr key="vothash">
                     <td>Vote Hash</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <pre className="d-inlinblock text-start mb-0">{value.hash}</pre>
                     </td>
                 </tr>
@@ -73,7 +73,7 @@ function renderDetails<T extends object>(props: InstructionDetailsProps, parsed:
                 attributes.push(
                     <tr key="timestamp">
                         <td>Timestamp</td>
-                        <td className="text-lg-end font-monospace">{displayTimestamp(value.timestamp * 1000)}</td>
+                        <td className="lg:text-right font-mono">{displayTimestamp(value.timestamp * 1000)}</td>
                     </tr>
                 );
             }
@@ -81,7 +81,7 @@ function renderDetails<T extends object>(props: InstructionDetailsProps, parsed:
             attributes.push(
                 <tr key="votslots">
                     <td>Slots</td>
-                    <td className="text-lg-end font-monospace">
+                    <td className="lg:text-right font-mono">
                         <pre className="d-inlinblock text-start mb-0">{value.slots.join('\n')}</pre>
                     </td>
                 </tr>
@@ -90,7 +90,7 @@ function renderDetails<T extends object>(props: InstructionDetailsProps, parsed:
             attributes.push(
                 <tr key={key}>
                     <td>{camelToTitleCase(key)} </td>
-                    <td className="text-lg-end">{value}</td>
+                    <td className="lg:text-right">{value}</td>
                 </tr>
             );
         }
@@ -100,7 +100,7 @@ function renderDetails<T extends object>(props: InstructionDetailsProps, parsed:
         <InstructionCard {...props} title={`Vote: ${camelToTitleCase(parsed.type)}`}>
             <tr>
                 <td>Program</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={props.ix.programId} alignRight link />
                 </td>
             </tr>

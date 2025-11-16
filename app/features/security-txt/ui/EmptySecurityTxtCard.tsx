@@ -7,8 +7,8 @@ export function EmptySecurityTxtCard({ programAddress }: { programAddress: strin
     const copyableTxt = `npx @solana-program/program-metadata@latest write security ${programAddress} ./security.json`;
 
     return (
-        <div className="card">
-            <div className="card-body text-center">
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="p-6 text-center">
                 <div className="mb-4">{NO_SECURITY_TXT_ERROR}</div>
 
                 <div className="mb-4">
@@ -18,11 +18,11 @@ export function EmptySecurityTxtCard({ programAddress }: { programAddress: strin
                     </p>
                     <div className="p-2 rounded text-start border d-inlinflex align-items-center text-sm">
                         <Copyable text={copyableTxt}>
-                            <code className="font-monospace small text-muted">{copyableTxt}</code>
+                            <code className="font-mono small text-muted">{copyableTxt}</code>
                         </Copyable>
                     </div>
                 </div>
-                <div className="text-muted">
+                <div className="text-muted-foreground">
                     <a
                         href="https://github.com/solana-program/program-metadata"
                         target="_blank"

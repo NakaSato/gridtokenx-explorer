@@ -3,7 +3,7 @@ import { LoadingCard } from '@components/common/LoadingCard';
 import { AddressLookupTableDetailsCard } from '@components/instruction/AddressLookupTableDetailsCard';
 import { AssociatedTokenDetailsCard } from '@components/instruction/associated-token/AssociatedTokenDetailsCard';
 import { BpfLoaderDetailsCard } from '@components/instruction/bpf-loader/BpfLoaderDetailsCard';
-import { BpfUpgradeableLoaderDetailsCard } from '@components/instruction/bpf-upgradeablloader/BpfUpgradeableLoaderDetailsCard';
+import { BpfUpgradeableLoaderDetailsCard } from '@components/instruction/bpf-upgradeable-loader/BpfUpgradeableLoaderDetailsCard';
 import { ComputeBudgetDetailsCard } from '@components/instruction/ComputeBudgetDetailsCard';
 import { MangoDetailsCard } from '@components/instruction/MangoDetails';
 import { MemoDetailsCard } from '@components/instruction/MemoDetailsCard';
@@ -103,7 +103,7 @@ export function InstructionsSection({ signature }: SignatureProps) {
 
     return (
         <>
-            <div className="container">
+            <div className="container mx-auto px-4">
                 <div className="header">
                     <div className="header-body">
                         <h3 className="mb-0">
@@ -198,7 +198,7 @@ function InstructionCard({
                 );
             case 'bpf-loader':
                 return <BpfLoaderDetailsCard {...props} key={key} />;
-            case 'bpf-upgradeablloader':
+            case 'bpf-upgradeable-loader':
                 return <BpfUpgradeableLoaderDetailsCard {...props} key={key} />;
             case 'system':
                 return <SystemDetailsCard {...props} key={key} />;

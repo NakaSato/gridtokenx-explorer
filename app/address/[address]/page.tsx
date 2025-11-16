@@ -1,5 +1,5 @@
 import { TransactionHistoryCard } from '@components/account/history/TransactionHistoryCard';
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readabltitlfrom-address';
+import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readable-title-from-address';
 import { Metadata } from 'next/types';
 
 type Props = Readonly<{

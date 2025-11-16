@@ -50,7 +50,7 @@ function LockupCard({ stakeAccount }: { stakeAccount: StakeAccountInfo }) {
     if (Date.now() < unixTimestamp) {
         const prettyTimestamp = displayTimestampUtc(unixTimestamp);
         return (
-            <div className="alert alert-warning text-center">
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md text-center">
                 <strong>Account is locked!</strong> Lockup expires on {prettyTimestamp}
             </div>
         );
@@ -93,11 +93,11 @@ function OverviewCard({
 }) {
     const refresh = useFetchAccountInfo();
     return (
-        <div className="card">
-            <div className="card-header">
-                <h3 className="card-header-title mb-0 d-flex align-items-center">Stake Account</h3>
-                <button className="btn btn-white btn-sm" onClick={() => refresh(account.pubkey, 'parsed')}>
-                    <RefreshCw className="align-text-top m2" size={13} />
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold mb-0 flex items-center">Stake Account</h3>
+                <button className="bg-white text-black border px-3 py-1.5 rounded-md hover:bg-gray-100 text-sm" onClick={() => refresh(account.pubkey, 'parsed')}>
+                    <RefreshCw className="align-text-top mr-2" size={13} />
                     Refresh
                 </button>
             </div>
@@ -105,26 +105,26 @@ function OverviewCard({
             <TableCardBody>
                 <tr>
                     <td>Address</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Address pubkey={account.pubkey} alignRight raw />
                     </td>
                 </tr>
                 <tr>
                     <td>Balance (SOL)</td>
-                    <td className="text-lg-end text-uppercase">
+                    <td className="lg:text-right uppercase">
                         <SolBalance lamports={account.lamports} />
                     </td>
                 </tr>
                 <tr>
                     <td>Rent Reserve (SOL)</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <SolBalance lamports={stakeAccount.meta.rentExemptReserve} />
                     </td>
                 </tr>
                 {hideDelegation && (
                     <tr>
                         <td>Status</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             {isFullyInactivated(stakeAccount, activation)
                                 ? 'Not delegated'
                                 : displayStatus(stakeAccountType, activation)}
@@ -158,21 +158,21 @@ function DelegationCard({
     }
     const { stake } = stakeAccount;
     return (
-        <div className="card">
-            <div className="card-header">
-                <h3 className="card-header-title mb-0 d-flex align-items-center">Stake Delegation</h3>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold mb-0 flex items-center">Stake Delegation</h3>
             </div>
             <TableCardBody>
                 <tr>
                     <td>Status</td>
-                    <td className="text-lg-end">{displayStatus(stakeAccountType, activation)}</td>
+                    <td className="lg:text-right">{displayStatus(stakeAccountType, activation)}</td>
                 </tr>
 
                 {stake && (
                     <>
                         <tr>
                             <td>Delegated Stake (SOL)</td>
-                            <td className="text-lg-end">
+                            <td className="lg:text-right">
                                 <SolBalance lamports={stake.delegation.stake} />
                             </td>
                         </tr>
@@ -181,14 +181,14 @@ function DelegationCard({
                             <>
                                 <tr>
                                     <td>Active Stake (SOL)</td>
-                                    <td className="text-lg-end">
+                                    <td className="lg:text-right">
                                         <SolBalance lamports={activation.active} />
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <td>Inactive Stake (SOL)</td>
-                                    <td className="text-lg-end">
+                                    <td className="lg:text-right">
                                         <SolBalance lamports={activation.inactive} />
                                     </td>
                                 </tr>
@@ -198,7 +198,7 @@ function DelegationCard({
                         {voterPubkey && (
                             <tr>
                                 <td>Delegated Vote Address</td>
-                                <td className="text-lg-end">
+                                <td className="lg:text-right">
                                     <Address pubkey={voterPubkey} alignRight link />
                                 </td>
                             </tr>
@@ -206,13 +206,13 @@ function DelegationCard({
 
                         <tr>
                             <td>Activation Epoch</td>
-                            <td className="text-lg-end">
+                            <td className="lg:text-right">
                                 {activationEpoch !== undefined ? <Epoch epoch={activationEpoch} link /> : '-'}
                             </td>
                         </tr>
                         <tr>
                             <td>Deactivation Epoch</td>
-                            <td className="text-lg-end">
+                            <td className="lg:text-right">
                                 {deactivationEpoch !== undefined ? <Epoch epoch={deactivationEpoch} link /> : '-'}
                             </td>
                         </tr>
@@ -226,21 +226,21 @@ function DelegationCard({
 function AuthoritiesCard({ meta }: { meta: StakeMeta }) {
     const hasLockup = meta.lockup.unixTimestamp > 0;
     return (
-        <div className="card">
-            <div className="card-header">
-                <h3 className="card-header-title mb-0 d-flex align-items-center">Authorities</h3>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold mb-0 flex items-center">Authorities</h3>
             </div>
             <TableCardBody>
                 <tr>
                     <td>Stake Authority Address</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Address pubkey={meta.authorized.staker} alignRight link />
                     </td>
                 </tr>
 
                 <tr>
                     <td>Withdraw Authority Address</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Address pubkey={meta.authorized.withdrawer} alignRight link />
                     </td>
                 </tr>
@@ -248,7 +248,7 @@ function AuthoritiesCard({ meta }: { meta: StakeMeta }) {
                 {hasLockup && (
                     <tr>
                         <td>Lockup Authority Address</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <Address pubkey={meta.lockup.custodian} alignRight link />
                         </td>
                     </tr>

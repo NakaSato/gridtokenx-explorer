@@ -38,13 +38,13 @@ export function AnchorPublicKeyDisplay({
     const getClusterBadge = () => {
         switch (cluster) {
             case Cluster.MainnetBeta:
-                return <span className="badge bg-primary">Mainnet</span>;
+                return <span className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">Mainnet</span>;
             case Cluster.Testnet:
-                return <span className="badge bg-info">Testnet</span>;
+                return <span className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">Testnet</span>;
             case Cluster.Devnet:
-                return <span className="badge bg-warning">Devnet</span>;
+                return <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">Devnet</span>;
             case Cluster.Custom:
-                return <span className="badge bg-success">Custom RPC</span>;
+                return <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">Custom RPC</span>;
             default:
                 return null;
         }
@@ -54,10 +54,12 @@ export function AnchorPublicKeyDisplay({
         if (!showClusterInfo) return null;
 
         return (
-            <div className="d-flex align-items-center gap-2 mb-2">
+            <div className="mb-2 flex items-center gap-2">
                 {getClusterBadge()}
-                {isAnchorNetwork && <span className="badge bg-secondary">🔧 Anchor Network</span>}
-                <span className="text-muted small">
+                {isAnchorNetwork && (
+                    <span className="rounded-full bg-gray-200 px-2 py-1 text-xs text-gray-800">🔧 Anchor Network</span>
+                )}
+                <span className="text-muted-foreground text-sm">
                     Status:{' '}
                     {status === ClusterStatus.Connected ? '🟢' : status === ClusterStatus.Connecting ? '🟡' : '🔴'}{' '}
                     {status}
@@ -67,23 +69,23 @@ export function AnchorPublicKeyDisplay({
     };
 
     return (
-        <div className="card" style={customStyle}>
-            <div className="card-header">
-                <div className="d-flex justify-content-between align-items-center">
+        <div className="bg-card rounded-lg border shadow-sm" style={customStyle}>
+            <div className="border-b px-6 py-4">
+                <div className="flex items-center justify-between">
                     <h6 className="card-title mb-0">{label}</h6>
                     {isAnchorNetwork && (
-                        <div className="d-flex align-items-center gap-2">
-                            <span className="text-success small">🔗</span>
-                            <span className="text-muted small">Anchor RPC</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-success text-sm">🔗</span>
+                            <span className="text-muted-foreground text-sm">Anchor RPC</span>
                         </div>
                     )}
                 </div>
             </div>
-            <div className="card-body">
+            <div className="p-6">
                 {getNetworkInfo()}
 
-                <div className="d-flex align-items-center gap-3">
-                    <div className="flex-grow-1">
+                <div className="flex items-center gap-3">
+                    <div className="flex-grow">
                         <Address
                             pubkey={pubkey}
                             link={showLink}
@@ -96,15 +98,15 @@ export function AnchorPublicKeyDisplay({
 
                 {/* Additional information for Anchor networks */}
                 {isAnchorNetwork && (
-                    <div className="mt-3 pt-3 border-top">
+                    <div className="border-top mt-3 pt-3">
                         <div className="row">
                             <div className="col-md-6">
-                                <small className="text-muted">Network URL:</small>
-                                <div className="font-monospace small text-break">{url}</div>
+                                <small className="text-muted-foreground">Network URL:</small>
+                                <div className="small text-break font-mono">{url}</div>
                             </div>
                             <div className="col-md-6">
-                                <small className="text-muted">Key Length:</small>
-                                <div className="font-monospace small">{pubkeyString.length} characters</div>
+                                <small className="text-muted-foreground">Key Length:</small>
+                                <div className="small font-mono">{pubkeyString.length} characters</div>
                             </div>
                         </div>
                     </div>
@@ -115,7 +117,7 @@ export function AnchorPublicKeyDisplay({
                     <div className="mt-3">
                         <div className="btn-group" role="group">
                             <button
-                                className="btn btn-sm btn-outlinprimary"
+                                className="border-primary text-primary hover:bg-primary rounded-md border px-3 py-1.5 text-sm hover:text-white"
                                 onClick={() => {
                                     navigator.clipboard.writeText(pubkeyString);
                                     // You could add a toast notification here
@@ -124,7 +126,7 @@ export function AnchorPublicKeyDisplay({
                                 📋 Copy Key
                             </button>
                             <button
-                                className="btn btn-sm btn-outlininfo"
+                                className="rounded-md border border-blue-500 px-3 py-1.5 text-sm text-blue-500 hover:bg-blue-500 hover:text-white"
                                 onClick={() => {
                                     window.open(`/address/${pubkeyString}`, '_blank');
                                 }}
@@ -132,7 +134,7 @@ export function AnchorPublicKeyDisplay({
                                 🔍 View Details
                             </button>
                             <button
-                                className="btn btn-sm btn-outlinsecondary"
+                                className="rounded-md border border-gray-500 px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-500 hover:text-white"
                                 onClick={() => {
                                     // Generate keypair for testing (only on localhost)
                                     if (url.includes('localhost')) {
@@ -172,24 +174,28 @@ export function AnchorPublicKeyList({
 
     if (!publicKeys || publicKeys.length === 0) {
         return (
-            <div className="alert alert-info">
+            <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-800">
                 <strong>No public keys provided</strong>
-                <p className="mb-0 small">Add public keys to display them on the Anchor network.</p>
+                <p className="small mb-0">Add public keys to display them on the Anchor network.</p>
             </div>
         );
     }
 
     return (
-        <div className="card">
-            <div className="card-header">
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="border-b px-6 py-4">
                 <h5 className="card-title mb-0">
                     {title}
-                    {isAnchorNetwork && <span className="badge bg-success ms-2">🔧 Anchor Network</span>}
+                    {isAnchorNetwork && (
+                        <span className="ml-2 inline-flex items-center rounded-full bg-green-600 px-2 py-0.5 text-xs font-medium text-white">
+                            Anchor Network
+                        </span>
+                    )}
                 </h5>
             </div>
-            <div className="card-body">
+            <div className="p-6">
                 {publicKeys.map((item, index) => (
-                    <div key={index} className={index > 0 ? 'mt-3 pt-3 border-top' : ''}>
+                    <div key={index} className={index > 0 ? 'border-top mt-3 pt-3' : ''}>
                         <AnchorPublicKeyDisplay
                             publicKey={item.key}
                             label={item.label || `Key ${index + 1}`}
@@ -197,7 +203,9 @@ export function AnchorPublicKeyList({
                             truncate={true}
                             truncateChars={16}
                         />
-                        {item.description && <p className="text-muted small mt-2 mb-0">{item.description}</p>}
+                        {item.description && (
+                            <p className="text-muted-foreground mt-2 mb-0 text-sm">{item.description}</p>
+                        )}
                     </div>
                 ))}
             </div>
@@ -225,15 +233,19 @@ export function AnchorProgramKeyDisplay({
     return (
         <div className="card border-primary">
             <div className="card-header bg-primary text-white">
-                <div className="d-flex justify-content-between align-items-center">
+                <div className="flex items-center justify-between">
                     <h6 className="card-title mb-0">{programName || 'Anchor Program'}</h6>
-                    {isAnchorNetwork && <span className="badge bg-light text-primary">🔧 Custom RPC</span>}
+                    {isAnchorNetwork && (
+                        <span className="text-primary inline-flex items-center rounded-full bg-white px-2 py-0.5 text-xs font-medium">
+                            🔧 Custom RPC
+                        </span>
+                    )}
                 </div>
             </div>
-            <div className="card-body">
+            <div className="p-6">
                 <div className="mb-3">
-                    <small className="text-muted">Program ID:</small>
-                    <div className="d-flex align-items-center gap-2 mt-1">
+                    <small className="text-muted-foreground">Program ID:</small>
+                    <div className="mt-1 flex items-center gap-2">
                         <Address
                             pubkey={typeof programId === 'string' ? new PublicKey(programId) : programId}
                             link={true}
@@ -244,14 +256,17 @@ export function AnchorProgramKeyDisplay({
                 </div>
 
                 {showIdlStatus && (
-                    <div className="alert alert-info">
-                        <div className="d-flex justify-content-between align-items-center">
+                    <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-800">
+                        <div className="flex items-center justify-between">
                             <div>
                                 <strong>IDL Status:</strong>
-                                <span className="ms-2">Available on-chain</span>
+                                <span className="ml-2">Available on-chain</span>
                             </div>
                             {onFetchIdl && (
-                                <button className="btn btn-sm btn-primary" onClick={onFetchIdl}>
+                                <button
+                                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1.5 text-sm"
+                                    onClick={onFetchIdl}
+                                >
                                     Fetch IDL
                                 </button>
                             )}
@@ -260,12 +275,12 @@ export function AnchorProgramKeyDisplay({
                 )}
 
                 {isAnchorNetwork && (
-                    <div className="text-muted small">
-                        <div className="d-flex align-items-center gap-2 mb-2">
+                    <div className="text-muted-foreground text-sm">
+                        <div className="mb-2 flex items-center gap-2">
                             <span>🔧</span>
                             <span>This program is running on a custom Anchor RPC network</span>
                         </div>
-                        <div className="font-monospace text-break">{url}</div>
+                        <div className="text-break font-mono">{url}</div>
                     </div>
                 )}
             </div>

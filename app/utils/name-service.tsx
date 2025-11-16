@@ -1,6 +1,6 @@
 'use client';
 
-import { getAllDomains, NAME_PROGRAM_ID, reverseLookup } from '@bonfida/spl-namservice';
+import { getAllDomains, NAME_PROGRAM_ID, reverseLookup } from '@bonfida/spl-name-service';
 import { useCluster } from '@providers/cluster';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';

@@ -75,7 +75,7 @@ export function ProgramSecurityTxtCard({
     return (
         <div className="card security-txt overflow-hidden">
             <div className="card-header flex h-auto min-h-[60px] items-center">
-                <h3 className="card-header-title mb-0 d-flex align-items-center gap-3 mr-4">
+                <h3 className="card-header-title mb-0 flex items-center gap-3 mr-4">
                     Security.txt
                     <SecurityTxtVersionBadge version={pmpSecurityTxt ? 'pmp' : 'neodyme'} />
                 </h3>
@@ -95,7 +95,7 @@ export function ProgramSecurityTxtCard({
                     Note that this is self-reported by the author of the program and might not be accurate
                 </small>
             </div>
-            <ErrorBoundary fallback={<div className="card-body text-center">Invalid security.txt</div>}>
+            <ErrorBoundary fallback={<div className="p-6 text-center">Invalid security.txt</div>}>
                 {securityTable}
             </ErrorBoundary>
         </div>

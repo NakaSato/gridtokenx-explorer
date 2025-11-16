@@ -3,7 +3,7 @@
 import { useCluster } from '@providers/cluster';
 import { createSolanaRpc } from '@solana/kit';
 import { Cluster } from '@utils/cluster';
-import useTabVisibility from '@utils/ustab-visibility';
+import useTabVisibility from '@utils/use-tab-visibility';
 import React from 'react';
 
 import { DashboardInfo, DashboardInfoActionType, dashboardInfoReducer, EpochInfo } from './solanaDashboardInfo';

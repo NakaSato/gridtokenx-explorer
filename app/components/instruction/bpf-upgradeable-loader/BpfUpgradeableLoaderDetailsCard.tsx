@@ -74,15 +74,15 @@ function renderDetails<T extends object>(props: DetailsProps, parsed: ParsedInfo
         } else if (key === 'bytes') {
             value = <pre className="d-inlinblock text-start mb-0 data-wrap">{value}</pre>;
         } else if (value === null) {
-            value = <span className="text-muted">None</span>;
+            value = <span className="text-muted-foreground">None</span>;
         }
 
         attributes.push(
             <tr key={key}>
                 <td>
-                    {camelToTitleCase(key)} {key === 'bytes' && <span className="text-muted">(Base 64)</span>}
+                    {camelToTitleCase(key)} {key === 'bytes' && <span className="text-muted-foreground">(Base 64)</span>}
                 </td>
-                <td className="text-lg-end">{value}</td>
+                <td className="lg:text-right">{value}</td>
             </tr>
         );
     }
@@ -91,7 +91,7 @@ function renderDetails<T extends object>(props: DetailsProps, parsed: ParsedInfo
         <InstructionCard {...props} title={`BPF Upgradeable Loader: ${camelToTitleCase(parsed.type)}`}>
             <tr>
                 <td>Program</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={props.ix.programId} alignRight link />
                 </td>
             </tr>

@@ -111,7 +111,7 @@ export default function RealtimeTransactionsPage() {
                         .getAccountKeys()
                         .staticAccountKeys.filter((_, idx) => {
                             return details.transaction.message.compiledInstructions.some(
-                                ix => ix.programIdIndex === idx
+                                ix => ix.programIdIndex === idx,
                             );
                         })
                         .map(key => key.toBase58());
@@ -143,7 +143,7 @@ export default function RealtimeTransactionsPage() {
                 setDetailsLoading(false);
             }
         },
-        [url]
+        [url],
     );
 
     React.useEffect(() => {
@@ -182,25 +182,25 @@ export default function RealtimeTransactionsPage() {
             <LocalhostDeveloperGuide isLocalhost={url.includes('localhost') || url.includes('127.0.0.1')} />
 
             {/* Program ID Filter */}
-            <div className="card mb-4">
-                <div className="card-body">
-                    <h5 className="card-title">Monitor Your P2P Energy Trading Platform</h5>
-                    <p className="text-muted mb-3">
+            <div className="bg-card mb-4 rounded-lg border shadow-sm">
+                <div className="p-6">
+                    <h5 className="mb-3 text-lg font-semibold">Monitor Your P2P Energy Trading Platform</h5>
+                    <p className="text-muted-foreground mb-3">
                         Enter your Anchor program ID to monitor transactions specific to your energy trading platform
                     </p>
-                    <div className="row">
-                        <div className="col-md-9">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
+                        <div className="md:col-span-9">
                             <input
                                 type="text"
-                                className="form-control"
+                                className="border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-ring focus:border-ring w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                                 placeholder="Enter your program ID (e.g., YourProgramId...)"
                                 value={customProgramId}
                                 onChange={e => setCustomProgramId(e.target.value)}
                             />
                         </div>
-                        <div className="col-md-3">
+                        <div className="md:col-span-3">
                             <button
-                                className="btn btn-primary w-100"
+                                className="bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-ring w-full rounded-md px-4 py-2 focus:ring-2 focus:ring-offset-2 focus:outline-none"
                                 onClick={() => {
                                     setLoading(true);
                                     fetchTransactions();
@@ -211,7 +211,7 @@ export default function RealtimeTransactionsPage() {
                         </div>
                     </div>
                     {customProgramId && (
-                        <div className="alert alert-success mt-3 mb-0">
+                        <div className="mt-3 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-800">
                             <strong>Monitoring:</strong> {customProgramId}
                         </div>
                     )}
@@ -224,49 +224,50 @@ export default function RealtimeTransactionsPage() {
             {/* Anchor Developer Tools - Show when program ID is entered */}
             {customProgramId && <AnchorDeveloperTools programId={customProgramId} clusterUrl={url} />}
 
-            <div className="card">
-                <div className="card-header">
-                    <div className="row align-items-center">
-                        <div className="col">
-                            <h4 className="card-header-title">Real-time Transactions</h4>
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="border-b px-6 py-4">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="flex-1">
+                            <h4 className="text-lg font-semibold">Real-time Transactions</h4>
                         </div>
-                        <div className="col-auto">
-                            <div className="d-flex align-items-center gap-3">
-                                {lastSlot && (
-                                    <span className="text-muted small">
-                                        Current Slot: <Slot slot={lastSlot} link />
-                                    </span>
-                                )}
-                                {!isPaused && (
-                                    <span className="badge bg-success-soft">
-                                        <span className="spinner-grow spinner-grow-sm m2" role="status" />
-                                        Live
-                                    </span>
-                                )}
-                                <button
-                                    className={`btn btn-sm ${isPaused ? 'btn-success' : 'btn-warning'}`}
-                                    onClick={() => setIsPaused(!isPaused)}
-                                >
-                                    {isPaused ? '▶ Resume' : '⏸ Pause'}
-                                </button>
-                            </div>
+                        <div className="flex items-center gap-3">
+                            {lastSlot && (
+                                <span className="text-muted-foreground text-sm">
+                                    Current Slot: <Slot slot={lastSlot} link />
+                                </span>
+                            )}
+                            {!isPaused && (
+                                <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                                    <span
+                                        className="mr-2 h-3 w-3 animate-spin rounded-full border border-green-600 border-t-transparent"
+                                        role="status"
+                                    />
+                                    Live
+                                </span>
+                            )}
+                            <button
+                                className={`rounded-md px-3 py-1 text-sm ${isPaused ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-yellow-600 text-white hover:bg-yellow-700'}`}
+                                onClick={() => setIsPaused(!isPaused)}
+                            >
+                                {isPaused ? '▶ Resume' : '⏸ Pause'}
+                            </button>
                         </div>
                     </div>
-                    <p className="text-muted mb-0 mt-2">
+                    <p className="text-muted-foreground mt-2 text-sm">
                         Showing the latest {transactions.length} transactions. Updates every {REFRESH_INTERVAL / 1000}{' '}
                         seconds when not paused.
                     </p>
                 </div>
-                <div className="tablresponsive mb-0">
-                    <table className="table tablsm tablnowrap card-table">
+                <div className="mb-0 overflow-x-auto">
+                    <table className="w-full text-sm">
                         <thead>
                             <tr>
-                                <th className="text-muted">Signature</th>
-                                <th className="text-muted">Slot</th>
-                                <th className="text-muted">Time</th>
-                                <th className="text-muted">Status</th>
-                                <th className="text-muted">Confirmations</th>
-                                <th className="text-muted">Details</th>
+                                <th className="text-muted-foreground">Signature</th>
+                                <th className="text-muted-foreground">Slot</th>
+                                <th className="text-muted-foreground">Time</th>
+                                <th className="text-muted-foreground">Status</th>
+                                <th className="text-muted-foreground">Confirmations</th>
+                                <th className="text-muted-foreground">Details</th>
                             </tr>
                         </thead>
                         <tbody className="list">
@@ -282,33 +283,43 @@ export default function RealtimeTransactionsPage() {
                                         {tx.blockTime ? (
                                             <TimestampToggle unixTimestamp={tx.blockTime} shorter />
                                         ) : (
-                                            <span className="text-muted">-</span>
+                                            <span className="text-muted-foreground">-</span>
                                         )}
                                     </td>
                                     <td>
                                         {tx.err ? (
-                                            <span className="badge bg-danger-soft">Failed</span>
+                                            <span className="rounded-full bg-red-50 px-2 py-1 text-xs text-red-700">
+                                                Failed
+                                            </span>
                                         ) : (
-                                            <span className="badge bg-success-soft">Success</span>
+                                            <span className="rounded-full bg-green-50 px-2 py-1 text-xs text-green-700">
+                                                Success
+                                            </span>
                                         )}
                                     </td>
                                     <td>
                                         {tx.confirmationStatus === 'finalized' ? (
-                                            <span className="badge bg-success">Finalized</span>
+                                            <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                                                Finalized
+                                            </span>
                                         ) : tx.confirmationStatus === 'confirmed' ? (
-                                            <span className="badge bg-info">Confirmed</span>
+                                            <span className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">
+                                                Confirmed
+                                            </span>
                                         ) : (
-                                            <span className="badge bg-warning">Processed</span>
+                                            <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">
+                                                Processed
+                                            </span>
                                         )}
                                     </td>
                                     <td>
                                         <button
-                                            className="btn btn-sm btn-primary"
+                                            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1.5 text-sm"
                                             onClick={() => fetchTransactionDetails(tx)}
                                             disabled={detailsLoading}
                                         >
                                             {detailsLoading && selectedTx?.signature === tx.signature ? (
-                                                <span className="spinner-border spinner-border-sm m2" />
+                                                <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                                             ) : null}
                                             Inspect
                                         </button>
@@ -323,14 +334,14 @@ export default function RealtimeTransactionsPage() {
             {/* Transaction Details Modal */}
             {selectedTx && <TransactionDetailsCard tx={selectedTx} onClose={() => setSelectedTx(null)} />}
 
-            <div className="card mt-4">
-                <div className="card-body">
-                    <h5 className="card-title">P2P Energy Trading Platform Monitoring</h5>
-                    <p className="text-muted mb-2">
+            <div className="bg-card mt-4 rounded-lg border shadow-sm">
+                <div className="p-6">
+                    <h5 className="text-lg font-semibold">P2P Energy Trading Platform Monitoring</h5>
+                    <p className="text-muted-foreground mb-2">
                         This page is designed to help you monitor your Anchor-based P2P energy trading platform on
                         Solana. You can view real-time transactions and inspect deep details including:
                     </p>
-                    <ul className="text-muted mb-0">
+                    <ul className="text-muted-foreground mb-0">
                         <li>
                             <strong>Program Instructions:</strong> See all program invocations in each transaction
                         </li>
@@ -350,7 +361,7 @@ export default function RealtimeTransactionsPage() {
                             <strong>Energy Trading Events:</strong> Monitor trades, settlements, and platform activity
                         </li>
                     </ul>
-                    <div className="alert alert-info mt-3 mb-0">
+                    <div className="mt-3 mb-0 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-800">
                         <strong>Pro Tip:</strong> Enter your program ID above to filter transactions specific to your
                         energy trading platform. Click "Inspect" on any transaction to see full details including all
                         accounts, instructions, and program logs.
@@ -373,26 +384,29 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
     const instructions = message.compiledInstructions;
 
     return (
-        <div className="card mt-4">
-            <div className="card-header">
-                <div className="row align-items-center">
-                    <div className="col">
-                        <h4 className="card-header-title">Transaction Deep Inspection</h4>
+        <div className="bg-card mt-4 rounded-lg border shadow-sm">
+            <div className="border-b px-6 py-4">
+                <div className="flex items-center">
+                    <div className="flex-1">
+                        <h4 className="text-lg font-semibold">Transaction Deep Inspection</h4>
                     </div>
-                    <div className="col-auto">
-                        <button className="btn btn-sm btn-white" onClick={onClose}>
+                    <div className="flex-shrink-0">
+                        <button
+                            className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                            onClick={onClose}
+                        >
                             ✕ Close
                         </button>
                     </div>
                 </div>
             </div>
-            <div className="card-body">
+            <div className="p-6">
                 {/* Transaction Overview */}
                 <div className="mb-4">
                     <h5 className="border-bottom pb-2">Overview</h5>
                     <div className="row">
                         <div className="col-md-6">
-                            <table className="table tablsm">
+                            <table className="w-full text-sm">
                                 <tbody>
                                     <tr>
                                         <td className="w-50">
@@ -420,7 +434,7 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                             </table>
                         </div>
                         <div className="col-md-6">
-                            <table className="table tablsm">
+                            <table className="w-full text-sm">
                                 <tbody>
                                     <tr>
                                         <td className="w-50">
@@ -453,18 +467,20 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                         <div className="list-group">
                             {tx.programIds.map((programId, idx) => (
                                 <div key={idx} className="list-group-item">
-                                    <div className="d-flex justify-content-between align-items-center">
+                                    <div className="flex items-center justify-between">
                                         <div>
                                             <strong>Program {idx + 1}:</strong>
                                             <Address pubkey={new PublicKey(programId)} link />
                                         </div>
-                                        <span className="badge bg-primary">{getProgramName(programId)}</span>
+                                        <span className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">
+                                            {getProgramName(programId)}
+                                        </span>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <p className="text-muted">No program IDs found</p>
+                        <p className="text-muted-foreground">No program IDs found</p>
                     )}
                 </div>
 
@@ -484,7 +500,7 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                                             data-bs-target={`#instruction-${idx}`}
                                         >
                                             <strong>Instruction #{idx + 1}:</strong>
-                                            <span className="ms-2 badge bg-info">
+                                            <span className="ml-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
                                                 {getProgramName(programId.toBase58())}
                                             </span>
                                         </button>
@@ -504,7 +520,9 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                                                 <ul className="list-group mt-2">
                                                     {instruction.accountKeyIndexes.map((accountIdx, i) => (
                                                         <li key={i} className="list-group-item">
-                                                            <span className="badge bg-secondary m2">#{i}</span>
+                                                            <span className="mr-2 inline-flex items-center rounded-full bg-gray-500 px-2 py-0.5 text-xs font-medium text-white">
+                                                                #{i}
+                                                            </span>
                                                             <Address pubkey={accountKeys[accountIdx]} link />
                                                         </li>
                                                     ))}
@@ -512,7 +530,7 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                                             </div>
                                             <div>
                                                 <strong>Data:</strong>
-                                                <pre className="bg-light p-2 mt-2 small">
+                                                <pre className="bg-light small mt-2 p-2">
                                                     {Buffer.from(instruction.data).toString('hex')}
                                                 </pre>
                                             </div>
@@ -527,8 +545,8 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                 {/* Account Keys */}
                 <div className="mb-4">
                     <h5 className="border-bottom pb-2">All Accounts ({accountKeys.length})</h5>
-                    <div className="tablresponsive">
-                        <table className="table tablsm">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -550,16 +568,24 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                                             </td>
                                             <td>
                                                 {isWritable ? (
-                                                    <span className="badge bg-warning">Yes</span>
+                                                    <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">
+                                                        Yes
+                                                    </span>
                                                 ) : (
-                                                    <span className="badge bg-secondary">No</span>
+                                                    <span className="rounded-full bg-gray-200 px-2 py-1 text-xs text-gray-800">
+                                                        No
+                                                    </span>
                                                 )}
                                             </td>
                                             <td>
                                                 {isSigner ? (
-                                                    <span className="badge bg-success">Yes</span>
+                                                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                                                        Yes
+                                                    </span>
                                                 ) : (
-                                                    <span className="badge bg-secondary">No</span>
+                                                    <span className="rounded-full bg-gray-200 px-2 py-1 text-xs text-gray-800">
+                                                        No
+                                                    </span>
                                                 )}
                                             </td>
                                         </tr>
@@ -591,8 +617,8 @@ function TransactionDetailsCard({ tx, onClose }: { tx: EnhancedTransaction; onCl
                 {details.meta?.preBalances && details.meta?.postBalances && (
                     <div>
                         <h5 className="border-bottom pb-2">Balance Changes</h5>
-                        <div className="tablresponsive">
-                            <table className="table tablsm">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
                                 <thead>
                                     <tr>
                                         <th>Account</th>

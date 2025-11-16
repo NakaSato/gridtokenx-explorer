@@ -43,13 +43,16 @@ export default function FeatureGatesPageClient() {
         <div className="mx-4 mt-4">
             <h1>Feature Gates</h1>
             {cluster === Cluster.Custom ? (
-                <div className="alert alert-warning" role="alert">
+                <div
+                    className="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800"
+                    role="alert"
+                >
                     This is a custom cluster. Enumeration of feature gates is not available.
                 </div>
             ) : (
-                <div className="card">
-                    <div className="tablresponsive">
-                        <table className="table tablsm tablnowrap card-table">
+                <div className="bg-card rounded-lg border shadow-sm">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
                             <thead>
                                 <tr>
                                     <th className="px-3">Feature</th>
@@ -66,7 +69,7 @@ export default function FeatureGatesPageClient() {
                                         <td className="px-3">
                                             <Link
                                                 href={`/epoch/${feature.clusterActivationEpoch}?cluster=${clusterSlug(
-                                                    cluster
+                                                    cluster,
                                                 )}`}
                                                 className="epoch-link mb-1"
                                             >
@@ -79,7 +82,7 @@ export default function FeatureGatesPageClient() {
                                                     href={feature.simd_link[0]}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="btn btn-sm btn-outlinprimary fs-sm"
+                                                    className="border-primary text-primary hover:bg-primary rounded-md border px-3 py-1.5 text-sm hover:text-white"
                                                 >
                                                     {feature.simds.map(simd => simd.replace(/^0+/, ''))}
                                                 </a>

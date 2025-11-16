@@ -92,9 +92,9 @@ export function AccountsCard({ message }: { message: VersionedMessage }) {
     }
 
     return (
-        <div className="card">
-            <div className="card-header">
-                <h3 className="card-header-title">{`Account List (${numAccounts})`}</h3>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold">{`Account List (${numAccounts})`}</h3>
                 <button
                     className={`btn btn-sm d-flex ${expanded ? 'btn-black active' : 'btn-white'}`}
                     onClick={() => setExpanded(e => !e)}
@@ -129,7 +129,7 @@ function AccountFromLookupTableRow({
                     </span>
                 </div>
             </td>
-            <td className="text-lg-end">
+            <td className="lg:text-right">
                 <AddressFromLookupTableWithContext
                     lookupTableKey={lookupTableKey}
                     lookupTableIndex={lookupTableIndex}
@@ -157,11 +157,11 @@ function AccountRow({
                     Account #{accountIndex + 1}
                     <span className="mt-1">
                         {signer && <span className="badge bg-info-soft m1">Signer</span>}
-                        {!readOnly && <span className="badge bg-danger-soft">Writable</span>}
+                        {!readOnly && <span className="bg-red-50 text-red-700 px-2 py-1 rounded-full text-xs">Writable</span>}
                     </span>
                 </div>
             </td>
-            <td className="text-lg-end">
+            <td className="lg:text-right">
                 <AddressWithContext pubkey={publicKey} />
             </td>
         </tr>

@@ -14,12 +14,12 @@ export function NFTokenCollectionNFTGrid({ collection }: { collection: string })
         collectionAddress: collection,
     });
     return (
-        <div className="card">
-            <div className="card-header align-items-center">
-                <h3 className="card-header-title">NFTs</h3>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b flex items-center">
+                <h3 className="text-lg font-semibold">NFTs</h3>
 
-                <button className="btn btn-white btn-sm" onClick={() => mutate()}>
-                    <RefreshCw className="align-text-top m2" size={13} />
+                <button className="bg-white text-black border px-3 py-1.5 rounded-md hover:bg-gray-100 text-sm" onClick={() => mutate()}>
+                    <RefreshCw className="align-text-top mr-2" size={13} />
                     Refresh
                 </button>
             </div>

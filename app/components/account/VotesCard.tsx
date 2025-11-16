@@ -5,21 +5,21 @@ import React from 'react';
 export function VotesCard({ voteAccount }: { voteAccount: VoteAccount }) {
     return (
         <>
-            <div className="card">
-                <div className="card-header">
-                    <div className="row align-items-center">
-                        <div className="col">
-                            <h3 className="card-header-title">Vote History</h3>
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="border-b px-6 py-4">
+                    <div className="flex items-center">
+                        <div className="flex-1">
+                            <h3 className="text-lg font-semibold">Vote History</h3>
                         </div>
                     </div>
                 </div>
 
-                <div className="tablresponsive mb-0">
-                    <table className="table tablsm tablnowrap card-table">
+                <div className="mb-0 overflow-x-auto">
+                    <table className="w-full text-sm">
                         <thead>
                             <tr>
-                                <th className="w-1 text-muted">Slot</th>
-                                <th className="text-muted">Confirmation Count</th>
+                                <th className="text-muted-foreground w-1">Slot</th>
+                                <th className="text-muted-foreground">Confirmation Count</th>
                             </tr>
                         </thead>
                         <tbody className="list">
@@ -31,8 +31,8 @@ export function VotesCard({ voteAccount }: { voteAccount: VoteAccount }) {
                     </table>
                 </div>
 
-                <div className="card-footer">
-                    <div className="text-muted text-center">
+                <div className="border-t px-6 py-4">
+                    <div className="text-muted-foreground text-center">
                         {voteAccount.info.votes.length > 0 ? '' : 'No votes found'}
                     </div>
                 </div>
@@ -44,10 +44,10 @@ export function VotesCard({ voteAccount }: { voteAccount: VoteAccount }) {
 const renderAccountRow = (vote: Vote, index: number) => {
     return (
         <tr key={index}>
-            <td className="w-1 font-monospace">
+            <td className="w-1 font-mono">
                 <Slot slot={vote.slot} link />
             </td>
-            <td className="font-monospace">{vote.confirmationCount}</td>
+            <td className="font-mono">{vote.confirmationCount}</td>
         </tr>
     );
 };

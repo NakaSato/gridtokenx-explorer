@@ -13,7 +13,7 @@ import {
     IdlTypeDefTy,
 } from '@coral-xyz/anchor/dist/cjs/idl';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { camelCase } from 'changcase';
+import { camelCase } from 'change-case';
 import { useMemo } from 'react';
 
 import { FieldType, FormattedIdl, PdaData, StructField } from './FormattedIdl';

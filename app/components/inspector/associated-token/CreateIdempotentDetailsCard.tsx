@@ -40,43 +40,43 @@ export function CreateIdempotentDetailsCard(props: {
         >
             <tr>
                 <td>Program</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <Address pubkey={ix.programId} alignRight link />
                 </td>
             </tr>
             <tr>
                 <td>Source</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <AddressWithContext pubkey={raw.keys[0].pubkey} hideInfo />
                 </td>
             </tr>
             <tr>
                 <td>Account</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <AddressWithContext pubkey={raw.keys[1].pubkey} hideInfo />
                 </td>
             </tr>
             <tr>
                 <td>Wallet</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <AddressWithContext pubkey={raw.keys[2].pubkey} hideInfo />
                 </td>
             </tr>
             <tr>
                 <td>Mint</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <AddressWithContext pubkey={raw.keys[3].pubkey} hideInfo />
                 </td>
             </tr>
             <tr>
                 <td>System Program</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <AddressWithContext pubkey={raw.keys[4].pubkey} hideInfo />
                 </td>
             </tr>
             <tr>
                 <td>Token Program</td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <AddressWithContext pubkey={raw.keys[5].pubkey} hideInfo />
                 </td>
             </tr>

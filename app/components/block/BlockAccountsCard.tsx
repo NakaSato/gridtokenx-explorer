@@ -58,20 +58,20 @@ export function BlockAccountsCard({ block, blockSlot }: { block: VersionedBlockR
     }, [block]);
 
     return (
-        <div className="card">
-            <div className="card-header align-items-center">
-                <h3 className="card-header-title">Block Account Usage</h3>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b flex items-center">
+                <h3 className="text-lg font-semibold">Block Account Usage</h3>
             </div>
 
-            <div className="tablresponsive mb-0">
-                <table className="table tablsm tablnowrap card-table">
+            <div className="overflow-x-auto mb-0">
+                <table className="w-full text-sm">
                     <thead>
                         <tr>
-                            <th className="text-muted">Account</th>
-                            <th className="text-muted">Read-Write Count</th>
-                            <th className="text-muted">Read-Only Count</th>
-                            <th className="text-muted">Total Count</th>
-                            <th className="text-muted">% of Transactions</th>
+                            <th className="text-muted-foreground">Account</th>
+                            <th className="text-muted-foreground">Read-Write Count</th>
+                            <th className="text-muted-foreground">Read-Only Count</th>
+                            <th className="text-muted-foreground">Total Count</th>
+                            <th className="text-muted-foreground">% of Transactions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -90,9 +90,9 @@ export function BlockAccountsCard({ block, blockSlot }: { block: VersionedBlockR
             </div>
 
             {accountStats.length > numDisplayed && (
-                <div className="card-footer">
+                <div className="px-6 py-4 border-t">
                     <button
-                        className="btn btn-primary w-100"
+                        className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 w-full"
                         onClick={() => setNumDisplayed(displayed => displayed + PAGE_SIZE)}
                     >
                         Load More

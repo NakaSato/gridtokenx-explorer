@@ -5,7 +5,7 @@ import { useCluster } from '@/app/providers/cluster';
 import { Cluster } from '@/app/utils/cluster';
 import { useClusterPath } from '@/app/utils/url';
 import { useIsProgramVerified } from '@/app/utils/verified-builds';
-import { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeablprogram';
+import { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeable-program';
 
 export function VerifiedProgramBadge({
     programData,
@@ -28,19 +28,25 @@ export function VerifiedProgramBadge({
     if (cluster !== Cluster.MainnetBeta) {
         return (
             <h3 className="mb-0">
-                <span className="badge bg-warning-soft rank">Verified Builds only available on Mainnet</span>
+                <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                    Verified Builds only available on Mainnet
+                </span>
             </h3>
         );
     } else if (isLoading) {
         return (
             <h3 className="mb-0">
-                <span className="badge">Loading...</span>
+                <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800">
+                    Loading...
+                </span>
             </h3>
         );
     } else if (error) {
         return (
             <h3 className="mb-0">
-                <span className="badge bg-warning-soft rank">Error fetching verified build information</span>
+                <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                    Error fetching verified build information
+                </span>
             </h3>
         );
     } else {

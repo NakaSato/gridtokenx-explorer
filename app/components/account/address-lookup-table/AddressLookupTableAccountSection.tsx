@@ -33,11 +33,11 @@ export function AddressLookupTableAccountSection(
     });
     const refresh = useFetchAccountInfo();
     return (
-        <div className="card">
-            <div className="card-header">
-                <h3 className="card-header-title mb-0 d-flex align-items-center">Address Lookup Table Account</h3>
-                <button className="btn btn-white btn-sm" onClick={() => refresh(account.pubkey, 'parsed')}>
-                    <RefreshCw className="align-text-top m2" size={13} />
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold mb-0 flex items-center">Address Lookup Table Account</h3>
+                <button className="bg-white text-black border px-3 py-1.5 rounded-md hover:bg-gray-100 text-sm" onClick={() => refresh(account.pubkey, 'parsed')}>
+                    <RefreshCw className="align-text-top mr-2" size={13} />
                     Refresh
                 </button>
             </div>
@@ -45,25 +45,25 @@ export function AddressLookupTableAccountSection(
             <TableCardBody>
                 <tr>
                     <td>Address</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Address pubkey={account.pubkey} alignRight raw />
                     </td>
                 </tr>
                 <tr>
                     <td>Balance (SOL)</td>
-                    <td className="text-lg-end text-uppercase">
+                    <td className="lg:text-right uppercase">
                         <SolBalance lamports={account.lamports} />
                     </td>
                 </tr>
                 <tr>
                     <td>Activation Status</td>
-                    <td className="text-lg-end text-uppercase">
+                    <td className="lg:text-right uppercase">
                         {lookupTableAccount.isActive() ? 'Active' : 'Deactivated'}
                     </td>
                 </tr>
                 <tr>
                     <td>Last Extended Slot</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         {lookupTableAccount.state.lastExtendedSlot === 0 ? (
                             'None (Empty)'
                         ) : (
@@ -73,7 +73,7 @@ export function AddressLookupTableAccountSection(
                 </tr>
                 <tr>
                     <td>Authority</td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         {lookupTableAccount.state.authority === undefined ? (
                             'None (Frozen)'
                         ) : (

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { expect, test } from 'vitest';
 
-import useTabVisibility from '../ustab-visibility';
+import useTabVisibility from '../use-tab-visibility';
 
 const isVisibleTestId = 'isVisible';
 

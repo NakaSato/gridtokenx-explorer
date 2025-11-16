@@ -23,18 +23,14 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
         setError(null);
 
         try {
-            const { Program, AnchorProvider } = await import('@coral-xyz/anchor');
-            const { Connection, Keypair } = await import('@solana/web3.js');
-            const NodeWallet = (await import('@coral-xyz/anchor/dist/cjs/nodewallet')).default;
+            // Use the API route instead of client-side NodeWallet
+            // The API expects a cluster parameter, but we need to determine the cluster type
+            // For now, we'll use a generic approach since the API can handle different cluster URLs
+            const response = await fetch(`/api/anchor?cluster=${encodeURIComponent(clusterUrl)}&programAddress=${encodeURIComponent(programId)}`);
+            const data = await response.json();
 
-            const connection = new Connection(clusterUrl);
-            const provider = new AnchorProvider(connection, new NodeWallet(Keypair.generate()), {});
-            const programPubkey = new PublicKey(programId);
-
-            const idl = await Program.fetchIdl(programPubkey, provider);
-
-            if (idl) {
-                setIdlData(idl);
+            if (response.ok && data.idl) {
+                setIdlData(data.idl);
                 setError(null);
             } else {
                 setError('IDL not found on-chain. You can manually paste your IDL below.');
@@ -66,25 +62,25 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
 
     if (!programId) {
         return (
-            <div className="card">
-                <div className="card-body">
-                    <h5 className="card-title">Anchor Developer Tools</h5>
-                    <p className="text-muted">Enter a program ID above to access Anchor developer tools.</p>
+            <div className="bg-card border rounded-lg shadow-sm">
+                <div className="p-6">
+                    <h5 className="text-lg font-semibold">Anchor Developer Tools</h5>
+                    <p className="text-muted-foreground">Enter a program ID above to access Anchor developer tools.</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="card mb-4">
-            <div className="card-header">
-                <div className="row align-items-center">
-                    <div className="col">
-                        <h5 className="card-header-title mb-0">🔧 Anchor Developer Tools</h5>
+        <div className="bg-card border rounded-lg shadow-sm mb-4">
+            <div className="px-6 py-4 border-b">
+                <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                        <h5 className="text-lg font-semibold mb-0">🔧 Anchor Developer Tools</h5>
                     </div>
-                    <div className="col-auto">
+                    <div className="flex-shrink-0">
                         <button
-                            className="btn btn-sm btn-outlinprimary"
+                            className="px-3 py-1.5 text-sm border border-primary text-primary rounded-md hover:bg-primary/10"
                             onClick={() => setShowIdlInput(!showIdlInput)}
                         >
                             {showIdlInput ? 'Hide' : 'Manual IDL'}
@@ -92,20 +88,20 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                     </div>
                 </div>
             </div>
-            <div className="card-body">
+            <div className="p-6">
                 {loading && (
                     <div className="text-center py-4">
-                        <div className="spinner-border text-primary" role="status">
-                            <span className="visually-hidden">Loading IDL...</span>
+                        <div className="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" role="status">
+                            <span className="sr-only">Loading IDL...</span>
                         </div>
-                        <p className="text-muted mt-2">Fetching IDL from program...</p>
+                        <p className="text-muted-foreground mt-2">Fetching IDL from program...</p>
                     </div>
                 )}
 
                 {error && !showIdlInput && (
-                    <div className="alert alert-warning">
+                    <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md">
                         <strong>Note:</strong> {error}
-                        <button className="btn btn-sm btn-outlinprimary ms-3" onClick={() => setShowIdlInput(true)}>
+                        <button className="px-3 py-1.5 text-sm border border-primary text-primary rounded-md hover:bg-primary/10 ml-3" onClick={() => setShowIdlInput(true)}>
                             Paste IDL Manually
                         </button>
                     </div>
@@ -113,15 +109,15 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
 
                 {showIdlInput && (
                     <div className="mb-3">
-                        <label className="form-label">Paste Your Program IDL (JSON format):</label>
+                        <label className="block text-sm font-medium mb-2">Paste Your Program IDL (JSON format):</label>
                         <textarea
-                            className="form-control font-monospace"
+                            className="w-full border rounded-md px-3 py-2 font-mono text-sm"
                             rows={10}
                             value={manualIdl}
                             onChange={e => setManualIdl(e.target.value)}
                             placeholder='{"version": "0.1.0", "name": "your_program", ...}'
                         />
-                        <button className="btn btn-primary mt-2" onClick={handleManualIdl}>
+                        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 mt-2" onClick={handleManualIdl}>
                             Load IDL
                         </button>
                     </div>
@@ -129,17 +125,17 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
 
                 {idlData && (
                     <>
-                        <div className="row mb-4">
-                            <div className="col-md-6">
-                                <div className="p-3 bg-light rounded">
-                                    <h6 className="text-muted mb-1">Program Name</h6>
-                                    <h4 className="mb-0">{idlData.name}</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <div className="p-3 bg-gray-50 rounded">
+                                    <h6 className="text-muted-foreground text-sm mb-1">Program Name</h6>
+                                    <h4 className="text-xl font-bold mb-0">{idlData.name}</h4>
                                 </div>
                             </div>
-                            <div className="col-md-6">
-                                <div className="p-3 bg-light rounded">
-                                    <h6 className="text-muted mb-1">IDL Version</h6>
-                                    <h4 className="mb-0">{idlData.version}</h4>
+                            <div>
+                                <div className="p-3 bg-gray-50 rounded">
+                                    <h6 className="text-muted-foreground text-sm mb-1">IDL Version</h6>
+                                    <h4 className="text-xl font-bold mb-0">{idlData.version}</h4>
                                 </div>
                             </div>
                         </div>
@@ -158,11 +154,11 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                                                     data-bs-toggle="collapse"
                                                     data-bs-target={`#ix-${idx}`}
                                                 >
-                                                    <code className="m2">{instruction.name}</code>
-                                                    <span className="badge bg-info">
+                                                    <code className="mr-2">{instruction.name}</code>
+                                                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
                                                         {instruction.accounts?.length || 0} accounts
                                                     </span>
-                                                    <span className="badge bg-secondary ms-2">
+                                                    <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs ml-2">
                                                         {instruction.args?.length || 0} args
                                                     </span>
                                                 </button>
@@ -175,18 +171,18 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                                                 <div className="accordion-body">
                                                     {instruction.accounts && instruction.accounts.length > 0 && (
                                                         <div className="mb-3">
-                                                            <h6>Accounts:</h6>
-                                                            <ul className="list-group">
+                                                            <h6 className="font-semibold mb-2">Accounts:</h6>
+                                                            <ul className="space-y-2">
                                                                 {instruction.accounts.map((account: any, i: number) => (
-                                                                    <li key={i} className="list-group-item">
+                                                                    <li key={i} className="border rounded px-3 py-2">
                                                                         <code>{account.name}</code>
                                                                         {account.isMut && (
-                                                                            <span className="badge bg-warning ms-2">
+                                                                            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs ml-2">
                                                                                 mut
                                                                             </span>
                                                                         )}
                                                                         {account.isSigner && (
-                                                                            <span className="badge bg-success ms-2">
+                                                                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs ml-2">
                                                                                 signer
                                                                             </span>
                                                                         )}
@@ -197,12 +193,12 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                                                     )}
                                                     {instruction.args && instruction.args.length > 0 && (
                                                         <div>
-                                                            <h6>Arguments:</h6>
-                                                            <ul className="list-group">
+                                                            <h6 className="font-semibold mb-2">Arguments:</h6>
+                                                            <ul className="space-y-2">
                                                                 {instruction.args.map((arg: any, i: number) => (
-                                                                    <li key={i} className="list-group-item">
+                                                                    <li key={i} className="border rounded px-3 py-2">
                                                                         <code>{arg.name}</code>
-                                                                        <span className="text-muted ms-2">
+                                                                        <span className="text-muted-foreground ml-2">
                                                                             : {JSON.stringify(arg.type)}
                                                                         </span>
                                                                     </li>
@@ -241,7 +237,7 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                                                 data-bs-parent="#accountsDetails"
                                             >
                                                 <div className="accordion-body">
-                                                    <pre className="bg-light p-2 rounded">
+                                                    <pre className="bg-gray-50 p-2 rounded">
                                                         {JSON.stringify(account.type, null, 2)}
                                                     </pre>
                                                 </div>
@@ -262,7 +258,7 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                                             <h6>
                                                 <code>{event.name}</code>
                                             </h6>
-                                            <pre className="bg-light p-2 rounded mb-0">
+                                            <pre className="bg-gray-50 p-2 rounded mb-0">
                                                 {JSON.stringify(event.fields, null, 2)}
                                             </pre>
                                         </div>
@@ -274,9 +270,9 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                         {/* Errors */}
                         {idlData.errors && idlData.errors.length > 0 && (
                             <div className="mb-4">
-                                <h5 className="border-bottom pb-2">⚠️ Error Codes ({idlData.errors.length})</h5>
-                                <div className="tablresponsive">
-                                    <table className="table tablsm">
+                                <h5 className="border-b pb-2">⚠️ Error Codes ({idlData.errors.length})</h5>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm">
                                         <thead>
                                             <tr>
                                                 <th>Code</th>
@@ -303,13 +299,13 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                         )}
 
                         {/* Full IDL Download */}
-                        <div className="alert alert-info">
-                            <div className="d-flex justify-content-between align-items-center">
+                        <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md">
+                            <div className="flex justify-between items-center">
                                 <span>
                                     <strong>Developer Tip:</strong> You can download the full IDL for offline use
                                 </span>
                                 <button
-                                    className="btn btn-sm btn-primary"
+                                    className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                                     onClick={() => {
                                         const blob = new Blob([JSON.stringify(idlData, null, 2)], {
                                             type: 'application/json',

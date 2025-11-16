@@ -17,11 +17,11 @@ export function ConcurrentMerkleTreeCard({ data }: { data: Buffer }) {
     const rightMostIndex = cmt.tree.rightMostPath.index;
     return (
         <>
-            <div className="card">
-                <div className="card-header">
-                    <div className="row align-items-center">
-                        <div className="col">
-                            <h3 className="card-header-title">Concurrent Merkle Tree</h3>
+            <div className="bg-card border rounded-lg shadow-sm">
+                <div className="px-6 py-4 border-b">
+                    <div className="flex items-center">
+                        <div className="flex-1">
+                            <h3 className="text-lg font-semibold">Concurrent Merkle Tree</h3>
                         </div>
                     </div>
                 </div>
@@ -29,61 +29,61 @@ export function ConcurrentMerkleTreeCard({ data }: { data: Buffer }) {
                 <TableCardBody>
                     <tr>
                         <td>Authority</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <Address pubkey={authority} alignRight raw />
                         </td>
                     </tr>
                     <tr>
                         <td>Creation Slot</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <Slot slot={creationSlot.toNumber()} link />
                         </td>
                     </tr>
                     <tr>
                         <td>Max Depth</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <span className="text-monospace">{treeHeight}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Max Buffer Size</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <span className="text-monospace">{maxBufferSize}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Canopy Depth</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <span className="text-monospace">{canopyDepth}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Current Sequence Number</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <span className="text-monospace">{seq.toString()}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Current Root</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <Address pubkey={new PublicKey(root)} alignRight raw />
                         </td>
                     </tr>
                     <tr>
                         <td>Current Number of Leaves</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <span className="text-monospace">{rightMostIndex}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Remaining Leaves</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <span className="text-monospace">{Math.pow(2, treeHeight) - rightMostIndex}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Max Possible Leaves</td>
-                        <td className="text-lg-end">
+                        <td className="lg:text-right">
                             <span className="text-monospace">{Math.pow(2, treeHeight)}</span>
                         </td>
                     </tr>

@@ -39,8 +39,8 @@ export function UpcomingFeatures() {
 
     if (filteredFeatures.length === 0) {
         return (
-            <div className="card">
-                <div className="card-body">
+            <div className="bg-card border rounded-lg shadow-sm">
+                <div className="p-6">
                     <div className="text-center">No upcoming features for {clusterName(cluster)}</div>
                 </div>
             </div>
@@ -71,9 +71,9 @@ function FeaturesTable({
     cluster: Cluster;
 }) {
     return (
-        <div className="card">
-            <div className="card-header">
-                <h4 className="card-header-title">{header}</h4>
+        <div className="bg-card border rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b">
+                <h4 className="text-lg font-semibold">{header}</h4>
             </div>
             <div className="tablresponsive small-headers">
                 <table className="table">
@@ -89,22 +89,22 @@ function FeaturesTable({
                         {features.map(feature => (
                             <tr key={feature.key}>
                                 <td>
-                                    <div className="mb-2 d-flex align-items-center">
+                                    <div className="mb-2 flex items-center">
                                         <p className="mb-0 m3 text-decoration-underline fs-sm">{feature.title}</p>
                                         {cluster === Cluster.MainnetBeta && feature.mainnet_activation_epoch && (
-                                            <span className="badge bg-success">Active on Mainnet</span>
+                                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Active on Mainnet</span>
                                         )}
                                         {cluster === Cluster.Devnet && feature.devnet_activation_epoch && (
-                                            <span className="badge bg-success">Active on Devnet</span>
+                                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Active on Devnet</span>
                                         )}
                                         {cluster === Cluster.Testnet && feature.testnet_activation_epoch && (
-                                            <span className="badge bg-success">Active on Testnet</span>
+                                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Active on Testnet</span>
                                         )}
                                     </div>
                                     <p className="mb-0 fs-sm">{feature.description}</p>
                                 </td>
                                 <td>
-                                    <div className="d-flex flex-column fs-sm">
+                                    <div className="flex flex-col fs-sm">
                                         {feature.mainnet_activation_epoch && (
                                             <Link
                                                 href={`/epoch/${feature.mainnet_activation_epoch}?cluster=mainnet`}

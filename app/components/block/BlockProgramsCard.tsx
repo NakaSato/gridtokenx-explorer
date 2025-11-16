@@ -57,36 +57,36 @@ export function BlockProgramsCard({ block }: { block: VersionedBlockResponse }) 
     const showSuccessRate = block.transactions.every(tx => tx.meta !== null);
     return (
         <>
-            <div className="card">
-                <div className="card-header align-items-center">
-                    <h3 className="card-header-title">Block Program Stats</h3>
+            <div className="bg-card border rounded-lg shadow-sm">
+                <div className="px-6 py-4 border-b flex items-center">
+                    <h3 className="text-lg font-semibold">Block Program Stats</h3>
                 </div>
                 <TableCardBody>
                     <tr>
-                        <td className="w-100">Unique Programs Count</td>
-                        <td className="text-lg-end font-monospace">{programEntries.length}</td>
+                        <td className="w-full">Unique Programs Count</td>
+                        <td className="lg:text-right font-mono">{programEntries.length}</td>
                     </tr>
                     <tr>
-                        <td className="w-100">Total Instructions</td>
-                        <td className="text-lg-end font-monospace">{totalInstructions}</td>
+                        <td className="w-full">Total Instructions</td>
+                        <td className="lg:text-right font-mono">{totalInstructions}</td>
                     </tr>
                 </TableCardBody>
             </div>
-            <div className="card">
-                <div className="card-header align-items-center">
-                    <h3 className="card-header-title">Block Programs</h3>
+            <div className="bg-card border rounded-lg shadow-sm">
+                <div className="px-6 py-4 border-b flex items-center">
+                    <h3 className="text-lg font-semibold">Block Programs</h3>
                 </div>
 
-                <div className="tablresponsive mb-0">
-                    <table className="table tablsm tablnowrap card-table">
+                <div className="overflow-x-auto mb-0">
+                    <table className="w-full text-sm">
                         <thead>
                             <tr>
-                                <th className="text-muted">Program</th>
-                                <th className="text-muted">Transaction Count</th>
-                                <th className="text-muted">% of Total</th>
-                                <th className="text-muted">Instruction Count</th>
-                                <th className="text-muted">% of Total</th>
-                                {showSuccessRate && <th className="text-muted">Success Rate</th>}
+                                <th className="text-muted-foreground">Program</th>
+                                <th className="text-muted-foreground">Transaction Count</th>
+                                <th className="text-muted-foreground">% of Total</th>
+                                <th className="text-muted-foreground">Instruction Count</th>
+                                <th className="text-muted-foreground">% of Total</th>
+                                {showSuccessRate && <th className="text-muted-foreground">Success Rate</th>}
                             </tr>
                         </thead>
                         <tbody>

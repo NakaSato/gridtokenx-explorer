@@ -39,7 +39,7 @@ export function AddressFromLookupTableWithContext({
     const lookupTable = lookupTableInfo && lookupTableInfo[0];
     if (!lookupTable) {
         return (
-            <span className="text-muted">
+            <span className="text-muted-foreground">
                 <span className="spinner-grow spinner-grow-sm m2"></span>
                 Loading
             </span>
@@ -92,7 +92,7 @@ function AccountInfo({ pubkey, validator }: { pubkey: PublicKey; validator?: Acc
     const account = info?.data;
     if (!account)
         return (
-            <span className="text-muted">
+            <span className="text-muted-foreground">
                 <span className="spinner-grow spinner-grow-sm m2"></span>
                 Loading
             </span>
@@ -102,14 +102,14 @@ function AccountInfo({ pubkey, validator }: { pubkey: PublicKey; validator?: Acc
     if (errorMessage) return <span className="text-warning">{errorMessage}</span>;
 
     if (account.lamports === 0) {
-        return <span className="text-muted">Account doesn&apos;t exist</span>;
+        return <span className="text-muted-foreground">Account doesn&apos;t exist</span>;
     }
 
     const ownerAddress = account.owner.toBase58();
     const ownerLabel = addressLabel(ownerAddress, cluster);
 
     return (
-        <span className="text-muted">
+        <span className="text-muted-foreground">
             {`Owned by ${ownerLabel || ownerAddress}.`}
             {` Balance is ${lamportsToSolString(account.lamports)} SOL.`}
             {account.space !== undefined && ` Size is ${new Intl.NumberFormat('en-US').format(account.space)} byte(s).`}

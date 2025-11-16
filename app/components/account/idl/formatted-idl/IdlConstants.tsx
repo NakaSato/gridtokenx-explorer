@@ -6,11 +6,11 @@ export function IdlConstantsView({ data }: { data?: FormattedIdl['constants'] })
     if (!data) return null;
 
     return (
-        <table className="table tablsm tablnowrap card-table">
+        <table className="w-full text-sm">
             <thead>
                 <tr>
-                    <th className="text-muted w-1">Name</th>
-                    <th className="text-muted">Value</th>
+                    <th className="text-muted-foreground w-1">Name</th>
+                    <th className="text-muted-foreground">Value</th>
                 </tr>
             </thead>
             <tbody className="list">
@@ -18,9 +18,11 @@ export function IdlConstantsView({ data }: { data?: FormattedIdl['constants'] })
                     <tr key={constant.name}>
                         <td>{constant.name}</td>
                         <td>
-                            <div className="d-flex gap-2 align-items-center">
+                            <div className="flex items-center gap-2">
                                 <span>{JSON.stringify(constant.value, undefined, 2)}:</span>
-                                <span className="badge bg-success-soft">{constant.type}</span>
+                                <span className="rounded-full bg-green-50 px-2 py-1 text-xs text-green-700">
+                                    {constant.type}
+                                </span>
                             </div>
                         </td>
                     </tr>

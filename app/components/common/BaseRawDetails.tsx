@@ -19,11 +19,11 @@ function BaseTransactionInstructionRawDetails({ ix }: { ix: TransactionInstructi
             {ix.keys.map(({ pubkey, isSigner, isWritable }, keyIndex) => (
                 <tr key={keyIndex}>
                     <td>
-                        <div className="m2 d-md-inline">Account #{keyIndex + 1}</div>
+                        <div className="mr-2 d-md-inline">Account #{keyIndex + 1}</div>
                         {isWritable && <span className="badge bg-danger-soft m1">Writable</span>}
                         {isSigner && <span className="badge bg-info-soft m1">Signer</span>}
                     </td>
-                    <td className="text-lg-end">
+                    <td className="lg:text-right">
                         <Address pubkey={pubkey} alignRight link />
                     </td>
                 </tr>
@@ -31,9 +31,9 @@ function BaseTransactionInstructionRawDetails({ ix }: { ix: TransactionInstructi
 
             <tr>
                 <td>
-                    Instruction Data <span className="text-muted">(Hex)</span>
+                    Instruction Data <span className="text-muted-foreground">(Hex)</span>
                 </td>
-                <td className="text-lg-end">
+                <td className="lg:text-right">
                     <HexData raw={ix.data} />
                 </td>
             </tr>

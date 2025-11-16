@@ -97,19 +97,29 @@ function ProgramLogRow({
     return (
         <tr>
             <td>
-                <Link className="d-flex align-items-center" href={anchorPath}>
-                    <span className={`badge bg-${badgeColor}-soft m2`}>#{index + 1}</span>
+                <Link className="flex items-center" href={anchorPath}>
+                    <span
+                        className={`mr-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                            badgeColor === 'success'
+                                ? 'bg-green-100 text-green-800'
+                                : badgeColor === 'warning'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-gray-800 text-white'
+                        }`}
+                    >
+                        #{index + 1}
+                    </span>
                     <span className="program-log-instruction-name">
                         <ProgramName programId={programId} cluster={cluster} url={url} /> Instruction
                     </span>
                     <ChevronsUp className="c-pointer m-2" size={13} />
                 </Link>
                 {programLogs && (
-                    <div className="d-flex align-items-start flex-column font-monospace p-2 font-sizsm">
+                    <div className="flex flex-col items-start p-2 font-mono text-sm">
                         {programLogs.logs.map((log, key) => {
                             return (
                                 <span key={key}>
-                                    <span className="text-muted">{log.prefix}</span>
+                                    <span className="text-muted-foreground">{log.prefix}</span>
                                     <span className={`text-${log.style}`}>{log.text}</span>
                                 </span>
                             );

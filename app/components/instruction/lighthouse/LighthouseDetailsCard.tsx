@@ -23,7 +23,7 @@ import {
     parseAssertUpgradeableLoaderAccountMultiInstruction,
     parseMemoryCloseInstruction,
     parseMemoryWriteInstruction,
-} from 'lighthoussdk';
+} from 'lighthouse-sdk';
 import React from 'react';
 
 import { camelToTitleCase } from '@/app/utils';
@@ -69,7 +69,7 @@ function parseLighthouseInstruction(ix: ReturnType<typeof upcastTransactionInstr
     const subEnum = (pix: ParsedCodamaInstruction, key: string, array = false) => {
         if (array) {
             const assertions = pix.data[key].map((assertion: Parameters<typeof renderEnumsAsStrings>[0]) =>
-                renderEnumsAsStrings(assertion)
+                renderEnumsAsStrings(assertion),
             );
             pix.data[key] = assertions;
         } else {
@@ -343,13 +343,13 @@ function CodamaCard({ ix, parsedIx }: { ix: Instruction; parsedIx: ParsedCodamaI
         <>
             <tr>
                 <td>Program</td>
-                <td className="text-lg-end" colSpan={2}>
+                <td className="lg:text-right" colSpan={2}>
                     <Address pubkey={programId} alignRight link raw overrideText={programName} />
                 </td>
             </tr>
             <tr className="tablsep">
                 <td>Account Name</td>
-                <td className="text-lg-end" colSpan={2}>
+                <td className="lg:text-right" colSpan={2}>
                     Address
                 </td>
             </tr>
@@ -357,7 +357,7 @@ function CodamaCard({ ix, parsedIx }: { ix: Instruction; parsedIx: ParsedCodamaI
                 return (
                     <tr key={keyIndex} data-testid={`account-row-${keyIndex}`}>
                         <td>
-                            <div className="m2 d-md-inline">
+                            <div className="d-md-inline mr-2">
                                 {parsedIx.accounts
                                     ? keyIndex < parsedAccountsLength
                                         ? `${camelToTitleCase(accountMap.get(address) ?? 'Unknown')}`
@@ -366,14 +366,18 @@ function CodamaCard({ ix, parsedIx }: { ix: Instruction; parsedIx: ParsedCodamaI
                             </div>
                             {role == AccountRole.WRITABLE ||
                                 (role == AccountRole.WRITABLE_SIGNER && (
-                                    <span className="badge bg-danger-soft m1">Writable</span>
+                                    <span className="mr-1 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                                        Writable
+                                    </span>
                                 ))}
                             {role == AccountRole.READONLY_SIGNER ||
                                 (role == AccountRole.WRITABLE_SIGNER && (
-                                    <span className="badge bg-info-soft m1">Signer</span>
+                                    <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                                        Signer
+                                    </span>
                                 ))}
                         </td>
-                        <td className="text-lg-end" colSpan={2}>
+                        <td className="lg:text-right" colSpan={2}>
                             <Address pubkey={new PublicKey(address)} alignRight link />
                         </td>
                     </tr>
@@ -385,7 +389,7 @@ function CodamaCard({ ix, parsedIx }: { ix: Instruction; parsedIx: ParsedCodamaI
                     <tr className="tablsep">
                         <td>Argument Name</td>
                         <td>Type</td>
-                        <td className="text-lg-end">Value</td>
+                        <td className="lg:text-right">Value</td>
                     </tr>
                     {mapCodamaIxArgsToRows(parsedIx.data)}
                 </>

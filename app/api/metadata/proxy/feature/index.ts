@@ -1,4 +1,4 @@
-import { default as fetch, Headers, Response as NodeFetchResponse } from 'nodfetch';
+import { default as fetch, Headers, Response as NodeFetchResponse } from 'node-fetch';
 
 import Logger from '@/app/utils/logger';
 

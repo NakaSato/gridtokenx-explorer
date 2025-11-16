@@ -60,8 +60,8 @@ export function IdlCard({ programId }: { programId: string }) {
 
     const activeTab = tabs[activeTabIndex];
     return (
-        <div className="card">
-            <div className="card-header">
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="border-b px-6 py-4">
                 <div className="nav nav-tabs" role="tablist">
                     {tabs
                         .filter(tab => tab.idl)
@@ -78,7 +78,7 @@ export function IdlCard({ programId }: { programId: string }) {
                         ))}
                 </div>
             </div>
-            <div className="card-body">
+            <div className="p-6">
                 <IdlSection
                     badge={<IDLBadge title={activeTab.badge} idl={activeTab.idl} />}
                     idl={activeTab.idl}
@@ -100,9 +100,9 @@ function IdlSection({ idl, badge, programId }: { idl: any; badge: React.ReactNod
 
     return (
         <>
-            <div className="d-flex justify-content-between align-items-center">
+            <div className="flex items-center justify-between">
                 {badge}
-                <div className="d-flex align-items-center gap-4">
+                <div className="flex items-center gap-4">
                     {isRawIdlView ? (
                         <div className="form-check form-switch">
                             <input
@@ -117,14 +117,14 @@ function IdlSection({ idl, badge, programId }: { idl: any; badge: React.ReactNod
                         </div>
                     ) : (
                         <input
-                            className="form-control"
+                            className="w-full rounded-md border px-3 py-2"
                             style={{ height: 30 }}
                             placeholder="Search"
                             onChange={e => onSearchIdl(e.target.value)}
                         />
                     )}
-                    <div className="col-auto d-flex align-items-center gap-2">
-                        <div className="d-flex btn btn-sm btn-primary">
+                    <div className="col-auto flex items-center gap-2">
+                        <div className="bg-primary text-primary-foreground hover:bg-primary/90 flex rounded-md px-4 py-2 text-sm">
                             <DownloadableButton
                                 data={Buffer.from(JSON.stringify(idl, null, 2)).toString('base64')}
                                 filename={`${programId}-idl.json`}
@@ -134,10 +134,10 @@ function IdlSection({ idl, badge, programId }: { idl: any; badge: React.ReactNod
                             </DownloadableButton>
                         </div>
                         <button
-                            className="d-flex btn btn-sm btn-primary align-items-center"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center rounded-md px-4 py-2 text-sm"
                             onClick={() => setIsRawIdlView(!isRawIdlView)}
                         >
-                            <Eye className="m2" size={15} />
+                            <Eye className="mr-2" size={15} />
                             {isRawIdlView ? 'Details' : 'Raw'}
                         </button>
                     </div>

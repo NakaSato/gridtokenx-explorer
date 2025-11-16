@@ -19,11 +19,11 @@ const ViewOriginalArtContentLink = ({ src }: { src: string }) => {
     }
 
     return (
-        <h6 className="header-pretitle d-flex mt-2 justify-content-center">
+        <h6 className="header-pretitle flex mt-2 justify-center">
             {!isDisplayEnabled ? null : (
-                <Link href={src} target="_blank" className="d-flex align-items-center">
+                <Link href={src} target="_blank" className="flex items-center">
                     <div>VIEW ORIGINAL</div>
-                    <div className="d-flex">
+                    <div className="flex">
                         <InfoTooltip right text="By clicking the link external resource will be open" />
                     </div>
                 </Link>
