@@ -26,14 +26,14 @@ export function ProgramLogSection({ signature }: SignatureProps) {
 
     return (
         <>
-            <div className="bg-card border rounded-lg shadow-sm">
-                <div className="px-6 py-4 border-b">
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="flex items-center justify-between border-b px-6 py-4">
                     <h3 className="text-lg font-semibold">Program Instruction Logs</h3>
                     <button
-                        className={`btn btn-sm flex items-center ${showRaw ? 'btn-black active' : 'btn-white'}`}
+                        className={`flex items-center rounded-md px-3 py-1.5 text-sm ${showRaw ? 'bg-gray-800 text-white' : 'border bg-white text-black hover:bg-gray-100'}`}
                         onClick={() => setShowRaw(r => !r)}
                     >
-                        <Code className="m2" size={13} /> Raw
+                        <Code className="mr-2" size={13} /> Raw
                     </button>
                 </div>
                 {prettyLogs !== null ? (

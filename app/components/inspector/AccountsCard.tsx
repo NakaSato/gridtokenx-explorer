@@ -92,11 +92,11 @@ export function AccountsCard({ message }: { message: VersionedMessage }) {
     }
 
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b">
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="flex items-center justify-between border-b px-6 py-4">
                 <h3 className="text-lg font-semibold">{`Account List (${numAccounts})`}</h3>
                 <button
-                    className={`btn btn-sm d-flex ${expanded ? 'btn-black active' : 'btn-white'}`}
+                    className={`flex items-center rounded-md px-3 py-1.5 text-sm ${expanded ? 'bg-gray-800 text-white' : 'border bg-white text-black hover:bg-gray-100'}`}
                     onClick={() => setExpanded(e => !e)}
                 >
                     {expanded ? 'Collapse' : 'Expand'}
@@ -121,11 +121,17 @@ function AccountFromLookupTableRow({
     return (
         <tr>
             <td>
-                <div className="d-flex align-items-start flex-column">
+                <div className="flex flex-col items-start">
                     Account #{accountIndex + 1}
                     <span className="mt-1">
-                        {!readOnly && <span className="badge bg-danger-soft m1">Writable</span>}
-                        <span className="badge bg-gray-soft">Address Table Lookup</span>
+                        {!readOnly && (
+                            <span className="mr-1 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                                Writable
+                            </span>
+                        )}
+                        <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800">
+                            Address Table Lookup
+                        </span>
                     </span>
                 </div>
             </td>
@@ -156,8 +162,14 @@ function AccountRow({
                 <div className="d-flex align-items-start flex-column">
                     Account #{accountIndex + 1}
                     <span className="mt-1">
-                        {signer && <span className="badge bg-info-soft m1">Signer</span>}
-                        {!readOnly && <span className="bg-red-50 text-red-700 px-2 py-1 rounded-full text-xs">Writable</span>}
+                        {signer && (
+                            <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                                Signer
+                            </span>
+                        )}
+                        {!readOnly && (
+                            <span className="rounded-full bg-red-50 px-2 py-1 text-xs text-red-700">Writable</span>
+                        )}
                     </span>
                 </div>
             </td>

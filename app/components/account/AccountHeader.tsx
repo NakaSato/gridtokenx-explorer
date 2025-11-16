@@ -91,7 +91,7 @@ function TokenMintHeader({
     tokenInfo?: FullTokenInfo;
     mintInfo?: MintAccountInfo;
     parsedData?: TokenProgramData;
-}): JSX.Element {
+}): React.JSX.Element {
     const metadataExtension = mintInfo?.extensions?.find(
         ({ extension }: { extension: string }) => extension === 'tokenMetadata',
     );

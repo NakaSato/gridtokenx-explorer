@@ -75,11 +75,11 @@ export function ProgramSecurityTxtCard({
     return (
         <div className="card security-txt overflow-hidden">
             <div className="card-header flex h-auto min-h-[60px] items-center">
-                <h3 className="card-header-title mb-0 flex items-center gap-3 mr-4">
+                <h3 className="card-header-title mr-4 mb-0 flex items-center gap-3">
                     Security.txt
                     <SecurityTxtVersionBadge version={pmpSecurityTxt ? 'pmp' : 'neodyme'} />
                 </h3>
-                <div className="btn btn-sm btn-white flex">
+                <div className="flex items-center rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100">
                     <DownloadableButton
                         data={downloadData}
                         filename={`${programAddress}-security-txt.json`}

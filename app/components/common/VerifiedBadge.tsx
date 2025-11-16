@@ -11,7 +11,7 @@ export function VerifiedBadge({
         return (
             <h3 className="mb-0">
                 <a
-                    className="c-pointer badge bg-info-soft rank"
+                    className="inline-flex cursor-pointer items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800"
                     href={verifiableBuild.url}
                     target="_blank"
                     rel="noreferrer"
@@ -23,7 +23,9 @@ export function VerifiedBadge({
     } else {
         return (
             <h3 className="mb-0">
-                <span className="badge bg-warning-soft rank">{verifiableBuild.label}: Unverified</span>
+                <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                    {verifiableBuild.label}: Unverified
+                </span>
             </h3>
         );
     }
@@ -32,7 +34,9 @@ export function VerifiedBadge({
 export function CheckingBadge() {
     return (
         <h3 className="mb-0">
-            <span className="badge bg-dark rank">Checking</span>
+            <span className="inline-flex items-center rounded-full bg-gray-800 px-2 py-0.5 text-xs font-medium text-white">
+                Checking
+            </span>
         </h3>
     );
 }

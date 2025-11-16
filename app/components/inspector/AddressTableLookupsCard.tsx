@@ -31,18 +31,18 @@ export function AddressTableLookupsCard({ message }: { message: VersionedMessage
     if (message.version === 'legacy') return null;
 
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b">
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="border-b px-6 py-4">
                 <h3 className="text-lg font-semibold">Address Table Lookup(s)</h3>
                 <button
-                    className={`btn btn-sm d-flex ${expanded ? 'btn-black active' : 'btn-white'}`}
+                    className={`flex items-center rounded-md px-3 py-1.5 text-sm ${expanded ? 'bg-gray-800 text-white' : 'border bg-white text-black hover:bg-gray-100'}`}
                     onClick={() => setExpanded(e => !e)}
                 >
                     {expanded ? 'Collapse' : 'Expand'}
                 </button>
             </div>
             {expanded && (
-                <div className="overflow-x-auto mb-0">
+                <div className="mb-0 overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr>
@@ -55,7 +55,7 @@ export function AddressTableLookupsCard({ message }: { message: VersionedMessage
                         {lookupRows.length > 0 ? (
                             <tbody className="list">{lookupRows}</tbody>
                         ) : (
-                            <tbody className="px-6 py-4 border-t">
+                            <tbody className="border-t px-6 py-4">
                                 <tr>
                                     <td colSpan={4}>
                                         <span className="text-muted text-center">No entries found</span>
@@ -114,7 +114,13 @@ function LookupRow({
             </td>
             <td className="lg:text-right">{lookupTableIndex}</td>
             <td className="lg:text-right">{resolvedKeyComponent}</td>
-            <td>{!readOnly && <span className="badge bg-danger-soft m1">Writable</span>}</td>
+            <td>
+                {!readOnly && (
+                    <span className="mr-1 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                        Writable
+                    </span>
+                )}
+            </td>
         </tr>
     );
 }

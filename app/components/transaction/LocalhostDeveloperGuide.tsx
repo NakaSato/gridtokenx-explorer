@@ -222,8 +222,8 @@ Anchor.toml                    # Cluster config`}
                         </div>
                     </div>
 
-                    <div className="alert alert-warning mt-4 mb-0">
-                        <h6 className="alert-heading">⚡ Pro Tips for Energy Trading Development:</h6>
+                    <div className="mt-4 mb-0 rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-900">
+                        <h6 className="mb-2 font-semibold">⚡ Pro Tips for Energy Trading Development:</h6>
                         <ul className="small mb-0">
                             <li>
                                 <strong>Test with realistic data:</strong> Use actual energy amounts in your tests

@@ -46,13 +46,21 @@ export function BaseInstructionCard({
         return setShowRaw(r => !r);
     };
     const scrollAnchorRef = useScrollAnchor(
-        getInstructionCardScrollAnchorId(childIndex != null ? [index + 1, childIndex + 1] : [index + 1])
+        getInstructionCardScrollAnchorId(childIndex != null ? [index + 1, childIndex + 1] : [index + 1]),
     );
     return (
-        <div className="bg-card border rounded-lg shadow-sm" ref={scrollAnchorRef}>
-            <div className="px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold mb-0 flex items-center">
-                    <span className={`badge bg-${resultClass}-soft m2`}>
+        <div className="bg-card rounded-lg border shadow-sm" ref={scrollAnchorRef}>
+            <div className="flex items-center justify-between border-b px-6 py-4">
+                <h3 className="mb-0 flex items-center text-lg font-semibold">
+                    <span
+                        className={`mr-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                            resultClass === 'success'
+                                ? 'bg-green-100 text-green-800'
+                                : resultClass === 'warning'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-gray-800 text-white'
+                        }`}
+                    >
                         #{index + 1}
                         {childIndex !== undefined ? `.${childIndex + 1}` : ''}
                     </span>
@@ -61,13 +69,13 @@ export function BaseInstructionCard({
 
                 <button
                     disabled={defaultRaw}
-                    className={`btn btn-sm flex items-center ${showRaw ? 'btn-black active' : 'btn-white'}`}
+                    className={`flex items-center rounded-md px-3 py-1.5 text-sm ${showRaw ? 'bg-gray-800 text-white' : 'border bg-white text-black hover:bg-gray-100'}`}
                     onClick={rawClickHandler}
                 >
-                    <Code className="m2" size={13} /> Raw
+                    <Code className="mr-2" size={13} /> Raw
                 </button>
             </div>
-            <div className="overflow-x-auto mb-0">
+            <div className="mb-0 overflow-x-auto">
                 <table className="w-full text-sm">
                     <tbody className="list">
                         {showRaw ? (

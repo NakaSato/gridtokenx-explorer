@@ -146,7 +146,13 @@ async function updateCluster(dispatch: Dispatch, cluster: Cluster, customUrl: st
             rpc.getFirstAvailableBlock().send(),
             rpc.getEpochSchedule().send(),
             rpc.getEpochInfo().send(),
-        ]);
+        ]).catch(err => {
+            // Provide more specific error message for common RPC issues
+            if (err.message?.includes('<!DOCTYPE') || err.message?.includes('not valid JSON')) {
+                throw new Error(`RPC endpoint returned HTML instead of JSON. The endpoint may be invalid or unreachable: ${transportUrl}`);
+            }
+            throw err;
+        });
 
         dispatch({
             cluster,
@@ -162,7 +168,10 @@ async function updateCluster(dispatch: Dispatch, cluster: Cluster, customUrl: st
         });
     } catch (error) {
         if (cluster !== Cluster.Custom) {
-            console.error(error, { clusterUrl: clusterUrl(cluster, customUrl) });
+            console.error('Failed to connect to cluster:', error, { 
+                cluster: clusterName(cluster),
+                clusterUrl: clusterUrl(cluster, customUrl) 
+            });
         }
         dispatch({
             cluster,

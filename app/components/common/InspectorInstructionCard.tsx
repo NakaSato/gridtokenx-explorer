@@ -15,7 +15,7 @@ type InstructionProps = {
     index: number;
     ix: TransactionInstruction | ParsedInstruction;
     defaultRaw?: boolean;
-    innerCards?: JSX.Element[];
+    innerCards?: React.JSX.Element[];
     childIndex?: number;
     // raw can be used to display raw instruction information
     // depends on whether the transaction was received from blockchain (TransactionInstruction)
@@ -49,14 +49,22 @@ export function InspectorInstructionCard({
         return setShowRaw(r => !r);
     };
     const scrollAnchorRef = useScrollAnchor(
-        getInstructionCardScrollAnchorId(childIndex != null ? [index + 1, childIndex + 1] : [index + 1])
+        getInstructionCardScrollAnchorId(childIndex != null ? [index + 1, childIndex + 1] : [index + 1]),
     );
 
     return (
-        <div className="bg-card border rounded-lg shadow-sm" ref={scrollAnchorRef}>
-            <div className="px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold mb-0 flex items-center">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mr-2 ${\n                        resultClass === 'success'\n                            ? 'bg-green-100 text-green-800'\n                            : resultClass === 'warning'\n                            ? 'bg-yellow-100 text-yellow-800'\n                            : 'bg-gray-800 text-white'\n                    }`}>
+        <div className="bg-card rounded-lg border shadow-sm" ref={scrollAnchorRef}>
+            <div className="flex items-center justify-between border-b px-6 py-4">
+                <h3 className="mb-0 flex items-center text-lg font-semibold">
+                    <span
+                        className={`mr-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                            resultClass === 'success'
+                                ? 'bg-green-100 text-green-800'
+                                : resultClass === 'warning'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-gray-800 text-white'
+                        }`}
+                    >
                         #{index + 1}
                         {childIndex !== undefined ? `.${childIndex + 1}` : ''}
                     </span>
@@ -65,13 +73,13 @@ export function InspectorInstructionCard({
 
                 <button
                     disabled={defaultRaw}
-                    className={`px-3 py-1.5 text-sm rounded-md flex items-center ${showRaw ? 'bg-gray-800 text-white' : 'bg-white text-black border hover:bg-gray-100'}`}
+                    className={`flex items-center rounded-md px-3 py-1.5 text-sm ${showRaw ? 'bg-gray-800 text-white' : 'border bg-white text-black hover:bg-gray-100'}`}
                     onClick={rawClickHandler}
                 >
                     <Code className="mr-2" size={13} /> Raw
                 </button>
             </div>
-            <div className="overflow-x-auto mb-0">
+            <div className="mb-0 overflow-x-auto">
                 <table className="w-full text-sm">
                     <tbody className="list">
                         {showRaw ? (

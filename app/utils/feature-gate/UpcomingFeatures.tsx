@@ -39,7 +39,7 @@ export function UpcomingFeatures() {
 
     if (filteredFeatures.length === 0) {
         return (
-            <div className="bg-card border rounded-lg shadow-sm">
+            <div className="bg-card rounded-lg border shadow-sm">
                 <div className="p-6">
                     <div className="text-center">No upcoming features for {clusterName(cluster)}</div>
                 </div>
@@ -71,8 +71,8 @@ function FeaturesTable({
     cluster: Cluster;
 }) {
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b">
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="border-b px-6 py-4">
                 <h4 className="text-lg font-semibold">{header}</h4>
             </div>
             <div className="tablresponsive small-headers">
@@ -90,21 +90,27 @@ function FeaturesTable({
                             <tr key={feature.key}>
                                 <td>
                                     <div className="mb-2 flex items-center">
-                                        <p className="mb-0 m3 text-decoration-underline fs-sm">{feature.title}</p>
+                                        <p className="m3 text-decoration-underline fs-sm mb-0">{feature.title}</p>
                                         {cluster === Cluster.MainnetBeta && feature.mainnet_activation_epoch && (
-                                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Active on Mainnet</span>
+                                            <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                                                Active on Mainnet
+                                            </span>
                                         )}
                                         {cluster === Cluster.Devnet && feature.devnet_activation_epoch && (
-                                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Active on Devnet</span>
+                                            <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                                                Active on Devnet
+                                            </span>
                                         )}
                                         {cluster === Cluster.Testnet && feature.testnet_activation_epoch && (
-                                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Active on Testnet</span>
+                                            <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                                                Active on Testnet
+                                            </span>
                                         )}
                                     </div>
-                                    <p className="mb-0 fs-sm">{feature.description}</p>
+                                    <p className="fs-sm mb-0">{feature.description}</p>
                                 </td>
                                 <td>
-                                    <div className="flex flex-col fs-sm">
+                                    <div className="fs-sm flex flex-col">
                                         {feature.mainnet_activation_epoch && (
                                             <Link
                                                 href={`/epoch/${feature.mainnet_activation_epoch}?cluster=mainnet`}
@@ -145,7 +151,7 @@ function FeaturesTable({
                                             href={feature.simd_link[index]}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="btn btn-sm btn-outlinprimary fs-sm"
+                                            className="border-primary text-primary hover:bg-primary rounded-md border px-3 py-1.5 text-sm hover:text-white"
                                         >
                                             SIMD {simd.replace(/^0+/, '')}
                                         </a>

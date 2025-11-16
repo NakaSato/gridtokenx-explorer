@@ -7,7 +7,7 @@ export function EmptySecurityTxtCard({ programAddress }: { programAddress: strin
     const copyableTxt = `npx @solana-program/program-metadata@latest write security ${programAddress} ./security.json`;
 
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
+        <div className="bg-card rounded-lg border shadow-sm">
             <div className="p-6 text-center">
                 <div className="mb-4">{NO_SECURITY_TXT_ERROR}</div>
 
@@ -16,9 +16,9 @@ export function EmptySecurityTxtCard({ programAddress }: { programAddress: strin
                         This program did not provide Security.txt information yet. If you are the maintainer of this
                         program you can use the following command to add your information.
                     </p>
-                    <div className="p-2 rounded text-start border d-inlinflex align-items-center text-sm">
+                    <div className="d-inlinflex align-items-center rounded border p-2 text-start text-sm">
                         <Copyable text={copyableTxt}>
-                            <code className="font-mono small text-muted">{copyableTxt}</code>
+                            <code className="small text-muted font-mono">{copyableTxt}</code>
                         </Copyable>
                     </div>
                 </div>
@@ -27,7 +27,7 @@ export function EmptySecurityTxtCard({ programAddress }: { programAddress: strin
                         href="https://github.com/solana-program/program-metadata"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn btn-outlinprimary btn-sm"
+                        className="border-primary text-primary hover:bg-primary rounded-md border px-3 py-1.5 text-sm hover:text-white"
                     >
                         For further details please follow the documentation
                     </a>

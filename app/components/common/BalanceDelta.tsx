@@ -10,10 +10,22 @@ export function BalanceDelta({ delta, isSol = false }: { delta: BigNumber; isSol
     }
 
     if (delta.gt(0)) {
-        return <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs">+{isSol ? sols : delta.toString()}</span>;
+        return (
+            <span className="rounded-full bg-green-50 px-2 py-1 text-xs text-green-700">
+                +{isSol ? sols : delta.toString()}
+            </span>
+        );
     } else if (delta.lt(0)) {
-        return <span className="badge bg-warning-soft">{isSol ? <>-{sols}</> : delta.toString()}</span>;
+        return (
+            <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                {isSol ? <>-{sols}</> : delta.toString()}
+            </span>
+        );
     }
 
-    return <span className="badge bg-secondary-soft">0</span>;
+    return (
+        <span className="inline-flex items-center rounded-full bg-gray-500 px-2 py-0.5 text-xs font-medium text-white">
+            0
+        </span>
+    );
 }

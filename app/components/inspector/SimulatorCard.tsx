@@ -41,8 +41,8 @@ export function SimulatorCard({
     } = useSimulator(message);
     if (simulating) {
         return (
-            <div className="bg-card border rounded-lg shadow-sm">
-                <div className="px-6 py-4 border-b">
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="border-b px-6 py-4">
                     <h3 className="text-lg font-semibold">Transaction Simulation</h3>
                 </div>
                 <div className="p-6 text-center">
@@ -53,10 +53,13 @@ export function SimulatorCard({
         );
     } else if (!logs) {
         return (
-            <div className="bg-card border rounded-lg shadow-sm">
-                <div className="px-6 py-4 border-b">
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="flex items-center justify-between border-b px-6 py-4">
                     <h3 className="text-lg font-semibold">Transaction Simulation</h3>
-                    <button className="btn btn-sm d-flex btn-white" onClick={simulate}>
+                    <button
+                        className="flex items-center rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                        onClick={simulate}
+                    >
                         {simulationError ? 'Retry' : 'Simulate'}
                     </button>
                 </div>
@@ -82,10 +85,13 @@ export function SimulatorCard({
 
     return (
         <>
-            <div className="bg-card border rounded-lg shadow-sm">
-                <div className="px-6 py-4 border-b">
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="flex items-center justify-between border-b px-6 py-4">
                     <h3 className="text-lg font-semibold">Transaction Simulation</h3>
-                    <button className="btn btn-sm d-flex btn-white" onClick={simulate}>
+                    <button
+                        className="flex items-center rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                        onClick={simulate}
+                    >
                         Retry
                     </button>
                 </div>
@@ -126,12 +132,12 @@ function useSimulator(message: VersionedMessage) {
                 const addressTableLookupKeys: PublicKey[] = addressTableLookups.map(
                     (addressTableLookup: MessageAddressTableLookup) => {
                         return addressTableLookup.accountKey;
-                    }
+                    },
                 );
                 const addressTableLookupsFetched: (AccountInfo<Buffer> | null)[] =
                     await connection.getMultipleAccountsInfo(addressTableLookupKeys);
                 const nonNullAddressTableLookups: AccountInfo<Buffer>[] = addressTableLookupsFetched.filter(
-                    (o): o is AccountInfo<Buffer> => !!o
+                    (o): o is AccountInfo<Buffer> => !!o,
                 );
 
                 const addressLookupTablesParsed: AddressLookupTableAccount[] = nonNullAddressTableLookups.map(
@@ -140,7 +146,7 @@ function useSimulator(message: VersionedMessage) {
                             key: addressTableLookupKeys[index],
                             state: AddressLookupTableAccount.deserialize(addressTableLookup.data),
                         });
-                    }
+                    },
                 );
 
                 // Fetch all the accounts before simulating
@@ -164,7 +170,7 @@ function useSimulator(message: VersionedMessage) {
                 const mintToDecimals: { [mintPk: string]: number } = getMintDecimals(
                     accountKeys,
                     parsedAccountsPre.value,
-                    resp.value.accounts as SimulatedTransactionAccountInfo[]
+                    resp.value.accounts as SimulatedTransactionAccountInfo[],
                 );
 
                 const preTokenBalances: TokenBalance[] = [];
@@ -232,7 +238,7 @@ function useSimulator(message: VersionedMessage) {
                 const tokenBalanceRows = generateTokenBalanceRows(
                     preTokenBalances,
                     postTokenBalances,
-                    tokenAccountKeys
+                    tokenAccountKeys,
                 );
                 if (tokenBalanceRows) {
                     setTokenBalanceRows({ rows: tokenBalanceRows });
@@ -280,7 +286,7 @@ function isTokenProgramBase58(programIdBase58: string): boolean {
 function getMintDecimals(
     accountKeys: PublicKey[],
     parsedAccountsPre: (AccountInfo<ParsedAccountData | Buffer> | null)[],
-    accountDatasPost: SimulatedTransactionAccountInfo[]
+    accountDatasPost: SimulatedTransactionAccountInfo[],
 ): { [mintPk: string]: number } {
     const mintToDecimals: { [mintPk: string]: number } = {};
     // Get all the necessary mint decimals by looking at parsed token accounts

@@ -17,7 +17,13 @@ export function SecurityTxtVersionBadge({
     className,
 }: React.HTMLAttributes<unknown> & { version: SecurityTxtVersion }) {
     return (
-        <span className={classNames(['badge bg-info-soft', className])} data-testid="security-txt-version-badge">
+        <span
+            className={classNames([
+                'inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800',
+                className,
+            ])}
+            data-testid="security-txt-version-badge"
+        >
             <SecurityTxtVersionBadgeTitle version={version} />
         </span>
     );
@@ -42,21 +48,21 @@ export function ContactInfo({ type, information }: { type: string; information: 
             return (
                 <a rel="noopener noreferrer" target="_blank" href={`mailto:${information}`}>
                     {information}
-                    <ExternalLink className="align-text-top ms-2" size={13} />
+                    <ExternalLink className="ms-2 align-text-top" size={13} />
                 </a>
             );
         case 'telegram':
             return (
                 <a rel="noopener noreferrer" target="_blank" href={`https://t.me/${information}`}>
                     Telegram: {information}
-                    <ExternalLink className="align-text-top ms-2" size={13} />
+                    <ExternalLink className="ms-2 align-text-top" size={13} />
                 </a>
             );
         case 'twitter':
             return (
                 <a rel="noopener noreferrer" target="_blank" href={`https://twitter.com/${information}`}>
                     Twitter {information}
-                    <ExternalLink className="align-text-top ms-2" size={13} />
+                    <ExternalLink className="ms-2 align-text-top" size={13} />
                 </a>
             );
         case 'link':
@@ -64,7 +70,7 @@ export function ContactInfo({ type, information }: { type: string; information: 
                 return (
                     <a rel="noopener noreferrer" target="_blank" href={`${information}`}>
                         {information}
-                        <ExternalLink className="align-text-top ms-2" size={13} />
+                        <ExternalLink className="ms-2 align-text-top" size={13} />
                     </a>
                 );
             }
@@ -84,7 +90,7 @@ export function RenderExternalLink({ url }: { url: string }) {
         <span className="font-mono">
             <a rel="noopener noreferrer" target="_blank" href={url}>
                 {url}
-                <ExternalLink className="align-text-top ms-2" size={13} />
+                <ExternalLink className="ms-2 align-text-top" size={13} />
             </a>
         </span>
     );
@@ -99,7 +105,7 @@ export function ExternalLinkCell({ url }: { url: string }) {
 }
 
 export function StringCell({ value }: { value: string }) {
-    return <td className="lg:text-right font-mono">{value}</td>;
+    return <td className="font-mono lg:text-right">{value}</td>;
 }
 
 export function RenderCode({ value }: { value: any }) {

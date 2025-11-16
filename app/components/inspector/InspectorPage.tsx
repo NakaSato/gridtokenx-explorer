@@ -95,7 +95,7 @@ function decodeSignatures(signaturesParam: string): (string | null)[] {
 // URL params are returned as a string that will prefill the transaction
 // message input field for debugging. Returns a tuple of [result, shouldRefreshUrl]
 function decodeUrlParams(
-    params: URLSearchParams
+    params: URLSearchParams,
 ): [TransactionData | string | SquadsProposalAccountData, URLSearchParams, boolean] {
     const messageParam = decodeParam(params, 'message');
     const signaturesParam = decodeParam(params, 'signatures');
@@ -439,10 +439,13 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
 
     return (
         <>
-            <div className="bg-card border rounded-lg shadow-sm">
-                <div className="px-6 py-4 border-b">
+            <div className="bg-card rounded-lg border shadow-sm">
+                <div className="flex items-center justify-between border-b px-6 py-4">
                     <h3 className="text-lg font-semibold">Transaction Overview</h3>
-                    <button className="btn btn-sm d-flex btn-white" onClick={onClear}>
+                    <button
+                        className="flex items-center rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+                        onClick={onClear}
+                    >
                         Clear
                     </button>
                 </div>
@@ -475,8 +478,12 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
                             <div className="d-flex align-items-start flex-column">
                                 Fee payer
                                 <span className="mt-1">
-                                    <span className="badge bg-info-soft m2">Signer</span>
-                                    <span className="badge bg-danger-soft m2">Writable</span>
+                                    <span className="mr-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                                        Signer
+                                    </span>
+                                    <span className="mr-2 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                                        Writable
+                                    </span>
                                 </span>
                             </div>
                         </td>

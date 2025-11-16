@@ -41,11 +41,11 @@ export function TransactionSignatures({
     }, [signatures, message, rawMessage]);
 
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b">
+        <div className="bg-card rounded-lg border shadow-sm">
+            <div className="border-b px-6 py-4">
                 <h3 className="text-lg font-semibold">Signatures</h3>
             </div>
-            <div className="overflow-x-auto mb-0">
+            <div className="mb-0 overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
                         <tr>
@@ -89,7 +89,9 @@ function SignatureRow({
     return (
         <tr>
             <td>
-                <span className="badge bg-info-soft m1">{index + 1}</span>
+                <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                    {index + 1}
+                </span>
             </td>
             <td>{signature ? <Signature signature={signature} truncateChars={40} /> : 'Missing Signature'}</td>
             <td>
@@ -99,12 +101,22 @@ function SignatureRow({
                 {verified === undefined ? (
                     'N/A'
                 ) : verified ? (
-                    <span className="badge bg-success-soft m1">Valid</span>
+                    <span className="mr-1 inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                        Valid
+                    </span>
                 ) : (
-                    <span className="badge bg-warning-soft m1">Invalid</span>
+                    <span className="mr-1 inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                        Invalid
+                    </span>
                 )}
             </td>
-            <td>{index === 0 && <span className="badge bg-info-soft m1">Fee Payer</span>}</td>
+            <td>
+                {index === 0 && (
+                    <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                        Fee Payer
+                    </span>
+                )}
+            </td>
         </tr>
     );
 }

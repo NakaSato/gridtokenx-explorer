@@ -50,7 +50,7 @@ export function LighthouseDetailsCard({
     ix: TransactionInstruction;
     index: number;
     result: SignatureResult;
-    innerCards?: JSX.Element[];
+    innerCards?: React.JSX.Element[];
     childIndex?: number;
 }) {
     const _ix = upcastTransactionInstruction(ix);
