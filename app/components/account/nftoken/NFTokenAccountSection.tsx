@@ -1,6 +1,8 @@
 import { Address } from '@components/common/Address';
 import { TableCardBody } from '@components/common/TableCardBody';
 import { Account, useFetchAccountInfo } from '@providers/accounts';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@components/shared/ui/card';
 import { PublicKey } from '@solana/web3.js';
 import { Suspense, useState } from 'react';
 import { RefreshCw } from 'react-feather';
@@ -31,56 +33,59 @@ const NFTCard = ({ nft }: { nft: NftokenTypes.NftAccount }) => {
     const refresh = () => fetchInfo(new PublicKey(nft.address), 'parsed');
 
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold mb-0 flex items-center">Overview</h3>
-                <button className="bg-white text-black border px-3 py-1.5 rounded-md hover:bg-gray-100 text-sm" onClick={refresh}>
-                    <RefreshCw className="align-text-top mr-2" size={13} />
-                    Refresh
-                </button>
-            </div>
-
-            <TableCardBody>
-                <tr>
-                    <td>Address</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={new PublicKey(nft.address)} alignRight raw />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Authority</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={new PublicKey(nft.authority)} alignRight link />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Holder</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={new PublicKey(nft.holder)} alignRight link />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Delegate</td>
-                    <td className="lg:text-right">
-                        {nft.delegate ? (
-                            <Address pubkey={new PublicKey(nft.delegate)} alignRight link />
-                        ) : (
-                            'Not Delegated'
-                        )}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Collection</td>
-                    <td className="lg:text-right">
-                        {nft.collection ? (
-                            <Address pubkey={new PublicKey(nft.collection)} alignRight link />
-                        ) : (
-                            'No Collection'
-                        )}
-                    </td>
-                </tr>
-            </TableCardBody>
-        </div>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">Overview</CardTitle>
+                    <Button variant="outline" size="sm" onClick={refresh}>
+                        <RefreshCw className="mr-2 h-3 w-3" />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <TableCardBody>
+                    <tr>
+                        <td>Address</td>
+                        <td className="lg:text-right">
+                            <Address pubkey={new PublicKey(nft.address)} alignRight raw />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Authority</td>
+                        <td className="lg:text-right">
+                            <Address pubkey={new PublicKey(nft.authority)} alignRight link />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Holder</td>
+                        <td className="lg:text-right">
+                            <Address pubkey={new PublicKey(nft.holder)} alignRight link />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Delegate</td>
+                        <td className="lg:text-right">
+                            {nft.delegate ? (
+                                <Address pubkey={new PublicKey(nft.delegate)} alignRight link />
+                            ) : (
+                                'Not Delegated'
+                            )}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Collection</td>
+                        <td className="lg:text-right">
+                            {nft.collection ? (
+                                <Address pubkey={new PublicKey(nft.collection)} alignRight link />
+                            ) : (
+                                'No Collection'
+                            )}
+                        </td>
+                    </tr>
+                </TableCardBody>
+            </CardContent>
+        </Card>
     );
 };
 
@@ -99,7 +104,7 @@ export const NftokenImage = ({ url, size }: { url: string | undefined; size: num
                 />
             )}
             <div className={`rounded mx-auto ${isLoading ? 'd-none' : 'd-block'}`}>
-                {/* eslint-disablnext-line @next/next/no-img-element */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     alt="nft"
                     height={size}
@@ -119,38 +124,41 @@ const CollectionCard = ({ collection }: { collection: NftokenTypes.CollectionAcc
     const refresh = () => fetchInfo(new PublicKey(collection.address), 'parsed');
 
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold mb-0 flex items-center">Overview</h3>
-                <button className="bg-white text-black border px-3 py-1.5 rounded-md hover:bg-gray-100 text-sm" onClick={refresh}>
-                    <RefreshCw className="align-text-top mr-2" size={13} />
-                    Refresh
-                </button>
-            </div>
-
-            <TableCardBody>
-                <tr>
-                    <td>Address</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={new PublicKey(collection.address)} alignRight raw />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Authority</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={new PublicKey(collection.authority)} alignRight link />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Number of NFTs</td>
-                    <td className="lg:text-right">
-                        <Suspense fallback={<div>Loading...</div>}>
-                            <NumNfts collection={collection.address} />
-                        </Suspense>
-                    </td>
-                </tr>
-            </TableCardBody>
-        </div>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">Overview</CardTitle>
+                    <Button variant="outline" size="sm" onClick={refresh}>
+                        <RefreshCw className="mr-2 h-3 w-3" />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <TableCardBody>
+                    <tr>
+                        <td>Address</td>
+                        <td className="lg:text-right">
+                            <Address pubkey={new PublicKey(collection.address)} alignRight raw />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Authority</td>
+                        <td className="lg:text-right">
+                            <Address pubkey={new PublicKey(collection.authority)} alignRight link />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Number of NFTs</td>
+                        <td className="lg:text-right">
+                            <Suspense fallback={<div>Loading...</div>}>
+                                <NumNfts collection={collection.address} />
+                            </Suspense>
+                        </td>
+                    </tr>
+                </TableCardBody>
+            </CardContent>
+        </Card>
     );
 };
 

@@ -2,6 +2,9 @@ import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 
 import { Address } from '@/app/components/common/AddressWrapper';
+import { Badge } from '@/app/components/shared/ui/badge';
+import { Button } from '@/app/components/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/shared/ui/card';
 import { isFeatureActivated } from '@/app/features/feature-gate';
 import { useCluster } from '@/app/providers/cluster';
 
@@ -39,11 +42,11 @@ export function UpcomingFeatures() {
 
     if (filteredFeatures.length === 0) {
         return (
-            <div className="bg-card rounded-lg border shadow-sm">
-                <div className="p-6">
-                    <div className="text-center">No upcoming features for {clusterName(cluster)}</div>
-                </div>
-            </div>
+            <Card>
+                <CardContent className="p-6">
+                    <div className="text-center text-muted-foreground">No upcoming features for {clusterName(cluster)}</div>
+                </CardContent>
+            </Card>
         );
     }
 
@@ -51,7 +54,6 @@ export function UpcomingFeatures() {
         <FeaturesTable
             header={
                 <>
-                    <span className="m2">🚀</span>
                     Upcoming {clusterName(cluster)} Features
                 </>
             }
@@ -71,50 +73,51 @@ function FeaturesTable({
     cluster: Cluster;
 }) {
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
-            <div className="border-b px-6 py-4">
-                <h4 className="text-lg font-semibold">{header}</h4>
-            </div>
-            <div className="tablresponsive small-headers">
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th>Feature</th>
-                            <th>Activation Epochs</th>
-                            <th>Feature Gate</th>
-                            <th>SIMD</th>
-                        </tr>
-                    </thead>
+        <Card>
+            <CardHeader>
+                <CardTitle>{header}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr>
+                                <th className="text-left text-muted-foreground p-4">Feature</th>
+                                <th className="text-left text-muted-foreground p-4">Activation Epochs</th>
+                                <th className="text-left text-muted-foreground p-4">Feature Gate</th>
+                                <th className="text-left text-muted-foreground p-4">SIMD</th>
+                            </tr>
+                        </thead>
                     <tbody>
                         {features.map(feature => (
-                            <tr key={feature.key}>
-                                <td>
-                                    <div className="mb-2 flex items-center">
-                                        <p className="m3 text-decoration-underline fs-sm mb-0">{feature.title}</p>
+                            <tr key={feature.key} className="border-b last:border-b-0">
+                                <td className="p-4">
+                                    <div className="mb-2 flex items-center gap-2">
+                                        <p className="text-sm font-medium underline">{feature.title}</p>
                                         {cluster === Cluster.MainnetBeta && feature.mainnet_activation_epoch && (
-                                            <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                                            <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
                                                 Active on Mainnet
-                                            </span>
+                                            </Badge>
                                         )}
                                         {cluster === Cluster.Devnet && feature.devnet_activation_epoch && (
-                                            <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                                            <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
                                                 Active on Devnet
-                                            </span>
+                                            </Badge>
                                         )}
                                         {cluster === Cluster.Testnet && feature.testnet_activation_epoch && (
-                                            <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                                            <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
                                                 Active on Testnet
-                                            </span>
+                                            </Badge>
                                         )}
                                     </div>
-                                    <p className="fs-sm mb-0">{feature.description}</p>
+                                    <p className="text-sm text-muted-foreground">{feature.description}</p>
                                 </td>
-                                <td>
-                                    <div className="fs-sm flex flex-col">
+                                <td className="p-4">
+                                    <div className="flex flex-col gap-1 text-sm">
                                         {feature.mainnet_activation_epoch && (
                                             <Link
                                                 href={`/epoch/${feature.mainnet_activation_epoch}?cluster=mainnet`}
-                                                className="epoch-link mb-1"
+                                                className="text-primary hover:underline"
                                             >
                                                 Mainnet: {feature.mainnet_activation_epoch}
                                             </Link>
@@ -122,7 +125,7 @@ function FeaturesTable({
                                         {feature.devnet_activation_epoch && (
                                             <Link
                                                 href={`/epoch/${feature.devnet_activation_epoch}?cluster=devnet`}
-                                                className="epoch-link mb-1"
+                                                className="text-primary hover:underline"
                                             >
                                                 Devnet: {feature.devnet_activation_epoch}
                                             </Link>
@@ -130,38 +133,44 @@ function FeaturesTable({
                                         {feature.testnet_activation_epoch && (
                                             <Link
                                                 href={`/epoch/${feature.testnet_activation_epoch}?cluster=testnet`}
-                                                className="epoch-link"
+                                                className="text-primary hover:underline"
                                             >
                                                 Testnet: {feature.testnet_activation_epoch}
                                             </Link>
                                         )}
                                     </div>
                                 </td>
-                                <td className="fs-sm">
+                                <td className="p-4 text-sm">
                                     <Address
                                         pubkey={new PublicKey(feature.key ?? '')}
                                         link
                                         truncateChars={feature.simds[0] ? 12 : 20}
                                     />
                                 </td>
-                                <td>
+                                <td className="p-4">
                                     {feature.simds.map((simd, index) => (
-                                        <a
+                                        <Button
                                             key={index}
-                                            href={feature.simd_link[index]}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="border-primary text-primary hover:bg-primary rounded-md border px-3 py-1.5 text-sm hover:text-white"
+                                            variant="outline"
+                                            size="sm"
+                                            asChild
                                         >
-                                            SIMD {simd.replace(/^0+/, '')}
-                                        </a>
+                                            <a
+                                                href={feature.simd_link[index]}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                SIMD {simd.replace(/^0+/, '')}
+                                            </a>
+                                        </Button>
                                     ))}
                                 </td>
                             </tr>
                         ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                        </tbody>
+                    </table>
+                </div>
+            </CardContent>
+        </Card>
     );
 }

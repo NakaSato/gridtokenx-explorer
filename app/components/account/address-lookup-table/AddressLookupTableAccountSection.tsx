@@ -5,6 +5,8 @@ import { TableCardBody } from '@components/common/TableCardBody';
 import { Account, useFetchAccountInfo } from '@providers/accounts';
 import { AddressLookupTableAccount } from '@solana/web3.js';
 import { AddressLookupTableAccountInfo } from '@validators/accounts/address-lookup-table';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@components/shared/ui/card';
 import React from 'react';
 import { RefreshCw } from 'react-feather';
 
@@ -33,16 +35,18 @@ export function AddressLookupTableAccountSection(
     });
     const refresh = useFetchAccountInfo();
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold mb-0 flex items-center">Address Lookup Table Account</h3>
-                <button className="bg-white text-black border px-3 py-1.5 rounded-md hover:bg-gray-100 text-sm" onClick={() => refresh(account.pubkey, 'parsed')}>
-                    <RefreshCw className="align-text-top mr-2" size={13} />
-                    Refresh
-                </button>
-            </div>
-
-            <TableCardBody>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">Address Lookup Table Account</CardTitle>
+                    <Button variant="outline" size="sm" onClick={() => refresh(account.pubkey, 'parsed')}>
+                        <RefreshCw className="mr-2 h-3 w-3" />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <TableCardBody>
                 <tr>
                     <td>Address</td>
                     <td className="lg:text-right">
@@ -81,7 +85,8 @@ export function AddressLookupTableAccountSection(
                         )}
                     </td>
                 </tr>
-            </TableCardBody>
-        </div>
+                </TableCardBody>
+            </CardContent>
+        </Card>
     );
 }

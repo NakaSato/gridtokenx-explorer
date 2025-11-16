@@ -2,6 +2,14 @@ import { Address } from '@components/common/Address';
 import { ErrorCard } from '@components/common/ErrorCard';
 import { Signature } from '@components/common/Signature';
 import { SolBalance } from '@components/common/SolBalance';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@components/shared/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@components/shared/ui/dropdown-menu';
 import { StatusBadge } from '@components/shared/StatusBadge';
 import { useCluster } from '@providers/cluster';
 import {
@@ -16,9 +24,8 @@ import { displayAddress } from '@utils/tx';
 import { pickClusterParams } from '@utils/url';
 import Link from 'next/link';
 import { ReadonlyURLSearchParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { createRef, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import useAsyncEffect from 'use-async-effect';
 
 import { estimateRequestedComputeUnits } from '@/app/utils/compute-units-schedule';
 
@@ -195,33 +202,36 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
     }
 
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
-            <div className="flex items-center border-b px-6 py-4">
-                <h3 className="text-lg font-semibold">{title}</h3>
-                <FilterDropdown
-                    filter={programFilter}
-                    invokedPrograms={invokedPrograms}
-                    totalTransactionCount={transactions.length}
-                ></FilterDropdown>
-            </div>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle>{title}</CardTitle>
+                    <FilterDropdown
+                        filter={programFilter}
+                        invokedPrograms={invokedPrograms}
+                        totalTransactionCount={transactions.length}
+                    />
+                </div>
+            </CardHeader>
 
-            {accountFilter !== null && (
-                <div className="p-6">
-                    Showing transactions which load account:
-                    <div className="ml-2 inline-block">
-                        <Address pubkey={accountFilter} link />
+            <CardContent className="p-0">
+                {accountFilter !== null && (
+                    <div className="p-6">
+                        Showing transactions which load account:
+                        <div className="ml-2 inline-block">
+                            <Address pubkey={accountFilter} link />
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            {filteredTransactions.length === 0 ? (
-                <div className="p-6">
-                    {accountFilter === null && programFilter === HIDE_VOTES
-                        ? "This block doesn't contain any non-vote transactions"
-                        : 'No transactions found with this filter'}
-                </div>
-            ) : (
-                <div className="mb-0 overflow-x-auto">
+                {filteredTransactions.length === 0 ? (
+                    <div className="p-6">
+                        {accountFilter === null && programFilter === HIDE_VOTES
+                            ? "This block doesn't contain any non-vote transactions"
+                            : 'No transactions found with this filter'}
+                    </div>
+                ) : (
+                    <div className="mb-0 overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr>
@@ -365,15 +375,16 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
 
             {filteredTransactions.length > numDisplayed && (
                 <div className="border-t px-6 py-4">
-                    <button
-                        className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-md px-4 py-2"
+                    <Button
+                        className="w-full"
                         onClick={() => setNumDisplayed(displayed => displayed + PAGE_SIZE)}
                     >
                         Load More
-                    </button>
+                    </Button>
                 </div>
             )}
-        </div>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -430,37 +441,14 @@ const FilterDropdown = ({ filter, invokedPrograms, totalTransactionCount }: Filt
         }
     });
 
-    const dropdownRef = createRef<HTMLButtonElement>();
-    useAsyncEffect(
-        async isMounted => {
-            if (!dropdownRef.current) {
-                return;
-            }
-            const Dropdown = (await import('bootstrap/js/dist/dropdown')).default;
-            if (!isMounted || !dropdownRef.current) {
-                return;
-            }
-            return new Dropdown(dropdownRef.current);
-        },
-        dropdown => {
-            if (dropdown) {
-                dropdown.dispose();
-            }
-        },
-        [dropdownRef],
-    );
-
     return (
-        <div className="relative mr-2">
-            <button
-                className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                data-bs-toggle="dropdown"
-                type="button"
-                ref={dropdownRef}
-            >
-                {currentFilterOption.name} <ChevronDown className="align-text-top" size={13} />
-            </button>
-            <div className="absolute right-0 z-10 mt-2 max-h-96 min-w-[200px] overflow-y-auto rounded-md border bg-white shadow-lg">
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                    {currentFilterOption.name} <ChevronDown className="ml-1" size={13} />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="max-h-96 min-w-[200px] overflow-y-auto">
                 {filterOptions.map(({ name, programId, transactionCount }) => (
                     <FilterLink
                         currentFilter={filter}
@@ -470,8 +458,8 @@ const FilterDropdown = ({ filter, invokedPrograms, totalTransactionCount }: Filt
                         transactionCount={transactionCount}
                     />
                 ))}
-            </div>
-        </div>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };
 
@@ -499,12 +487,13 @@ function FilterLink({
         return `${currentPathname}${nextQueryString ? `?${nextQueryString}` : ''}`;
     }, [currentPathname, currentSearchParams, name, programId]);
     return (
-        <Link
-            className={`block px-4 py-2 hover:bg-gray-100${programId === currentFilter ? 'bg-gray-100 font-semibold' : ''}`}
-            href={href}
-            key={programId}
-        >
-            {`${name} (${transactionCount})`}
-        </Link>
+        <DropdownMenuItem asChild key={programId}>
+            <Link
+                href={href}
+                className={programId === currentFilter ? 'font-semibold' : ''}
+            >
+                {`${name} (${transactionCount})`}
+            </Link>
+        </DropdownMenuItem>
     );
 }

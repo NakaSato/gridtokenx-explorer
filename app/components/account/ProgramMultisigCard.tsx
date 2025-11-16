@@ -14,6 +14,7 @@ import {
 import { Address } from '../common/Address';
 import { LoadingCard } from '../common/LoadingCard';
 import { TableCardBody } from '../common/TableCardBody';
+import { Card, CardHeader, CardTitle } from '@components/shared/ui/card';
 
 export function ProgramMultisigCard({ data }: { data: UpgradeableLoaderAccountData }) {
     return (
@@ -46,12 +47,12 @@ function ProgramMultisigCardInner({ programAuthority }: { programAuthority: Publ
     }
 
     return (
-        <div className="card security-txt">
-            <div className="px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold mb-0 flex items-center">
+        <Card className="security-txt">
+            <CardHeader>
+                <CardTitle className="text-lg mb-0 flex items-center">
                     Upgrade Authority Multisig Information
-                </h3>
-            </div>
+                </CardTitle>
+            </CardHeader>
             <TableCardBody>
                 <tr>
                     <td>Multisig Program</td>
@@ -96,6 +97,6 @@ function ProgramMultisigCardInner({ programAuthority }: { programAuthority: Publ
                     </tr>
                 ))}
             </TableCardBody>
-        </div>
+        </Card>
     );
 }

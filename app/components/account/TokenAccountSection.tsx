@@ -2,6 +2,8 @@ import ScaledUiAmountMultiplierTooltip from '@components/account/token-extension
 import { Address } from '@components/common/Address';
 import { Copyable } from '@components/common/Copyable';
 import { TableCardBody } from '@components/common/TableCardBody';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@components/shared/ui/card';
 import { Account, NFTData, TokenProgramData, useFetchAccountInfo } from '@providers/accounts';
 import { TOKEN_2022_PROGRAM_ID, useScaledUiAmountForMint } from '@providers/accounts/tokens';
 import isMetaplexNFT from '@providers/accounts/utils/isMetaplexNFT';
@@ -138,24 +140,24 @@ function FungibleTokenMintAccountCard({
     const scaledUiAmountMultiplier = getCurrentTokenScaledUiAmountMultiplier(mintExtensions);
 
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
-            <div className="border-b px-6 py-4">
-                <h3 className="mb-0 flex items-center text-lg font-semibold">
-                    {tokenInfo
-                        ? 'Overview'
-                        : account.owner.toBase58() === TOKEN_2022_PROGRAM_ID.toBase58()
-                          ? 'Token-2022 Mint'
-                          : 'Token Mint'}
-                </h3>
-                <button
-                    className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                    onClick={refresh}
-                >
-                    <RefreshCw className="mr-2 align-text-top" size={13} />
-                    Refresh
-                </button>
-            </div>
-            <TableCardBody>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle>
+                        {tokenInfo
+                            ? 'Overview'
+                            : account.owner.toBase58() === TOKEN_2022_PROGRAM_ID.toBase58()
+                              ? 'Token-2022 Mint'
+                              : 'Token Mint'}
+                    </CardTitle>
+                    <Button variant="outline" size="sm" onClick={refresh}>
+                        <RefreshCw className="mr-2" size={13} />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent className="p-0">
+                <TableCardBody>
                 <tr>
                     <td>Address</td>
                     <td className="lg:text-right">
@@ -244,7 +246,8 @@ function FungibleTokenMintAccountCard({
                     <TokenExtensionsStatusRow address={account.pubkey.toBase58()} extensions={mintExtensions} />
                 )}
             </TableCardBody>
-        </div>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -262,18 +265,18 @@ function NonFungibleTokenMintAccountCard({
 
     const collection = nftData.metadata.collection;
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
-            <div className="border-b px-6 py-4">
-                <h3 className="mb-0 flex items-center text-lg font-semibold">Overview</h3>
-                <button
-                    className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                    onClick={refresh}
-                >
-                    <RefreshCw className="mr-2 align-text-top" size={13} />
-                    Refresh
-                </button>
-            </div>
-            <TableCardBody>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle>Overview</CardTitle>
+                    <Button variant="outline" size="sm" onClick={refresh}>
+                        <RefreshCw className="mr-2" size={13} />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent className="p-0">
+                <TableCardBody>
                 <tr>
                     <td>Address</td>
                     <td className="lg:text-right">
@@ -354,7 +357,8 @@ function NonFungibleTokenMintAccountCard({
                     </tr>
                 )}
             </TableCardBody>
-        </div>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -392,20 +396,20 @@ function TokenAccountCard({ account, info }: { account: Account; info: TokenAcco
     }, [tokenInfo, info]);
 
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
-            <div className="border-b px-6 py-4">
-                <h3 className="mb-0 flex items-center text-lg font-semibold">
-                    Token{account.owner.toBase58() === TOKEN_2022_PROGRAM_ID.toBase58() && '-2022'} Account
-                </h3>
-                <button
-                    className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                    onClick={() => refresh(account.pubkey, 'parsed')}
-                >
-                    <RefreshCw className="mr-2 align-text-top" size={13} />
-                    Refresh
-                </button>
-            </div>
-            <TableCardBody>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle>
+                        Token{account.owner.toBase58() === TOKEN_2022_PROGRAM_ID.toBase58() && '-2022'} Account
+                    </CardTitle>
+                    <Button variant="outline" size="sm" onClick={() => refresh(account.pubkey, 'parsed')}>
+                        <RefreshCw className="mr-2" size={13} />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent className="p-0">
+                <TableCardBody>
                 <tr>
                     <td>Address</td>
                     <td className="lg:text-right">
@@ -493,7 +497,8 @@ function TokenAccountCard({ account, info }: { account: Account; info: TokenAcco
                     <TokenExtensionsStatusRow address={account.pubkey.toBase58()} extensions={accountExtensions} />
                 )}
             </TableCardBody>
-        </div>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -501,19 +506,18 @@ function MultisigAccountCard({ account, info }: { account: Account; info: Multis
     const refresh = useFetchAccountInfo();
 
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
-            <div className="border-b px-6 py-4">
-                <h3 className="mb-0 flex items-center text-lg font-semibold">Multisig Account</h3>
-                <button
-                    className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                    onClick={() => refresh(account.pubkey, 'parsed')}
-                >
-                    <RefreshCw className="ml-2 align-text-top" size={13} />
-                    Refresh
-                </button>
-            </div>
-
-            <TableCardBody>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle>Multisig Account</CardTitle>
+                    <Button variant="outline" size="sm" onClick={() => refresh(account.pubkey, 'parsed')}>
+                        <RefreshCw className="mr-2" size={13} />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent className="p-0">
+                <TableCardBody>
                 <tr>
                     <td>Address</td>
                     <td className="lg:text-right">
@@ -543,7 +547,8 @@ function MultisigAccountCard({ account, info }: { account: Account; info: Multis
                     </tr>
                 )}
             </TableCardBody>
-        </div>
+            </CardContent>
+        </Card>
     );
 }
 

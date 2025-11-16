@@ -2,6 +2,7 @@ import { ErrorCard } from '@components/common/ErrorCard';
 import { LoadingCard } from '@components/common/LoadingCard';
 import { SolBalance } from '@components/common/SolBalance';
 import { TableCardBody } from '@components/common/TableCardBody';
+import { Card, CardContent, CardHeader, CardTitle } from '@components/shared/ui/card';
 import { Status, useFetchSupply, useSupply } from '@providers/supply';
 import React from 'react';
 
@@ -25,10 +26,12 @@ export function SupplyCard() {
     }
 
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            {renderHeader()}
-
-            <TableCardBody>
+        <Card>
+            <CardHeader>
+                <CardTitle>Supply Overview</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+                <TableCardBody>
                 <tr>
                     <td className="w-full">Total Supply (SOL)</td>
                     <td className="lg:text-right">
@@ -49,19 +52,8 @@ export function SupplyCard() {
                         <SolBalance lamports={supply.nonCirculating} maximumFractionDigits={0} />
                     </td>
                 </tr>
-            </TableCardBody>
-        </div>
+                </TableCardBody>
+            </CardContent>
+        </Card>
     );
 }
-
-const renderHeader = () => {
-    return (
-        <div className="px-6 py-4 border-b">
-            <div className="flex flex-wrap -mx-2 items-center">
-                <div className="flex-1 px-2">
-                    <h4 className="text-lg font-semibold">Supply Overview</h4>
-                </div>
-            </div>
-        </div>
-    );
-};

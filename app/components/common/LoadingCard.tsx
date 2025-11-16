@@ -1,12 +1,13 @@
 import React from 'react';
+import { Card, CardContent } from '@components/shared/ui/card';
 
 export function LoadingCard({ message }: { message?: string }) {
     return (
-        <div className="bg-white rounded-lg shadow-md border border-gray-200">
-            <div className="p-6 text-center">
-                <div className="inline-block align-top w-4 h-4 mr-2 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                {message || 'Loading'}
-            </div>
-        </div>
+        <Card>
+            <CardContent className="p-6 text-center">
+                <span className="inline-block align-top h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" role="status" aria-label="Loading" />
+                <span className="text-foreground">{message || 'Loading'}</span>
+            </CardContent>
+        </Card>
     );
 }

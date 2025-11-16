@@ -2,14 +2,22 @@ import { Address } from '@components/common/Address';
 import { ErrorCard } from '@components/common/ErrorCard';
 import { LoadingCard } from '@components/common/LoadingCard';
 import { SolBalance } from '@components/common/SolBalance';
+import { Badge } from '@components/shared/ui/badge';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@components/shared/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@components/shared/ui/dropdown-menu';
 import { Status, useFetchRichList, useRichList } from '@providers/richList';
 import { useSupply } from '@providers/supply';
 import { AccountBalancePair } from '@solana/web3.js';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import React, { createRef, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import useAsyncEffect from 'use-async-effect';
 
 import { percentage } from '../utils/math';
 
@@ -63,28 +71,22 @@ export function TopAccountsCard() {
     }
 
     return (
-        <>
-            <div className="bg-card rounded-lg border shadow-sm">
-                <div className="border-b px-6 py-4">
-                    <div className="flex items-center">
-                        <div className="flex-1">
-                            <h4 className="text-lg font-semibold">Largest Accounts</h4>
-                        </div>
-
-                        <div className="flex-shrink-0">
-                            <FilterDropdown filter={filter} />
-                        </div>
-                    </div>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle>Largest Accounts</CardTitle>
+                    <FilterDropdown filter={filter} />
                 </div>
-
+            </CardHeader>
+            <CardContent className="p-0">
                 {richList === Status.Idle && (
                     <div className="p-6">
-                        <span
-                            className="ml-3 hidden cursor-pointer items-center rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100 md:inline-flex"
+                        <Button
+                            variant="outline"
                             onClick={fetchRichList}
                         >
                             Load Largest Accounts
-                        </span>
+                        </Button>
                     </div>
                 )}
 
@@ -105,8 +107,8 @@ export function TopAccountsCard() {
                         </table>
                     </div>
                 )}
-            </div>
-        </>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -114,7 +116,7 @@ const renderAccountRow = (account: AccountBalancePair, index: number, supply: bi
     return (
         <tr key={index}>
             <td>
-                <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700">{index + 1}</span>
+                <Badge variant="secondary">{index + 1}</Badge>
             </td>
             <td>
                 <Address pubkey={account.address} link />
@@ -158,41 +160,20 @@ type DropdownProps = {
 
 const FilterDropdown = ({ filter }: DropdownProps) => {
     const FILTERS: Filter[] = ['all', null, 'nonCirculating'];
-    const dropdownRef = createRef<HTMLButtonElement>();
-    useAsyncEffect(
-        async isMounted => {
-            if (!dropdownRef.current) {
-                return;
-            }
-            const Dropdown = (await import('bootstrap/js/dist/dropdown')).default;
-            if (!isMounted || !dropdownRef.current) {
-                return;
-            }
-            return new Dropdown(dropdownRef.current);
-        },
-        dropdown => {
-            if (dropdown) {
-                dropdown.dispose();
-            }
-        },
-        [dropdownRef],
-    );
+    
     return (
-        <div className="dropdown">
-            <button
-                className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                type="button"
-                data-bs-toggle="dropdown"
-                ref={dropdownRef}
-            >
-                {filterTitle(filter)} <ChevronDown size={13} className="align-text-top" />
-            </button>
-            <div className="absolute right-0 mt-2 rounded-md border bg-white shadow-lg">
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                    {filterTitle(filter)} <ChevronDown size={13} className="ml-1" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
                 {FILTERS.map(filterOption => (
                     <FilterLink currentFilter={filter} filterOption={filterOption} key={filterOption} />
                 ))}
-            </div>
-        </div>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };
 
@@ -200,7 +181,7 @@ function FilterLink({ currentFilter, filterOption }: { currentFilter: Filter; fi
     const currentPathname = usePathname();
     const currentSearchParams = useSearchParams();
     const href = useMemo(() => {
-        const params = new URLSearchParams(currentSearchParams?.toString());
+        const params = new URLSearchParams(currentSearchParams?.toString() || '');
         if (filterOption === null) {
             params.delete('filter');
         } else {
@@ -209,13 +190,15 @@ function FilterLink({ currentFilter, filterOption }: { currentFilter: Filter; fi
         const queryString = params.toString();
         return `${currentPathname}${queryString ? `?${queryString}` : ''}`;
     }, [currentPathname, currentSearchParams, filterOption]);
+    
     return (
-        <Link
-            key={filterOption || 'null'}
-            href={href}
-            className={`block px-4 py-2 hover:bg-gray-100${filterOption === currentFilter ? 'bg-gray-100 font-semibold' : ''}`}
-        >
-            {filterTitle(filterOption)}
-        </Link>
+        <DropdownMenuItem asChild>
+            <Link
+                href={href}
+                className={filterOption === currentFilter ? 'font-semibold' : ''}
+            >
+                {filterTitle(filterOption)}
+            </Link>
+        </DropdownMenuItem>
     );
 }

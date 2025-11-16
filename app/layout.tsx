@@ -13,9 +13,12 @@ import React, { Suspense } from 'react';
 
 import './globals.css';
 
+const defaultUrl = process.env.NEXT_PUBLIC_URL || 'https://explorer.solana.com';
+
 export const metadata: Metadata = {
     description: 'Inspect transactions, accounts, blocks, and more on the Solana blockchain',
     manifest: '/manifest.json',
+    metadataBase: new URL(defaultUrl),
     title: 'Explorer | Solana',
 };
 

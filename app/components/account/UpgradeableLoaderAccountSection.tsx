@@ -15,6 +15,8 @@ import {
     ProgramDataAccountInfo,
     UpgradeableLoaderAccount,
 } from '@validators/accounts/upgradeable-program';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@components/shared/ui/card';
 import Link from 'next/link';
 import React from 'react';
 import { ExternalLink, RefreshCw } from 'react-feather';
@@ -74,118 +76,116 @@ export function UpgradeableProgramSection({
     const label = addressLabel(account.pubkey.toBase58(), cluster);
 
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
-            <div className="border-b px-6 py-4">
-                <h3 className="mb-0 flex items-center text-lg font-semibold">
-                    {programData === undefined && 'Closed '}Program Account
-                </h3>
-                <button
-                    className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                    onClick={() => refresh(account.pubkey, 'parsed')}
-                >
-                    <RefreshCw className="mr-2 align-text-top" size={13} />
-                    Refresh
-                </button>
-            </div>
-
-            <TableCardBody>
-                <tr>
-                    <td>Address</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={account.pubkey} alignRight raw />
-                    </td>
-                </tr>
-                {label && (
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">
+                        {programData === undefined && 'Closed '}Program Account
+                    </CardTitle>
+                    <Button variant="outline" size="sm" onClick={() => refresh(account.pubkey, 'parsed')}>
+                        <RefreshCw className="mr-2 h-3 w-3" />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <TableCardBody>
                     <tr>
-                        <td>Address Label</td>
-                        <td className="lg:text-right">{label}</td>
+                        <td>Address</td>
+                        <td className="lg:text-right">
+                            <Address pubkey={account.pubkey} alignRight raw />
+                        </td>
                     </tr>
-                )}
-                <tr>
-                    <td>Balance (SOL)</td>
-                    <td className="uppercase lg:text-right">
-                        <SolBalance lamports={account.lamports} />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Executable</td>
-                    <td className="lg:text-right">{programData !== undefined ? 'Yes' : 'No'}</td>
-                </tr>
-                <tr>
-                    <td>Executable Data{programData === undefined && ' (Closed)'}</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={programAccount.programData} alignRight link />
-                    </td>
-                </tr>
-                {programData !== undefined && (
-                    <>
+                    {label && (
                         <tr>
-                            <td>Upgradeable</td>
-                            <td className="lg:text-right">{programData.authority !== null ? 'Yes' : 'No'}</td>
+                            <td>Address Label</td>
+                            <td className="lg:text-right">{label}</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <VerifiedLabel />
-                            </td>
-                            <td className="lg:text-right">
-                                <VerifiedProgramBadge programData={programData} pubkey={account.pubkey} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <ProgramSecurityTXTLabel programPubkey={account.pubkey} />
-                            </td>
-                            <td className="lg:text-right">
-                                <ProgramSecurityTXTBadge programData={programData} programPubkey={account.pubkey} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Last Deployed Slot</td>
-                            <td className="lg:text-right">
-                                <Slot slot={programData.slot} link />
-                            </td>
-                        </tr>
-                        {programData.authority !== null && (
-                            <>
-                                <tr>
-                                    <td>Upgrade Authority</td>
-                                    <td className="lg:text-right">
-                                        {cluster == Cluster.MainnetBeta && squadMapInfo?.isSquad ? (
-                                            <MultisigBadge pubkey={account.pubkey} />
-                                        ) : null}
-                                        <Address pubkey={programData.authority} alignRight link />
-                                    </td>
-                                </tr>
-                            </>
-                        )}
-                    </>
-                )}
-            </TableCardBody>
-        </div>
+                    )}
+                    <tr>
+                        <td>Balance (SOL)</td>
+                        <td className="uppercase lg:text-right">
+                            <SolBalance lamports={account.lamports} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Executable</td>
+                        <td className="lg:text-right">{programData !== undefined ? 'Yes' : 'No'}</td>
+                    </tr>
+                    <tr>
+                        <td>Executable Data{programData === undefined && ' (Closed)'}</td>
+                        <td className="lg:text-right">
+                            <Address pubkey={programAccount.programData} alignRight link />
+                        </td>
+                    </tr>
+                    {programData !== undefined && (
+                        <>
+                            <tr>
+                                <td>Upgradeable</td>
+                                <td className="lg:text-right">{programData.authority !== null ? 'Yes' : 'No'}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <VerifiedLabel />
+                                </td>
+                                <td className="lg:text-right">
+                                    <VerifiedProgramBadge programData={programData} pubkey={account.pubkey} />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ProgramSecurityTXTLabel programPubkey={account.pubkey} />
+                                </td>
+                                <td className="lg:text-right">
+                                    <ProgramSecurityTXTBadge programData={programData} programPubkey={account.pubkey} />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Last Deployed Slot</td>
+                                <td className="lg:text-right">
+                                    <Slot slot={programData.slot} link />
+                                </td>
+                            </tr>
+                            {programData.authority !== null && (
+                                <>
+                                    <tr>
+                                        <td>Upgrade Authority</td>
+                                        <td className="lg:text-right">
+                                            {cluster == Cluster.MainnetBeta && squadMapInfo?.isSquad ? (
+                                                <MultisigBadge pubkey={account.pubkey} />
+                                            ) : null}
+                                            <Address pubkey={programData.authority} alignRight link />
+                                        </td>
+                                    </tr>
+                                </>
+                            )}
+                        </>
+                    )}
+                </TableCardBody>
+            </CardContent>
+        </Card>
     );
 }
 
 function MultisigBadge({ pubkey }: { pubkey: PublicKey }) {
     const programMultisigTabPath = useClusterPath({ pathname: `/address/${pubkey.toBase58()}/program-multisig` });
     return (
-        <h3 className="mb-0">
-            <Link
-                className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800"
-                href={programMultisigTabPath}
-            >
-                Program Multisig
-            </Link>
-        </h3>
+        <Link
+            className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800"
+            href={programMultisigTabPath}
+        >
+            Program Multisig
+        </Link>
     );
 }
 
 function VerifiedLabel() {
     return (
-        <InfoTooltip text="Verified builds allow users can ensure that the hash of the on-chain program matches the hash of the program of the given codebase (registry hosted by osec.io).">
+        <InfoTooltip text="Verified builds allow users can ensure that hash of on-chain program matches the hash of the program of given codebase (registry hosted by osec.io).">
             <Link
                 rel="noopener noreferrer"
                 target="_blank"
-                href="https://github.com/Ellipsis-Labs/solana-verifiablbuild"
+                href="https://github.com/Ellipsis-Labs/solana-verifiable-build"
             >
                 <span className="security-txt-link-color-hack-reee">Verified Build</span>
                 <ExternalLink className="ml-2 align-text-top" size={13} />
@@ -203,61 +203,61 @@ export function UpgradeableProgramDataSection({
 }) {
     const refresh = useFetchAccountInfo();
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
-            <div className="border-b px-6 py-4">
-                <h3 className="mb-0 flex items-center text-lg font-semibold">Program Executable Data Account</h3>
-                <button
-                    className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                    onClick={() => refresh(account.pubkey, 'parsed')}
-                >
-                    <RefreshCw className="mr-2 align-text-top" size={13} />
-                    Refresh
-                </button>
-            </div>
-
-            <TableCardBody>
-                <tr>
-                    <td>Address</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={account.pubkey} alignRight raw />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Balance (SOL)</td>
-                    <td className="uppercase lg:text-right">
-                        <SolBalance lamports={account.lamports} />
-                    </td>
-                </tr>
-                {account.space !== undefined && (
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">Program Executable Data Account</CardTitle>
+                    <Button variant="outline" size="sm" onClick={() => refresh(account.pubkey, 'parsed')}>
+                        <RefreshCw className="mr-2 h-3 w-3" />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <TableCardBody>
                     <tr>
-                        <td>Data Size (Bytes)</td>
+                        <td>Address</td>
                         <td className="lg:text-right">
-                            <DownloadableIcon data={programData.data[0]} filename={`${account.pubkey.toString()}.bin`}>
-                                <span className="mr-2">{account.space}</span>
-                            </DownloadableIcon>
+                            <Address pubkey={account.pubkey} alignRight raw />
                         </td>
                     </tr>
-                )}
-                <tr>
-                    <td>Upgradeable</td>
-                    <td className="lg:text-right">{programData.authority !== null ? 'Yes' : 'No'}</td>
-                </tr>
-                <tr>
-                    <td>Last Deployed Slot</td>
-                    <td className="lg:text-right">
-                        <Slot slot={programData.slot} link />
-                    </td>
-                </tr>
-                {programData.authority !== null && (
                     <tr>
-                        <td>Upgrade Authority</td>
-                        <td className="lg:text-right">
-                            <Address pubkey={programData.authority} alignRight link />
+                        <td>Balance (SOL)</td>
+                        <td className="uppercase lg:text-right">
+                            <SolBalance lamports={account.lamports} />
                         </td>
                     </tr>
-                )}
-            </TableCardBody>
-        </div>
+                    {account.space !== undefined && (
+                        <tr>
+                            <td>Data Size (Bytes)</td>
+                            <td className="lg:text-right">
+                                <DownloadableIcon data={programData.data[0]} filename={`${account.pubkey.toString()}.bin`}>
+                                    <span className="mr-2">{account.space}</span>
+                                </DownloadableIcon>
+                            </td>
+                        </tr>
+                    )}
+                    <tr>
+                        <td>Upgradeable</td>
+                        <td className="lg:text-right">{programData.authority !== null ? 'Yes' : 'No'}</td>
+                    </tr>
+                    <tr>
+                        <td>Last Deployed Slot</td>
+                        <td className="lg:text-right">
+                            <Slot slot={programData.slot} link />
+                        </td>
+                    </tr>
+                    {programData.authority !== null && (
+                        <tr>
+                            <td>Upgrade Authority</td>
+                            <td className="lg:text-right">
+                                <Address pubkey={programData.authority} alignRight link />
+                            </td>
+                        </tr>
+                    )}
+                </TableCardBody>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -270,52 +270,52 @@ export function UpgradeableProgramBufferSection({
 }) {
     const refresh = useFetchAccountInfo();
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
-            <div className="border-b px-6 py-4">
-                <h3 className="mb-0 flex items-center text-lg font-semibold">Program Deploy Buffer Account</h3>
-                <button
-                    className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                    onClick={() => refresh(account.pubkey, 'parsed')}
-                >
-                    <RefreshCw className="mr-2 align-text-top" size={13} />
-                    Refresh
-                </button>
-            </div>
-
-            <TableCardBody>
-                <tr>
-                    <td>Address</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={account.pubkey} alignRight raw />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Balance (SOL)</td>
-                    <td className="uppercase lg:text-right">
-                        <SolBalance lamports={account.lamports} />
-                    </td>
-                </tr>
-                {account.space !== undefined && (
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">Program Deploy Buffer Account</CardTitle>
+                    <Button variant="outline" size="sm" onClick={() => refresh(account.pubkey, 'parsed')}>
+                        <RefreshCw className="mr-2 h-3 w-3" />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <TableCardBody>
                     <tr>
-                        <td>Data Size (Bytes)</td>
-                        <td className="lg:text-right">{account.space}</td>
-                    </tr>
-                )}
-                {programBuffer.authority !== null && (
-                    <tr>
-                        <td>Deploy Authority</td>
+                        <td>Address</td>
                         <td className="lg:text-right">
-                            <Address pubkey={programBuffer.authority} alignRight link />
+                            <Address pubkey={account.pubkey} alignRight raw />
                         </td>
                     </tr>
-                )}
-                <tr>
-                    <td>Owner</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={account.owner} alignRight link />
-                    </td>
-                </tr>
-            </TableCardBody>
-        </div>
+                    <tr>
+                        <td>Balance (SOL)</td>
+                        <td className="uppercase lg:text-right">
+                            <SolBalance lamports={account.lamports} />
+                        </td>
+                    </tr>
+                    {account.space !== undefined && (
+                        <tr>
+                            <td>Data Size (Bytes)</td>
+                            <td className="lg:text-right">{account.space}</td>
+                        </tr>
+                    )}
+                    {programBuffer.authority !== null && (
+                        <tr>
+                            <td>Deploy Authority</td>
+                            <td className="lg:text-right">
+                                <Address pubkey={programBuffer.authority} alignRight link />
+                            </td>
+                        </tr>
+                    )}
+                    <tr>
+                        <td>Owner</td>
+                        <td className="lg:text-right">
+                            <Address pubkey={account.owner} alignRight link />
+                        </td>
+                    </tr>
+                </TableCardBody>
+            </CardContent>
+        </Card>
     );
 }

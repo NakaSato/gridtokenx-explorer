@@ -1,6 +1,5 @@
 'use client';
 
-// Force dynamic rendering to avoid static generation issues
 export const dynamic = 'force-dynamic';
 
 import { Address } from '@components/common/Address';
@@ -8,7 +7,6 @@ import { ErrorCard } from '@components/common/ErrorCard';
 import { LoadingCard } from '@components/common/LoadingCard';
 import { Signature } from '@components/common/Signature';
 import { Slot } from '@components/common/Slot';
-import { TableCardBody } from '@components/common/TableCardBody';
 import { TimestampToggle } from '@components/common/TimestampToggle';
 import { AnchorDeveloperTools } from '@components/transaction/AnchorDeveloperTools';
 import { AnchorEventDecoder } from '@components/transaction/AnchorEventDecoder';

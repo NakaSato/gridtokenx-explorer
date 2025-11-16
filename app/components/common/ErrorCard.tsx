@@ -1,4 +1,7 @@
 import React from 'react';
+import { Card, CardContent } from '@components/shared/ui/card';
+import { Button } from '@components/shared/ui/button';
+import { Separator } from '@components/shared/ui/separator';
 
 export function ErrorCard({
     retry,
@@ -13,34 +16,36 @@ export function ErrorCard({
 }) {
     const buttonText = retryText || 'Try Again';
     return (
-        <div className="bg-white rounded-lg shadow-md border border-gray-200">
-            <div className="p-6 text-center">
-                {text}
+        <Card>
+            <CardContent className="p-6 text-center">
+                <p className="text-foreground">{text}</p>
                 {retry && (
                     <>
-                        <button 
-                            className="ml-3 px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hidden md:inline-block"
+                        <Button 
+                            variant="outline"
+                            className="ml-3 mt-3 hidden md:inline-flex"
                             onClick={retry}
                         >
                             {buttonText}
-                        </button>
+                        </Button>
                         <div className="block md:hidden mt-4">
-                            <button 
-                                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            <Button 
+                                variant="outline"
+                                className="w-full"
                                 onClick={retry}
                             >
                                 {buttonText}
-                            </button>
+                            </Button>
                         </div>
                         {subtext && (
-                            <div className="text-gray-500 mt-4">
-                                <hr className="my-2 border-gray-300" />
-                                {subtext}
+                            <div className="text-muted-foreground mt-4">
+                                <Separator className="my-2" />
+                                <p className="text-sm">{subtext}</p>
                             </div>
                         )}
                     </>
                 )}
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 }

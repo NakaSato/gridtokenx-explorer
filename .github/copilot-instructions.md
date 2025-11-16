@@ -71,6 +71,7 @@ function MyCardRenderer({ account, onNotFound }) {
 #### Styling with Tailwind & shadcn/ui
 - **Utility function**: `cn()` from `@components/shared/utils` merges Tailwind classes
 - **shadcn/ui components**: Located in `app/components/shared/ui/`
+- **UI System Spec**: Complete specification in `docs/ui-system-spec.md`
 - **Dark mode**: Implemented via `class` strategy (see `tailwind.config.ts`)
 - **Theme toggle**: Managed by `ThemeProvider` in `app/providers/theme.tsx`
 - **Custom breakpoints**: `xxs, xs, sm, md, lg, xl, xxl` (see `tailwind.config.ts`)
@@ -79,6 +80,14 @@ function MyCardRenderer({ account, onNotFound }) {
 import { cn } from '@components/shared/utils';
 <div className={cn('card', 'hover:shadow-lg', className)} />
 ```
+
+#### Available shadcn/ui Components
+All installed in `app/components/shared/ui/`:
+- accordion, alert, badge, button, card, dialog, dropdown-menu
+- input, label, popover, progress, scroll-area, select
+- separator, skeleton, switch, table, tabs, textarea, tooltip
+
+Add new components: `bun run gen` or `bunx shadcn@latest add [component]`
 
 ### API Routes Pattern
 Next.js App Router API routes at `app/api/[endpoint]/route.ts`:
@@ -89,6 +98,35 @@ export async function GET(request: Request) {
 }
 ```
 Examples: `app/api/anchor/`, `app/api/token-info/`, `app/api/metadata/proxy/`
+
+### Data Visualization with Nivo
+- **Charts library**: Use [Nivo](https://nivo.rocks/) for all data visualizations
+- **Installation**: `bun add @nivo/core @nivo/line @nivo/bar @nivo/pie`
+- **Theme integration**: Use semantic color tokens (`hsl(var(--foreground))`) for dark mode support
+- **Common charts**: ResponsiveLine, ResponsiveBar, ResponsivePie, ResponsiveArea
+- **Wrapper pattern**: Combine with shadcn/ui Card components for consistent layouts
+
+```tsx
+import { ResponsiveLine } from '@nivo/line';
+import { Card, CardContent, CardHeader, CardTitle } from '@components/shared/ui/card';
+
+<Card>
+  <CardHeader><CardTitle>Chart Title</CardTitle></CardHeader>
+  <CardContent>
+    <div className="h-[300px]">
+      <ResponsiveLine
+        data={data}
+        theme={{
+          text: { fill: 'hsl(var(--foreground))' },
+          grid: { line: { stroke: 'hsl(var(--border))' } }
+        }}
+      />
+    </div>
+  </CardContent>
+</Card>
+```
+
+See `docs/ui-system-spec.md` for complete Nivo integration patterns.
 
 ### Solana Integration Specifics
 
@@ -160,6 +198,15 @@ bun run gen              # Add shadcn/ui components
 2. Place shared components in `app/components/shared/`
 3. Use `cn()` for className merging
 4. Wrap client logic in `'use client'` components
+5. Follow patterns in `docs/ui-system-spec.md` for consistency
+
+### Adding Data Visualizations
+1. Install required Nivo packages: `bun add @nivo/[chart-type]`
+2. Use `ResponsiveXxx` components for automatic sizing
+3. Wrap charts in shadcn/ui Card for consistent styling
+4. Apply semantic color tokens for theme compatibility
+5. Create reusable chart wrapper components when needed
+6. See `docs/ui-system-spec.md` for complete examples
 
 ### Adding Features
 1. Check if similar pattern exists (search for analogous features)

@@ -1,6 +1,8 @@
 'use client';
 
 import { useClusterPath } from '@utils/url';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@components/shared/ui/card';
 import Link from 'next/link';
 import React from 'react';
 import { RefreshCw } from 'react-feather';
@@ -14,24 +16,23 @@ export function NFTokenCollectionNFTGrid({ collection }: { collection: string })
         collectionAddress: collection,
     });
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b flex items-center">
-                <h3 className="text-lg font-semibold">NFTs</h3>
-
-                <button className="bg-white text-black border px-3 py-1.5 rounded-md hover:bg-gray-100 text-sm" onClick={() => mutate()}>
-                    <RefreshCw className="align-text-top mr-2" size={13} />
-                    Refresh
-                </button>
-            </div>
-
-            <div className="py-4">
-                {nfts.length === 0 && <div className={'px-4'}>No NFTs Found</div>}
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">NFTs</CardTitle>
+                    <Button variant="outline" size="sm" onClick={() => mutate()}>
+                        <RefreshCw className="mr-2 h-3 w-3" />
+                        Refresh
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {nfts.length === 0 && <div className="px-4">No NFTs Found</div>}
 
                 {nfts.length > 0 && (
                     <div
                         style={{
                             display: 'grid',
-
                             gridGap: '1.5rem',
                             /* Creates as many columns as possible that are at least 10rem wide. */
                             gridTemplateColumns: 'repeat(auto-fill, minmax(10rem, 1fr))',
@@ -42,8 +43,8 @@ export function NFTokenCollectionNFTGrid({ collection }: { collection: string })
                         ))}
                     </div>
                 )}
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 }
 

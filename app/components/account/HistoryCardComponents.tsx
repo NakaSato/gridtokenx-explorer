@@ -1,6 +1,7 @@
 import { ConfirmedSignatureInfo, TransactionError } from '@solana/web3.js';
 import React from 'react';
 import { RefreshCw } from 'react-feather';
+import { Button } from '@components/shared/ui/button';
 
 export type TransactionRow = {
     slot: number;
@@ -24,23 +25,24 @@ export function HistoryCardHeader({
     return (
         <div className="flex items-center border-b px-6 py-4">
             <h3 className="text-lg font-semibold">{title}</h3>
-            <button
-                className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+            <Button
+                variant="outline"
+                size="sm"
                 disabled={fetching}
                 onClick={() => refresh()}
             >
                 {fetching ? (
                     <>
-                        <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current align-text-top"></span>
+                        <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current"></span>
                         Loading
                     </>
                 ) : (
                     <>
-                        <RefreshCw className="mr-2 align-text-top" size={13} />
+                        <RefreshCw className="mr-2" size={13} />
                         Refresh
                     </>
                 )}
-            </button>
+            </Button>
         </div>
     );
 }
@@ -59,20 +61,20 @@ export function HistoryCardFooter({
             {foundOldest ? (
                 <div className="text-muted-foreground text-center">Fetched full history</div>
             ) : (
-                <button
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-md px-4 py-2"
+                <Button
+                    className="w-full"
                     onClick={() => loadMore()}
                     disabled={fetching}
                 >
                     {fetching ? (
                         <>
-                            <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current align-text-top"></span>
+                            <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current"></span>
                             Loading
                         </>
                     ) : (
                         'Load More'
                     )}
-                </button>
+                </Button>
             )}
         </div>
     );

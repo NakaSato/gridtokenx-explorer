@@ -6,6 +6,7 @@ import { AccountAddressRow, AccountHeader } from '@/app/components/common/Accoun
 import { Address } from '@/app/components/common/Address';
 import { TableCardBody } from '@/app/components/common/TableCardBody';
 import { Account, useFetchAccountInfo } from '@/app/providers/accounts';
+import { Card, CardContent } from '@components/shared/ui/card';
 import { decodeAccount } from '@/app/utils/attestation-service';
 import { decodeString, mapToPublicKey } from '@/app/utils/kit-wrapper';
 
@@ -131,12 +132,14 @@ export function SolanaAttestationServiceCard({ account }: { account: Account }) 
     }
 
     return (
-        <div className="card">
+        <Card>
             <AccountHeader title={title} refresh={() => refresh(account.pubkey, 'parsed')} />
-            <TableCardBody>
-                <AccountAddressRow account={account} />
-                {content}
-            </TableCardBody>
-        </div>
+            <CardContent>
+                <TableCardBody>
+                    <AccountAddressRow account={account} />
+                    {content}
+                </TableCardBody>
+            </CardContent>
+        </Card>
     );
 }

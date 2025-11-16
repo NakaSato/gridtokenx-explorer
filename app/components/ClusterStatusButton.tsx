@@ -28,24 +28,24 @@ export const ClusterStatusButton = () => {
     switch (status) {
         case ClusterStatus.Connected:
             return (
-                <Button variant="default" size="sm" onClick={onClickHandler}>
-                    <CheckCircle size={14} />
+                <Button variant="default" size="sm" onClick={onClickHandler} className="relative z-50">
+                    <CheckCircle size={14} className="mr-2" />
                     {statusName}
                 </Button>
             );
 
         case ClusterStatus.Connecting:
             return (
-                <Button variant="secondary" size="sm" onClick={onClickHandler} disabled>
-                    <Loader size={14} className="animate-spin" />
+                <Button variant="secondary" size="sm" onClick={onClickHandler} disabled className="relative z-50">
+                    <Loader size={14} className="mr-2 animate-spin" />
                     {statusName}
                 </Button>
             );
 
         case ClusterStatus.Failure:
             return (
-                <Button variant="destructive" size="sm" onClick={onClickHandler}>
-                    <AlertCircle size={14} />
+                <Button variant="destructive" size="sm" onClick={onClickHandler} className="relative z-50">
+                    <AlertCircle size={14} className="mr-2" />
                     {statusName}
                 </Button>
             );

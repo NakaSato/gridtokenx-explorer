@@ -5,6 +5,14 @@ import { ErrorCard } from '@components/common/ErrorCard';
 import { LoadingCard } from '@components/common/LoadingCard';
 import { Signature } from '@components/common/Signature';
 import { Slot } from '@components/common/Slot';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@components/shared/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@components/shared/ui/dropdown-menu';
 import { isMangoInstruction, parseMangoInstructionTitle } from '@components/instruction/mango/types';
 import { isSerumInstruction, parseSerumInstructionTitle } from '@components/instruction/serum/types';
 import {
@@ -185,79 +193,86 @@ function TokenHistoryTable({ tokens }: { tokens: TokenInfoWithPubkey[] }) {
     });
 
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
-            <div className="flex items-center border-b px-6 py-4">
-                <h3 className="text-lg font-semibold">Token History</h3>
-                <FilterDropdown
-                    filter={filter}
-                    toggle={() => setDropdown(show => !show)}
-                    show={showDropdown}
-                    tokens={tokens}
-                ></FilterDropdown>
-                <button
-                    className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                    disabled={fetching}
-                    onClick={() => fetchHistories(true)}
-                >
-                    {fetching ? (
-                        <>
-                            <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current align-text-top"></span>
-                            Loading
-                        </>
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle>Token History</CardTitle>
+                    <div className="flex items-center gap-2">
+                        <FilterDropdown
+                            filter={filter}
+                            toggle={() => setDropdown(show => !show)}
+                            show={showDropdown}
+                            tokens={tokens}
+                        />
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={fetching}
+                            onClick={() => fetchHistories(true)}
+                        >
+                            {fetching ? (
+                                <>
+                                    <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current"></span>
+                                    Loading
+                                </>
+                            ) : (
+                                <>
+                                    <RefreshCw className="mr-2" size={13} />
+                                    Refresh
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            </CardHeader>
+
+            <CardContent className="p-0">
+                <div className="mb-0 overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr>
+                                <th className="text-muted-foreground w-1">Slot</th>
+                                <th className="text-muted-foreground">Result</th>
+                                <th className="text-muted-foreground">Token</th>
+                                <th className="text-muted-foreground">Instruction Type</th>
+                                <th className="text-muted-foreground">Transaction Signature</th>
+                            </tr>
+                        </thead>
+                        <tbody className="list">
+                            {mintAndTxs.map(({ mint, tx }) => (
+                                <TokenTransactionRow
+                                    key={tx.signature}
+                                    mint={mint}
+                                    tx={tx}
+                                    details={transactionDetailsCache[tx.signature]}
+                                />
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div className="border-t px-6 py-4">
+                    {allFoundOldest ? (
+                        <div className="text-muted-foreground text-center">Fetched full history</div>
                     ) : (
-                        <>
-                            <RefreshCw className="mr-2 align-text-top" size={13} />
-                            Refresh
-                        </>
+                        <Button
+                            className="w-full"
+                            onClick={() => fetchHistories()}
+                            disabled={fetching}
+                        >
+                            {fetching ? (
+                                <>
+                                    <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current"></span>
+                                    Loading
+                                </>
+                            ) : (
+                                'Load More'
+                            )}
+                        </Button>
                     )}
-                </button>
-            </div>
-
-            <div className="mb-0 overflow-x-auto">
-                <table className="w-full text-sm">
-                    <thead>
-                        <tr>
-                            <th className="text-muted-foreground w-1">Slot</th>
-                            <th className="text-muted-foreground">Result</th>
-                            <th className="text-muted-foreground">Token</th>
-                            <th className="text-muted-foreground">Instruction Type</th>
-                            <th className="text-muted-foreground">Transaction Signature</th>
-                        </tr>
-                    </thead>
-                    <tbody className="list">
-                        {mintAndTxs.map(({ mint, tx }) => (
-                            <TokenTransactionRow
-                                key={tx.signature}
-                                mint={mint}
-                                tx={tx}
-                                details={transactionDetailsCache[tx.signature]}
-                            />
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            <div className="border-t px-6 py-4">
-                {allFoundOldest ? (
-                    <div className="text-muted-foreground text-center">Fetched full history</div>
-                ) : (
-                    <button
-                        className="bg-primary hover:bg-primary/90 w-full rounded-md px-4 py-2 text-white disabled:opacity-50"
-                        onClick={() => fetchHistories()}
-                        disabled={fetching}
-                    >
-                        {fetching ? (
-                            <>
-                                <span className="mr-2 inline-block h-4 w-4 animate-pulse rounded-full bg-current align-text-top"></span>
-                                Loading
-                            </>
-                        ) : (
-                            'Load More'
-                        )}
-                    </button>
-                )}
-            </div>
-        </div>
+                </div>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -291,33 +306,27 @@ const FilterDropdown = ({ filter, toggle, show, tokens }: FilterProps) => {
     });
 
     return (
-        <div className="relative mr-2">
-            <small className="mr-2">Filter:</small>
-            <button
-                className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
-                type="button"
-                onClick={toggle}
-            >
-                {filter === ALL_TOKENS ? 'All Tokens' : nameLookup.get(filter)}{' '}
-                <ChevronDown size={15} className="align-text-top" />
-            </button>
-            <div
-                className={`absolute right-0 z-10 mt-2 rounded-md border bg-white shadow-lg min-w-[200px]${show ? 'block' : 'hidden'}`}
-            >
-                {filterOptions.map(filterOption => {
-                    return (
+        <DropdownMenu open={show} onOpenChange={toggle}>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                    {filter === ALL_TOKENS ? 'All Tokens' : nameLookup.get(filter)}{' '}
+                    <ChevronDown size={15} className="ml-1" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[200px]">
+                {filterOptions.map(filterOption => (
+                    <DropdownMenuItem key={filterOption} asChild>
                         <Link
-                            key={filterOption}
                             href={buildLocation(filterOption)}
-                            className={`block px-4 py-2 hover:bg-gray-100${filterOption === filter ? 'bg-gray-100 font-semibold' : ''}`}
+                            className={filterOption === filter ? 'font-semibold' : ''}
                             onClick={toggle}
                         >
                             {filterOption === ALL_TOKENS ? 'All Tokens' : nameLookup.get(filterOption) || filterOption}
                         </Link>
-                    );
-                })}
-            </div>
-        </div>
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };
 

@@ -14,6 +14,12 @@ const nextConfig = {
     typescript: {
         ignoreBuildErrors: true,
     },
+    // Suppress console warnings
+    logging: {
+        fetches: {
+            fullUrl: false,
+        },
+    },
     // Use empty turbopack config to silence warning and use webpack
     turbopack: {},
     // Suppress webpack warnings

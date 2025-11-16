@@ -1,4 +1,5 @@
 import { Account, useAccountInfo, useFetchAccountInfo } from '@providers/accounts';
+import { Card, CardHeader, CardContent, CardTitle } from '@components/shared/ui/card';
 import React from 'react';
 import {
     Attestation as SasAttestation,
@@ -34,19 +35,16 @@ export function AttestationDataCard({ account, onNotFound }: { account?: Account
 function SchemaCard({ schema }: { schema: SasSchema }) {
     const borshSchema = convertSasSchemaToBorshSchema(schema);
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b">
-                <div className="flex items-center">
-                    <div className="flex-1">
-                        <h3 className="text-lg font-semibold">Schema Layout (Borsh)</h3>
-                    </div>
+        <Card>
+            <CardHeader>
+                <CardTitle>Schema Layout (Borsh)</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="card metadata-json-viewer m-4">
+                    <ReactJson src={borshSchema['schema']} style={{ padding: 25 }} name={false} />
                 </div>
-            </div>
-
-            <div className="card metadata-json-viewer m-4">
-                <ReactJson src={borshSchema['schema']} style={{ padding: 25 }} name={false} />
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -70,35 +68,32 @@ function AttestationCard({ attestation }: { attestation: SasAttestation }) {
     }
 
     return (
-        <div className="bg-card border rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b">
-                <div className="flex items-center">
-                    <div className="flex-1">
-                        <h3 className="text-lg font-semibold">Attestation Data {decoded ? '' : 'Raw (Base64)'}</h3>
+        <Card>
+            <CardHeader>
+                <CardTitle>Attestation Data {decoded ? '' : 'Raw (Base64)'}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                {decoded ? (
+                    <div className="card metadata-json-viewer m-4">
+                        <ReactJson src={decoded} style={{ padding: 25 }} name={false} />
                     </div>
-                </div>
-            </div>
-
-            {decoded ? (
-                <div className="card metadata-json-viewer m-4">
-                    <ReactJson src={decoded} style={{ padding: 25 }} name={false} />
-                </div>
-            ) : (
-                <div
-                    className="font-mono"
-                    style={{
-                        fontSize: '0.85rem',
-                        lineHeight: '1.2',
-                        maxWidth: '100%',
-                        overflowWrap: 'break-word',
-                        padding: '1rem',
-                        whiteSpace: 'normal',
-                        wordBreak: 'break-all',
-                    }}
-                >
-                    {Buffer.from(attestation.data).toString('base64') || '(empty)'}
-                </div>
-            )}
-        </div>
+                ) : (
+                    <div
+                        className="font-mono"
+                        style={{
+                            fontSize: '0.85rem',
+                            lineHeight: '1.2',
+                            maxWidth: '100%',
+                            overflowWrap: 'break-word',
+                            padding: '1rem',
+                            whiteSpace: 'normal',
+                            wordBreak: 'break-all',
+                        }}
+                    >
+                        {Buffer.from(attestation.data).toString('base64') || '(empty)'}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
     );
 }

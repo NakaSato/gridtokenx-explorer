@@ -1,5 +1,7 @@
 import { SolBalance } from '@components/common/SolBalance';
 import { Account } from '@providers/accounts';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardHeader, CardTitle } from '@components/shared/ui/card';
 import React from 'react';
 import { RefreshCw } from 'react-feather';
 
@@ -16,13 +18,15 @@ type AccountProps = {
 
 export function AccountHeader({ title, refresh }: AccountHeaderProps) {
     return (
-        <div className="px-6 py-4 border-b flex items-center">
-            <h3 className="text-lg font-semibold">{title}</h3>
-            <button className="bg-white text-black border px-3 py-1.5 rounded-md hover:bg-gray-100 text-sm" onClick={() => refresh()}>
-                <RefreshCw className="align-text-top mr-2" size={13} />
-                Refresh
-            </button>
-        </div>
+        <CardHeader>
+            <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">{title}</CardTitle>
+                <Button variant="outline" size="sm" onClick={() => refresh()}>
+                    <RefreshCw className="mr-2 h-3 w-3" />
+                    Refresh
+                </Button>
+            </div>
+        </CardHeader>
     );
 }
 

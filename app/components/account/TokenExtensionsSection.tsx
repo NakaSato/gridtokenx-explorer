@@ -1,4 +1,5 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/shared/ui/accordion';
+import { Card } from '@components/shared/ui/card';
 import { SyntheticEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { Code, ExternalLink } from 'react-feather';
 
@@ -111,11 +112,11 @@ function TokenExtensionAccordionItem({
             </AccordionTrigger>
             <AccordionContent>
                 {!showRaw ? (
-                    <div className="card m-4">
+                    <Card className="m-4">
                         <TableCardBodyHeaded headerComponent={tableHeaderComponent}>
                             {TokenExtensionRow(extension, undefined, decimals, symbol, 'omit')}
                         </TableCardBodyHeaded>
-                    </div>
+                    </Card>
                 ) : (
                     <div className="p-4">
                         <ReactJson src={parsedExtension.parsed || {}} style={{ padding: 25 }} />
@@ -170,17 +171,14 @@ function ExtensionListItem({
                 <a key="raw" href="javascript:void(0)" onClick={handleToggleRaw}>
                     <Badge
                         className="font-normal text-white"
-                        as="link"
-                        size="sm"
-                        status={raw ? 'active' : 'inactive'}
-                        variant="transparent"
+                        variant={raw ? "default" : "outline"}
                     >
                         <Code size={16} /> Raw
                     </Badge>
                 </a>
                 {ext.externalLinks.map((link, index) => (
                     <a key={index} href={link.url} target="_blank" rel="noopener noreferrer">
-                        <Badge variant="transparent" size="sm" as="link" className="font-normal text-white">
+                        <Badge variant="outline" className="font-normal text-white">
                             <ExternalLink size={16} />
                             {link.label}
                         </Badge>
