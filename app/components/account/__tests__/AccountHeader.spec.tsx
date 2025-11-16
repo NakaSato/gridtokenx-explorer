@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { vi } from 'vitest';
@@ -181,7 +182,7 @@ function setup(): { account: Account; mockAddress: string } {
             executable: true,
             lamports: 0,
             owner: PublicKey.default,
-            pubkey: new PublicKey(mockAddress),
+            pubkey: addressToPublicKey(toAddress(mockAddress)),
             space: 0,
         },
         mockAddress,

@@ -1,5 +1,6 @@
 import { sha256 } from '@noble/hashes/sha2.js';
 import { Connection, PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import useSWRImmutable from 'swr/immutable';
 
 import { useAnchorProgram } from '../providers/anchor';
@@ -194,8 +195,8 @@ function useEnrichedOsecInfo({
 
             try {
                 const [pda] = PublicKey.findProgramAddressSync(
-                    [Buffer.from('otter_verify'), new PublicKey(osecInfo.signer).toBuffer(), programId.toBuffer()],
-                    new PublicKey(VERIFY_PROGRAM_ID)
+                    [Buffer.from('otter_verify'), addressToPublicKey(toAddress(osecInfo.signer)).toBuffer(), programId.toBuffer()],
+                    addressToPublicKey(toAddress(VERIFY_PROGRAM_ID))
                 );
 
                 const pdaAccountInfo = await (accountAnchorProgram.account as any).buildParams.fetch(pda);

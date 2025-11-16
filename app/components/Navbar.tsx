@@ -9,7 +9,6 @@ import { useSelectedLayoutSegment, useSelectedLayoutSegments } from 'next/naviga
 import React, { ReactNode } from 'react';
 
 import { ClusterStatusButton } from './ClusterStatusButton';
-import { ThemeToggle } from './ThemeToggle';
 
 export interface INavbarProps {
     children?: ReactNode;
@@ -147,7 +146,6 @@ export function Navbar({ children }: INavbarProps) {
                         </ul>
 
                         <div className="ml-4 flex items-center gap-2 border-l border-gray-200 pl-4 dark:border-gray-700">
-                            <ThemeToggle />
                             <ClusterStatusButton />
                         </div>
                     </div>
@@ -236,7 +234,6 @@ export function Navbar({ children }: INavbarProps) {
                     </ul>
 
                     <div className="mt-4 flex items-center gap-2 border-t border-gray-200 pt-4 dark:border-gray-700">
-                        <ThemeToggle />
                         <ClusterStatusButton />
                     </div>
                 </div>

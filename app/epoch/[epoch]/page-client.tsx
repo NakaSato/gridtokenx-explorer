@@ -1,5 +1,6 @@
 'use client';
 
+import React, { Suspense } from 'react';
 import { Epoch } from '@components/common/Epoch';
 import { ErrorCard } from '@components/common/ErrorCard';
 import { LoadingCard } from '@components/common/LoadingCard';
@@ -10,7 +11,6 @@ import { useCluster } from '@providers/cluster';
 import { useEpoch, useFetchEpoch } from '@providers/epoch';
 import { ClusterStatus } from '@utils/cluster';
 import { displayTimestampUtc } from '@utils/date';
-import React from 'react';
 
 import { getFirstSlotInEpoch, getLastSlotInEpoch } from '@/app/utils/epoch-schedule';
 
@@ -29,15 +29,25 @@ export default function EpochDetailsPageClient({ params: { epoch } }: Props) {
     }
 
     return (
-        <div className="container mx-auto px-4 -mt-12">
-            <div className="header">
-                <div className="header-body">
-                    <h6 className="header-pretitle">Details</h6>
-                    <h2 className="header-title">Epoch</h2>
+        <Suspense
+            fallback={
+                <div className="container mx-auto px-4 -mt-12">
+                    <div className="border-primary h-12 w-12 animate-spin rounded-full border-b-2" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div>
                 </div>
+            }
+        >
+            <div className="container mx-auto px-4 -mt-12">
+                <div className="header">
+                    <div className="header-body">
+                        <h6 className="header-pretitle">Details</h6>
+                        <h2 className="header-title">Epoch</h2>
+                    </div>
+                </div>
+                {output}
             </div>
-            {output}
-        </div>
+        </Suspense>
     );
 }
 

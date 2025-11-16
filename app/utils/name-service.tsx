@@ -3,6 +3,7 @@
 import { getAllDomains, NAME_PROGRAM_ID, reverseLookup } from '@bonfida/spl-name-service';
 import { useCluster } from '@providers/cluster';
 import { Connection, PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import { Cluster } from '@utils/cluster';
 import { useEffect, useState } from 'react';
 
@@ -10,7 +11,7 @@ import { DomainInfo, SOL_TLD_AUTHORITY } from './domain-info';
 
 async function getUserDomainAddresses(connection: Connection, userAddress: string): Promise<PublicKey[]> {
     // Use getAllDomains instead of getFilteredProgramAccounts
-    const userPublicKey = new PublicKey(userAddress);
+    const userPublicKey = addressToPublicKey(toAddress(userAddress));
     const accounts = await getAllDomains(connection, userPublicKey);
     return accounts;
 }

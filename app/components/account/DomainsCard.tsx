@@ -3,6 +3,7 @@
 import { Address } from '@components/common/Address';
 import { ErrorCard } from '@components/common/ErrorCard';
 import { LoadingCard } from '@components/common/LoadingCard';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { useUserDomains } from '@utils/name-service';
 import React from 'react';
 

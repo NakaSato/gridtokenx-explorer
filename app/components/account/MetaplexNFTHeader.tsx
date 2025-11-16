@@ -4,6 +4,7 @@ import { ArtContent } from '@components/common/NFTArt';
 // import { programs } from '@metaplex/js';
 import { NFTData, useFetchAccountInfo, useMintAccountInfo } from '@providers/accounts';
 import { EditionInfo } from '@providers/accounts/utils/getEditionInfo';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { useClusterPath } from '@utils/url';
 import Link from 'next/link';
@@ -19,7 +20,7 @@ export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; addr
 
     React.useEffect(() => {
         if (collectionAddress && !collectionMintInfo) {
-            fetchAccountInfo(new PublicKey(collectionAddress), 'parsed');
+            fetchAccountInfo(addressToPublicKey(toAddress(collectionAddress)), 'parsed');
         }
     }, [fetchAccountInfo, collectionAddress]); // eslint-disablline react-hooks/exhaustivdeps
 

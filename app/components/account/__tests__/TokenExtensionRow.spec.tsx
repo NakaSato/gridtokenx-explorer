@@ -1,5 +1,6 @@
 import { TableCardBody } from '@components/common/TableCardBody';
 import { PublicKey } from '@solana/web3.js';
+// Note: Test files may continue using PublicKey for mock data
 import { render, screen } from '@testing-library/react';
 import { useSearchParams } from 'next/navigation';
 import { describe, vi } from 'vitest';

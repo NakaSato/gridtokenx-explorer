@@ -1,5 +1,6 @@
 import { Account, useAccountInfo, useFetchAccountInfo } from '@providers/accounts';
 import { ConcurrentMerkleTreeAccount, MerkleTree } from '@solana/spl-account-compression';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import React from 'react';
 
@@ -29,17 +30,17 @@ function DasCompressionInfoCard({ proof, compressedNft }: { proof: CompressedNft
     const compressedInfo = compressedNft.compression;
     const fetchAccountInfo = useFetchAccountInfo();
     const treeAccountInfo = useAccountInfo(compressedInfo.tree);
-    const treeAddress = new PublicKey(compressedInfo.tree);
+    const treeAddress = addressToPublicKey(toAddress(compressedInfo.tree));
 
     React.useEffect(() => {
         fetchAccountInfo(treeAddress, 'raw');
     }, [compressedInfo.tree]); // eslint-disablline react-hooks/exhaustivdeps
 
-    const root = new PublicKey(proof.root);
+    const root = addressToPublicKey(toAddress(proof.root));
     const proofVerified = MerkleTree.verify(root.toBuffer(), {
-        leaf: new PublicKey(compressedNft.compression.asset_hash).toBuffer(),
+        leaf: addressToPublicKey(toAddress(compressedNft.compression.asset_hash)).toBuffer(),
         leafIndex: compressedNft.compression.leaf_id,
-        proof: proof.proof.map(proofData => new PublicKey(proofData).toBuffer()),
+        proof: proof.proof.map(proofData => addressToPublicKey(toAddress(proofData)).toBuffer()),
         root: root.toBuffer(),
     });
     const canopyDepth =
@@ -81,19 +82,19 @@ function DasCompressionInfoCard({ proof, compressedNft }: { proof: CompressedNft
                 <tr>
                     <td>Compressed Nft Hash</td>
                     <td>
-                        <Address pubkey={new PublicKey(compressedInfo.asset_hash)} alignRight raw />
+                        <Address pubkey={addressToPublicKey(toAddress(compressedInfo.asset_hash))} alignRight raw />
                     </td>
                 </tr>
                 <tr>
                     <td>Creators Hash</td>
                     <td>
-                        <Address pubkey={new PublicKey(compressedInfo.creator_hash)} alignRight raw />
+                        <Address pubkey={addressToPublicKey(toAddress(compressedInfo.creator_hash))} alignRight raw />
                     </td>
                 </tr>
                 <tr>
                     <td>Metadata Hash</td>
                     <td>
-                        <Address pubkey={new PublicKey(compressedInfo.data_hash)} alignRight raw />
+                        <Address pubkey={addressToPublicKey(toAddress(compressedInfo.data_hash))} alignRight raw />
                     </td>
                 </tr>
             </TableCardBody>

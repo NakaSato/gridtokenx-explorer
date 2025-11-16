@@ -1,8 +1,9 @@
 'use client';
 
 import { useCluster } from '@providers/cluster';
-import { AccountBalancePair, Connection } from '@solana/web3.js';
+import { AccountBalancePair } from '@solana/web3.js';
 import { Cluster, ClusterStatus } from '@utils/cluster';
+import { createRpc, bigintToNumber, addressToPublicKey } from '@utils/rpc';
 import React from 'react';
 
 export enum Status {
@@ -54,15 +55,27 @@ async function fetch(dispatch: Dispatch, cluster: Cluster, url: string) {
     dispatch(Status.Connecting);
 
     try {
-        const connection = new Connection(url, 'finalized');
+        const rpc = createRpc(url);
 
-        const [total, circulating, nonCirculating] = (
-            await Promise.all([
-                connection.getLargestAccounts(),
-                connection.getLargestAccounts({ filter: 'circulating' }),
-                connection.getLargestAccounts({ filter: 'nonCirculating' }),
-            ])
-        ).map(response => response.value);
+        const [totalResponse, circulatingResponse, nonCirculatingResponse] = await Promise.all([
+            rpc.getLargestAccounts({ commitment: 'finalized' }).send(),
+            rpc.getLargestAccounts({ commitment: 'finalized', filter: 'circulating' }).send(),
+            rpc.getLargestAccounts({ commitment: 'finalized', filter: 'nonCirculating' }).send(),
+        ]);
+
+        // Convert from kit types to legacy types
+        const total: AccountBalancePair[] = totalResponse.map(item => ({
+            address: addressToPublicKey(item.address),
+            lamports: bigintToNumber(item.lamports),
+        }));
+        const circulating: AccountBalancePair[] = circulatingResponse.map(item => ({
+            address: addressToPublicKey(item.address),
+            lamports: bigintToNumber(item.lamports),
+        }));
+        const nonCirculating: AccountBalancePair[] = nonCirculatingResponse.map(item => ({
+            address: addressToPublicKey(item.address),
+            lamports: bigintToNumber(item.lamports),
+        }));
 
         // Update state if still connecting
         dispatch(state => {

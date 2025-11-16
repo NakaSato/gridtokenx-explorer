@@ -4,8 +4,9 @@ import { useAccountInfo, useFetchAccountInfo } from '@providers/accounts';
 import * as Cache from '@providers/cache';
 import { ActionType, FetchStatus } from '@providers/cache';
 import { useCluster } from '@providers/cluster';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
+import { createRpc, toAddress, addressToPublicKey } from '@utils/rpc';
 import { TokenAccountInfo } from '@validators/accounts/token';
 import React from 'react';
 import { create } from 'superstruct';
@@ -65,23 +66,38 @@ async function fetchAccountTokens(dispatch: Dispatch, pubkey: PublicKey, cluster
     let status;
     let data;
     try {
-        const { value: tokenAccounts } = await new Connection(url, 'processed').getParsedTokenAccountsByOwner(pubkey, {
-            programId: TOKEN_PROGRAM_ID,
-        });
-        const { value: token2022Accounts } = await new Connection(url, 'processed').getParsedTokenAccountsByOwner(
-            pubkey,
-            {
-                programId: TOKEN_2022_PROGRAM_ID,
-            }
-        );
+        const rpc = createRpc(url);
+        const address = toAddress(pubkey);
+        
+        // Fetch token accounts for both TOKEN_PROGRAM_ID and TOKEN_2022_PROGRAM_ID
+        const [tokenAccountsResponse, token2022AccountsResponse] = await Promise.all([
+            rpc.getTokenAccountsByOwner(
+                address,
+                { programId: toAddress(TOKEN_PROGRAM_ID) },
+                { encoding: 'jsonParsed' }
+            ).send(),
+            rpc.getTokenAccountsByOwner(
+                address,
+                { programId: toAddress(TOKEN_2022_PROGRAM_ID) },
+                { encoding: 'jsonParsed' }
+            ).send(),
+        ]);
 
-        const tokens: TokenInfoWithPubkey[] = tokenAccounts
-            .concat(token2022Accounts)
+        // Combine and convert token accounts
+        const allAccounts = [
+            ...Array.from(tokenAccountsResponse.value),
+            ...Array.from(token2022AccountsResponse.value),
+        ];
+
+        const tokens: TokenInfoWithPubkey[] = allAccounts
             .slice(0, 101)
             .map(accountInfo => {
                 const parsedInfo = accountInfo.account.data.parsed.info;
                 const info = create(parsedInfo, TokenAccountInfo);
-                return { info, pubkey: accountInfo.pubkey };
+                return { 
+                    info, 
+                    pubkey: addressToPublicKey(accountInfo.pubkey) 
+                };
             });
 
         // Fetch symbols and logos for tokens

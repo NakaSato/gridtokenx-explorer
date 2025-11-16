@@ -191,20 +191,29 @@ export function SolanaClusterStatsProvider({ children }: Props) {
         const getBlockTime = async () => {
             if (lastSlot) {
                 try {
-                    const blockTime = await rpc.getBlockTime(lastSlot).send();
+                    // Ensure slot is BigInt for getBlockTime API
+                    const slotAsBigInt = typeof lastSlot === 'bigint' ? lastSlot : BigInt(lastSlot);
+                    const blockTime = await rpc.getBlockTime(slotAsBigInt).send();
 
                     if (stale) {
                         return;
                     }
-                    dispatchDashboardInfo({
-                        data: {
-                            blockTime: Number(blockTime) * 1000,
-                            slot: lastSlot,
-                        },
-                        type: DashboardInfoActionType.SetLastBlockTime,
-                    });
+                    
+                    // Only update if we got a valid timestamp
+                    if (blockTime !== null) {
+                        dispatchDashboardInfo({
+                            data: {
+                                blockTime: Number(blockTime) * 1000,
+                                slot: lastSlot,
+                            },
+                            type: DashboardInfoActionType.SetLastBlockTime,
+                        });
+                    }
                 } catch (error) {
-                    // let this fail gracefully
+                    // let this fail gracefully - don't set stats as failed for blockTime alone
+                    if (cluster !== Cluster.Custom) {
+                        console.warn('Failed to fetch block time:', error);
+                    }
                 }
             }
         };
@@ -257,7 +266,7 @@ export function SolanaClusterStatsProvider({ children }: Props) {
             data: 'Cluster stats timed out',
             type: PerformanceInfoActionType.SetError,
         });
-        console.error('Cluster stats timed out');
+        console.warn('Cluster stats timed out - RPC endpoint may be slow or unavailable');
         setActive(false);
     }, []);
 

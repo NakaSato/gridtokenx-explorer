@@ -3,6 +3,7 @@
 // import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 import { useCluster } from '@providers/cluster';
 import { PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import { displayAddress, TokenLabelInfo } from '@utils/tx';
 import { useClusterPath } from '@utils/url';
 import Link from 'next/link';
@@ -146,7 +147,7 @@ const useTokenInfo = (fetchTokenLabelInfo: boolean | undefined, pubkey: string) 
             if (!fetchTokenLabelInfo) return;
             if (!info) {
                 try {
-                    const token = await getTokenInfoWithoutOnChainFallback(new PublicKey(pubkey), cluster);
+                    const token = await getTokenInfoWithoutOnChainFallback(addressToPublicKey(toAddress(pubkey)), cluster);
                     if (isMounted()) {
                         setInfo(token);
                     }

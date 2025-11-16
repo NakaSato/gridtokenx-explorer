@@ -162,7 +162,7 @@ export function Ed25519DetailsCard(props: DetailsProps) {
                             <td>Public Key</td>
                             <td className="lg:text-right">
                                 {pubkey ? (
-                                    <Address pubkey={new PublicKey(pubkey)} alignRight link />
+                                    <Address pubkey={addressToPublicKey(toAddress(pubkey))} alignRight link />
                                 ) : (
                                     'Invalid reference'
                                 )}

@@ -1,6 +1,7 @@
 'use client';
 
 import { PublicKey, Keypair } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import React from 'react';
 import { useCluster } from '@providers/cluster';
 import { Cluster, ClusterStatus } from '@utils/cluster';
@@ -30,7 +31,7 @@ export function AnchorPublicKeyDisplay({
     const { cluster, url, status } = useCluster();
 
     // Convert string to PublicKey if needed
-    const pubkey = typeof publicKey === 'string' ? new PublicKey(publicKey) : publicKey;
+    const pubkey = typeof publicKey === 'string' ? addressToPublicKey(toAddress(publicKey)) : publicKey;
     const pubkeyString = pubkey.toBase58();
 
     const isAnchorNetwork = url.includes('localhost') || url.includes('127.0.0.1') || cluster === Cluster.Custom;
@@ -247,7 +248,7 @@ export function AnchorProgramKeyDisplay({
                     <small className="text-muted-foreground">Program ID:</small>
                     <div className="mt-1 flex items-center gap-2">
                         <Address
-                            pubkey={typeof programId === 'string' ? new PublicKey(programId) : programId}
+                            pubkey={typeof programId === 'string' ? addressToPublicKey(toAddress(programId)) : programId}
                             link={true}
                             truncate={false}
                             alignRight={false}

@@ -7,6 +7,7 @@ import { Signature } from '@components/common/Signature';
 import { useAccountHistory } from '@providers/accounts';
 import { useFetchAccountHistory } from '@providers/accounts/history';
 import { FetchStatus } from '@providers/cache';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { ParsedInstruction, ParsedTransactionWithMeta, PartiallyDecodedInstruction, PublicKey } from '@solana/web3.js';
 import { getTokenInstructionName, InstructionContainer } from '@utils/instruction';
 import React, { useMemo } from 'react';
@@ -16,7 +17,7 @@ import { getTransactionRows, HistoryCardFooter, HistoryCardHeader } from '../His
 import { extractMintDetails, MintDetails } from './common';
 
 export function TokenInstructionsCard({ address }: { address: string }) {
-    const pubkey = useMemo(() => new PublicKey(address), [address]);
+    const pubkey = useMemo(() => addressToPublicKey(toAddress(address)), [address]);
     const history = useAccountHistory(address);
     const fetchAccountHistory = useFetchAccountHistory();
     const refresh = () => fetchAccountHistory(pubkey, true, true);

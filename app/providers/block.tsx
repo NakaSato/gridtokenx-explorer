@@ -2,8 +2,9 @@
 
 import * as Cache from '@providers/cache';
 import { useCluster } from '@providers/cluster';
-import { Connection, PublicKey, VersionedBlockResponse } from '@solana/web3.js';
+import { PublicKey, VersionedBlockResponse } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
+import { createRpc, bigintToNumber, addressToPublicKey } from '@utils/rpc';
 import React from 'react';
 
 export enum FetchStatus {
@@ -70,22 +71,28 @@ export async function fetchBlock(dispatch: Dispatch, url: string, cluster: Clust
     let data: Block | undefined = undefined;
 
     try {
-        const connection = new Connection(url, 'confirmed');
-        const block = await connection.getBlock(slot, {
+        const rpc = createRpc(url);
+        const blockResponse = await rpc.getBlock(BigInt(slot), {
+            commitment: 'confirmed',
             maxSupportedTransactionVersion: 0,
-        });
-        if (block === null) {
+        }).send();
+        if (blockResponse === null) {
             data = {};
             status = FetchStatus.Fetched;
         } else {
-            const childSlot = (await connection.getBlocks(slot + 1, slot + 100)).shift();
+            // Convert kit response to legacy VersionedBlockResponse format
+            const block = blockResponse as unknown as VersionedBlockResponse;
+            const childSlots = await rpc.getBlocks(BigInt(slot + 1), BigInt(slot + 100), { commitment: 'confirmed' }).send();
+            const childSlotArray = Array.from(childSlots);
+            const childSlot = childSlotArray.length > 0 ? bigintToNumber(childSlotArray[0]) : undefined;
             const firstLeaderSlot = block.parentSlot;
 
             let leaders: PublicKey[] = [];
             try {
                 const lastLeaderSlot = childSlot !== undefined ? childSlot : slot;
                 const slotLeadersLimit = lastLeaderSlot - block.parentSlot + 1;
-                leaders = await connection.getSlotLeaders(firstLeaderSlot, slotLeadersLimit);
+                const leaderAddresses = await rpc.getSlotLeaders(BigInt(firstLeaderSlot), slotLeadersLimit).send();
+                leaders = leaderAddresses.map(addr => addressToPublicKey(addr));
             } catch (err) {
                 // ignore errors
             }

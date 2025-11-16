@@ -1,4 +1,5 @@
 import { AddressLookupTableProgram, PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 
 import { Address } from '@/app/components/common/Address';
 import { InstructionCard } from '@/app/components/instruction/InstructionCard';
@@ -44,7 +45,7 @@ export function ExtendLookupTableDetailsCard(props: InstructionDetailsProps & { 
                                 <tr key={address.toString()}>
                                     <td className="w-1 font-mono">{index}</td>
                                     <td className="lg:text-right">
-                                        <Address pubkey={new PublicKey(address)} alignRight link />
+                                        <Address pubkey={addressToPublicKey(toAddress(address))} alignRight link />
                                     </td>
                                 </tr>
                             ))}

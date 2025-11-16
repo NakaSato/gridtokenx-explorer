@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@components/shared/ui/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/shared/ui/table';
 import { AnchorEventDecoder } from '@components/transaction/AnchorEventDecoder';
 import { PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import React from 'react';
 import { EnhancedTransaction } from './RealtimeTransactionTable';
 
@@ -90,7 +91,7 @@ export function TransactionDetailsCard({ tx, onClose }: TransactionDetailsCardPr
                                             #{idx + 1}
                                         </Badge>
                                         <div className="min-w-0 flex-1">
-                                            <Address pubkey={new PublicKey(programId)} link />
+                                            <Address pubkey={addressToPublicKey(toAddress(programId))} link />
                                         </div>
                                     </div>
                                     <Badge variant="secondary" className="ml-3 font-medium">

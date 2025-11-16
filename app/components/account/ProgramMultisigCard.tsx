@@ -1,3 +1,4 @@
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { Suspense } from 'react';
 
@@ -63,7 +64,7 @@ function ProgramMultisigCardInner({ programAuthority }: { programAuthority: Publ
                     <td className="lg:text-right">
                         <Address
                             pubkey={
-                                new PublicKey(squadMapInfo?.version === 'v4' ? SQUADS_V4_ADDRESS : SQUADS_V3_ADDRESS)
+                                addressToPublicKey(toAddress(squadMapInfo?.version === 'v4' ? SQUADS_V4_ADDRESS : SQUADS_V3_ADDRESS))
                             }
                             alignRight
                             link
@@ -74,7 +75,7 @@ function ProgramMultisigCardInner({ programAuthority }: { programAuthority: Publ
                     <td>Multisig Account</td>
                     <td className="lg:text-right">
                         {squadMapInfo?.isSquad ? (
-                            <Address pubkey={new PublicKey(squadMapInfo.multisig)} alignRight link />
+                            <Address pubkey={addressToPublicKey(toAddress(squadMapInfo.multisig))} alignRight link />
                         ) : null}
                     </td>
                 </tr>

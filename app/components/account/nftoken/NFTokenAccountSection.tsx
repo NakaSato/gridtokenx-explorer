@@ -4,6 +4,7 @@ import { Account, useFetchAccountInfo } from '@providers/accounts';
 import { Button } from '@components/shared/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@components/shared/ui/card';
 import { PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import { Suspense, useState } from 'react';
 import { RefreshCw } from 'react-feather';
 
@@ -30,7 +31,7 @@ export function NFTokenAccountSection({ account }: { account: Account }) {
 
 const NFTCard = ({ nft }: { nft: NftokenTypes.NftAccount }) => {
     const fetchInfo = useFetchAccountInfo();
-    const refresh = () => fetchInfo(new PublicKey(nft.address), 'parsed');
+    const refresh = () => fetchInfo(addressToPublicKey(toAddress(nft.address)), 'parsed');
 
     return (
         <Card>
@@ -48,26 +49,26 @@ const NFTCard = ({ nft }: { nft: NftokenTypes.NftAccount }) => {
                     <tr>
                         <td>Address</td>
                         <td className="lg:text-right">
-                            <Address pubkey={new PublicKey(nft.address)} alignRight raw />
+                            <Address pubkey={addressToPublicKey(toAddress(nft.address))} alignRight raw />
                         </td>
                     </tr>
                     <tr>
                         <td>Authority</td>
                         <td className="lg:text-right">
-                            <Address pubkey={new PublicKey(nft.authority)} alignRight link />
+                            <Address pubkey={addressToPublicKey(toAddress(nft.authority))} alignRight link />
                         </td>
                     </tr>
                     <tr>
                         <td>Holder</td>
                         <td className="lg:text-right">
-                            <Address pubkey={new PublicKey(nft.holder)} alignRight link />
+                            <Address pubkey={addressToPublicKey(toAddress(nft.holder))} alignRight link />
                         </td>
                     </tr>
                     <tr>
                         <td>Delegate</td>
                         <td className="lg:text-right">
                             {nft.delegate ? (
-                                <Address pubkey={new PublicKey(nft.delegate)} alignRight link />
+                                <Address pubkey={addressToPublicKey(toAddress(nft.delegate))} alignRight link />
                             ) : (
                                 'Not Delegated'
                             )}
@@ -77,7 +78,7 @@ const NFTCard = ({ nft }: { nft: NftokenTypes.NftAccount }) => {
                         <td>Collection</td>
                         <td className="lg:text-right">
                             {nft.collection ? (
-                                <Address pubkey={new PublicKey(nft.collection)} alignRight link />
+                                <Address pubkey={addressToPublicKey(toAddress(nft.collection))} alignRight link />
                             ) : (
                                 'No Collection'
                             )}
@@ -121,7 +122,7 @@ export const NftokenImage = ({ url, size }: { url: string | undefined; size: num
 
 const CollectionCard = ({ collection }: { collection: NftokenTypes.CollectionAccount }) => {
     const fetchInfo = useFetchAccountInfo();
-    const refresh = () => fetchInfo(new PublicKey(collection.address), 'parsed');
+    const refresh = () => fetchInfo(addressToPublicKey(toAddress(collection.address)), 'parsed');
 
     return (
         <Card>
@@ -139,13 +140,13 @@ const CollectionCard = ({ collection }: { collection: NftokenTypes.CollectionAcc
                     <tr>
                         <td>Address</td>
                         <td className="lg:text-right">
-                            <Address pubkey={new PublicKey(collection.address)} alignRight raw />
+                            <Address pubkey={addressToPublicKey(toAddress(collection.address))} alignRight raw />
                         </td>
                     </tr>
                     <tr>
                         <td>Authority</td>
                         <td className="lg:text-right">
-                            <Address pubkey={new PublicKey(collection.authority)} alignRight link />
+                            <Address pubkey={addressToPublicKey(toAddress(collection.authority))} alignRight link />
                         </td>
                     </tr>
                     <tr>

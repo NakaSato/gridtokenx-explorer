@@ -11,6 +11,7 @@ import { useFetchAccountHistory } from '@providers/accounts/history';
 import { useScaledUiAmountForMint } from '@providers/accounts/tokens';
 import { FetchStatus } from '@providers/cache';
 import { useCluster } from '@providers/cluster';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { ParsedInstruction, ParsedTransactionWithMeta, PartiallyDecodedInstruction, PublicKey } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
 import { normalizeTokenAmount } from '@utils/index';
@@ -44,7 +45,7 @@ type TransferData = {
 };
 
 async function fetchTokenInfo([_, address, cluster, url]: ['get-token-info', string, Cluster, string]) {
-    return await getTokenInfo(new PublicKey(address), cluster, url);
+    return await getTokenInfo(addressToPublicKey(toAddress(address)), cluster, url);
 }
 
 function TransferRow({
@@ -103,7 +104,7 @@ function TransferRow({
 
 export function TokenTransfersCard({ address }: { address: string }) {
     const { cluster, url } = useCluster();
-    const pubkey = useMemo(() => new PublicKey(address), [address]);
+    const pubkey = useMemo(() => addressToPublicKey(toAddress(address)), [address]);
     const history = useAccountHistory(address);
     const fetchAccountHistory = useFetchAccountHistory();
     const refresh = () => fetchAccountHistory(pubkey, true, true);

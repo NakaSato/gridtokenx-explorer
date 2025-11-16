@@ -1,4 +1,4 @@
-import { Address } from '@components/common/Address';
+import { Address as AddressComponent } from '@components/common/Address';
 import { ErrorCard } from '@components/common/ErrorCard';
 import { Signature } from '@components/common/Signature';
 import { SolBalance } from '@components/common/SolBalance';
@@ -12,6 +12,7 @@ import {
 } from '@components/shared/ui/dropdown-menu';
 import { StatusBadge } from '@components/shared/StatusBadge';
 import { useCluster } from '@providers/cluster';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import {
     ConfirmedTransactionMeta,
     PublicKey,
@@ -36,11 +37,13 @@ const useQueryProgramFilter = (query: ReadonlyURLSearchParams): string => {
     return filter || '';
 };
 
-const useQueryAccountFilter = (query: ReadonlyURLSearchParams): PublicKey | null => {
+const useQueryAccountFilter = (query: ReadonlyURLSearchParams): string | null => {
     const filter = query.get('accountFilter');
     if (filter !== null) {
         try {
-            return new PublicKey(filter);
+            // Validate it's a valid address
+            toAddress(filter);
+            return filter;
         } catch {
             /* empty */
         }
@@ -172,7 +175,7 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                 return accountKeys
                     .keySegments()
                     .flat()
-                    .find(key => key.equals(accountFilter));
+                    .find(key => key.toBase58() === accountFilter);
             });
 
         const showComputeUnits = filteredTxs.every(tx => tx.computeUnits !== undefined);
@@ -219,7 +222,7 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                     <div className="p-6">
                         Showing transactions which load account:
                         <div className="ml-2 inline-block">
-                            <Address pubkey={accountFilter} link />
+                            <AddressComponent pubkey={addressToPublicKey(toAddress(accountFilter))} link />
                         </div>
                     </div>
                 )}
@@ -359,7 +362,7 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                                                 : entries.map(([programId, count], i) => {
                                                       return (
                                                           <div key={i} className="flex items-center">
-                                                              <Address pubkey={new PublicKey(programId)} link />
+                                                              <AddressComponent pubkey={addressToPublicKey(toAddress(programId))} link />
                                                               <span className="text-muted-foreground ml-2">{`(${count})`}</span>
                                                           </div>
                                                       );

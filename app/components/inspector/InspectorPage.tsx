@@ -9,6 +9,7 @@ import { FetchStatus } from '@providers/cache';
 import { useFetchRawTransaction, useRawTransactionDetails } from '@providers/transactions/raw';
 import usePrevious from '@react-hook/previous';
 import { Connection, MessageV0, PACKET_DATA_SIZE, PublicKey, VersionedMessage } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import { generated, PROGRAM_ADDRESS as SQUADS_V4_PROGRAM_ADDRESS } from '@sqds/multisig';
 const { VaultTransaction } = generated;
 
@@ -111,7 +112,7 @@ function decodeUrlParams(
     if (typeof squadsTxParam === 'string') {
         try {
             // Validate that it's a valid public key
-            new PublicKey(squadsTxParam);
+            addressToPublicKey(toAddress(squadsTxParam));
             return [{ account: squadsTxParam }, params, refreshUrl];
         } catch (err) {
             params.delete('squadsTx');
@@ -166,7 +167,7 @@ function SquadsProposalInspectorCard({ account, onClear }: { account: string; on
         const connection = new Connection(url);
         try {
             // First check if the account exists and is owned by the Squads program
-            const accountInfo = await connection.getAccountInfo(new PublicKey(account), 'confirmed');
+            const accountInfo = await connection.getAccountInfo(addressToPublicKey(toAddress(account)), 'confirmed');
 
             if (!accountInfo) {
                 throw new Error('Account not found');
@@ -179,7 +180,7 @@ function SquadsProposalInspectorCard({ account, onClear }: { account: string; on
                 throw new Error(`Account ${account} is not a valid Squads transaction account`);
             }
 
-            return await VaultTransaction.fromAccountAddress(connection, new PublicKey(account), 'confirmed');
+            return await VaultTransaction.fromAccountAddress(connection, addressToPublicKey(toAddress(account)), 'confirmed');
         } catch (err) {
             throw err instanceof Error ? err : new Error('Failed to fetch account data');
         }

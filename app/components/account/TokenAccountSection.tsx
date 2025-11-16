@@ -8,6 +8,7 @@ import { Account, NFTData, TokenProgramData, useFetchAccountInfo } from '@provid
 import { TOKEN_2022_PROGRAM_ID, useScaledUiAmountForMint } from '@providers/accounts/tokens';
 import isMetaplexNFT from '@providers/accounts/utils/isMetaplexNFT';
 import { useCluster } from '@providers/cluster';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
 import { displayTimestamp } from '@utils/date';
@@ -313,7 +314,7 @@ function NonFungibleTokenMintAccountCard({
                     <tr>
                         <td>Verified Collection Address</td>
                         <td className="lg:text-right">
-                            <Address pubkey={new PublicKey(collection.key)} alignRight link />
+                            <Address pubkey={addressToPublicKey(toAddress(collection.key))} alignRight link />
                         </td>
                     </tr>
                 )}
@@ -336,7 +337,7 @@ function NonFungibleTokenMintAccountCard({
                 <tr>
                     <td>Update Authority</td>
                     <td className="lg:text-right">
-                        <Address pubkey={new PublicKey(nftData.metadata.updateAuthority)} alignRight link />
+                        <Address pubkey={addressToPublicKey(toAddress(nftData.metadata.updateAuthority))} alignRight link />
                     </td>
                 </tr>
                 {nftData?.json && nftData.json.external_url && (
@@ -363,7 +364,7 @@ function NonFungibleTokenMintAccountCard({
 }
 
 async function fetchTokenInfo([_, address, cluster, url]: ['get-token-info', string, Cluster, string]) {
-    return await getTokenInfo(new PublicKey(address), cluster, url);
+    return await getTokenInfo(addressToPublicKey(toAddress(address)), cluster, url);
 }
 
 function TokenAccountCard({ account, info }: { account: Account; info: TokenAccountInfo }) {

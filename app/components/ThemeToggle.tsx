@@ -5,50 +5,95 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@components/shared/ui/dropdown-menu';
 import { useTheme } from '@providers/theme';
-import React from 'react';
+import React, { useState } from 'react';
 
 export function ThemeToggle() {
-    const { theme, setTheme } = useTheme();
+    const { theme, setTheme, resolvedTheme } = useTheme();
+    const [isOpen, setIsOpen] = useState(false);
 
     const themes = [
-        { value: 'light' as const, label: 'Light', icon: SunIcon },
-        { value: 'dark' as const, label: 'Dark', icon: MoonIcon },
-        { value: 'system' as const, label: 'System', icon: ComputerIcon },
+        { 
+            value: 'light' as const, 
+            label: 'Light', 
+            icon: SunIcon,
+            description: 'Always use light theme'
+        },
+        { 
+            value: 'dark' as const, 
+            label: 'Dark', 
+            icon: MoonIcon,
+            description: 'Always use dark theme'
+        },
+        { 
+            value: 'system' as const, 
+            label: 'System', 
+            icon: ComputerIcon,
+            description: `Follow system preference (${resolvedTheme})`
+        },
     ];
 
     const currentTheme = themes.find(t => t.value === theme) || themes[2];
     const Icon = currentTheme.icon;
 
+    const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
+        setTheme(newTheme);
+        setIsOpen(false);
+    };
+
     return (
-        <DropdownMenu>
+        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Toggle theme">
-                    <Icon />
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    aria-label="Toggle theme"
+                    className="relative group transition-all duration-200 hover:scale-110"
+                >
+                    <div className="relative">
+                        <Icon />
+                        <div className="absolute -bottom-1 -right-1 h-2 w-2 rounded-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    </div>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-36">
+            <DropdownMenuContent align="end" className="w-48">
+                <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
+                    Theme
+                </div>
+                <DropdownMenuSeparator />
                 {themes.map(t => {
                     const ThemeIcon = t.icon;
+                    const isActive = theme === t.value;
+                    
                     return (
                         <DropdownMenuItem
                             key={t.value}
-                            onClick={() => setTheme(t.value)}
-                            className={theme === t.value ? 'bg-accent' : ''}
+                            onClick={() => handleThemeChange(t.value)}
+                            className={`cursor-pointer transition-colors duration-200 ${
+                                isActive 
+                                    ? 'bg-primary/10 text-primary font-medium' 
+                                    : 'hover:bg-accent'
+                            }`}
                         >
-                            <ThemeIcon />
-                            {t.label}
-                            {theme === t.value && (
-                                <svg className="ml-auto h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            )}
+                            <div className="flex items-center gap-3 flex-1">
+                                <div className={`p-1 rounded-md ${isActive ? 'bg-primary/20' : 'bg-muted'}`}>
+                                    <ThemeIcon />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="font-medium">{t.label}</div>
+                                    <div className="text-xs text-muted-foreground">
+                                        {t.description}
+                                    </div>
+                                </div>
+                                {isActive && (
+                                    <div className="ml-auto">
+                                        <div className="h-2 w-2 rounded-full bg-primary"></div>
+                                    </div>
+                                )}
+                            </div>
                         </DropdownMenuItem>
                     );
                 })}

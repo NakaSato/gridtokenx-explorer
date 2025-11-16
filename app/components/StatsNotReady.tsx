@@ -4,7 +4,7 @@ import { useStatsProvider } from '@providers/stats/solanaClusterStats';
 import React from 'react';
 import { RefreshCw } from 'react-feather';
 
-const CLUSTER_STATS_TIMEOUT = 15000; // Increased to 15 seconds to allow for slower network/RPC responses
+const CLUSTER_STATS_TIMEOUT = 30000; // Increased to 30 seconds to accommodate slower RPC endpoints
 
 export function StatsNotReady({ error }: { error: boolean }) {
     const { setTimedOut, retry, active } = useStatsProvider();

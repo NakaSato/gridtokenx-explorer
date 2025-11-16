@@ -15,6 +15,7 @@ import {
     VersionedTransaction,
 } from '@solana/web3.js';
 import { PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import { InstructionLogs, parseProgramLogs } from '@utils/program-logs';
 import React from 'react';
 
@@ -206,8 +207,8 @@ function useSimulator(message: VersionedMessage) {
                         Buffer.from(accountDataPost!, 'base64').length >= 165
                     ) {
                         const accountParsedPost = AccountLayout.decode(Buffer.from(accountDataPost!, 'base64'));
-                        const mint = new PublicKey(accountParsedPost.mint);
-                        const owner = new PublicKey(accountParsedPost.owner);
+                        const mint = addressToPublicKey(toAddress(accountParsedPost.mint));
+                        const owner = addressToPublicKey(toAddress(accountParsedPost.owner));
                         const postRawAmount = Number(accountParsedPost.amount.readBigUInt64LE(0));
 
                         const decimals = mintToDecimals[mint.toBase58()];

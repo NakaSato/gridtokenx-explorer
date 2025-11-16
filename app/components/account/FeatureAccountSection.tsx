@@ -2,6 +2,7 @@ import { Address } from '@components/common/Address';
 import { Slot } from '@components/common/Slot';
 import { TableCardBody } from '@components/common/TableCardBody';
 import { Account } from '@providers/accounts';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { parseFeatureAccount, useFeatureAccount } from '@utils/parseFeatureAccount';
 import Link from 'next/link';
@@ -107,7 +108,7 @@ const BaseFeatureCard = ({
                 <tr>
                     <td>Address</td>
                     <td>
-                        <Address pubkey={new PublicKey(address)} alignRight raw />
+                        <Address pubkey={addressToPublicKey(toAddress(address))} alignRight raw />
                     </td>
                 </tr>
 

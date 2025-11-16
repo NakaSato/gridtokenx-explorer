@@ -3,8 +3,9 @@
 import * as Cache from '@providers/cache';
 import { ActionType, FetchStatus } from '@providers/cache';
 import { useCluster } from '@providers/cluster';
-import { Connection, ParsedTransactionWithMeta, TransactionSignature } from '@solana/web3.js';
+import { ParsedTransactionWithMeta, TransactionSignature } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
+import { createRpc, toLegacyParsedTransaction, toSignature } from '@utils/rpc';
 import React from 'react';
 
 export interface Details {
@@ -44,10 +45,17 @@ async function fetchDetails(dispatch: Dispatch, signature: TransactionSignature,
     let fetchStatus;
     let transactionWithMeta;
     try {
-        transactionWithMeta = await new Connection(url).getParsedTransaction(signature, {
-            commitment: 'confirmed',
-            maxSupportedTransactionVersion: 0,
-        });
+        const rpc = createRpc(url);
+        const kitTransaction = await rpc
+            .getTransaction(toSignature(signature), {
+                commitment: 'confirmed',
+                encoding: 'jsonParsed',
+                maxSupportedTransactionVersion: 0,
+            })
+            .send();
+        
+        // Convert kit response to legacy format for existing components
+        transactionWithMeta = toLegacyParsedTransaction(kitTransaction);
         fetchStatus = FetchStatus.Fetched;
     } catch (error) {
         if (cluster !== Cluster.Custom) {

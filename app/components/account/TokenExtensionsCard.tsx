@@ -3,6 +3,7 @@
 import { AccountHeader } from '@components/common/Account';
 import { useFetchAccountInfo } from '@providers/accounts';
 import { useCluster } from '@providers/cluster';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
 import { useMemo } from 'react';
@@ -17,7 +18,7 @@ import { TokenExtensionsSection } from './TokenExtensionsSection';
 import { ParsedTokenExtension } from './types';
 
 async function fetchTokenInfo([_, address, cluster, url]: ['get-token-info', string, Cluster, string]) {
-    return await getTokenInfo(new PublicKey(address), cluster, url);
+    return await getTokenInfo(addressToPublicKey(toAddress(address)), cluster, url);
 }
 
 export function TokenExtensionsCard({
@@ -48,7 +49,7 @@ export function TokenExtensionsCard({
 
     return (
         <div className="bg-card border rounded-lg shadow-sm">
-            <AccountHeader title="Extensions" refresh={() => refresh(new PublicKey(address), 'parsed')} />
+            <AccountHeader title="Extensions" refresh={() => refresh(addressToPublicKey(toAddress(address)), 'parsed')} />
             <div className="p-0 overflow-x-scroll">
                 <TokenExtensionsSection
                     address={address}

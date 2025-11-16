@@ -1,6 +1,7 @@
-import { Address } from '@components/common/Address';
+import { Address as AddressComponent } from '@components/common/Address';
 import { SolBalance } from '@components/common/SolBalance';
-import { PublicKey, VersionedBlockResponse } from '@solana/web3.js';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
+import { VersionedBlockResponse } from '@solana/web3.js';
 import React from 'react';
 
 const PAGE_SIZE = 10;
@@ -45,7 +46,7 @@ export function BlockRewardsCard({ block }: { block: VersionedBlockResponse }) {
                             return (
                                 <tr key={reward.pubkey + reward.rewardType}>
                                     <td>
-                                        <Address pubkey={new PublicKey(reward.pubkey)} link />
+                                        <AddressComponent pubkey={addressToPublicKey(toAddress(reward.pubkey))} link />
                                     </td>
                                     <td>{reward.rewardType}</td>
                                     <td>

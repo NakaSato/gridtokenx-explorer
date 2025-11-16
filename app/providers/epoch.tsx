@@ -2,8 +2,8 @@
 
 import * as Cache from '@providers/cache';
 import { useCluster } from '@providers/cluster';
-import { Connection } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
+import { createRpc, bigintToNumber } from '@utils/rpc';
 import React from 'react';
 
 import { EpochSchedule, getFirstSlotInEpoch, getLastSlotInEpoch } from '../utils/epoch-schedule';
@@ -78,17 +78,20 @@ export async function fetchEpoch(
     let data: Epoch | undefined = undefined;
 
     try {
-        const connection = new Connection(url, 'confirmed');
+        const rpc = createRpc(url);
         const firstSlot = getFirstSlotInEpoch(epochSchedule, BigInt(epoch));
         const lastSlot = getLastSlotInEpoch(epochSchedule, BigInt(epoch));
         const [firstBlock, lastBlock] = await Promise.all([
             (async () => {
-                const firstBlocks = await connection.getBlocks(Number(firstSlot), Number(firstSlot + 100n));
-                return firstBlocks.shift();
+                const firstBlocks = await rpc.getBlocks(firstSlot, firstSlot + 100n, { commitment: 'confirmed' }).send();
+                const firstBlockArray = Array.from(firstBlocks);
+                return firstBlockArray.length > 0 ? bigintToNumber(firstBlockArray[0]) : undefined;
             })(),
             (async () => {
-                const lastBlocks = await connection.getBlocks(Math.max(0, Number(lastSlot - 100n)), Number(lastSlot));
-                return lastBlocks.pop();
+                const startSlot = lastSlot > 100n ? lastSlot - 100n : 0n;
+                const lastBlocks = await rpc.getBlocks(startSlot, lastSlot, { commitment: 'confirmed' }).send();
+                const lastBlockArray = Array.from(lastBlocks);
+                return lastBlockArray.length > 0 ? bigintToNumber(lastBlockArray[lastBlockArray.length - 1]) : undefined;
             })(),
         ]);
 
@@ -99,8 +102,8 @@ export async function fetchEpoch(
         }
 
         const [firstTimestamp, lastTimestamp] = await Promise.all([
-            connection.getBlockTime(firstBlock),
-            lastBlock ? connection.getBlockTime(lastBlock) : null,
+            rpc.getBlockTime(BigInt(firstBlock)).send().then(t => t !== null ? bigintToNumber(t) : null),
+            lastBlock ? rpc.getBlockTime(BigInt(lastBlock)).send().then(t => t !== null ? bigintToNumber(t) : null) : null,
         ]);
 
         data = {

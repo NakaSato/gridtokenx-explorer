@@ -39,6 +39,7 @@ const nextConfig = {
         };
 
         // Ignore borsh import error - known compatibility issue between web3.js v1 and borsh v2
+        // Ignore bigint bindings warning - pure JS fallback works fine
         config.ignoreWarnings = [
             ...(config.ignoreWarnings || []),
             {
@@ -46,6 +47,7 @@ const nextConfig = {
                 message: /deserializeUnchecked/,
             },
             /deserializeUnchecked' is not exported from 'borsh'/,
+            /bigint.*Failed to load bindings/,
         ];
 
         if (!isServer) {
@@ -86,6 +88,10 @@ const nextConfig = {
                 'avsc': 'commonjs avsc',
                 // Solflare UTL SDK that uses Metaplex
                 '@solflare-wallet/utl-sdk': 'commonjs @solflare-wallet/utl-sdk',
+                // Mango client packages
+                '@blockworks-foundation/mango-client': 'commonjs @blockworks-foundation/mango-client',
+                '@blockworks-foundation/mango-client/lib/src/client': 'commonjs @blockworks-foundation/mango-client/lib/src/client',
+                '@blockworks-foundation/mango-client/lib/src/index': 'commonjs @blockworks-foundation/mango-client/lib/src/index',
                 // Node.js built-in modules (but NOT buffer - we're polyfilling it)
                 'fs': 'fs',
                 'os': 'os',
@@ -104,6 +110,7 @@ const nextConfig = {
                 '@project-serum/anchor': 'commonjs @project-serum/anchor',
                 '@metaplex-foundation/js': 'commonjs @metaplex-foundation/js',
                 '@bundlr-network/client': 'commonjs @bundlr-network/client',
+                '@blockworks-foundation/mango-client': 'commonjs @blockworks-foundation/mango-client',
                 'avsc': 'commonjs avsc',
             });
         }

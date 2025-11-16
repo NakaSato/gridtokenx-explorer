@@ -4,8 +4,9 @@ import { ActionType } from '@providers/block';
 import * as Cache from '@providers/cache';
 import { FetchStatus } from '@providers/cache';
 import { useCluster } from '@providers/cluster';
-import { Connection, InflationReward, PublicKey } from '@solana/web3.js';
+import { InflationReward, PublicKey } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
+import { createRpc, publicKeyToAddress, bigintToNumber } from '@utils/rpc';
 import React from 'react';
 
 const REWARDS_AVAILABLE_EPOCH = new Map<Cluster, number>([
@@ -85,12 +86,12 @@ async function fetchRewards(
     });
 
     const lowestAvailableEpoch = REWARDS_AVAILABLE_EPOCH.get(cluster) || 0;
-    const connection = new Connection(url);
+    const rpc = createRpc(url);
 
     if (!fromEpoch) {
         try {
-            const epochInfo = await connection.getEpochInfo();
-            fromEpoch = epochInfo.epoch - 1;
+            const epochInfo = await rpc.getEpochInfo().send();
+            fromEpoch = Number(epochInfo.epoch) - 1;
         } catch (error) {
             if (cluster !== Cluster.Custom) {
                 console.error(error, { url });
@@ -111,8 +112,17 @@ async function fetchRewards(
 
     const getInflationReward = async (epoch: number) => {
         try {
-            const result = await connection.getInflationReward([pubkey], epoch);
-            return result[0];
+            const result = await rpc.getInflationReward([publicKeyToAddress(pubkey)], { epoch: BigInt(epoch) }).send();
+            // Convert kit response to legacy InflationReward format
+            const reward = result[0];
+            if (!reward) return null;
+            return {
+                amount: bigintToNumber(reward.amount),
+                effectiveSlot: bigintToNumber(reward.effectiveSlot),
+                epoch: epoch,
+                postBalance: bigintToNumber(reward.postBalance),
+                commission: reward.commission ?? null,
+            } as InflationReward;
         } catch (error) {
             if (cluster !== Cluster.Custom) {
                 console.error(error, { url });

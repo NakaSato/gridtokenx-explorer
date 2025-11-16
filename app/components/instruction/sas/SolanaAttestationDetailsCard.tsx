@@ -99,7 +99,7 @@ export function SolanaAttestationDetailsCard({
             <tr>
                 <td>Program</td>
                 <td className="lg:text-right" colSpan={2}>
-                    <Address pubkey={new PublicKey(SAS_PROGRAM_ID)} alignRight link raw />
+                    <Address pubkey={addressToPublicKey(toAddress(SAS_PROGRAM_ID))} alignRight link raw />
                 </td>
             </tr>
             <tr className="tablsep">
@@ -114,7 +114,7 @@ export function SolanaAttestationDetailsCard({
                     <tr key={idx}>
                         <td>{key.charAt(0).toUpperCase() + key.slice(1)}</td>
                         <td className="lg:text-right" colSpan={2}>
-                            <Address pubkey={new PublicKey(value.address)} alignRight link />
+                            <Address pubkey={addressToPublicKey(toAddress(value.address))} alignRight link />
                         </td>
                     </tr>
                 ))}

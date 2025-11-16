@@ -2,6 +2,7 @@
 
 import React, { Suspense } from 'react';
 import { PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import { Address as AddressComponent } from './Address';
 import { TokenLabelInfo } from '@utils/tx';
 
@@ -20,7 +21,7 @@ type Props = {
 };
 
 export function Address(props: Props) {
-    const pubkey = typeof props.pubkey === 'string' ? new PublicKey(props.pubkey) : props.pubkey;
+    const pubkey = typeof props.pubkey === 'string' ? addressToPublicKey(toAddress(props.pubkey)) : props.pubkey;
     const fallback = typeof props.pubkey === 'string' ? props.pubkey : props.pubkey.toBase58();
     
     return (

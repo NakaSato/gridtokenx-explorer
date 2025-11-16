@@ -1,6 +1,7 @@
 import { ErrorCard } from '@components/common/ErrorCard';
 import { TableCardBody } from '@components/common/TableCardBody';
 import { UpgradeableLoaderAccountData } from '@providers/accounts';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 import { ExternalLink } from 'react-feather';
@@ -14,7 +15,7 @@ import { LoadingCard } from '../common/LoadingCard';
 export function VerifiedBuildCard({ data, pubkey }: { data: UpgradeableLoaderAccountData; pubkey: PublicKey }) {
     const { data: registryInfo, isLoading } = useVerifiedProgram({
         options: { suspense: true },
-        programAuthority: data.programData?.authority ? new PublicKey(data.programData.authority) : null,
+        programAuthority: data.programData?.authority ? addressToPublicKey(toAddress(data.programData.authority)) : null,
         programData: data.programData,
         programId: pubkey,
     });
@@ -227,7 +228,7 @@ function RenderEntry({ value, type }: { value: OsecRegistryInfo[keyof OsecRegist
         case DisplayType.PublicKey:
             return (
                 <td className="font-mono lg:text-right">
-                    <Address pubkey={new PublicKey(value as string)} link alignRight />
+                    <Address pubkey={addressToPublicKey(toAddress(value as string))} link alignRight />
                 </td>
             );
         default:

@@ -10,6 +10,7 @@ import {
     useScaledUiAmountForMint,
 } from '@providers/accounts/tokens';
 import { FetchStatus } from '@providers/cache';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { BigNumber } from 'bignumber.js';
 import Image from 'next/image';
@@ -35,7 +36,7 @@ const useQueryDisplay = (): Display => {
 };
 
 export function OwnedTokensCard({ address }: { address: string }) {
-    const pubkey = useMemo(() => new PublicKey(address), [address]);
+    const pubkey = useMemo(() => addressToPublicKey(toAddress(address)), [address]);
     const ownedTokens = useAccountOwnedTokens(address);
     const fetchAccountTokens = useFetchAccountOwnedTokens();
     const refresh = () => fetchAccountTokens(pubkey);
@@ -232,11 +233,11 @@ function TokenRow({ mintAddress, token, showLogo, showAccountAddress }: TokenRow
             )}
             {showAccountAddress && token.pubkey && (
                 <td>
-                    <Address pubkey={new PublicKey(token.pubkey)} link tokenLabelInfo={token} useMetadata />
+                    <Address pubkey={addressToPublicKey(toAddress(token.pubkey))} link tokenLabelInfo={token} useMetadata />
                 </td>
             )}
             <td>
-                <Address pubkey={new PublicKey(mintAddress)} link tokenLabelInfo={token} useMetadata />
+                <Address pubkey={addressToPublicKey(toAddress(mintAddress))} link tokenLabelInfo={token} useMetadata />
             </td>
             <td>
                 {token.amount} {token.symbol}

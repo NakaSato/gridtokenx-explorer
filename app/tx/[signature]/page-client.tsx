@@ -320,13 +320,30 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
                 <tr>
                     <td>Timestamp</td>
                     <td className="lg:text-right">
-                        {info.timestamp !== 'unavailable' ? (
-                            <span className="font-mono">{displayTimestamp(info.timestamp * 1000)}</span>
-                        ) : (
-                            <InfoTooltip bottom right text="Timestamps are only available for confirmed blocks">
-                                Unavailable
-                            </InfoTooltip>
-                        )}
+                        {(() => {
+                            // Try to get timestamp from status info first, fallback to transaction blockTime
+                            let timestamp: number | null = null;
+                            
+                            if (info.timestamp !== 'unavailable') {
+                                // Validate timestamp is reasonable (after year 2000)
+                                if (info.timestamp > 946684800) {
+                                    timestamp = info.timestamp;
+                                }
+                            }
+                            
+                            // Fallback to blockTime from transaction details
+                            if (!timestamp && transactionWithMeta?.blockTime) {
+                                timestamp = transactionWithMeta.blockTime;
+                            }
+                            
+                            return timestamp ? (
+                                <span className="font-mono">{displayTimestamp(timestamp * 1000)}</span>
+                            ) : (
+                                <InfoTooltip bottom right text="Timestamps are only available for confirmed blocks">
+                                    Unavailable
+                                </InfoTooltip>
+                            );
+                        })()}
                     </td>
                 </tr>
 

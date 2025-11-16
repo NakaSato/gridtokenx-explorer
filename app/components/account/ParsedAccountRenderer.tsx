@@ -3,6 +3,7 @@ import { LoadingCard } from '@components/common/LoadingCard';
 import { Account, useAccountInfo, useFetchAccountInfo } from '@providers/accounts';
 import { FetchStatus } from '@providers/cache';
 import { useCluster } from '@providers/cluster';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { ClusterStatus } from '@utils/cluster';
 import { RedirectType } from 'next/dist/client/components/redirect';
@@ -26,7 +27,7 @@ export function ParsedAccountRenderer({
     const fetchAccount = useFetchAccountInfo();
     const { status } = useCluster();
     const accountInfoCacheEntry = useAccountInfo(address);
-    const pubkey = useMemo(() => new PublicKey(address), [address]);
+    const pubkey = useMemo(() => addressToPublicKey(toAddress(address)), [address]);
     const rootAddressPathname = useClusterPath({ pathname: `/address/${address}` });
     const onNotFound = useCallback(() => {
         redirect(rootAddressPathname, RedirectType.replace);

@@ -1,5 +1,6 @@
 import { AccountMeta, AccountRole, Address as TAddress, Instruction } from '@solana/kit';
 import { PublicKey, SignatureResult, TransactionInstruction } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import {
     EquatableOperator,
     identifyLighthouseInstruction,
@@ -333,7 +334,7 @@ function renderEquatableOperator(operator: EquatableOperator) {
 
 function CodamaCard({ ix, parsedIx }: { ix: Instruction; parsedIx: ParsedCodamaInstruction }) {
     const programName = 'Lighthouse';
-    const programId = new PublicKey(LIGHTHOUSE_ADDRESS);
+    const programId = addressToPublicKey(toAddress(LIGHTHOUSE_ADDRESS));
 
     const parsedAccountsLength = parsedIx.accounts ? Object.keys(parsedIx.accounts).length : 0;
     const accountMap = parsedIx.accounts
@@ -378,7 +379,7 @@ function CodamaCard({ ix, parsedIx }: { ix: Instruction; parsedIx: ParsedCodamaI
                                 ))}
                         </td>
                         <td className="lg:text-right" colSpan={2}>
-                            <Address pubkey={new PublicKey(address)} alignRight link />
+                            <Address pubkey={addressToPublicKey(toAddress(address))} alignRight link />
                         </td>
                     </tr>
                 );

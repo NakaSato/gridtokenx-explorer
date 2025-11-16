@@ -2,6 +2,7 @@ import { Address } from '@components/common/Address';
 import { BalanceDelta } from '@components/common/BalanceDelta';
 import { useTransactionDetails } from '@providers/transactions';
 import { ParsedMessageAccount, PublicKey, TokenBalance } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import { SignatureProps } from '@utils/index';
 import { BigNumber } from 'bignumber.js';
 import { useState } from 'react';
@@ -55,7 +56,7 @@ export function TokenBalancesCardInner({ rows }: TokenBalancesCardInnerProps) {
     const [tokenSymbols, setTokenSymbols] = useState<Map<string, string>>(new Map());
 
     useAsyncEffect(async isMounted => {
-        const mints = rows.map(r => new PublicKey(r.mint));
+        const mints = rows.map(r => addressToPublicKey(toAddress(r.mint)));
         getTokenInfos(mints, cluster, url).then(tokens => {
             if (isMounted()) {
                 setTokenSymbols(new Map(tokens?.map(t => [t.address, t.symbol])));
@@ -115,7 +116,7 @@ function TokenBalanceRow({
                 <Address pubkey={account} link />
             </td>
             <td>
-                <Address pubkey={new PublicKey(mint)} link fetchTokenLabelInfo />
+                <Address pubkey={addressToPublicKey(toAddress(mint))} link fetchTokenLabelInfo />
             </td>
             <td>
                 <BalanceDelta delta={delta.multipliedBy(scaledUiAmountMultiplier)} />

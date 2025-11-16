@@ -1,4 +1,5 @@
 import { PublicKey, VersionedMessage } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import base58 from 'bs58';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
@@ -221,7 +222,7 @@ export function RawInput({
                 }
 
                 // Necessary to validate the account address
-                new PublicKey(accounts[0]);
+                addressToPublicKey(toAddress(accounts[0]));
 
                 setTransactionData({ account: accounts[0] });
                 setError(undefined);

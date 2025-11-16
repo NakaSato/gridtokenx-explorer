@@ -12,10 +12,10 @@ function Tooltip({ state }: { state: State }) {
 
     if (state === 'hide') return null;
     return (
-        <div className="popover bs-popover-bottom show" style={tooltip}>
-            <div className="arrow" />
-            <div className="popover-body">(Click to toggle between local and UTC)</div>
-        </div>
+        <span className="popover bs-popover-bottom show" style={tooltip}>
+            <span className="arrow" />
+            <span className="popover-body">(Click to toggle between local and UTC)</span>
+        </span>
     );
 }
 

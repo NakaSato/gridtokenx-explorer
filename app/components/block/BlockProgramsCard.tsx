@@ -1,6 +1,7 @@
-import { Address } from '@components/common/Address';
+import { Address as AddressComponent } from '@components/common/Address';
 import { TableCardBody } from '@components/common/TableCardBody';
-import { PublicKey, VersionedBlockResponse } from '@solana/web3.js';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
+import { VersionedBlockResponse } from '@solana/web3.js';
 import React from 'react';
 
 export function BlockProgramsCard({ block }: { block: VersionedBlockResponse }) {
@@ -96,7 +97,7 @@ export function BlockProgramsCard({ block }: { block: VersionedBlockResponse }) 
                                 return (
                                     <tr key={programId}>
                                         <td>
-                                            <Address pubkey={new PublicKey(programId)} link />
+                                            <AddressComponent pubkey={addressToPublicKey(toAddress(programId))} link />
                                         </td>
                                         <td>{txFreq}</td>
                                         <td>{((100 * txFreq) / totalTransactions).toFixed(2)}%</td>

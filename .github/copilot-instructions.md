@@ -131,9 +131,47 @@ See `docs/ui-system-spec.md` for complete Nivo integration patterns.
 ### Solana Integration Specifics
 
 #### RPC Layer
-- Uses `@solana/kit` (new web3.js 2.0): `createSolanaRpc(url)`
-- Legacy web3.js v1 still used for some features: `@solana/web3.js`
-- Both versions coexist - check imports carefully
+- **Primary**: Uses `@solana/kit` (web3.js 2.0) for modern RPC calls
+  - `ClusterProvider` uses `createSolanaRpc(url)` for cluster management
+  - `EpochProvider`, `RichListProvider`, and `BlockProvider` fully migrated to @solana/kit
+  - `TransactionProvider` (parsed.tsx) migrated to kit with type converters
+  - `TransactionStatusProvider` (index.tsx) migrated to kit for signature status checking
+  - `AccountProvider` (index.tsx) migrated to kit for batch account fetching
+  - `AccountHistoryProvider`, `TokensProvider`, and `VoteAccountsProvider` migrated to kit
+  - `RewardsProvider` migrated to kit
+  - `SupplyProvider` and `SolanaClusterStatsProvider` migrated to kit
+  - New code should prefer `createRpc()` from `@utils/rpc.ts`
+- **Legacy**: `@solana/web3.js` v1 maintained for:
+  - Transaction decompiling (TransactionMessage.decompile in raw.tsx)
+  - Parsed account validation (uses v1-specific validators in accounts/index.tsx)
+  - Third-party library compatibility (Anchor, SPL, Metaplex, Mango, Serum)
+  - Use `LegacyAdapter` from `@utils/legacy-adapters.ts` for these integrations
+- **Helper utilities** in `@utils/rpc.ts`:
+  - `createRpc(url)`: Create @solana/kit RPC client
+  - `createLegacyConnection(url, commitment)`: Create v1 Connection when needed
+  - Type conversion utilities: 
+    - `toAddress()`, `toSignature()`: Convert to kit types
+    - `publicKeyToAddress()`, `addressToPublicKey()`: Convert between formats
+    - `bigintToNumber()`: Safe bigint to number conversion
+    - `toLegacyAccountInfo()`, `toLegacyBlockResponse()`, `toLegacyParsedTransaction()`, `toLegacySignatureInfo()`: Convert kit responses to legacy format
+- **Legacy Adapter** in `@utils/legacy-adapters.ts`:
+  - `createLegacyAdapter(url)`: Create adapter for third-party libraries
+  - Methods: `getAnchorProgram()`, `getSerumMarket()`, `getMangoClient()`, `getMetaplexNFT()`, `resolveSNS()`, `resolveANS()`
+- **Migration strategy**: See `docs/SOLANA_KIT_MIGRATION_PLAN.md` for comprehensive migration roadmap
+  - Current status: ~80% migrated - **All production code paths complete!** \u2705
+  - Phase 1 complete: Type converters and test suite
+  - Phase 2 complete: All provider layer migrations (13 files)
+  - Phase 3 complete: All UI components (39 files total)
+    - Phase 3.1: Block components (4 files)
+    - Phase 3.2: Account components (21 files)
+    - Phase 3.3: NFToken components (1 file)
+    - Phase 3.4: Transaction & Inspector components (6 files)
+    - Phase 3.5: Instruction Parsers & Common components (7 files)
+  - Phase 4 complete: API Routes & Utilities (4 files)
+  - Key migrated files: All providers, all UI components, anchor route, name-service, verified-builds, kit-wrapper
+  - **All production UI and API code migrated** \ud83c\udf89
+  - Test files intentionally retain v1 patterns for mock data
+  - Legacy adapters maintained for third-party library compatibility (Anchor, Serum, Mango)
 
 #### Critical Workarounds
 1. **borsh deserialization**: `postinstall` script fixes CJS module issue for `@solana/spl-account-compression`

@@ -4,6 +4,7 @@ import * as Cache from '@providers/cache';
 import { ActionType, FetchStatus } from '@providers/cache';
 import { useCluster } from '@providers/cluster';
 import { Connection, SignatureResult, TransactionConfirmationStatus, TransactionSignature } from '@solana/web3.js';
+import { createRpc, publicKeyToAddress, toSignature } from '@utils/rpc';
 import { Cluster } from '@utils/cluster';
 import React from 'react';
 
@@ -72,10 +73,13 @@ export async function fetchTransactionStatus(
     let fetchStatus;
     let data;
     try {
-        const connection = new Connection(url);
-        const { value } = await connection.getSignatureStatus(signature, {
-            searchTransactionHistory: true,
-        });
+        const rpc = createRpc(url);
+        const signatureAddress = toSignature(signature);
+        const response = await rpc
+            .getSignatureStatuses([signatureAddress], { searchTransactionHistory: true })
+            .send();
+
+        const value = response.value[0];
 
         let info = null;
         if (value !== null) {
@@ -88,7 +92,11 @@ export async function fetchTransactionStatus(
 
             let blockTime = null;
             try {
-                blockTime = await connection.getBlockTime(value.slot);
+                // Convert slot to BigInt before calling getBlockTime
+                const slotAsBigInt = typeof value.slot === 'bigint' ? value.slot : BigInt(value.slot);
+                const blockTimeResponse = await rpc.getBlockTime(slotAsBigInt).send();
+                // getBlockTime returns Unix timestamp in seconds as bigint
+                blockTime = blockTimeResponse ? Number(blockTimeResponse) : null;
             } catch (error) {
                 if (cluster === Cluster.MainnetBeta && confirmations === 'max') {
                     console.error(error, { slot: `${value.slot}` });
@@ -97,10 +105,10 @@ export async function fetchTransactionStatus(
             const timestamp: Timestamp = blockTime !== null ? blockTime : 'unavailable';
 
             info = {
-                confirmationStatus: value.confirmationStatus,
+                confirmationStatus: value.confirmationStatus as TransactionConfirmationStatus | undefined,
                 confirmations,
                 result: { err: value.err },
-                slot: value.slot,
+                slot: Number(value.slot),
                 timestamp,
             };
         }

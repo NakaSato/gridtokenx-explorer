@@ -7,6 +7,7 @@ import { Slot } from '@components/common/Slot';
 import { useAccountInfo } from '@providers/accounts';
 import { useFetchRewards, useRewards } from '@providers/accounts/rewards';
 import { FetchStatus } from '@providers/cache';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { lamportsToSolString } from '@utils/index';
 import React from 'react';
@@ -14,7 +15,7 @@ import React from 'react';
 const U64_MAX = BigInt('0xffffffffffffffff');
 
 export function RewardsCard({ address }: { address: string }) {
-    const pubkey = React.useMemo(() => new PublicKey(address), [address]);
+    const pubkey = React.useMemo(() => addressToPublicKey(toAddress(address)), [address]);
     const info = useAccountInfo(address);
     const account = info?.data;
     const parsedData = account?.data.parsed;

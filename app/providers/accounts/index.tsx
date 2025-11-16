@@ -16,6 +16,8 @@ import {
     StakeActivationData,
     SystemProgram,
 } from '@solana/web3.js';
+import { Address, getBase58Decoder, Rpc } from '@solana/kit';
+import { createRpc, publicKeyToAddress, addressToPublicKey } from '@utils/rpc';
 import { Cluster } from '@utils/cluster';
 import { pubkeyToString } from '@utils/index';
 import { assertIsTokenProgram, TokenProgram } from '@utils/programs';
@@ -225,6 +227,8 @@ async function fetchMultipleAccounts({
     }
 
     const BATCH_SIZE = 100;
+    const rpc = createRpc(url);
+    // Keep legacy Connection for parsed account handling (uses v1-specific validators)
     const connection = new Connection(url, 'confirmed');
 
     let nextBatchStart = 0;
@@ -235,13 +239,29 @@ async function fetchMultipleAccounts({
         try {
             let results;
             if (dataMode === 'parsed') {
-                results = (await connection.getMultipleParsedAccounts(batch)).value;
+                // Convert pubkeys to Address[] for kit
+                const addresses = batch.map(pk => publicKeyToAddress(pk));
+                const response = await rpc
+                    .getMultipleAccounts(addresses, { encoding: 'jsonParsed', commitment: 'confirmed' })
+                    .send();
+                results = response.value;
             } else if (dataMode === 'raw') {
-                results = await connection.getMultipleAccountsInfo(batch);
+                const addresses = batch.map(pk => publicKeyToAddress(pk));
+                const response = await rpc
+                    .getMultipleAccounts(addresses, { encoding: 'base64', commitment: 'confirmed' })
+                    .send();
+                results = response.value;
             } else {
-                results = await connection.getMultipleAccountsInfo(batch, {
-                    dataSlice: { length: 0, offset: 0 },
-                });
+                // Skip mode - fetch with data slice
+                const addresses = batch.map(pk => publicKeyToAddress(pk));
+                const response = await rpc
+                    .getMultipleAccounts(addresses, {
+                        commitment: 'confirmed',
+                        dataSlice: { length: 0, offset: 0 },
+                        encoding: 'base64',
+                    })
+                    .send();
+                results = response.value;
             }
 
             for (let i = 0; i < batch.length; i++) {
@@ -261,9 +281,11 @@ async function fetchMultipleAccounts({
                 } else {
                     let space: number | undefined = undefined;
                     let parsedData: ParsedData | undefined;
+
+                    // Handle jsonParsed encoding
                     if ('parsed' in result.data) {
-                        const accountData: ParsedAccountData = result.data;
-                        space = result.data.space;
+                        const accountData: ParsedAccountData = result.data as any;
+                        space = Number(result.data.space);
                         try {
                             parsedData = await handleParsedAccountData(connection, pubkey, accountData);
                         } catch (error) {
@@ -275,8 +297,16 @@ async function fetchMultipleAccounts({
                     // then keep raw data for other components to decode
                     let rawData: Buffer | undefined;
                     if (!parsedData && !('parsed' in result.data) && dataMode !== 'skip') {
-                        space = result.data.length;
-                        rawData = result.data;
+                        // Handle base64 encoding
+                        if (typeof result.data === 'string') {
+                            // Kit returns base64 string
+                            rawData = Buffer.from(result.data, 'base64');
+                            space = rawData.length;
+                        } else if (Array.isArray(result.data)) {
+                            // Kit can return [data, encoding] tuple
+                            rawData = Buffer.from(result.data[0], result.data[1] as BufferEncoding);
+                            space = rawData.length;
+                        }
                     }
 
                     account = {
@@ -285,8 +315,8 @@ async function fetchMultipleAccounts({
                             raw: rawData,
                         },
                         executable: result.executable,
-                        lamports: result.lamports,
-                        owner: result.owner,
+                        lamports: Number(result.lamports),
+                        owner: addressToPublicKey(result.owner),
                         pubkey,
                         space,
                     };

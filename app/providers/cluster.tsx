@@ -136,13 +136,25 @@ async function updateCluster(dispatch: Dispatch, cluster: Cluster, customUrl: st
     });
 
     try {
-        // validate url
-        new URL(customUrl);
-
+        // Determine transport URL first
         const transportUrl = clusterUrl(cluster, customUrl);
 
         if (!transportUrl) {
             throw new Error(`Failed to determine RPC URL for cluster: ${clusterName(cluster)}`);
+        }
+
+        // Validate URL format for custom clusters
+        if (cluster === Cluster.Custom) {
+            try {
+                const urlObj = new URL(transportUrl);
+                // Ensure it's http or https
+                if (!['http:', 'https:'].includes(urlObj.protocol)) {
+                    throw new Error(`Invalid protocol: ${urlObj.protocol}. Must be http: or https:`);
+                }
+            } catch (urlError) {
+                const message = urlError instanceof Error ? urlError.message : String(urlError);
+                throw new Error(`Invalid Custom RPC URL "${transportUrl}": ${message}`);
+            }
         }
 
         const rpc = createSolanaRpc(transportUrl);
@@ -167,21 +179,119 @@ async function updateCluster(dispatch: Dispatch, cluster: Cluster, customUrl: st
         });
     } catch (error) {
         const transportUrl = clusterUrl(cluster, customUrl);
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        
+        // Extract detailed error information with comprehensive logging
+        let errorMessage = 'Unknown error';
+        let errorType = 'UnknownError';
+        let errorStack: string | undefined;
+        let errorDetails: Record<string, unknown> = {};
+
+        if (error instanceof Error) {
+            errorMessage = error.message;
+            errorType = error.name;
+            errorStack = error.stack;
+            
+            // Extract all properties (both enumerable and non-enumerable)
+            const allKeys = [
+                ...Object.getOwnPropertyNames(error),
+                ...Object.keys(error),
+            ];
+            
+            // Remove duplicates
+            const uniqueKeys = [...new Set(allKeys)];
+            
+            errorDetails = uniqueKeys.reduce((acc, key) => {
+                try {
+                    const value = (error as any)[key];
+                    
+                    // Handle different value types
+                    if (typeof value === 'function') {
+                        acc[key] = '[Function]';
+                    } else if (value === null) {
+                        acc[key] = null;
+                    } else if (value === undefined) {
+                        acc[key] = undefined;
+                    } else if (typeof value === 'object') {
+                        // Try to serialize objects safely
+                        try {
+                            acc[key] = JSON.parse(JSON.stringify(value));
+                        } catch {
+                            // If circular reference or unserializable, use string representation
+                            acc[key] = Object.prototype.toString.call(value);
+                        }
+                    } else {
+                        acc[key] = value;
+                    }
+                } catch {
+                    acc[key] = '[Unreadable]';
+                }
+                return acc;
+            }, {} as Record<string, unknown>);
+            
+            // Also check prototype chain for custom error properties
+            let proto = Object.getPrototypeOf(error);
+            while (proto && proto !== Error.prototype && proto !== Object.prototype) {
+                Object.getOwnPropertyNames(proto).forEach(key => {
+                    if (key !== 'constructor' && !(key in errorDetails)) {
+                        try {
+                            const value = (error as any)[key];
+                            if (typeof value !== 'function') {
+                                errorDetails[`proto_${key}`] = value;
+                            }
+                        } catch {
+                            // Ignore unreadable prototype properties
+                        }
+                    }
+                });
+                proto = Object.getPrototypeOf(proto);
+            }
+        } else if (typeof error === 'object' && error !== null) {
+            // Handle non-Error objects
+            try {
+                errorMessage = JSON.stringify(error);
+                errorDetails = { ...error } as Record<string, unknown>;
+            } catch {
+                errorMessage = String(error);
+                errorDetails = { stringValue: String(error) };
+            }
+            errorType = 'ObjectError';
+        } else {
+            errorMessage = String(error);
+            errorDetails = { primitiveValue: error };
+        }
+
+        // Create a safe error log object (avoid circular references)
+        const errorLog = {
+            cluster: clusterName(cluster),
+            url: transportUrl,
+            isCustom: cluster === Cluster.Custom,
+            errorType,
+            errorMessage,
+            ...(errorStack && { 
+                errorStack: errorStack.split('\n').slice(0, 3).join('\n') 
+            }),
+            errorDetails,
+        };
 
         // Provide more informative error messages
         if (errorMessage.includes('<!DOCTYPE') || errorMessage.includes('not valid JSON')) {
-            console.error('RPC endpoint returned HTML instead of JSON:', {
-                cluster: clusterName(cluster),
-                url: transportUrl,
-                error: errorMessage,
+            console.error('RPC endpoint returned HTML instead of JSON (not a valid Solana RPC):', {
+                ...errorLog,
+                errorMessage: errorMessage.substring(0, 200), // Truncate HTML
             });
-        } else if (cluster !== Cluster.Custom) {
-            console.error('Failed to connect to cluster:', {
-                cluster: clusterName(cluster),
-                url: transportUrl,
-                error: errorMessage,
+        } else if (errorMessage.includes('fetch') || errorMessage.includes('network') || errorMessage.includes('ECONNREFUSED')) {
+            console.error('Network error connecting to RPC:', {
+                ...errorLog,
+                hint: cluster === Cluster.Custom 
+                    ? 'Check that the RPC URL is correct and accessible from your network'
+                    : 'Check your internet connection',
             });
+        } else {
+            // Log all cluster connection errors with proper context
+            console.error('Failed to connect to cluster:', errorLog);
+            
+            // Also log the raw error separately for debugging
+            console.error('Raw error object:', error);
         }
 
         dispatch({

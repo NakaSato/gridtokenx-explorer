@@ -1,5 +1,6 @@
 import { AnchorProvider, Idl, Program, Wallet } from '@coral-xyz/anchor';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@/app/utils/rpc';
 import { NextResponse } from 'next/server';
 
 import { Cluster, serverClusterUrl } from '../../utils/cluster';
@@ -52,7 +53,7 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Invalid cluster' }, { status: 400 });
     }
 
-    const programId = new PublicKey(programAddress);
+    const programId = addressToPublicKey(toAddress(programAddress));
     try {
         const provider = new AnchorProvider(new Connection(url), new ServerWallet(), {});
         const idl = await Program.fetchIdl<Idl>(programId, provider);

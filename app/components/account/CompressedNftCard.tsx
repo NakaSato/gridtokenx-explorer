@@ -1,4 +1,5 @@
 import { Account } from '@providers/accounts';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { createRef, Suspense } from 'react';
 import { ChevronDown, ExternalLink } from 'react-feather';
@@ -39,14 +40,14 @@ export function CompressedNftCard({ account }: { account: Account }) {
                 <tr>
                     <td>Owner</td>
                     <td className="lg:text-right">
-                        <Address pubkey={new PublicKey(compressedNft.ownership.owner)} alignRight link />
+                        <Address pubkey={addressToPublicKey(toAddress(compressedNft.ownership.owner))} alignRight link />
                     </td>
                 </tr>
                 <tr>
                     <td>Verified Collection Address</td>
                     <td className="lg:text-right">
                         {collectionGroup ? (
-                            <Address pubkey={new PublicKey(collectionGroup.group_value)} alignRight link />
+                            <Address pubkey={addressToPublicKey(toAddress(collectionGroup.group_value))} alignRight link />
                         ) : (
                             'None'
                         )}
@@ -55,7 +56,7 @@ export function CompressedNftCard({ account }: { account: Account }) {
                 <tr>
                     <td>Update Authority</td>
                     <td className="lg:text-right">
-                        {updateAuthority ? <Address pubkey={new PublicKey(updateAuthority)} alignRight link /> : 'None'}
+                        {updateAuthority ? <Address pubkey={addressToPublicKey(toAddress(updateAuthority))} alignRight link /> : 'None'}
                     </td>
                 </tr>
                 <tr>

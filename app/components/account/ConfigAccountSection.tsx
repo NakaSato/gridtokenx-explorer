@@ -3,6 +3,7 @@ import { Address } from '@components/common/Address';
 import { TableCardBody } from '@components/common/TableCardBody';
 import { Account, useFetchAccountInfo } from '@providers/accounts';
 import { Card, CardContent } from '@components/shared/ui/card';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { ConfigAccount, StakeConfigInfoAccount, ValidatorInfoAccount } from '@validators/accounts/config';
 import React from 'react';
@@ -102,7 +103,7 @@ function ValidatorInfoCard({ account, configAccount }: { account: Account; confi
                         <tr>
                             <td>Signer</td>
                             <td className="lg:text-right">
-                                <Address pubkey={new PublicKey(configAccount.info.keys[1].pubkey)} link alignRight />
+                                <Address pubkey={addressToPublicKey(toAddress(configAccount.info.keys[1].pubkey))} link alignRight />
                             </td>
                         </tr>
                     )}

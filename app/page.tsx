@@ -254,9 +254,9 @@ function StatsCardBody() {
                             <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                                 <div>
                                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Cluster Time</p>
-                                    <p className="text-sm font-mono text-primary">
+                                    <div className="text-sm font-mono text-primary">
                                         <TimestampToggle unixTimestamp={blockTime} shorter></TimestampToggle>
-                                    </p>
+                                    </div>
                                 </div>
                             </div>
                         )}

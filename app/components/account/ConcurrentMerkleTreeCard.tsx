@@ -1,4 +1,5 @@
 import { ConcurrentMerkleTreeAccount } from '@solana/spl-account-compression';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 
 import { Address } from '../common/Address';
@@ -66,7 +67,7 @@ export function ConcurrentMerkleTreeCard({ data }: { data: Buffer }) {
                     <tr>
                         <td>Current Root</td>
                         <td className="lg:text-right">
-                            <Address pubkey={new PublicKey(root)} alignRight raw />
+                            <Address pubkey={addressToPublicKey(toAddress(root))} alignRight raw />
                         </td>
                     </tr>
                     <tr>

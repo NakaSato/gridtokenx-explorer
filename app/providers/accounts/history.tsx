@@ -5,12 +5,12 @@ import { ActionType, FetchStatus } from '@providers/cache';
 import { useCluster } from '@providers/cluster';
 import {
     ConfirmedSignatureInfo,
-    Connection,
     ParsedTransactionWithMeta,
     PublicKey,
     TransactionSignature,
 } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
+import { createRpc, toAddress, toLegacyParsedTransaction, toLegacySignatureInfo, toSignature } from '@utils/rpc';
 import React from 'react';
 
 const MAX_TRANSACTION_BATCH_SIZE = 10;
@@ -92,16 +92,23 @@ export function HistoryProvider({ children }: HistoryProviderProps) {
 
 async function fetchParsedTransactions(url: string, transactionSignatures: string[]) {
     const transactionMap = new Map();
-    const connection = new Connection(url);
+    const rpc = createRpc(url);
 
     while (transactionSignatures.length > 0) {
         const signatures = transactionSignatures.splice(0, MAX_TRANSACTION_BATCH_SIZE);
-        const fetched = await connection.getParsedTransactions(signatures, {
-            maxSupportedTransactionVersion: 0,
-        });
-        fetched.forEach((transactionWithMeta: ParsedTransactionWithMeta | null, index: number) => {
+        const kitSignatures = signatures.map(sig => toSignature(sig));
+        const fetched = await Promise.all(
+            kitSignatures.map(sig => 
+                rpc.getTransaction(sig, {
+                    encoding: 'jsonParsed',
+                    maxSupportedTransactionVersion: 0,
+                }).send()
+            )
+        );
+        fetched.forEach((transactionWithMeta, index: number) => {
             if (transactionWithMeta !== null) {
-                transactionMap.set(signatures[index], transactionWithMeta);
+                const legacyTx = toLegacyParsedTransaction(transactionWithMeta);
+                transactionMap.set(signatures[index], legacyTx);
             }
         });
     }
@@ -131,8 +138,15 @@ async function fetchAccountHistory(
     let status;
     let history;
     try {
-        const connection = new Connection(url);
-        const fetched = await connection.getSignaturesForAddress(pubkey, options);
+        const rpc = createRpc(url);
+        const kitOptions: any = {
+            limit: options.limit,
+        };
+        if (options.before) {
+            kitOptions.before = toSignature(options.before);
+        }
+        const kitFetched = await rpc.getSignaturesForAddress(toAddress(pubkey), kitOptions).send();
+        const fetched = Array.from(kitFetched).map(sig => toLegacySignatureInfo(sig));
         history = {
             fetched,
             foundOldest: fetched.length < options.limit,

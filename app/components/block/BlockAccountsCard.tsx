@@ -1,5 +1,6 @@
-import { Address } from '@components/common/Address';
-import { PublicKey, VersionedBlockResponse } from '@solana/web3.js';
+import { Address as AddressComponent } from '@components/common/Address';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
+import { VersionedBlockResponse } from '@solana/web3.js';
 import { useClusterPath } from '@utils/url';
 import Link from 'next/link';
 import React from 'react';
@@ -124,7 +125,7 @@ function StatsRow({
         <tr>
             <td>
                 <Link href={accountPath}>
-                    <Address pubkey={new PublicKey(address)} />
+                    <AddressComponent pubkey={addressToPublicKey(toAddress(address))} />
                 </Link>
             </td>
             <td>{writes}</td>

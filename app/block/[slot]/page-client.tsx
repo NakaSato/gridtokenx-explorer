@@ -1,12 +1,12 @@
 'use client';
 
+import React, { Suspense } from 'react';
 import { BlockHistoryCard } from '@components/block/BlockHistoryCard';
 import { useBlock, useFetchBlock } from '@providers/block';
 import { useCluster } from '@providers/cluster';
 import { ClusterStatus } from '@utils/cluster';
 import { getEpochForSlot } from '@utils/epoch-schedule';
 import { notFound } from 'next/navigation';
-import React from 'react';
 
 type Props = Readonly<{ params: { slot: string } }>;
 
@@ -33,8 +33,19 @@ export default function BlockTransactionsTabClient({ params: { slot } }: Props) 
             fetchBlock(slotNumber);
         }
     }, [slotNumber, status]); // eslint-disablline react-hooks/exhaustivdeps
-    if (confirmedBlock?.data?.block) {
-        return <BlockHistoryCard block={confirmedBlock.data.block} epoch={epoch} />;
-    }
-    return null;
+    return (
+        <Suspense
+            fallback={
+                <div className="container mt-4">
+                    <div className="border-primary h-12 w-12 animate-spin rounded-full border-b-2" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div>
+                </div>
+            }
+        >
+            {confirmedBlock?.data?.block ? (
+                <BlockHistoryCard block={confirmedBlock.data.block} epoch={epoch} />
+            ) : null}
+        </Suspense>
+    );
 }
