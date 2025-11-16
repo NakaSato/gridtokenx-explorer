@@ -16,8 +16,13 @@ const nextConfig = {
     },
     // Use empty turbopack config to silence warning and use webpack
     turbopack: {},
+    // Suppress webpack warnings
+    onDemandEntries: {
+        maxInactiveAge: 25 * 1000,
+        pagesBufferLength: 2,
+    },
     // Keep webpack config for fallback
-    webpack: (config, { isServer }) => {
+    webpack: (config, { isServer, dev }) => {
         config.resolve.alias = {
             ...(config.resolve.alias || {}),
             // Fix borsh import by pointing to the package root
@@ -27,10 +32,14 @@ const nextConfig = {
             'borsh/lib': path.resolve(__dirname, 'node_modules/borsh/lib'),
         };
 
-        // Ignore borsh import error for now
+        // Ignore borsh import error - known compatibility issue between web3.js v1 and borsh v2
         config.ignoreWarnings = [
             ...(config.ignoreWarnings || []),
-            /'deserializeUnchecked' is not exported from 'borsh'/,
+            {
+                module: /node_modules\/@solana\/web3\.js/,
+                message: /deserializeUnchecked/,
+            },
+            /deserializeUnchecked' is not exported from 'borsh'/,
         ];
 
         if (!isServer) {
