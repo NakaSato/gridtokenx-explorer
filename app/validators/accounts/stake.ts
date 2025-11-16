@@ -9,37 +9,37 @@ export const StakeAccountType = enums(['uninitialized', 'initialized', 'delegate
 
 export type StakeMeta = Infer<typeof StakeMeta>;
 export const StakeMeta = type({
-    authorized: type({
-        staker: PublicKeyFromString,
-        withdrawer: PublicKeyFromString,
-    }),
-    lockup: type({
-        custodian: PublicKeyFromString,
-        epoch: number(),
-        unixTimestamp: number(),
-    }),
-    rentExemptReserve: BigIntFromString,
+  authorized: type({
+    staker: PublicKeyFromString,
+    withdrawer: PublicKeyFromString,
+  }),
+  lockup: type({
+    custodian: PublicKeyFromString,
+    epoch: number(),
+    unixTimestamp: number(),
+  }),
+  rentExemptReserve: BigIntFromString,
 });
 
 export type StakeAccountInfo = Infer<typeof StakeAccountInfo>;
 export const StakeAccountInfo = type({
-    meta: StakeMeta,
-    stake: nullable(
-        type({
-            creditsObserved: number(),
-            delegation: type({
-                activationEpoch: BigIntFromString,
-                deactivationEpoch: BigIntFromString,
-                stake: BigIntFromString,
-                voter: PublicKeyFromString,
-                warmupCooldownRate: number(),
-            }),
-        })
-    ),
+  meta: StakeMeta,
+  stake: nullable(
+    type({
+      creditsObserved: number(),
+      delegation: type({
+        activationEpoch: BigIntFromString,
+        deactivationEpoch: BigIntFromString,
+        stake: BigIntFromString,
+        voter: PublicKeyFromString,
+        warmupCooldownRate: number(),
+      }),
+    }),
+  ),
 });
 
 export type StakeAccount = Infer<typeof StakeAccount>;
 export const StakeAccount = type({
-    info: StakeAccountInfo,
-    type: StakeAccountType,
+  info: StakeAccountInfo,
+  type: StakeAccountType,
 });

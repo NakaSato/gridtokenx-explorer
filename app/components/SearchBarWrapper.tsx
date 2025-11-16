@@ -6,5 +6,5 @@ import React from 'react';
 const SearchBar = dynamic(() => import('./SearchBar'), { ssr: false });
 
 export default function SearchBarWrapper() {
-    return <SearchBar />;
+  return <SearchBar />;
 }

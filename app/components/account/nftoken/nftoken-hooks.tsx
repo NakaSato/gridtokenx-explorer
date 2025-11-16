@@ -5,48 +5,48 @@ import { NftokenFetcher } from './nftoken';
 import { NftokenTypes } from './nftoken-types';
 
 const getCollectionNftsFetcher = async ([_method, collectionAddress, url]: [string, string, string]) => {
-    return await NftokenFetcher.getNftsInCollection({
-        collection: collectionAddress,
-        rpcUrl: url,
-    });
+  return await NftokenFetcher.getNftsInCollection({
+    collection: collectionAddress,
+    rpcUrl: url,
+  });
 };
 
 export const useCollectionNfts = ({
-    collectionAddress,
+  collectionAddress,
 }: {
-    collectionAddress: string;
+  collectionAddress: string;
 }): {
-    // We can be confident that data will be nonnull even if the request fails,
-    // if we defined fallbackData in the config.
-    data: NftokenTypes.NftInfo[];
-    error: any;
-    mutate: SWRResponse<NftokenTypes.NftInfo[], never>['mutate'];
+  // We can be confident that data will be nonnull even if the request fails,
+  // if we defined fallbackData in the config.
+  data: NftokenTypes.NftInfo[];
+  error: any;
+  mutate: SWRResponse<NftokenTypes.NftInfo[], never>['mutate'];
 } => {
-    const { url } = useCluster();
+  const { url } = useCluster();
 
-    const swrKey = ['getNftsInCollection', collectionAddress, url];
-    const { data, error, mutate } = useSWR(swrKey, getCollectionNftsFetcher, {
-        suspense: true,
-    });
-    // Not nullable since we use suspense
-    return { data: data!, error, mutate };
+  const swrKey = ['getNftsInCollection', collectionAddress, url];
+  const { data, error, mutate } = useSWR(swrKey, getCollectionNftsFetcher, {
+    suspense: true,
+  });
+  // Not nullable since we use suspense
+  return { data: data!, error, mutate };
 };
 
 const getMetadataFetcher = async (metadataUrl: string) => {
-    return await NftokenFetcher.getMetadata({ url: metadataUrl });
+  return await NftokenFetcher.getMetadata({ url: metadataUrl });
 };
 
 export const useNftokenMetadata = (
-    metadataUrl: string | null | undefined
+  metadataUrl: string | null | undefined,
 ): {
-    data: NftokenTypes.Metadata | null;
-    error: any;
-    mutate: SWRResponse<NftokenTypes.Metadata | null, never>['mutate'];
+  data: NftokenTypes.Metadata | null;
+  error: any;
+  mutate: SWRResponse<NftokenTypes.Metadata | null, never>['mutate'];
 } => {
-    const swrKey = [metadataUrl];
-    const { data, error, mutate } = useSWR(swrKey, getMetadataFetcher, {
-        suspense: true,
-    });
-    // Not nullable since we use suspense
-    return { data: data!, error, mutate };
+  const swrKey = [metadataUrl];
+  const { data, error, mutate } = useSWR(swrKey, getMetadataFetcher, {
+    suspense: true,
+  });
+  // Not nullable since we use suspense
+  return { data: data!, error, mutate };
 };

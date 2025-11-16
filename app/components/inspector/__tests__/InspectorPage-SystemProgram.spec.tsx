@@ -14,8 +14,8 @@ import { TransactionsProvider } from '@/app/providers/transactions';
 import { TransactionInspectorPage } from '../InspectorPage';
 
 type ColumnMatcher = {
-    columnIndex: number;
-    regex: RegExp;
+  columnIndex: number;
+  regex: RegExp;
 };
 
 /**
@@ -25,21 +25,21 @@ type ColumnMatcher = {
  * @returns The matching row element or null if not found
  */
 function findTableRowWithMatches(container: HTMLElement, matchers: ColumnMatcher[]): HTMLElement | null {
+  // eslint-disablnext-line testing-library/no-nodaccess
+  const rows = container.querySelectorAll('tr');
+
+  const matchingRow = Array.from(rows).find(row => {
     // eslint-disablnext-line testing-library/no-nodaccess
-    const rows = container.querySelectorAll('tr');
+    const cells = row.querySelectorAll('td');
 
-    const matchingRow = Array.from(rows).find(row => {
-        // eslint-disablnext-line testing-library/no-nodaccess
-        const cells = row.querySelectorAll('td');
-
-        return matchers.every(matcher => {
-            if (matcher.columnIndex >= cells.length) return false;
-            const cellContent = cells[matcher.columnIndex].textContent || '';
-            return matcher.regex.test(cellContent);
-        });
+    return matchers.every(matcher => {
+      if (matcher.columnIndex >= cells.length) return false;
+      const cellContent = cells[matcher.columnIndex].textContent || '';
+      return matcher.regex.test(cellContent);
     });
+  });
 
-    return matchingRow || null;
+  return matchingRow || null;
 }
 
 /**
@@ -49,430 +49,430 @@ function findTableRowWithMatches(container: HTMLElement, matchers: ColumnMatcher
  * @returns
  */
 function populateColumnMatchers(matches: RegExp[]) {
-    return matches.reduce((acc, next, index) => {
-        return acc.concat([{ columnIndex: index, regex: next }]);
-    }, [] as ColumnMatcher[]);
+  return matches.reduce((acc, next, index) => {
+    return acc.concat([{ columnIndex: index, regex: next }]);
+  }, [] as ColumnMatcher[]);
 }
 
 const mockUseSearchParams = (message: string) => {
-    if (!message) throw new Error('Message is absent');
+  if (!message) throw new Error('Message is absent');
 
-    const params = new URLSearchParams();
-    // URL-encoded representation of serialized and base64 encoded MessageV0
-    params.set('message', decodeURIComponent(message));
-    return params;
+  const params = new URLSearchParams();
+  // URL-encoded representation of serialized and base64 encoded MessageV0
+  params.set('message', decodeURIComponent(message));
+  return params;
 };
 
 const DEFAULT_INTERVAL = { interval: 50, timeout: 10000 };
 async function waitForTimeout(fn: () => void, params: object = DEFAULT_INTERVAL) {
-    await waitFor(fn, params);
+  await waitFor(fn, params);
 }
 
 /** Mock the necessary environment for a nextjs page */
 // Mock SWR
 vi.mock('swr', () => ({
-    __esModule: true,
-    default: vi.fn(),
+  __esModule: true,
+  default: vi.fn(),
 }));
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
-    usePathname: vi.fn(),
-    useRouter: vi.fn(),
-    useSearchParams: vi.fn(),
+  usePathname: vi.fn(),
+  useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
 }));
 
 // Mock next/link
 vi.mock('next/link', () => ({
-    __esModule: true,
-    default: ({ children, href }: { children: React.ReactNode; href: string }) => <a href={href}>{children}</a>,
+  __esModule: true,
+  default: ({ children, href }: { children: React.ReactNode; href: string }) => <a href={href}>{children}</a>,
 }));
 /** end */
 
 describe("TransactionInspectorPage with SystemProgram' instructions", () => {
-    const originalFetch = global.fetch;
+  const originalFetch = global.fetch;
 
-    global.fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-        const target = typeof input === 'string' ? input : (input as Request).url;
-        if (typeof target === 'string' && target.startsWith('/api/anchor')) {
-            return GET({ url: target } as Request);
-        }
-        return originalFetch(input, init);
-    });
-
-    /**
-     * Function that checks that all the matches are present
-     *
-     * @param container HTML node to check for a proper layout
-     * @param columnsRegexps List of matchers
-     */
-    function expectAllColumnsNotNull(container: HTMLElement, columnsRegexps: Array<[RegExp, RegExp]>) {
-        columnsRegexps.forEach(matchers => {
-            expect(findTableRowWithMatches(container, populateColumnMatchers(matchers))).not.toBeNull();
-        });
+  global.fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const target = typeof input === 'string' ? input : (input as Request).url;
+    if (typeof target === 'string' && target.startsWith('/api/anchor')) {
+      return GET({ url: target } as Request);
     }
+    return originalFetch(input, init);
+  });
 
-    beforeEach(async () => {
-        // sleep to allow not facing 429s
-        await sleep();
+  /**
+   * Function that checks that all the matches are present
+   *
+   * @param container HTML node to check for a proper layout
+   * @param columnsRegexps List of matchers
+   */
+  function expectAllColumnsNotNull(container: HTMLElement, columnsRegexps: Array<[RegExp, RegExp]>) {
+    columnsRegexps.forEach(matchers => {
+      expect(findTableRowWithMatches(container, populateColumnMatchers(matchers))).not.toBeNull();
+    });
+  }
 
-        // Setup router mock
-        const mockRouter = { push: vi.fn(), replace: vi.fn() };
-        vi.spyOn(await import('next/navigation'), 'useRouter').mockReturnValue(mockRouter as any);
+  beforeEach(async () => {
+    // sleep to allow not facing 429s
+    await sleep();
 
-        // Mock accountInfo to prevent the UI stuck upon loading
-        vi.mock('@providers/accounts', async () => {
-            const actual = await vi.importActual('@providers/accounts');
-            return {
-                ...actual,
-                useAccountInfo: () => ({
-                    data: {
-                        lamports: 1000000,
-                        owner: SystemProgram.programId,
-                        space: 0,
-                    },
-                    status: 'fetched',
-                }),
-            };
-        });
+    // Setup router mock
+    const mockRouter = { push: vi.fn(), replace: vi.fn() };
+    vi.spyOn(await import('next/navigation'), 'useRouter').mockReturnValue(mockRouter as any);
+
+    // Mock accountInfo to prevent the UI stuck upon loading
+    vi.mock('@providers/accounts', async () => {
+      const actual = await vi.importActual('@providers/accounts');
+      return {
+        ...actual,
+        useAccountInfo: () => ({
+          data: {
+            lamports: 1000000,
+            owner: SystemProgram.programId,
+            space: 0,
+          },
+          status: 'fetched',
+        }),
+      };
+    });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('renders SystemProgram::CreateAccount instruction', async () => {
+    // Setup search params mock
+    const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramCreateAccountQueryParam);
+    vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
+
+    const { container: c } = render(
+      <ScrollAnchorProvider>
+        <ClusterProvider>
+          <TransactionsProvider>
+            <AccountsProvider>
+              <TransactionInspectorPage showTokenBalanceChanges={false} />
+            </AccountsProvider>
+          </TransactionsProvider>
+        </ClusterProvider>
+      </ScrollAnchorProvider>,
+    );
+
+    // Wait for initial and temporary elements to disappear separately
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Inspector Input/i)).toBeNull();
+    });
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Loading/i)).toBeNull();
     });
 
-    afterEach(() => {
-        vi.clearAllMocks();
+    // expect(screen.getByText(/Account List \(11\)/i)).not.toBeNull();
+    expect(screen.getByText(/System Program: Create Account/i)).not.toBeNull();
+
+    await waitForTimeout(() => {
+      expectAllColumnsNotNull(c, [
+        [/Program/, /System Program/],
+        [/From Address/, /paykgcZ547qCd1sm3kBn83t9Fnr2hxM6anLBXhV7Fhn/],
+        [/New Address/, /recvKuUhe9nsQ4QzrW68rTnzFT2S2dGmBKFNRfQB4Lp/],
+        [/Transfer Amount \(SOL\)/, /0.001/],
+        [/Allocated Data Size/, /100 byte\(s\)/],
+        [/Assigned Program Id/, /Associated Token Program/],
+      ]);
+    });
+  });
+
+  test('renders SystemProgram::CreateAccountWithSeed instruction', async () => {
+    // Setup search params mock
+    const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramCreateAccountWithSeedQueryParam);
+    vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
+
+    const { container: c } = render(
+      <ScrollAnchorProvider>
+        <ClusterProvider>
+          <TransactionsProvider>
+            <AccountsProvider>
+              <TransactionInspectorPage showTokenBalanceChanges={false} />
+            </AccountsProvider>
+          </TransactionsProvider>
+        </ClusterProvider>
+      </ScrollAnchorProvider>,
+    );
+
+    // Wait for initial and temporary elements to disappear separately
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Inspector Input/i)).toBeNull();
+    });
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Loading/i)).toBeNull();
     });
 
-    test('renders SystemProgram::CreateAccount instruction', async () => {
-        // Setup search params mock
-        const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramCreateAccountQueryParam);
-        vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
+    expect(screen.getByText(/System Program: Create Account w\/ Seed/i)).not.toBeNull();
 
-        const { container: c } = render(
-            <ScrollAnchorProvider>
-                <ClusterProvider>
-                    <TransactionsProvider>
-                        <AccountsProvider>
-                            <TransactionInspectorPage showTokenBalanceChanges={false} />
-                        </AccountsProvider>
-                    </TransactionsProvider>
-                </ClusterProvider>
-            </ScrollAnchorProvider>
-        );
+    await waitForTimeout(() => {
+      expectAllColumnsNotNull(c, [
+        [/Program/, /System Program/],
+        [/From Address/, /paykgcZ547qCd1sm3kBn83t9Fnr2hxM6anLBXhV7Fhn/],
+        [/New Address/, /recvKuUhe9nsQ4QzrW68rTnzFT2S2dGmBKFNRfQB4Lp/],
+        [/Base Address/, /Base4feziQk7rNDM1GfCnU6BMAUQiY7MBtJ7qctugFJp/],
+        [/Seed/, /test-seed/],
+        [/Transfer Amount \(SOL\)/, /0.002/],
+        [/Allocated Data Size/, /200 byte\(s\)/],
+        [/Assigned Program Id/, /Associated Token Program/],
+      ]);
+    });
+  });
 
-        // Wait for initial and temporary elements to disappear separately
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Inspector Input/i)).toBeNull();
-        });
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Loading/i)).toBeNull();
-        });
+  test('renders SystemProgram::Allocate instruction', async () => {
+    // Setup search params mock
+    const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramAllocateQueryParam);
+    vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
 
-        // expect(screen.getByText(/Account List \(11\)/i)).not.toBeNull();
-        expect(screen.getByText(/System Program: Create Account/i)).not.toBeNull();
+    const { container: c } = render(
+      <ScrollAnchorProvider>
+        <ClusterProvider>
+          <TransactionsProvider>
+            <AccountsProvider>
+              <TransactionInspectorPage showTokenBalanceChanges={false} />
+            </AccountsProvider>
+          </TransactionsProvider>
+        </ClusterProvider>
+      </ScrollAnchorProvider>,
+    );
 
-        await waitForTimeout(() => {
-            expectAllColumnsNotNull(c, [
-                [/Program/, /System Program/],
-                [/From Address/, /paykgcZ547qCd1sm3kBn83t9Fnr2hxM6anLBXhV7Fhn/],
-                [/New Address/, /recvKuUhe9nsQ4QzrW68rTnzFT2S2dGmBKFNRfQB4Lp/],
-                [/Transfer Amount \(SOL\)/, /0.001/],
-                [/Allocated Data Size/, /100 byte\(s\)/],
-                [/Assigned Program Id/, /Associated Token Program/],
-            ]);
-        });
+    // Wait for initial and temporary elements to disappear separately
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Inspector Input/i)).toBeNull();
+    });
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Loading/i)).toBeNull();
     });
 
-    test('renders SystemProgram::CreateAccountWithSeed instruction', async () => {
-        // Setup search params mock
-        const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramCreateAccountWithSeedQueryParam);
-        vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
+    expect(screen.getByText(/System Program: Allocate Account/i)).not.toBeNull();
 
-        const { container: c } = render(
-            <ScrollAnchorProvider>
-                <ClusterProvider>
-                    <TransactionsProvider>
-                        <AccountsProvider>
-                            <TransactionInspectorPage showTokenBalanceChanges={false} />
-                        </AccountsProvider>
-                    </TransactionsProvider>
-                </ClusterProvider>
-            </ScrollAnchorProvider>
-        );
+    await waitForTimeout(() => {
+      expectAllColumnsNotNull(c, [
+        [/Program/, /System Program/],
+        [/Account Address/, /recvKuUhe9nsQ4QzrW68rTnzFT2S2dGmBKFNRfQB4Lp/],
+        [/Allocated Data Size/, /300 byte\(s\)/],
+      ]);
+    });
+  });
 
-        // Wait for initial and temporary elements to disappear separately
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Inspector Input/i)).toBeNull();
-        });
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Loading/i)).toBeNull();
-        });
+  test('renders SystemProgram::Assign instruction', async () => {
+    // Setup search params mock
+    const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramAssignQueryParam);
+    vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
 
-        expect(screen.getByText(/System Program: Create Account w\/ Seed/i)).not.toBeNull();
+    const { container: c } = render(
+      <ScrollAnchorProvider>
+        <ClusterProvider>
+          <TransactionsProvider>
+            <AccountsProvider>
+              <TransactionInspectorPage showTokenBalanceChanges={false} />
+            </AccountsProvider>
+          </TransactionsProvider>
+        </ClusterProvider>
+      </ScrollAnchorProvider>,
+    );
 
-        await waitForTimeout(() => {
-            expectAllColumnsNotNull(c, [
-                [/Program/, /System Program/],
-                [/From Address/, /paykgcZ547qCd1sm3kBn83t9Fnr2hxM6anLBXhV7Fhn/],
-                [/New Address/, /recvKuUhe9nsQ4QzrW68rTnzFT2S2dGmBKFNRfQB4Lp/],
-                [/Base Address/, /Base4feziQk7rNDM1GfCnU6BMAUQiY7MBtJ7qctugFJp/],
-                [/Seed/, /test-seed/],
-                [/Transfer Amount \(SOL\)/, /0.002/],
-                [/Allocated Data Size/, /200 byte\(s\)/],
-                [/Assigned Program Id/, /Associated Token Program/],
-            ]);
-        });
+    // Wait for initial and temporary elements to disappear separately
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Inspector Input/i)).toBeNull();
     });
 
-    test('renders SystemProgram::Allocate instruction', async () => {
-        // Setup search params mock
-        const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramAllocateQueryParam);
-        vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
+    // Wait for the proper card to be rendered to prevent failing upon `Loading`
+    expect(screen.getByText(/System Program: Assign Account/i)).not.toBeNull();
 
-        const { container: c } = render(
-            <ScrollAnchorProvider>
-                <ClusterProvider>
-                    <TransactionsProvider>
-                        <AccountsProvider>
-                            <TransactionInspectorPage showTokenBalanceChanges={false} />
-                        </AccountsProvider>
-                    </TransactionsProvider>
-                </ClusterProvider>
-            </ScrollAnchorProvider>
-        );
+    await waitForTimeout(() => {
+      expectAllColumnsNotNull(c, [
+        [/Program/, /System Program/],
+        [/Account Address/, /recvKuUhe9nsQ4QzrW68rTnzFT2S2dGmBKFNRfQB4Lp/],
+        [/Assigned Program Id/, /Associated Token Program/],
+      ]);
+    });
+  });
 
-        // Wait for initial and temporary elements to disappear separately
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Inspector Input/i)).toBeNull();
-        });
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Loading/i)).toBeNull();
-        });
+  test('renders SystemProgram::Transfer instruction', async () => {
+    // Setup search params mock
+    const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramTransferQueryParam);
+    vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
 
-        expect(screen.getByText(/System Program: Allocate Account/i)).not.toBeNull();
+    const { container: c } = render(
+      <ScrollAnchorProvider>
+        <ClusterProvider>
+          <TransactionsProvider>
+            <AccountsProvider>
+              <TransactionInspectorPage showTokenBalanceChanges={false} />
+            </AccountsProvider>
+          </TransactionsProvider>
+        </ClusterProvider>
+      </ScrollAnchorProvider>,
+    );
 
-        await waitForTimeout(() => {
-            expectAllColumnsNotNull(c, [
-                [/Program/, /System Program/],
-                [/Account Address/, /recvKuUhe9nsQ4QzrW68rTnzFT2S2dGmBKFNRfQB4Lp/],
-                [/Allocated Data Size/, /300 byte\(s\)/],
-            ]);
-        });
+    // Wait for initial and temporary elements to disappear separately
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Inspector Input/i)).toBeNull();
+    });
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Loading/i)).toBeNull();
     });
 
-    test('renders SystemProgram::Assign instruction', async () => {
-        // Setup search params mock
-        const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramAssignQueryParam);
-        vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
+    expect(screen.getByText(/System Program: Transfer/i)).not.toBeNull();
 
-        const { container: c } = render(
-            <ScrollAnchorProvider>
-                <ClusterProvider>
-                    <TransactionsProvider>
-                        <AccountsProvider>
-                            <TransactionInspectorPage showTokenBalanceChanges={false} />
-                        </AccountsProvider>
-                    </TransactionsProvider>
-                </ClusterProvider>
-            </ScrollAnchorProvider>
-        );
+    await waitForTimeout(() => {
+      expectAllColumnsNotNull(c, [
+        [/Program/, /System Program/],
+        [/From Address/, /paykgcZ547qCd1sm3kBn83t9Fnr2hxM6anLBXhV7Fhn/],
+        [/To Address/, /destqL3WARuT1i7W4tyMr7e62fc5PjoQzuu2Cbpsf2p/],
+        [/Transfer Amount \(SOL\)/, /0.005/],
+      ]);
+    });
+  });
 
-        // Wait for initial and temporary elements to disappear separately
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Inspector Input/i)).toBeNull();
-        });
+  test('renders SystemProgram::AdvanceNonceAccount instruction', async () => {
+    // Setup search params mock
+    const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramAdvanceNonceQueryParam);
+    vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
 
-        // Wait for the proper card to be rendered to prevent failing upon `Loading`
-        expect(screen.getByText(/System Program: Assign Account/i)).not.toBeNull();
+    const { container: c } = render(
+      <ScrollAnchorProvider>
+        <ClusterProvider>
+          <TransactionsProvider>
+            <AccountsProvider>
+              <TransactionInspectorPage showTokenBalanceChanges={false} />
+            </AccountsProvider>
+          </TransactionsProvider>
+        </ClusterProvider>
+      </ScrollAnchorProvider>,
+    );
 
-        await waitForTimeout(() => {
-            expectAllColumnsNotNull(c, [
-                [/Program/, /System Program/],
-                [/Account Address/, /recvKuUhe9nsQ4QzrW68rTnzFT2S2dGmBKFNRfQB4Lp/],
-                [/Assigned Program Id/, /Associated Token Program/],
-            ]);
-        });
+    // Wait for initial and temporary elements to disappear separately
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Inspector Input/i)).toBeNull();
+    });
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Loading/i)).toBeNull();
     });
 
-    test('renders SystemProgram::Transfer instruction', async () => {
-        // Setup search params mock
-        const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramTransferQueryParam);
-        vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
+    expect(screen.getByText(/System Program: Advance Nonce/i)).not.toBeNull();
 
-        const { container: c } = render(
-            <ScrollAnchorProvider>
-                <ClusterProvider>
-                    <TransactionsProvider>
-                        <AccountsProvider>
-                            <TransactionInspectorPage showTokenBalanceChanges={false} />
-                        </AccountsProvider>
-                    </TransactionsProvider>
-                </ClusterProvider>
-            </ScrollAnchorProvider>
-        );
+    await waitForTimeout(() => {
+      expectAllColumnsNotNull(c, [
+        [/Program/, /System Program/],
+        [/Nonce Address/, /NonCboKHT9aKXzy87SQxX5ZWZ3u8VRVf5G6pm5NimtR/],
+        [/Authority Address/, /NautFCh9z5i4uN3ZCbEABf4ompPCPkzGzHKMcUbBUnf/],
+      ]);
+    });
+  });
 
-        // Wait for initial and temporary elements to disappear separately
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Inspector Input/i)).toBeNull();
-        });
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Loading/i)).toBeNull();
-        });
+  test('renders SystemProgram::WithdrawNonceAccount instruction', async () => {
+    // Setup search params mock
+    const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramWithdrawNonceQueryParam);
+    vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
 
-        expect(screen.getByText(/System Program: Transfer/i)).not.toBeNull();
+    const { container: c } = render(
+      <ScrollAnchorProvider>
+        <ClusterProvider>
+          <TransactionsProvider>
+            <AccountsProvider>
+              <TransactionInspectorPage showTokenBalanceChanges={false} />
+            </AccountsProvider>
+          </TransactionsProvider>
+        </ClusterProvider>
+      </ScrollAnchorProvider>,
+    );
 
-        await waitForTimeout(() => {
-            expectAllColumnsNotNull(c, [
-                [/Program/, /System Program/],
-                [/From Address/, /paykgcZ547qCd1sm3kBn83t9Fnr2hxM6anLBXhV7Fhn/],
-                [/To Address/, /destqL3WARuT1i7W4tyMr7e62fc5PjoQzuu2Cbpsf2p/],
-                [/Transfer Amount \(SOL\)/, /0.005/],
-            ]);
-        });
+    // Wait for initial and temporary elements to disappear separately
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Inspector Input/i)).toBeNull();
+    });
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Loading/i)).toBeNull();
     });
 
-    test('renders SystemProgram::AdvanceNonceAccount instruction', async () => {
-        // Setup search params mock
-        const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramAdvanceNonceQueryParam);
-        vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
+    expect(screen.getByText(/System Program: Withdraw Nonce/i)).not.toBeNull();
 
-        const { container: c } = render(
-            <ScrollAnchorProvider>
-                <ClusterProvider>
-                    <TransactionsProvider>
-                        <AccountsProvider>
-                            <TransactionInspectorPage showTokenBalanceChanges={false} />
-                        </AccountsProvider>
-                    </TransactionsProvider>
-                </ClusterProvider>
-            </ScrollAnchorProvider>
-        );
+    await waitForTimeout(() => {
+      expectAllColumnsNotNull(c, [
+        [/Program/, /System Program/],
+        [/Nonce Address/, /NonCboKHT9aKXzy87SQxX5ZWZ3u8VRVf5G6pm5NimtR/],
+        [/Authority Address/, /NautFCh9z5i4uN3ZCbEABf4ompPCPkzGzHKMcUbBUnf/],
+        [/To Address/, /destqL3WARuT1i7W4tyMr7e62fc5PjoQzuu2Cbpsf2p/],
+        [/Withdraw Amount \(SOL\)/, /0.001/],
+      ]);
+    });
+  });
 
-        // Wait for initial and temporary elements to disappear separately
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Inspector Input/i)).toBeNull();
-        });
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Loading/i)).toBeNull();
-        });
+  test('renders SystemProgram::AuthorizeNonceAccount instruction', async () => {
+    // Setup search params mock
+    const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramAuthorizeNonceQueryParam);
+    vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
 
-        expect(screen.getByText(/System Program: Advance Nonce/i)).not.toBeNull();
+    const { container: c } = render(
+      <ScrollAnchorProvider>
+        <ClusterProvider>
+          <TransactionsProvider>
+            <AccountsProvider>
+              <TransactionInspectorPage showTokenBalanceChanges={false} />
+            </AccountsProvider>
+          </TransactionsProvider>
+        </ClusterProvider>
+      </ScrollAnchorProvider>,
+    );
 
-        await waitForTimeout(() => {
-            expectAllColumnsNotNull(c, [
-                [/Program/, /System Program/],
-                [/Nonce Address/, /NonCboKHT9aKXzy87SQxX5ZWZ3u8VRVf5G6pm5NimtR/],
-                [/Authority Address/, /NautFCh9z5i4uN3ZCbEABf4ompPCPkzGzHKMcUbBUnf/],
-            ]);
-        });
+    // Wait for initial and temporary elements to disappear separately
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Inspector Input/i)).toBeNull();
+    });
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Loading/i)).toBeNull();
     });
 
-    test('renders SystemProgram::WithdrawNonceAccount instruction', async () => {
-        // Setup search params mock
-        const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramWithdrawNonceQueryParam);
-        vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
+    expect(screen.getByText(/System Program: Authorize Nonce/i)).not.toBeNull();
 
-        const { container: c } = render(
-            <ScrollAnchorProvider>
-                <ClusterProvider>
-                    <TransactionsProvider>
-                        <AccountsProvider>
-                            <TransactionInspectorPage showTokenBalanceChanges={false} />
-                        </AccountsProvider>
-                    </TransactionsProvider>
-                </ClusterProvider>
-            </ScrollAnchorProvider>
-        );
+    await waitForTimeout(() => {
+      expectAllColumnsNotNull(c, [
+        [/Program/, /System Program/],
+        [/Nonce Address/, /NonCboKHT9aKXzy87SQxX5ZWZ3u8VRVf5G6pm5NimtR/],
+        [/Old Authority Address/, /NautFCh9z5i4uN3ZCbEABf4ompPCPkzGzHKMcUbBUnf/],
+        [/New Authority Address/, /destqL3WARuT1i7W4tyMr7e62fc5PjoQzuu2Cbpsf2p/],
+      ]);
+    });
+  });
 
-        // Wait for initial and temporary elements to disappear separately
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Inspector Input/i)).toBeNull();
-        });
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Loading/i)).toBeNull();
-        });
+  test('renders SystemProgram::InitializeNonceAccount instruction', async () => {
+    // Setup search params mock
+    const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramInitializeNonceQueryParam);
+    vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
 
-        expect(screen.getByText(/System Program: Withdraw Nonce/i)).not.toBeNull();
+    const { container: c } = render(
+      <ScrollAnchorProvider>
+        <ClusterProvider>
+          <TransactionsProvider>
+            <AccountsProvider>
+              <TransactionInspectorPage showTokenBalanceChanges={false} />
+            </AccountsProvider>
+          </TransactionsProvider>
+        </ClusterProvider>
+      </ScrollAnchorProvider>,
+    );
 
-        await waitForTimeout(() => {
-            expectAllColumnsNotNull(c, [
-                [/Program/, /System Program/],
-                [/Nonce Address/, /NonCboKHT9aKXzy87SQxX5ZWZ3u8VRVf5G6pm5NimtR/],
-                [/Authority Address/, /NautFCh9z5i4uN3ZCbEABf4ompPCPkzGzHKMcUbBUnf/],
-                [/To Address/, /destqL3WARuT1i7W4tyMr7e62fc5PjoQzuu2Cbpsf2p/],
-                [/Withdraw Amount \(SOL\)/, /0.001/],
-            ]);
-        });
+    // Wait for initial and temporary elements to disappear separately
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Inspector Input/i)).toBeNull();
+    });
+    await waitForTimeout(() => {
+      expect(screen.queryByText(/Loading/i)).toBeNull();
     });
 
-    test('renders SystemProgram::AuthorizeNonceAccount instruction', async () => {
-        // Setup search params mock
-        const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramAuthorizeNonceQueryParam);
-        vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
+    expect(screen.getByText(/System Program: Initialize Nonce/i)).not.toBeNull();
 
-        const { container: c } = render(
-            <ScrollAnchorProvider>
-                <ClusterProvider>
-                    <TransactionsProvider>
-                        <AccountsProvider>
-                            <TransactionInspectorPage showTokenBalanceChanges={false} />
-                        </AccountsProvider>
-                    </TransactionsProvider>
-                </ClusterProvider>
-            </ScrollAnchorProvider>
-        );
-
-        // Wait for initial and temporary elements to disappear separately
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Inspector Input/i)).toBeNull();
-        });
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Loading/i)).toBeNull();
-        });
-
-        expect(screen.getByText(/System Program: Authorize Nonce/i)).not.toBeNull();
-
-        await waitForTimeout(() => {
-            expectAllColumnsNotNull(c, [
-                [/Program/, /System Program/],
-                [/Nonce Address/, /NonCboKHT9aKXzy87SQxX5ZWZ3u8VRVf5G6pm5NimtR/],
-                [/Old Authority Address/, /NautFCh9z5i4uN3ZCbEABf4ompPCPkzGzHKMcUbBUnf/],
-                [/New Authority Address/, /destqL3WARuT1i7W4tyMr7e62fc5PjoQzuu2Cbpsf2p/],
-            ]);
-        });
+    await waitForTimeout(() => {
+      expectAllColumnsNotNull(c, [
+        [/Program/, /System Program/],
+        [/Nonce Address/, /NonCboKHT9aKXzy87SQxX5ZWZ3u8VRVf5G6pm5NimtR/],
+        [/Authority Address/, /NautFCh9z5i4uN3ZCbEABf4ompPCPkzGzHKMcUbBUnf/],
+      ]);
     });
-
-    test('renders SystemProgram::InitializeNonceAccount instruction', async () => {
-        // Setup search params mock
-        const mockUseSearchParamsReturn = mockUseSearchParams(stubs.systemProgramInitializeNonceQueryParam);
-        vi.spyOn(await import('next/navigation'), 'useSearchParams').mockReturnValue(mockUseSearchParamsReturn as any);
-
-        const { container: c } = render(
-            <ScrollAnchorProvider>
-                <ClusterProvider>
-                    <TransactionsProvider>
-                        <AccountsProvider>
-                            <TransactionInspectorPage showTokenBalanceChanges={false} />
-                        </AccountsProvider>
-                    </TransactionsProvider>
-                </ClusterProvider>
-            </ScrollAnchorProvider>
-        );
-
-        // Wait for initial and temporary elements to disappear separately
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Inspector Input/i)).toBeNull();
-        });
-        await waitForTimeout(() => {
-            expect(screen.queryByText(/Loading/i)).toBeNull();
-        });
-
-        expect(screen.getByText(/System Program: Initialize Nonce/i)).not.toBeNull();
-
-        await waitForTimeout(() => {
-            expectAllColumnsNotNull(c, [
-                [/Program/, /System Program/],
-                [/Nonce Address/, /NonCboKHT9aKXzy87SQxX5ZWZ3u8VRVf5G6pm5NimtR/],
-                [/Authority Address/, /NautFCh9z5i4uN3ZCbEABf4ompPCPkzGzHKMcUbBUnf/],
-            ]);
-        });
-    });
+  });
 });

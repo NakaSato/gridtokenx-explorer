@@ -7,63 +7,63 @@ import { InstructionCard } from '../InstructionCard';
 import { CreateAccountInfo } from './types';
 
 export function CreateDetailsCard(props: {
-    ix: ParsedInstruction;
-    index: number;
-    result: SignatureResult;
-    info: CreateAccountInfo;
-    innerCards?: JSX.Element[];
-    childIndex?: number;
+  ix: ParsedInstruction;
+  index: number;
+  result: SignatureResult;
+  info: CreateAccountInfo;
+  innerCards?: JSX.Element[];
+  childIndex?: number;
 }) {
-    const { ix, index, result, info, innerCards, childIndex } = props;
+  const { ix, index, result, info, innerCards, childIndex } = props;
 
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title="System Program: Create Account"
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Program</td>
-                <td className="lg:text-right">
-                    <Address pubkey={SystemProgram.programId} alignRight link />
-                </td>
-            </tr>
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title="System Program: Create Account"
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Program</td>
+        <td className="lg:text-right">
+          <Address pubkey={SystemProgram.programId} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>From Address</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.source} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>From Address</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.source} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>New Address</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.newAccount} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>New Address</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.newAccount} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Transfer Amount (SOL)</td>
-                <td className="lg:text-right">
-                    <SolBalance lamports={info.lamports} />
-                </td>
-            </tr>
+      <tr>
+        <td>Transfer Amount (SOL)</td>
+        <td className="lg:text-right">
+          <SolBalance lamports={info.lamports} />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Allocated Data Size</td>
-                <td className="lg:text-right">{info.space} byte(s)</td>
-            </tr>
+      <tr>
+        <td>Allocated Data Size</td>
+        <td className="lg:text-right">{info.space} byte(s)</td>
+      </tr>
 
-            <tr>
-                <td>Assigned Program Id</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.owner} alignRight link />
-                </td>
-            </tr>
-        </InstructionCard>
-    );
+      <tr>
+        <td>Assigned Program Id</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.owner} alignRight link />
+        </td>
+      </tr>
+    </InstructionCard>
+  );
 }

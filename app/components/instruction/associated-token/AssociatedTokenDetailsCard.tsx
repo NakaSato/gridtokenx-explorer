@@ -11,37 +11,37 @@ import { RecoverNestedDetailsCard } from './RecoverNestedDetailsCard';
 import { CreateIdempotentInfo, RecoverNestedInfo } from './types';
 
 type DetailsProps = {
-    tx: ParsedTransaction;
-    ix: ParsedInstruction;
-    result: SignatureResult;
-    index: number;
-    innerCards?: JSX.Element[];
-    childIndex?: number;
-    InstructionCardComponent?: React.FC<Parameters<typeof InstructionCard>[0]>;
+  tx: ParsedTransaction;
+  ix: ParsedInstruction;
+  result: SignatureResult;
+  index: number;
+  innerCards?: JSX.Element[];
+  childIndex?: number;
+  InstructionCardComponent?: React.FC<Parameters<typeof InstructionCard>[0]>;
 };
 
 export function AssociatedTokenDetailsCard(props: DetailsProps) {
-    try {
-        const parsed = create(props.ix.parsed, ParsedInfo);
-        switch (parsed.type) {
-            case 'create': {
-                return <CreateDetailsCard {...props} />;
-            }
-            case 'createIdempotent': {
-                const info = create(parsed.info, CreateIdempotentInfo);
-                return <CreateIdempotentDetailsCard info={info} {...props} />;
-            }
-            case 'recoverNested': {
-                const info = create(parsed.info, RecoverNestedInfo);
-                return <RecoverNestedDetailsCard info={info} {...props} />;
-            }
-            default:
-                return <UnknownDetailsCard {...props} />;
-        }
-    } catch (error) {
-        console.error(error, {
-            signature: props.tx.signatures[0],
-        });
+  try {
+    const parsed = create(props.ix.parsed, ParsedInfo);
+    switch (parsed.type) {
+      case 'create': {
+        return <CreateDetailsCard {...props} />;
+      }
+      case 'createIdempotent': {
+        const info = create(parsed.info, CreateIdempotentInfo);
+        return <CreateIdempotentDetailsCard info={info} {...props} />;
+      }
+      case 'recoverNested': {
+        const info = create(parsed.info, RecoverNestedInfo);
+        return <RecoverNestedDetailsCard info={info} {...props} />;
+      }
+      default:
         return <UnknownDetailsCard {...props} />;
     }
+  } catch (error) {
+    console.error(error, {
+      signature: props.tx.signatures[0],
+    });
+    return <UnknownDetailsCard {...props} />;
+  }
 }

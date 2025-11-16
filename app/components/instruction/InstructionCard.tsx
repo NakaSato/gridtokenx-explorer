@@ -6,50 +6,50 @@ import React, { useCallback, useContext } from 'react';
 import { SignatureContext } from './SignatureContext';
 
 type InstructionProps = {
-    title: string;
-    children?: React.ReactNode;
-    result: SignatureResult;
-    index: number;
-    ix: TransactionInstruction | ParsedInstruction;
-    defaultRaw?: boolean;
-    innerCards?: JSX.Element[];
-    childIndex?: number;
+  title: string;
+  children?: React.ReactNode;
+  result: SignatureResult;
+  index: number;
+  ix: TransactionInstruction | ParsedInstruction;
+  defaultRaw?: boolean;
+  innerCards?: JSX.Element[];
+  childIndex?: number;
 };
 
 export function InstructionCard({
-    title,
-    children,
-    result,
-    index,
-    ix,
-    defaultRaw,
-    innerCards,
-    childIndex,
+  title,
+  children,
+  result,
+  index,
+  ix,
+  defaultRaw,
+  innerCards,
+  childIndex,
 }: InstructionProps) {
-    const signature = useContext(SignatureContext);
-    const rawDetails = useRawTransactionDetails(signature);
+  const signature = useContext(SignatureContext);
+  const rawDetails = useRawTransactionDetails(signature);
 
-    let raw: TransactionInstruction | undefined = undefined;
-    if (rawDetails && childIndex === undefined) {
-        raw = rawDetails?.data?.raw?.transaction.instructions[index];
-    }
+  let raw: TransactionInstruction | undefined = undefined;
+  if (rawDetails && childIndex === undefined) {
+    raw = rawDetails?.data?.raw?.transaction.instructions[index];
+  }
 
-    const fetchRaw = useFetchRawTransaction();
-    const fetchRawTrigger = useCallback(() => fetchRaw(signature), [signature, fetchRaw]);
+  const fetchRaw = useFetchRawTransaction();
+  const fetchRawTrigger = useCallback(() => fetchRaw(signature), [signature, fetchRaw]);
 
-    return (
-        <BaseInstructionCard
-            title={title}
-            result={result}
-            index={index}
-            ix={ix}
-            defaultRaw={defaultRaw}
-            innerCards={innerCards}
-            childIndex={childIndex}
-            raw={raw}
-            onRequestRaw={fetchRawTrigger}
-        >
-            {children}
-        </BaseInstructionCard>
-    );
+  return (
+    <BaseInstructionCard
+      title={title}
+      result={result}
+      index={index}
+      ix={ix}
+      defaultRaw={defaultRaw}
+      innerCards={innerCards}
+      childIndex={childIndex}
+      raw={raw}
+      onRequestRaw={fetchRawTrigger}
+    >
+      {children}
+    </BaseInstructionCard>
+  );
 }

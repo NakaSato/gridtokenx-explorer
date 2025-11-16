@@ -12,5 +12,5 @@
  * const isDebugMode = isEnvEnabled(process.env.DEBUG_MODE); // returns false
  */
 export function isEnvEnabled(variable: undefined | string) {
-    return variable === 'true';
+  return variable === 'true';
 }

@@ -3,5 +3,5 @@
 import { ClusterDropdown } from './ClusterDropdown';
 
 export const ClusterStatusButton = () => {
-    return <ClusterDropdown />;
+  return <ClusterDropdown />;
 };

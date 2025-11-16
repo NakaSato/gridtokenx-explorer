@@ -5,8 +5,8 @@ import { ComponentProps } from 'react';
 
 // Dynamically import react-json-view with SSR disabled
 const ReactJsonView = dynamic(() => import('react-json-view'), {
-    loading: () => <div className="text-muted-foreground">Loading JSON viewer...</div>,
-    ssr: false,
+  loading: () => <div className="text-muted-foreground">Loading JSON viewer...</div>,
+  ssr: false,
 });
 
 export type JsonViewerProps = ComponentProps<typeof ReactJsonView>;
@@ -16,7 +16,7 @@ export type JsonViewerProps = ComponentProps<typeof ReactJsonView>;
  * This prevents the "document is not defined" error during server-side rendering.
  */
 export function JsonViewer(props: JsonViewerProps) {
-    return <ReactJsonView {...props} />;
+  return <ReactJsonView {...props} />;
 }
 
 /**
@@ -24,5 +24,5 @@ export function JsonViewer(props: JsonViewerProps) {
  * commonly used across the application
  */
 export function SolarizedJsonViewer(props: Omit<JsonViewerProps, 'theme'>) {
-    return <JsonViewer theme="solarized" {...props} />;
+  return <JsonViewer theme="solarized" {...props} />;
 }

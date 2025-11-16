@@ -4,9 +4,9 @@ import { ErrorCard } from '@components/common/ErrorCard';
 export const dynamic = 'force-dynamic';
 
 export default function NotFoundPage() {
-    return (
-        <div className="container mx-auto px-4 -mt-12">
-            <ErrorCard text="Page not found" />
-        </div>
-    );
+  return (
+    <div className="container mx-auto -mt-12 px-4">
+      <ErrorCard text="Page not found" />
+    </div>
+  );
 }

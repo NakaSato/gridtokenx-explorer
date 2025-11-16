@@ -22,117 +22,117 @@ import { IdlTypesView } from './IdlTypes';
 type TabId = 'instructions' | 'accounts' | 'types' | 'errors' | 'constants' | 'events' | 'pdas';
 
 type Tab = {
-    id: TabId;
-    title: string;
-    disabled: boolean;
-    component: JSX.Element;
+  id: TabId;
+  title: string;
+  disabled: boolean;
+  component: JSX.Element;
 };
 
 function useTabs(idl: FormattedIdl | null) {
-    const tabs: Tab[] = useMemo(() => {
-        if (!idl) return [];
+  const tabs: Tab[] = useMemo(() => {
+    if (!idl) return [];
 
-        return [
-            {
-                component: <IdlInstructionsView data={idl.instructions} />,
-                disabled: !idl.instructions,
-                id: 'instructions',
-                title: 'Instructions',
-            },
-            {
-                component: <IdlAccountsView data={idl.accounts} />,
-                disabled: !idl.accounts?.length,
-                id: 'accounts',
-                title: 'Accounts',
-            },
-            {
-                component: <IdlTypesView data={idl.types} />,
-                disabled: !idl.types?.length,
-                id: 'types',
-                title: 'Types',
-            },
-            {
-                component: <IdlPdasView data={idl.pdas} />,
-                disabled: !idl.pdas?.length,
-                id: 'pdas',
-                title: 'Pdas',
-            },
-            {
-                component: <IdlErrorsView data={idl.errors} />,
-                disabled: !idl.errors?.length,
-                id: 'errors',
-                title: 'Errors',
-            },
-            {
-                component: <IdlConstantsView data={idl.constants} />,
-                disabled: !idl.constants?.length,
-                id: 'constants',
-                title: 'Constants',
-            },
-            {
-                component: <IdlEventsView data={idl.events} />,
-                disabled: !idl.events?.length,
-                id: 'events',
-                title: 'Events',
-            },
-        ];
-    }, [idl]);
+    return [
+      {
+        component: <IdlInstructionsView data={idl.instructions} />,
+        disabled: !idl.instructions,
+        id: 'instructions',
+        title: 'Instructions',
+      },
+      {
+        component: <IdlAccountsView data={idl.accounts} />,
+        disabled: !idl.accounts?.length,
+        id: 'accounts',
+        title: 'Accounts',
+      },
+      {
+        component: <IdlTypesView data={idl.types} />,
+        disabled: !idl.types?.length,
+        id: 'types',
+        title: 'Types',
+      },
+      {
+        component: <IdlPdasView data={idl.pdas} />,
+        disabled: !idl.pdas?.length,
+        id: 'pdas',
+        title: 'Pdas',
+      },
+      {
+        component: <IdlErrorsView data={idl.errors} />,
+        disabled: !idl.errors?.length,
+        id: 'errors',
+        title: 'Errors',
+      },
+      {
+        component: <IdlConstantsView data={idl.constants} />,
+        disabled: !idl.constants?.length,
+        id: 'constants',
+        title: 'Constants',
+      },
+      {
+        component: <IdlEventsView data={idl.events} />,
+        disabled: !idl.events?.length,
+        id: 'events',
+        title: 'Events',
+      },
+    ];
+  }, [idl]);
 
-    return tabs;
+  return tabs;
 }
 
 export function FormattedIdlView({ idl }: { idl: FormattedIdl | null }) {
-    const [activeTabIndex, setActiveTabIndex] = useState<number | null>(null);
-    const tabs = useTabs(idl);
+  const [activeTabIndex, setActiveTabIndex] = useState<number | null>(null);
+  const tabs = useTabs(idl);
 
-    useEffect(() => {
-        if (typeof activeTabIndex === 'number') return;
-        setActiveTabIndex(tabs.findIndex(tab => !tab.disabled));
-    }, [tabs, activeTabIndex]);
+  useEffect(() => {
+    if (typeof activeTabIndex === 'number') return;
+    setActiveTabIndex(tabs.findIndex(tab => !tab.disabled));
+  }, [tabs, activeTabIndex]);
 
-    if (!tabs || activeTabIndex === null || !idl) return null;
+  if (!tabs || activeTabIndex === null || !idl) return null;
 
-    const activeTab = tabs[activeTabIndex];
+  const activeTab = tabs[activeTabIndex];
 
-    return (
-        <div className="idl-view">
-            <div className="nav nav-tabs mb-5">
-                {tabs.map((tab, index) => (
-                    <button
-                        key={tab.title}
-                        className={classNames('nav-item nav-link', {
-                            active: index === activeTabIndex,
-                            'opacity-50': tab.disabled,
-                        })}
-                        disabled={tab.disabled}
-                        onClick={() => setActiveTabIndex(index)}
-                    >
-                        {tab.title}
-                    </button>
-                ))}
-            </div>
-            <div className="tablresponsive mb-0 min-h-[200px]">{activeTab.component}</div>
-        </div>
-    );
+  return (
+    <div className="idl-view">
+      <div className="nav nav-tabs mb-5">
+        {tabs.map((tab, index) => (
+          <button
+            key={tab.title}
+            className={classNames('nav-item nav-link', {
+              active: index === activeTabIndex,
+              'opacity-50': tab.disabled,
+            })}
+            disabled={tab.disabled}
+            onClick={() => setActiveTabIndex(index)}
+          >
+            {tab.title}
+          </button>
+        ))}
+      </div>
+      <div className="tablresponsive mb-0 min-h-[200px]">{activeTab.component}</div>
+    </div>
+  );
 }
 
 export function AnchorFormattedIdl({
-    idl,
-    programId,
-    searchStr = '',
+  idl,
+  programId,
+  searchStr = '',
 }: {
-    idl?: Idl;
-    programId: string;
-    searchStr?: string;
+  idl?: Idl;
+  programId: string;
+  searchStr?: string;
 }) {
-    const formattedIdl = getFormattedIdl(formatDisplayIdl, idl, programId);
-    const anchorFormattedIdl = useFormatAnchorIdl(idl ? formattedIdl : idl);
-    const searchResults = useSearchIdl(anchorFormattedIdl, searchStr);
-    return <FormattedIdlView idl={searchResults} />;
+  const formattedIdl = getFormattedIdl(formatDisplayIdl, idl, programId);
+  const anchorFormattedIdl = useFormatAnchorIdl(idl ? formattedIdl : idl);
+  const searchResults = useSearchIdl(anchorFormattedIdl, searchStr);
+  return <FormattedIdlView idl={searchResults} />;
 }
 
 export function CodamaFormattedIdl({ idl, searchStr = '' }: { idl?: RootNode; searchStr?: string }) {
-    const formattedIdl = useFormatCodamaIdl(idl);
-    const searchResults = useSearchIdl(formattedIdl, searchStr);
-    return <FormattedIdlView idl={searchResults} />;
+  const formattedIdl = useFormatCodamaIdl(idl);
+  const searchResults = useSearchIdl(formattedIdl, searchStr);
+  return <FormattedIdlView idl={searchResults} />;
 }

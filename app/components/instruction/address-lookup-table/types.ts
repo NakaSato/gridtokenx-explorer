@@ -4,17 +4,17 @@ import { PublicKeyFromString } from '@/app/validators/pubkey';
 
 export type CreateLookupTableInfo = Infer<typeof CreateLookupTableInfo>;
 export const CreateLookupTableInfo = type({
-    bumpSeed: number(),
-    lookupTableAccount: PublicKeyFromString,
-    lookupTableAuthority: PublicKeyFromString,
-    payerAccount: PublicKeyFromString,
-    recentSlot: number(),
-    systemProgram: PublicKeyFromString,
+  bumpSeed: number(),
+  lookupTableAccount: PublicKeyFromString,
+  lookupTableAuthority: PublicKeyFromString,
+  payerAccount: PublicKeyFromString,
+  recentSlot: number(),
+  systemProgram: PublicKeyFromString,
 });
 
 const LookupTableInfo = {
-    lookupTableAccount: PublicKeyFromString,
-    lookupTableAuthority: PublicKeyFromString,
+  lookupTableAccount: PublicKeyFromString,
+  lookupTableAuthority: PublicKeyFromString,
 };
 
 export type FreezeLookupTableInfo = Infer<typeof FreezeLookupTableInfo>;
@@ -31,21 +31,21 @@ export const CloseLookupTableInfo = type({ ...LookupTableInfo, recipient: Public
 
 export type AddressLookupTableInstructionType = Infer<typeof AddressLookupTableInstructionType>;
 export const AddressLookupTableInstructionType = enums([
-    'createLookupTable',
-    'freezeLookupTable',
-    'extendLookupTable',
-    'deactivateLookupTable',
-    'closeLookupTable',
+  'createLookupTable',
+  'freezeLookupTable',
+  'extendLookupTable',
+  'deactivateLookupTable',
+  'closeLookupTable',
 ]);
 
 export type AddressLookupTableInstructionInfo = Infer<typeof AddressLookupTableInstructionInfo>;
 export const AddressLookupTableInstructionInfo = type({
-    info: union([
-        CreateLookupTableInfo,
-        FreezeLookupTableInfo,
-        ExtendLookupTableInfo,
-        DeactivateLookupTableInfo,
-        CloseLookupTableInfo,
-    ]),
-    type: AddressLookupTableInstructionType,
+  info: union([
+    CreateLookupTableInfo,
+    FreezeLookupTableInfo,
+    ExtendLookupTableInfo,
+    DeactivateLookupTableInfo,
+    CloseLookupTableInfo,
+  ]),
+  type: AddressLookupTableInstructionType,
 });

@@ -8,74 +8,74 @@ import { InstructionCard } from '../InstructionCard';
 import { TransferWithSeedInfo } from './types';
 
 export function TransferWithSeedDetailsCard(props: {
-    ix: ParsedInstruction;
-    index: number;
-    result: SignatureResult;
-    info: TransferWithSeedInfo;
-    innerCards?: JSX.Element[];
-    childIndex?: number;
+  ix: ParsedInstruction;
+  index: number;
+  result: SignatureResult;
+  info: TransferWithSeedInfo;
+  innerCards?: JSX.Element[];
+  childIndex?: number;
 }) {
-    const { ix, index, result, info, innerCards, childIndex } = props;
+  const { ix, index, result, info, innerCards, childIndex } = props;
 
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title="System Program: Transfer w/ Seed"
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Program</td>
-                <td className="lg:text-right">
-                    <Address pubkey={SystemProgram.programId} alignRight link />
-                </td>
-            </tr>
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title="System Program: Transfer w/ Seed"
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Program</td>
+        <td className="lg:text-right">
+          <Address pubkey={SystemProgram.programId} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>From Address</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.source} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>From Address</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.source} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Destination Address</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.destination} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Destination Address</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.destination} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Base Address</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.sourceBase} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Base Address</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.sourceBase} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Transfer Amount (SOL)</td>
-                <td className="lg:text-right">
-                    <SolBalance lamports={info.lamports} />
-                </td>
-            </tr>
+      <tr>
+        <td>Transfer Amount (SOL)</td>
+        <td className="lg:text-right">
+          <SolBalance lamports={info.lamports} />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Seed</td>
-                <td className="lg:text-right">
-                    <Copyable text={info.sourceSeed}>
-                        <code>{info.sourceSeed}</code>
-                    </Copyable>
-                </td>
-            </tr>
+      <tr>
+        <td>Seed</td>
+        <td className="lg:text-right">
+          <Copyable text={info.sourceSeed}>
+            <code>{info.sourceSeed}</code>
+          </Copyable>
+        </td>
+      </tr>
 
-            <tr>
-                <td>Source Owner</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.sourceOwner} alignRight link />
-                </td>
-            </tr>
-        </InstructionCard>
-    );
+      <tr>
+        <td>Source Owner</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.sourceOwner} alignRight link />
+        </td>
+      </tr>
+    </InstructionCard>
+  );
 }

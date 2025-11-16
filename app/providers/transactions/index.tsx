@@ -18,16 +18,16 @@ export type Confirmations = number | 'max';
 export type Timestamp = number | 'unavailable';
 
 export interface TransactionStatusInfo {
-    slot: number;
-    result: SignatureResult;
-    timestamp: Timestamp;
-    confirmations: Confirmations;
-    confirmationStatus?: TransactionConfirmationStatus;
+  slot: number;
+  result: SignatureResult;
+  timestamp: Timestamp;
+  confirmations: Confirmations;
+  confirmationStatus?: TransactionConfirmationStatus;
 }
 
 export interface TransactionStatus {
-    signature: TransactionSignature;
-    info: TransactionStatusInfo | null;
+  signature: TransactionSignature;
+  info: TransactionStatusInfo | null;
 }
 
 type State = Cache.State<TransactionStatus>;
@@ -38,125 +38,123 @@ const DispatchContext = React.createContext<Dispatch | undefined>(undefined);
 
 type TransactionsProviderProps = { children: React.ReactNode };
 export function TransactionsProvider({ children }: TransactionsProviderProps) {
-    const { url } = useCluster();
-    const [state, dispatch] = Cache.useReducer<TransactionStatus>(url);
+  const { url } = useCluster();
+  const [state, dispatch] = Cache.useReducer<TransactionStatus>(url);
 
-    // Clear accounts cache whenever cluster is changed
-    React.useEffect(() => {
-        dispatch({ type: ActionType.Clear, url });
-    }, [dispatch, url]);
+  // Clear accounts cache whenever cluster is changed
+  React.useEffect(() => {
+    dispatch({ type: ActionType.Clear, url });
+  }, [dispatch, url]);
 
-    return (
-        <StateContext.Provider value={state}>
-            <DispatchContext.Provider value={dispatch}>
-                <RawDetailsProvider>
-                    <DetailsProvider>{children}</DetailsProvider>
-                </RawDetailsProvider>
-            </DispatchContext.Provider>
-        </StateContext.Provider>
-    );
+  return (
+    <StateContext.Provider value={state}>
+      <DispatchContext.Provider value={dispatch}>
+        <RawDetailsProvider>
+          <DetailsProvider>{children}</DetailsProvider>
+        </RawDetailsProvider>
+      </DispatchContext.Provider>
+    </StateContext.Provider>
+  );
 }
 
 export async function fetchTransactionStatus(
-    dispatch: Dispatch,
-    signature: TransactionSignature,
-    cluster: Cluster,
-    url: string
+  dispatch: Dispatch,
+  signature: TransactionSignature,
+  cluster: Cluster,
+  url: string,
 ) {
-    dispatch({
-        key: signature,
-        status: FetchStatus.Fetching,
-        type: ActionType.Update,
-        url,
-    });
+  dispatch({
+    key: signature,
+    status: FetchStatus.Fetching,
+    type: ActionType.Update,
+    url,
+  });
 
-    let fetchStatus;
-    let data;
-    try {
-        const rpc = createRpc(url);
-        const signatureAddress = toSignature(signature);
-        const response = await rpc
-            .getSignatureStatuses([signatureAddress], { searchTransactionHistory: true })
-            .send();
+  let fetchStatus;
+  let data;
+  try {
+    const rpc = createRpc(url);
+    const signatureAddress = toSignature(signature);
+    const response = await rpc.getSignatureStatuses([signatureAddress], { searchTransactionHistory: true }).send();
 
-        const value = response.value[0];
+    const value = response.value[0];
 
-        let info = null;
-        if (value !== null) {
-            let confirmations: Confirmations;
-            if (typeof value.confirmations === 'number') {
-                confirmations = value.confirmations;
-            } else {
-                confirmations = 'max';
-            }
+    let info = null;
+    if (value !== null) {
+      let confirmations: Confirmations;
+      if (typeof value.confirmations === 'number') {
+        confirmations = value.confirmations;
+      } else {
+        confirmations = 'max';
+      }
 
-            let blockTime = null;
-            try {
-                // Convert slot to BigInt before calling getBlockTime
-                const slotAsBigInt = typeof value.slot === 'bigint' ? value.slot : BigInt(value.slot);
-                const blockTimeResponse = await rpc.getBlockTime(slotAsBigInt).send();
-                // getBlockTime returns Unix timestamp in seconds as bigint
-                blockTime = blockTimeResponse ? Number(blockTimeResponse) : null;
-            } catch (error) {
-                if (cluster === Cluster.MainnetBeta && confirmations === 'max') {
-                    console.error(error, { slot: `${value.slot}` });
-                }
-            }
-            const timestamp: Timestamp = blockTime !== null ? blockTime : 'unavailable';
-
-            info = {
-                confirmationStatus: value.confirmationStatus as TransactionConfirmationStatus | undefined,
-                confirmations,
-                result: { err: value.err },
-                slot: Number(value.slot),
-                timestamp,
-            };
+      let blockTime = null;
+      try {
+        // Convert slot to BigInt before calling getBlockTime
+        const slotAsBigInt = typeof value.slot === 'bigint' ? value.slot : BigInt(value.slot);
+        const blockTimeResponse = await rpc.getBlockTime(slotAsBigInt).send();
+        // getBlockTime returns Unix timestamp in seconds as bigint
+        blockTime = blockTimeResponse ? Number(blockTimeResponse) : null;
+      } catch (error) {
+        if (cluster === Cluster.MainnetBeta && confirmations === 'max') {
+          console.error(error, { slot: `${value.slot}` });
         }
-        data = { info, signature };
-        fetchStatus = FetchStatus.Fetched;
-    } catch (error) {
-        if (cluster !== Cluster.Custom) {
-            console.error(error, { url });
-        }
-        fetchStatus = FetchStatus.FetchFailed;
+      }
+      const timestamp: Timestamp = blockTime !== null ? blockTime : 'unavailable';
+
+      info = {
+        confirmationStatus: value.confirmationStatus as TransactionConfirmationStatus | undefined,
+        confirmations,
+        result: { err: value.err },
+        slot: Number(value.slot),
+        timestamp,
+      };
     }
+    data = { info, signature };
+    fetchStatus = FetchStatus.Fetched;
+  } catch (error) {
+    if (cluster !== Cluster.Custom) {
+      console.error(error, { url });
+    }
+    fetchStatus = FetchStatus.FetchFailed;
+  }
 
-    dispatch({
-        data,
-        key: signature,
-        status: fetchStatus,
-        type: ActionType.Update,
-        url,
-    });
+  dispatch({
+    data,
+    key: signature,
+    status: fetchStatus,
+    type: ActionType.Update,
+    url,
+  });
 }
 
 export function useTransactionStatus(
-    signature: TransactionSignature | undefined
+  signature: TransactionSignature | undefined,
 ): Cache.CacheEntry<TransactionStatus> | undefined {
-    const context = React.useContext(StateContext);
+  const context = React.useContext(StateContext);
 
-    if (!context) {
-        throw new Error(`useTransactionStatus must be used within a TransactionsProvider`);
-    }
+  if (!context) {
+    throw new Error(`useTransactionStatus must be used within a TransactionsProvider`);
+  }
 
-    if (signature === undefined) {
-        return undefined;
-    }
+  if (signature === undefined) {
+    return undefined;
+  }
 
-    return context.entries[signature];
+  return context.entries[signature];
 }
 
 export function useFetchTransactionStatus() {
-    const dispatch = React.useContext(DispatchContext);
-    if (!dispatch) {
-        throw new Error(`useFetchTransactionStatus must be used within a TransactionsProvider`);
-    }
+  const dispatch = React.useContext(DispatchContext);
+  if (!dispatch) {
+    throw new Error(`useFetchTransactionStatus must be used within a TransactionsProvider`);
+  }
 
-    const { cluster, url } = useCluster();
-    return React.useCallback(
-        (signature: TransactionSignature) => {
-            fetchTransactionStatus(dispatch, signature, cluster, url);
-        },
-        [dispatch, cluster, url]
-    );
+  const { cluster, url } = useCluster();
+  return React.useCallback(
+    (signature: TransactionSignature) => {
+      fetchTransactionStatus(dispatch, signature, cluster, url);
+    },
+    [dispatch, cluster, url],
+  );
 }

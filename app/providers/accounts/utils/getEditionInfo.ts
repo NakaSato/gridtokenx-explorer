@@ -9,17 +9,14 @@ import { Connection } from '@solana/web3.js';
 // type EditionData = programs.metadata.EditionData;
 
 export type EditionInfo = {
-    masterEdition?: any;
-    edition?: any;
+  masterEdition?: any;
+  edition?: any;
 };
 
-export default async function getEditionInfo(
-    metadata: any,
-    connection: Connection
-): Promise<EditionInfo> {
-    // TODO: Rimplement with new Metaplex SDK
-    return {
-        edition: undefined,
-        masterEdition: undefined,
-    };
+export default async function getEditionInfo(metadata: any, connection: Connection): Promise<EditionInfo> {
+  // TODO: Rimplement with new Metaplex SDK
+  return {
+    edition: undefined,
+    masterEdition: undefined,
+  };
 }

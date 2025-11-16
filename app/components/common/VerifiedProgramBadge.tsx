@@ -8,65 +8,65 @@ import { useIsProgramVerified } from '@/app/utils/verified-builds';
 import { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeable-program';
 
 export function VerifiedProgramBadge({
-    programData,
-    pubkey,
+  programData,
+  pubkey,
 }: {
-    programData: ProgramDataAccountInfo;
-    pubkey: PublicKey;
+  programData: ProgramDataAccountInfo;
+  pubkey: PublicKey;
 }) {
-    const { cluster } = useCluster();
-    const {
-        isLoading,
-        data: isVerified,
-        error,
-    } = useIsProgramVerified({
-        programData,
-        programId: pubkey,
-    });
-    const verifiedBuildTabPath = useClusterPath({ pathname: `/address/${pubkey.toBase58()}/verified-build` });
+  const { cluster } = useCluster();
+  const {
+    isLoading,
+    data: isVerified,
+    error,
+  } = useIsProgramVerified({
+    programData,
+    programId: pubkey,
+  });
+  const verifiedBuildTabPath = useClusterPath({ pathname: `/address/${pubkey.toBase58()}/verified-build` });
 
-    if (cluster !== Cluster.MainnetBeta) {
-        return (
-            <h3 className="mb-0">
-                <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-                    Verified Builds only available on Mainnet
-                </span>
-            </h3>
-        );
-    } else if (isLoading) {
-        return (
-            <h3 className="mb-0">
-                <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800">
-                    Loading...
-                </span>
-            </h3>
-        );
-    } else if (error) {
-        return (
-            <h3 className="mb-0">
-                <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-                    Error fetching verified build information
-                </span>
-            </h3>
-        );
+  if (cluster !== Cluster.MainnetBeta) {
+    return (
+      <h3 className="mb-0">
+        <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+          Verified Builds only available on Mainnet
+        </span>
+      </h3>
+    );
+  } else if (isLoading) {
+    return (
+      <h3 className="mb-0">
+        <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800">
+          Loading...
+        </span>
+      </h3>
+    );
+  } else if (error) {
+    return (
+      <h3 className="mb-0">
+        <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+          Error fetching verified build information
+        </span>
+      </h3>
+    );
+  } else {
+    let badgeClass = '';
+    let badgeText = '';
+
+    if (isVerified) {
+      badgeClass = 'bg-success-soft';
+      badgeText = 'Program Source Verified';
     } else {
-        let badgeClass = '';
-        let badgeText = '';
-
-        if (isVerified) {
-            badgeClass = 'bg-success-soft';
-            badgeText = 'Program Source Verified';
-        } else {
-            badgeClass = 'bg-warning-soft';
-            badgeText = 'Program Not Verified';
-        }
-
-        return (
-            <h3 className="mb-0">
-                <Link className={`c-pointer badge ${badgeClass} rank`} href={verifiedBuildTabPath}>
-                    {badgeText}
-                </Link>
-            </h3>
-        );
+      badgeClass = 'bg-warning-soft';
+      badgeText = 'Program Not Verified';
     }
+
+    return (
+      <h3 className="mb-0">
+        <Link className={`c-pointer badge ${badgeClass} rank`} href={verifiedBuildTabPath}>
+          {badgeText}
+        </Link>
+      </h3>
+    );
+  }
 }

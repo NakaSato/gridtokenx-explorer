@@ -3,14 +3,7 @@ export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './
 export { Alert, AlertTitle, AlertDescription } from './ui/alert';
 export { Badge, badgeVariants } from './ui/badge';
 export { Button, buttonVariants } from './ui/button';
-export {
-    Card,
-    CardHeader,
-    CardFooter,
-    CardTitle,
-    CardDescription,
-    CardContent,
-} from './ui/card';
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './ui/card';
 export { Input } from './ui/input';
 export { Label } from './ui/label';
 export { Separator } from './ui/separator';

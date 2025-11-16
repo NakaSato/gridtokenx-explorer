@@ -7,10 +7,10 @@ import React from 'react';
 import { AlertCircle } from 'react-feather';
 
 type Announcement = {
-    message: string;
-    estimate?: string;
-    start?: Date;
-    end?: Date;
+  message: string;
+  estimate?: string;
+  start?: Date;
+  end?: Date;
 };
 
 const announcements = new Map<Cluster, Announcement>();
@@ -30,53 +30,53 @@ const announcements = new Map<Cluster, Announcement>();
 // });
 
 export function MessageBanner() {
-    const cluster = useCluster().cluster;
-    const announcement = announcements.get(cluster);
-    if (!announcement) return null;
-    const { message, start, end, estimate } = announcement;
+  const cluster = useCluster().cluster;
+  const announcement = announcements.get(cluster);
+  if (!announcement) return null;
+  const { message, start, end, estimate } = announcement;
 
-    const now = new Date();
-    if (end && now > end) return null;
-    if (start && now < start) return null;
+  const now = new Date();
+  if (end && now > end) return null;
+  if (start && now < start) return null;
 
-    let timeframe;
-    if (estimate || start || end) {
-        timeframe = (
-            <div>
-                <hr className="text-gray-500 w-full my-3 opacity-50" />
-                {estimate && (
-                    <h5 className="text-sm text-gray-200">
-                        <span className="uppercase">Estimated Duration: </span>
-                        {estimate}
-                    </h5>
-                )}
-                {start && (
-                    <h5 className="text-sm text-gray-200">
-                        <span className="uppercase">Started at: </span>
-                        {displayTimestamp(start.getTime())}
-                    </h5>
-                )}
-                {end && (
-                    <h5 className="text-sm text-gray-200">
-                        <span className="uppercase">End: </span>
-                        {displayTimestamp(end.getTime())}
-                    </h5>
-                )}
-            </div>
-        );
-    }
-
-    return (
-        <div className="bg-blu600">
-            <div className="container mx-auto px-4">
-                <div className="flex flex-col items-center justify-center text-center py-3">
-                    <h3 className="mb-0 leading-normal">
-                        <AlertCircle className="mr-2" size={15} />
-                        {message}
-                    </h3>
-                    {timeframe}
-                </div>
-            </div>
-        </div>
+  let timeframe;
+  if (estimate || start || end) {
+    timeframe = (
+      <div>
+        <hr className="my-3 w-full text-gray-500 opacity-50" />
+        {estimate && (
+          <h5 className="text-sm text-gray-200">
+            <span className="uppercase">Estimated Duration: </span>
+            {estimate}
+          </h5>
+        )}
+        {start && (
+          <h5 className="text-sm text-gray-200">
+            <span className="uppercase">Started at: </span>
+            {displayTimestamp(start.getTime())}
+          </h5>
+        )}
+        {end && (
+          <h5 className="text-sm text-gray-200">
+            <span className="uppercase">End: </span>
+            {displayTimestamp(end.getTime())}
+          </h5>
+        )}
+      </div>
     );
+  }
+
+  return (
+    <div className="bg-blu600">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col items-center justify-center py-3 text-center">
+          <h3 className="mb-0 leading-normal">
+            <AlertCircle className="mr-2" size={15} />
+            {message}
+          </h3>
+          {timeframe}
+        </div>
+      </div>
+    </div>
+  );
 }

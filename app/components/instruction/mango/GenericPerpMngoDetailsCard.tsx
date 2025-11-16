@@ -5,49 +5,49 @@ import { InstructionCard } from '../InstructionCard';
 import { getPerpMarketFromInstruction } from './types';
 
 export function GenericPerpMngoDetailsCard(props: {
-    ix: TransactionInstruction;
-    index: number;
-    result: SignatureResult;
-    mangoAccountKeyLocation: number;
-    perpMarketKeyLocation: number;
-    title: string;
-    innerCards?: JSX.Element[];
-    childIndex?: number;
+  ix: TransactionInstruction;
+  index: number;
+  result: SignatureResult;
+  mangoAccountKeyLocation: number;
+  perpMarketKeyLocation: number;
+  title: string;
+  innerCards?: JSX.Element[];
+  childIndex?: number;
 }) {
-    const { ix, index, result, mangoAccountKeyLocation, perpMarketKeyLocation, title, innerCards, childIndex } = props;
-    const mangoAccount = ix.keys[mangoAccountKeyLocation];
-    const perpMarketAccountMeta = ix.keys[perpMarketKeyLocation];
-    const mangoPerpMarketConfig = getPerpMarketFromInstruction(ix, perpMarketAccountMeta);
+  const { ix, index, result, mangoAccountKeyLocation, perpMarketKeyLocation, title, innerCards, childIndex } = props;
+  const mangoAccount = ix.keys[mangoAccountKeyLocation];
+  const perpMarketAccountMeta = ix.keys[perpMarketKeyLocation];
+  const mangoPerpMarketConfig = getPerpMarketFromInstruction(ix, perpMarketAccountMeta);
 
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title={'Mango Program: ' + title}
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Mango account</td>
-                <td>
-                    <Address pubkey={mangoAccount.pubkey} alignRight link />
-                </td>
-            </tr>
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title={'Mango Program: ' + title}
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Mango account</td>
+        <td>
+          <Address pubkey={mangoAccount.pubkey} alignRight link />
+        </td>
+      </tr>
 
-            {mangoPerpMarketConfig !== undefined && (
-                <tr>
-                    <td>Perp market</td>
-                    <td className="lg:text-right">{mangoPerpMarketConfig.name}</td>
-                </tr>
-            )}
+      {mangoPerpMarketConfig !== undefined && (
+        <tr>
+          <td>Perp market</td>
+          <td className="lg:text-right">{mangoPerpMarketConfig.name}</td>
+        </tr>
+      )}
 
-            <tr>
-                <td>Perp market address</td>
-                <td>
-                    <Address pubkey={perpMarketAccountMeta.pubkey} alignRight link />
-                </td>
-            </tr>
-        </InstructionCard>
-    );
+      <tr>
+        <td>Perp market address</td>
+        <td>
+          <Address pubkey={perpMarketAccountMeta.pubkey} alignRight link />
+        </td>
+      </tr>
+    </InstructionCard>
+  );
 }

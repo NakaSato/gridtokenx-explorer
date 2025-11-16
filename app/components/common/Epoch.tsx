@@ -5,20 +5,20 @@ import React from 'react';
 import { Copyable } from './Copyable';
 
 type Props = {
-    epoch: number | bigint;
-    link?: boolean;
+  epoch: number | bigint;
+  link?: boolean;
 };
 export function Epoch({ epoch, link }: Props) {
-    const epochPath = useClusterPath({ pathname: `/epoch/${epoch}` });
-    return (
-        <span className="font-mono">
-            {link ? (
-                <Copyable text={epoch.toString()}>
-                    <Link href={epochPath}>{epoch.toLocaleString('en-US')}</Link>
-                </Copyable>
-            ) : (
-                epoch.toLocaleString('en-US')
-            )}
-        </span>
-    );
+  const epochPath = useClusterPath({ pathname: `/epoch/${epoch}` });
+  return (
+    <span className="font-mono">
+      {link ? (
+        <Copyable text={epoch.toString()}>
+          <Link href={epochPath}>{epoch.toLocaleString('en-US')}</Link>
+        </Copyable>
+      ) : (
+        epoch.toLocaleString('en-US')
+      )}
+    </span>
+  );
 }

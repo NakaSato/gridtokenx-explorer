@@ -9,15 +9,15 @@ export const AddressLookupTableAccountType = enums(['uninitialized', 'lookupTabl
 
 export type AddressLookupTableAccountInfo = Infer<typeof AddressLookupTableAccountInfo>;
 export const AddressLookupTableAccountInfo = type({
-    addresses: array(PublicKeyFromString),
-    authority: optional(PublicKeyFromString),
-    deactivationSlot: BigIntFromString,
-    lastExtendedSlot: NumberFromString,
-    lastExtendedSlotStartIndex: number(),
+  addresses: array(PublicKeyFromString),
+  authority: optional(PublicKeyFromString),
+  deactivationSlot: BigIntFromString,
+  lastExtendedSlot: NumberFromString,
+  lastExtendedSlotStartIndex: number(),
 });
 
 export type ParsedAddressLookupTableAccount = Infer<typeof ParsedAddressLookupTableAccount>;
 export const ParsedAddressLookupTableAccount = type({
-    info: AddressLookupTableAccountInfo,
-    type: AddressLookupTableAccountType,
+  info: AddressLookupTableAccountInfo,
+  type: AddressLookupTableAccountType,
 });

@@ -7,25 +7,25 @@ import { Suspense } from 'react';
 import React from 'react';
 
 type Props = Readonly<{
-    params: {
-        address: string;
-    };
+  params: {
+    address: string;
+  };
 }>;
 
 function AnchorAccountCardRenderer({
-    account,
-    onNotFound,
+  account,
+  onNotFound,
 }: React.ComponentProps<React.ComponentProps<typeof ParsedAccountRenderer>['renderComponent']>) {
-    if (!account) {
-        return onNotFound();
-    }
-    return (
-        <Suspense fallback={<LoadingCard message="Decoding account data using anchor interface" />}>
-            <AnchorAccountCard account={account} />
-        </Suspense>
-    );
+  if (!account) {
+    return onNotFound();
+  }
+  return (
+    <Suspense fallback={<LoadingCard message="Decoding account data using anchor interface" />}>
+      <AnchorAccountCard account={account} />
+    </Suspense>
+  );
 }
 
 export default function AnchorAccountPageClient({ params: { address } }: Props) {
-    return <ParsedAccountRenderer address={address} renderComponent={AnchorAccountCardRenderer} />;
+  return <ParsedAccountRenderer address={address} renderComponent={AnchorAccountCardRenderer} />;
 }

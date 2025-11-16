@@ -8,9 +8,9 @@ export const PROGRAM_ID = addressToPublicKey(toAddress(PROGRAM_ADDRESS));
 
 export type Ed25519Info = Infer<typeof Ed25519Info>;
 export const Ed25519Info = type({
-    account: PublicKeyFromString,
+  account: PublicKeyFromString,
 });
 
 export function isEd25519Instruction(instruction: TransactionInstruction): boolean {
-    return PROGRAM_ADDRESS === instruction.programId.toBase58();
+  return PROGRAM_ADDRESS === instruction.programId.toBase58();
 }

@@ -3,21 +3,21 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/app/components/shared/ui/tooltip';
 
 export function IdlDoc({ docs }: { docs: string[] }) {
-    if (!docs?.length) return null;
+  if (!docs?.length) return null;
 
-    return <p className="text-muted-foreground mb-0">{docs.join(' ')}</p>;
+  return <p className="text-muted-foreground mb-0">{docs.join(' ')}</p>;
 }
 
 // TODO: improve Tooltip. Vurrent version renders additional button element inside another one
 export function IdlDocTooltip({ docs, children }: { docs?: string[]; children: React.ReactNode }) {
-    if (!docs?.length) return <>{children}</>;
+  if (!docs?.length) return <>{children}</>;
 
-    return (
-        <Tooltip>
-            <TooltipTrigger className="border-0 bg-transparent p-0 text-inherit">{children}</TooltipTrigger>
-            <TooltipContent>
-                <div className="max-w-16 min-w-36">{docs.join(' ')}</div>
-            </TooltipContent>
-        </Tooltip>
-    );
+  return (
+    <Tooltip>
+      <TooltipTrigger className="border-0 bg-transparent p-0 text-inherit">{children}</TooltipTrigger>
+      <TooltipContent>
+        <div className="max-w-16 min-w-36">{docs.join(' ')}</div>
+      </TooltipContent>
+    </Tooltip>
+  );
 }

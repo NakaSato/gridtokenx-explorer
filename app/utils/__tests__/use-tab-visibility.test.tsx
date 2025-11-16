@@ -7,15 +7,15 @@ import useTabVisibility from '../use-tab-visibility';
 const isVisibleTestId = 'isVisible';
 
 const App: React.FC = () => {
-    const { visible } = useTabVisibility();
+  const { visible } = useTabVisibility();
 
-    return <div data-testid={isVisibleTestId} data-visible={visible} />;
+  return <div data-testid={isVisibleTestId} data-visible={visible} />;
 };
 
 test('detects visibility', async () => {
-    render(<App />);
+  render(<App />);
 
-    const el = screen.getByTestId(isVisibleTestId);
+  const el = screen.getByTestId(isVisibleTestId);
 
-    expect(el.dataset.visible).toBe('true');
+  expect(el.dataset.visible).toBe('true');
 });

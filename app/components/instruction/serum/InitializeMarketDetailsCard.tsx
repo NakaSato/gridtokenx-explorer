@@ -5,111 +5,111 @@ import { InstructionCard } from '../InstructionCard';
 import { InitializeMarket, SerumIxDetailsProps } from './types';
 
 export function InitializeMarketDetailsCard(props: SerumIxDetailsProps<InitializeMarket>) {
-    const { ix, index, result, programName, info, innerCards, childIndex } = props;
+  const { ix, index, result, programName, info, innerCards, childIndex } = props;
 
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title={`${programName} Program: Initialize Market`}
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Program</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.programId} alignRight link />
-                </td>
-            </tr>
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title={`${programName} Program: Initialize Market`}
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Program</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.programId} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Market</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.market} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Market</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.market} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Request Queue</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.requestQueue} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Request Queue</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.requestQueue} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Event Queue</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.eventQueue} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Event Queue</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.eventQueue} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Bids</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.bids} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Bids</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.bids} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Asks</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.asks} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Asks</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.asks} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Base Vault</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.baseVault} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Base Vault</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.baseVault} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Quote Vault</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.quoteVault} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Quote Vault</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.quoteVault} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Base Mint</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.baseMint} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Base Mint</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.baseMint} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Quote Mint</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.quoteMint} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Quote Mint</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.quoteMint} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Base Lot Size</td>
-                <td className="lg:text-right">{info.data.baseLotSize.toString(10)}</td>
-            </tr>
+      <tr>
+        <td>Base Lot Size</td>
+        <td className="lg:text-right">{info.data.baseLotSize.toString(10)}</td>
+      </tr>
 
-            <tr>
-                <td>Quote Lot Size</td>
-                <td className="lg:text-right">{info.data.quoteLotSize.toString(10)}</td>
-            </tr>
+      <tr>
+        <td>Quote Lot Size</td>
+        <td className="lg:text-right">{info.data.quoteLotSize.toString(10)}</td>
+      </tr>
 
-            <tr>
-                <td>Fee Rate Bps</td>
-                <td className="lg:text-right">{info.data.feeRateBps}</td>
-            </tr>
+      <tr>
+        <td>Fee Rate Bps</td>
+        <td className="lg:text-right">{info.data.feeRateBps}</td>
+      </tr>
 
-            <tr>
-                <td>Quote Dust Threshold</td>
-                <td className="lg:text-right">{info.data.quoteDustThreshold.toString(10)}</td>
-            </tr>
+      <tr>
+        <td>Quote Dust Threshold</td>
+        <td className="lg:text-right">{info.data.quoteDustThreshold.toString(10)}</td>
+      </tr>
 
-            <tr>
-                <td>Vault Signer Nonce</td>
-                <td className="lg:text-right">{info.data.vaultSignerNonce.toString(10)}</td>
-            </tr>
-        </InstructionCard>
-    );
+      <tr>
+        <td>Vault Signer Nonce</td>
+        <td className="lg:text-right">{info.data.vaultSignerNonce.toString(10)}</td>
+      </tr>
+    </InstructionCard>
+  );
 }

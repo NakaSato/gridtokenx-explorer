@@ -21,10 +21,10 @@ import { useVoteAccounts } from '@providers/accounts/vote-accounts';
 import { useCluster } from '@providers/cluster';
 import { StatsProvider } from '@providers/stats';
 import {
-    ClusterStatsStatus,
-    useDashboardInfo,
-    usePerformanceInfo,
-    useStatsProvider,
+  ClusterStatsStatus,
+  useDashboardInfo,
+  usePerformanceInfo,
+  useStatsProvider,
 } from '@providers/stats/solanaClusterStats';
 import { Status, SupplyProvider, useFetchSupply, useSupply } from '@providers/supply';
 import { ClusterStatus } from '@utils/cluster';
@@ -34,280 +34,271 @@ import { percentage } from '@utils/math';
 import { UpcomingFeatures } from './utils/feature-gate/UpcomingFeatures';
 
 export default function Page() {
-    return (
-        <Suspense
-            fallback={
-                <div className="container mx-auto mt-4 px-4">
-                    <div className="border-primary h-12 w-12 animate-spin rounded-full border-b-2" role="status">
-                        <span className="sr-only">Loading...</span>
-                    </div>
-                </div>
-            }
-        >
-            <StatsProvider>
-                <SupplyProvider>
-                    <div className="container mx-auto px-4 py-4">
-                        <StakingComponent />
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto mt-4 px-4">
+          <div className="border-primary h-12 w-12 animate-spin rounded-full border-b-2" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>
+      }
+    >
+      <StatsProvider>
+        <SupplyProvider>
+          <div className="container mx-auto px-4 py-4">
+            <StakingComponent />
 
-                        <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-                            <div className="w-full">
-                                <StatsCardBody />
-                            </div>
-                            <div className="w-full">
-                                <LiveTransactionStatsCard />
-                            </div>
-                        </div>
+            <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="w-full">
+                <StatsCardBody />
+              </div>
+              <div className="w-full">
+                <LiveTransactionStatsCard />
+              </div>
+            </div>
 
-                        <UpcomingFeatures />
-                    </div>
-                </SupplyProvider>
-            </StatsProvider>
-        </Suspense>
-    );
+            <UpcomingFeatures />
+          </div>
+        </SupplyProvider>
+      </StatsProvider>
+    </Suspense>
+  );
 }
 
 function StakingComponent() {
-    const { status } = useCluster();
-    const supply = useSupply();
-    const fetchSupply = useFetchSupply();
-    const { fetchVoteAccounts, voteAccounts } = useVoteAccounts();
+  const { status } = useCluster();
+  const supply = useSupply();
+  const fetchSupply = useFetchSupply();
+  const { fetchVoteAccounts, voteAccounts } = useVoteAccounts();
 
-    function fetchData() {
-        fetchSupply();
-        fetchVoteAccounts();
+  function fetchData() {
+    fetchSupply();
+    fetchVoteAccounts();
+  }
+
+  React.useEffect(() => {
+    if (status === ClusterStatus.Connected) {
+      fetchData();
     }
+  }, [status]); // eslint-disablline react-hooks/exhaustivdeps
 
-    React.useEffect(() => {
-        if (status === ClusterStatus.Connected) {
-            fetchData();
-        }
-    }, [status]); // eslint-disablline react-hooks/exhaustivdeps
-
-    const delinquentStake = React.useMemo(() => {
-        if (voteAccounts) {
-            return voteAccounts.delinquent.reduce(
-                (prev: bigint, current: any) => prev + current.activatedStake,
-                BigInt(0),
-            );
-        }
-    }, [voteAccounts]);
-
-    const activeStake = React.useMemo(() => {
-        if (voteAccounts && delinquentStake) {
-            return (
-                voteAccounts.current.reduce((prev: bigint, current: any) => prev + current.activatedStake, BigInt(0)) +
-                delinquentStake
-            );
-        }
-    }, [voteAccounts, delinquentStake]);
-
-    if (supply === Status.Disconnected) {
-        // we'll return here to prevent flicker
-        return null;
+  const delinquentStake = React.useMemo(() => {
+    if (voteAccounts) {
+      return voteAccounts.delinquent.reduce((prev: bigint, current: any) => prev + current.activatedStake, BigInt(0));
     }
+  }, [voteAccounts]);
 
-    if (supply === Status.Idle || supply === Status.Connecting) {
-        return <LoadingCard message="Loading supply data" />;
-    } else if (typeof supply === 'string') {
-        return <ErrorCard text={supply} retry={fetchData} />;
+  const activeStake = React.useMemo(() => {
+    if (voteAccounts && delinquentStake) {
+      return (
+        voteAccounts.current.reduce((prev: bigint, current: any) => prev + current.activatedStake, BigInt(0)) +
+        delinquentStake
+      );
     }
+  }, [voteAccounts, delinquentStake]);
 
-    // Don't display the staking card if the supply is 0
-    if (supply.circulating === BigInt(0) && supply.total === BigInt(0)) {
-        return null;
-    }
+  if (supply === Status.Disconnected) {
+    // we'll return here to prevent flicker
+    return null;
+  }
 
-    // Calculate to 2dp for accuracy, then display as 1
-    const circulatingPercentage = percentage(supply.circulating, supply.total, 2).toFixed(1);
+  if (supply === Status.Idle || supply === Status.Connecting) {
+    return <LoadingCard message="Loading supply data" />;
+  } else if (typeof supply === 'string') {
+    return <ErrorCard text={supply} retry={fetchData} />;
+  }
 
-    let delinquentStakePercentage;
-    if (delinquentStake && activeStake) {
-        delinquentStakePercentage = percentage(delinquentStake, activeStake, 2).toFixed(1);
-    }
+  // Don't display the staking card if the supply is 0
+  if (supply.circulating === BigInt(0) && supply.total === BigInt(0)) {
+    return null;
+  }
 
-    return (
-        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Card>
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-sm sm:text-lg">Circulating Supply</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <div className="text-xl font-bold break-words sm:text-2xl">
-                        <span className="text-blue-600 dark:text-blue-400">{displayLamports(supply.circulating)}</span>
-                        <span className="text-muted-foreground"> / {displayLamports(supply.total)}</span>
-                    </div>
-                    <p className="text-muted-foreground text-sm sm:text-base">
-                        <span className="text-blue-600 dark:text-blue-400">{circulatingPercentage}%</span> is
-                        circulating
-                    </p>
-                </CardContent>
-            </Card>
+  // Calculate to 2dp for accuracy, then display as 1
+  const circulatingPercentage = percentage(supply.circulating, supply.total, 2).toFixed(1);
 
-            <Card>
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-sm sm:text-lg">Active Stake</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    {activeStake ? (
-                        <div className="text-xl font-bold break-words sm:text-2xl">
-                            <span className="text-blue-600 dark:text-blue-400">{displayLamports(activeStake)}</span>
-                            <span className="text-muted-foreground"> / {displayLamports(supply.total)}</span>
-                        </div>
-                    ) : (
-                        <Skeleton className="h-8 w-full" />
-                    )}
-                    {delinquentStakePercentage && (
-                        <p className="text-muted-foreground text-sm sm:text-base">
-                            Delinquent stake:{' '}
-                            <span className="text-blue-600 dark:text-blue-400">{delinquentStakePercentage}%</span>
-                        </p>
-                    )}
-                </CardContent>
-            </Card>
-        </div>
-    );
+  let delinquentStakePercentage;
+  if (delinquentStake && activeStake) {
+    delinquentStakePercentage = percentage(delinquentStake, activeStake, 2).toFixed(1);
+  }
+
+  return (
+    <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm sm:text-lg">Circulating Supply</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <div className="text-xl font-bold break-words sm:text-2xl">
+            <span className="text-blue-600 dark:text-blue-400">{displayLamports(supply.circulating)}</span>
+            <span className="text-muted-foreground"> / {displayLamports(supply.total)}</span>
+          </div>
+          <p className="text-muted-foreground text-sm sm:text-base">
+            <span className="text-blue-600 dark:text-blue-400">{circulatingPercentage}%</span> is circulating
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm sm:text-lg">Active Stake</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {activeStake ? (
+            <div className="text-xl font-bold break-words sm:text-2xl">
+              <span className="text-blue-600 dark:text-blue-400">{displayLamports(activeStake)}</span>
+              <span className="text-muted-foreground"> / {displayLamports(supply.total)}</span>
+            </div>
+          ) : (
+            <Skeleton className="h-8 w-full" />
+          )}
+          {delinquentStakePercentage && (
+            <p className="text-muted-foreground text-sm sm:text-base">
+              Delinquent stake: <span className="text-blue-600 dark:text-blue-400">{delinquentStakePercentage}%</span>
+            </p>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 function displayLamports(value: number | bigint) {
-    return abbreviatedNumber(lamportsToSol(value));
+  return abbreviatedNumber(lamportsToSol(value));
 }
 
 function StatsCardBody() {
-    const dashboardInfo = useDashboardInfo();
-    const performanceInfo = usePerformanceInfo();
-    const { setActive } = useStatsProvider();
-    const { cluster } = useCluster();
+  const dashboardInfo = useDashboardInfo();
+  const performanceInfo = usePerformanceInfo();
+  const { setActive } = useStatsProvider();
+  const { cluster } = useCluster();
 
-    React.useEffect(() => {
-        setActive(true);
-        return () => setActive(false);
-    }, [setActive, cluster]);
+  React.useEffect(() => {
+    setActive(true);
+    return () => setActive(false);
+  }, [setActive, cluster]);
 
-    if (performanceInfo.status !== ClusterStatsStatus.Ready || dashboardInfo.status !== ClusterStatsStatus.Ready) {
-        const error =
-            performanceInfo.status === ClusterStatsStatus.Error || dashboardInfo.status === ClusterStatsStatus.Error;
-        return <StatsNotReady error={error} />;
-    }
+  if (performanceInfo.status !== ClusterStatsStatus.Ready || dashboardInfo.status !== ClusterStatsStatus.Ready) {
+    const error =
+      performanceInfo.status === ClusterStatsStatus.Error || dashboardInfo.status === ClusterStatsStatus.Error;
+    return <StatsNotReady error={error} />;
+  }
 
-    const { avgSlotTime_1h, avgSlotTime_1min, epochInfo, blockTime } = dashboardInfo;
-    const hourlySlotTime = Math.round(1000 * avgSlotTime_1h);
-    const averageSlotTime = Math.round(1000 * avgSlotTime_1min);
-    const { slotIndex, slotsInEpoch } = epochInfo;
-    const epochProgressValue = parseFloat(percentage(slotIndex, slotsInEpoch, 2).toFixed(1));
-    const epochTimeRemaining = slotsToHumanString(Number(slotsInEpoch - slotIndex), hourlySlotTime);
-    const { blockHeight, absoluteSlot } = epochInfo;
+  const { avgSlotTime_1h, avgSlotTime_1min, epochInfo, blockTime } = dashboardInfo;
+  const hourlySlotTime = Math.round(1000 * avgSlotTime_1h);
+  const averageSlotTime = Math.round(1000 * avgSlotTime_1min);
+  const { slotIndex, slotsInEpoch } = epochInfo;
+  const epochProgressValue = parseFloat(percentage(slotIndex, slotsInEpoch, 2).toFixed(1));
+  const epochTimeRemaining = slotsToHumanString(Number(slotsInEpoch - slotIndex), hourlySlotTime);
+  const { blockHeight, absoluteSlot } = epochInfo;
 
-    // Determine slot time health
-    const getSlotTimeHealth = (time: number) => {
-        if (time < 450) return { status: 'good', color: 'text-green-600 dark:text-green-400', badge: 'Fast' };
-        if (time < 550) return { status: 'good', color: 'text-blue-600 dark:text-blue-400', badge: 'Normal' };
-        if (time < 700) return { status: 'warning', color: 'text-yellow-600 dark:text-yellow-400', badge: 'Slow' };
-        return { status: 'error', color: 'text-red-600 dark:text-red-400', badge: 'Very Slow' };
-    };
+  // Determine slot time health
+  const getSlotTimeHealth = (time: number) => {
+    if (time < 450) return { status: 'good', color: 'text-green-600 dark:text-green-400', badge: 'Fast' };
+    if (time < 550) return { status: 'good', color: 'text-blue-600 dark:text-blue-400', badge: 'Normal' };
+    if (time < 700) return { status: 'warning', color: 'text-yellow-600 dark:text-yellow-400', badge: 'Slow' };
+    return { status: 'error', color: 'text-red-600 dark:text-red-400', badge: 'Very Slow' };
+  };
 
-    const slotTimeHealth = getSlotTimeHealth(averageSlotTime);
+  const slotTimeHealth = getSlotTimeHealth(averageSlotTime);
 
-    return (
-        <Card className="h-full">
-            <CardHeader className="border-b">
-                <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-                    {/* <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div> */}
-                    Live Cluster Stats
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 space-y-6">
-                {/* Primary Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                            <div>
-                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Current Slot</p>
-                                <p className="text-lg font-bold font-mono text-primary">
-                                    <Slot slot={absoluteSlot} link />
-                                </p>
-                            </div>
-                        </div>
-                        
-                        {blockHeight !== undefined && (
-                            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                                <div>
-                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Block Height</p>
-                                    <p className="text-lg font-bold font-mono text-primary">
-                                        <Slot slot={blockHeight} />
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+  return (
+    <Card className="h-full">
+      <CardHeader className="border-b">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          {/* <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div> */}
+          Live Cluster Stats
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6 p-4">
+        {/* Primary Stats Grid */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-3">
+            <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
+              <div>
+                <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Current Slot</p>
+                <p className="text-primary font-mono text-lg font-bold">
+                  <Slot slot={absoluteSlot} link />
+                </p>
+              </div>
+            </div>
 
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                            <div>
-                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Epoch</p>
-                                <p className="text-lg font-bold font-mono text-primary">
-                                    <Epoch epoch={epochInfo.epoch} link />
-                                </p>
-                            </div>
-                        </div>
-
-                        {blockTime && (
-                            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                                <div>
-                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Cluster Time</p>
-                                    <div className="text-sm font-mono text-primary">
-                                        <TimestampToggle unixTimestamp={blockTime} shorter></TimestampToggle>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+            {blockHeight !== undefined && (
+              <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
+                <div>
+                  <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Block Height</p>
+                  <p className="text-primary font-mono text-lg font-bold">
+                    <Slot slot={blockHeight} />
+                  </p>
                 </div>
+              </div>
+            )}
+          </div>
 
-                {/* Epoch Progress */}
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">Epoch Progress</p>
-                        <Badge variant="secondary" className="text-xs">
-                            {epochProgressValue.toFixed(1)}%
-                        </Badge>
-                    </div>
-                    <Progress value={epochProgressValue} className="h-2" />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Slot {slotIndex.toLocaleString()}</span>
-                        <span>~{epochTimeRemaining} remaining</span>
-                    </div>
+          <div className="space-y-3">
+            <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
+              <div>
+                <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Epoch</p>
+                <p className="text-primary font-mono text-lg font-bold">
+                  <Epoch epoch={epochInfo.epoch} link />
+                </p>
+              </div>
+            </div>
+
+            {blockTime && (
+              <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
+                <div>
+                  <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Cluster Time</p>
+                  <div className="text-primary font-mono text-sm">
+                    <TimestampToggle unixTimestamp={blockTime} shorter></TimestampToggle>
+                  </div>
                 </div>
+              </div>
+            )}
+          </div>
+        </div>
 
-                {/* Performance Metrics */}
-                <div className="space-y-4">
-                    <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Performance</h4>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <p className="text-sm text-muted-foreground">Slot Time (1min avg)</p>
-                                <div className="flex items-center gap-2">
-                                    <span className={`font-mono font-bold ${slotTimeHealth.color}`}>
-                                        {averageSlotTime}ms
-                                    </span>
-                                    <Badge variant="outline" className={`text-xs ${slotTimeHealth.color.replace('text-', 'border-')}`}>
-                                        {slotTimeHealth.badge}
-                                    </Badge>
-                                </div>
-                            </div>
-                        </div>
+        {/* Epoch Progress */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium">Epoch Progress</p>
+            <Badge variant="secondary" className="text-xs">
+              {epochProgressValue.toFixed(1)}%
+            </Badge>
+          </div>
+          <Progress value={epochProgressValue} className="h-2" />
+          <div className="text-muted-foreground flex justify-between text-xs">
+            <span>Slot {slotIndex.toLocaleString()}</span>
+            <span>~{epochTimeRemaining} remaining</span>
+          </div>
+        </div>
 
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <p className="text-sm text-muted-foreground">Slot Time (1hr avg)</p>
-                                <span className="font-mono font-bold text-primary">
-                                    {hourlySlotTime}ms
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+        {/* Performance Metrics */}
+        <div className="space-y-4">
+          <h4 className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">Performance</h4>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-muted-foreground text-sm">Slot Time (1min avg)</p>
+                <div className="flex items-center gap-2">
+                  <span className={`font-mono font-bold ${slotTimeHealth.color}`}>{averageSlotTime}ms</span>
+                  <Badge variant="outline" className={`text-xs ${slotTimeHealth.color.replace('text-', 'border-')}`}>
+                    {slotTimeHealth.badge}
+                  </Badge>
                 </div>
-            </CardContent>
-        </Card>
-    );
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-muted-foreground text-sm">Slot Time (1hr avg)</p>
+                <span className="text-primary font-mono font-bold">{hourlySlotTime}ms</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }

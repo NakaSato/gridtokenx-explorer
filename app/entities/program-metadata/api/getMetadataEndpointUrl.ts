@@ -7,7 +7,7 @@ import { Cluster, serverClusterUrl } from '../../../utils/cluster';
  * @returns
  */
 const isClusterSupported = (cluster: Cluster) => {
-    return Object.values(Cluster).includes(cluster);
+  return Object.values(Cluster).includes(cluster);
 };
 
 /**
@@ -17,9 +17,9 @@ const isClusterSupported = (cluster: Cluster) => {
  * @returns
  */
 export function getMetadataEndpointUrl(cluster: number): string | undefined {
-    if (!isClusterSupported(cluster)) {
-        return undefined;
-    }
+  if (!isClusterSupported(cluster)) {
+    return undefined;
+  }
 
-    return serverClusterUrl(cluster, '');
+  return serverClusterUrl(cluster, '');
 }

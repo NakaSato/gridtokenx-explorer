@@ -7,22 +7,20 @@ import { AttestationDataCard } from '@/app/components/account/sas/AttestationDat
 import { LoadingCard } from '@/app/components/common/LoadingCard';
 
 type Props = Readonly<{
-    params: {
-        address: string;
-    };
+  params: {
+    address: string;
+  };
 }>;
 
 function AttestationCardRenderer({
-    account,
-    onNotFound,
+  account,
+  onNotFound,
 }: React.ComponentProps<React.ComponentProps<typeof ParsedAccountRenderer>['renderComponent']>) {
-    return (
-        <Suspense fallback={<LoadingCard />}>
-            {<AttestationDataCard account={account} onNotFound={onNotFound} />}
-        </Suspense>
-    );
+  return (
+    <Suspense fallback={<LoadingCard />}>{<AttestationDataCard account={account} onNotFound={onNotFound} />}</Suspense>
+  );
 }
 
 export default function AttestationPageClient({ params: { address } }: Props) {
-    return <ParsedAccountRenderer address={address} renderComponent={AttestationCardRenderer} />;
+  return <ParsedAccountRenderer address={address} renderComponent={AttestationCardRenderer} />;
 }

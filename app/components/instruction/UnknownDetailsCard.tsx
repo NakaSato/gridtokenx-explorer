@@ -6,31 +6,31 @@ import React from 'react';
 import { InstructionCard } from './InstructionCard';
 
 export function UnknownDetailsCard({
-    ix,
-    index,
-    result,
-    innerCards,
-    childIndex,
-    InstructionCardComponent = InstructionCard,
+  ix,
+  index,
+  result,
+  innerCards,
+  childIndex,
+  InstructionCardComponent = InstructionCard,
 }: {
-    ix: TransactionInstruction | ParsedInstruction;
-    index: number;
-    result: SignatureResult;
-    innerCards?: JSX.Element[];
-    childIndex?: number;
-    InstructionCardComponent?: React.FC<Parameters<typeof InstructionCard>[0]>;
+  ix: TransactionInstruction | ParsedInstruction;
+  index: number;
+  result: SignatureResult;
+  innerCards?: JSX.Element[];
+  childIndex?: number;
+  InstructionCardComponent?: React.FC<Parameters<typeof InstructionCard>[0]>;
 }) {
-    const { cluster } = useCluster();
-    const programName = getProgramName(ix.programId.toBase58(), cluster);
-    return (
-        <InstructionCardComponent
-            ix={ix}
-            index={index}
-            result={result}
-            title={`${programName}: Unknown Instruction`}
-            innerCards={innerCards}
-            childIndex={childIndex}
-            defaultRaw
-        />
-    );
+  const { cluster } = useCluster();
+  const programName = getProgramName(ix.programId.toBase58(), cluster);
+  return (
+    <InstructionCardComponent
+      ix={ix}
+      index={index}
+      result={result}
+      title={`${programName}: Unknown Instruction`}
+      innerCards={innerCards}
+      childIndex={childIndex}
+      defaultRaw
+    />
+  );
 }

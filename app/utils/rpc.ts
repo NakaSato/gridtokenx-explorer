@@ -3,16 +3,22 @@
  * Provides standardized RPC client creation and type conversion helpers
  */
 
-import { createSolanaRpc, address as createAddress, Address, Commitment, signature as createSignature } from '@solana/kit';
 import {
-    Connection,
-    PublicKey,
-    Commitment as LegacyCommitment,
-    VersionedBlockResponse,
-    ParsedTransactionWithMeta,
-    ConfirmedSignatureInfo,
-    AccountInfo,
-    TransactionSignature,
+  createSolanaRpc,
+  address as createAddress,
+  Address,
+  Commitment,
+  signature as createSignature,
+} from '@solana/kit';
+import {
+  Connection,
+  PublicKey,
+  Commitment as LegacyCommitment,
+  VersionedBlockResponse,
+  ParsedTransactionWithMeta,
+  ConfirmedSignatureInfo,
+  AccountInfo,
+  TransactionSignature,
 } from '@solana/web3.js';
 
 /**
@@ -21,7 +27,7 @@ import {
  * @returns Configured RPC client
  */
 export function createRpc(url: string) {
-    return createSolanaRpc(url);
+  return createSolanaRpc(url);
 }
 
 /**
@@ -30,8 +36,8 @@ export function createRpc(url: string) {
  * @returns Address type from @solana/kit
  */
 export function toAddress(addressLike: string | PublicKey): Address {
-    const addressString = typeof addressLike === 'string' ? addressLike : addressLike.toBase58();
-    return createAddress(addressString);
+  const addressString = typeof addressLike === 'string' ? addressLike : addressLike.toBase58();
+  return createAddress(addressString);
 }
 
 /**
@@ -40,7 +46,7 @@ export function toAddress(addressLike: string | PublicKey): Address {
  * @returns Address from @solana/kit
  */
 export function publicKeyToAddress(pubkey: PublicKey): Address {
-    return createAddress(pubkey.toBase58());
+  return createAddress(pubkey.toBase58());
 }
 
 /**
@@ -49,7 +55,7 @@ export function publicKeyToAddress(pubkey: PublicKey): Address {
  * @returns PublicKey from @solana/web3.js
  */
 export function addressToPublicKey(addr: Address): PublicKey {
-    return new PublicKey(addr);
+  return new PublicKey(addr);
 }
 
 /**
@@ -58,7 +64,7 @@ export function addressToPublicKey(addr: Address): PublicKey {
  * @returns Signature type from @solana/kit
  */
 export function toSignature(sig: TransactionSignature | string) {
-    return createSignature(sig);
+  return createSignature(sig);
 }
 
 /**
@@ -67,10 +73,10 @@ export function toSignature(sig: TransactionSignature | string) {
  * @returns number
  */
 export function bigintToNumber(value: bigint): number {
-    if (value > Number.MAX_SAFE_INTEGER) {
-        throw new Error(`Value ${value} exceeds MAX_SAFE_INTEGER`);
-    }
-    return Number(value);
+  if (value > Number.MAX_SAFE_INTEGER) {
+    throw new Error(`Value ${value} exceeds MAX_SAFE_INTEGER`);
+  }
+  return Number(value);
 }
 
 /**
@@ -81,16 +87,16 @@ export function bigintToNumber(value: bigint): number {
  * @returns Connection instance
  */
 export function createLegacyConnection(url: string, commitment?: LegacyCommitment): Connection {
-    return new Connection(url, commitment);
+  return new Connection(url, commitment);
 }
 
 /**
  * Map new kit commitment levels to legacy commitment levels
  */
 export function toLegacyCommitment(commitment?: Commitment): LegacyCommitment | undefined {
-    if (!commitment) return undefined;
-    // Both use the same string values, so direct mapping works
-    return commitment as LegacyCommitment;
+  if (!commitment) return undefined;
+  // Both use the same string values, so direct mapping works
+  return commitment as LegacyCommitment;
 }
 
 /**
@@ -99,15 +105,15 @@ export function toLegacyCommitment(commitment?: Commitment): LegacyCommitment | 
  * @returns AccountInfo from @solana/web3.js
  */
 export function toLegacyAccountInfo<T>(account: any): AccountInfo<T> {
-    if (!account) return account;
-    
-    return {
-        data: account.data,
-        executable: account.executable,
-        lamports: typeof account.lamports === 'bigint' ? bigintToNumber(account.lamports) : account.lamports,
-        owner: account.owner ? addressToPublicKey(account.owner) : account.owner,
-        rentEpoch: typeof account.rentEpoch === 'bigint' ? bigintToNumber(account.rentEpoch) : account.rentEpoch,
-    } as AccountInfo<T>;
+  if (!account) return account;
+
+  return {
+    data: account.data,
+    executable: account.executable,
+    lamports: typeof account.lamports === 'bigint' ? bigintToNumber(account.lamports) : account.lamports,
+    owner: account.owner ? addressToPublicKey(account.owner) : account.owner,
+    rentEpoch: typeof account.rentEpoch === 'bigint' ? bigintToNumber(account.rentEpoch) : account.rentEpoch,
+  } as AccountInfo<T>;
 }
 
 /**
@@ -117,16 +123,16 @@ export function toLegacyAccountInfo<T>(account: any): AccountInfo<T> {
  * @returns VersionedBlockResponse from @solana/web3.js
  */
 export function toLegacyBlockResponse(block: any): VersionedBlockResponse {
-    if (!block) return block;
-    
-    // The kit response structure is mostly compatible with legacy
-    // Just need to handle bigint conversions where necessary
-    return {
-        ...block,
-        blockTime: typeof block.blockTime === 'bigint' ? bigintToNumber(block.blockTime) : block.blockTime,
-        blockHeight: typeof block.blockHeight === 'bigint' ? bigintToNumber(block.blockHeight) : block.blockHeight,
-        parentSlot: typeof block.parentSlot === 'bigint' ? bigintToNumber(block.parentSlot) : block.parentSlot,
-    } as VersionedBlockResponse;
+  if (!block) return block;
+
+  // The kit response structure is mostly compatible with legacy
+  // Just need to handle bigint conversions where necessary
+  return {
+    ...block,
+    blockTime: typeof block.blockTime === 'bigint' ? bigintToNumber(block.blockTime) : block.blockTime,
+    blockHeight: typeof block.blockHeight === 'bigint' ? bigintToNumber(block.blockHeight) : block.blockHeight,
+    parentSlot: typeof block.parentSlot === 'bigint' ? bigintToNumber(block.parentSlot) : block.parentSlot,
+  } as VersionedBlockResponse;
 }
 
 /**
@@ -135,58 +141,56 @@ export function toLegacyBlockResponse(block: any): VersionedBlockResponse {
  * @returns ParsedTransactionWithMeta from @solana/web3.js
  */
 export function toLegacyParsedTransaction(tx: any): ParsedTransactionWithMeta | null {
-    if (!tx) return tx;
-    
-    // Convert addresses in transaction to PublicKey instances
-    const convertAddresses = (obj: any): any => {
-        if (!obj) return obj;
-        if (typeof obj === 'string') {
-            // Check if it's a base58 address
-            try {
-                return new PublicKey(obj);
-            } catch {
-                return obj;
-            }
-        }
-        if (Array.isArray(obj)) {
-            return obj.map(convertAddresses);
-        }
-        if (typeof obj === 'object') {
-            const converted: any = {};
-            for (const key in obj) {
-                if (key === 'pubkey' || key === 'owner' || key === 'mint' || key === 'authority') {
-                    try {
-                        converted[key] = new PublicKey(obj[key]);
-                    } catch {
-                        converted[key] = obj[key];
-                    }
-                } else {
-                    converted[key] = convertAddresses(obj[key]);
-                }
-            }
-            return converted;
-        }
+  if (!tx) return tx;
+
+  // Convert addresses in transaction to PublicKey instances
+  const convertAddresses = (obj: any): any => {
+    if (!obj) return obj;
+    if (typeof obj === 'string') {
+      // Check if it's a base58 address
+      try {
+        return new PublicKey(obj);
+      } catch {
         return obj;
-    };
-    
-    return {
-        ...tx,
-        slot: typeof tx.slot === 'bigint' ? bigintToNumber(tx.slot) : tx.slot,
-        blockTime: typeof tx.blockTime === 'bigint' ? bigintToNumber(tx.blockTime) : tx.blockTime,
-        transaction: convertAddresses(tx.transaction),
-        meta: tx.meta ? {
-            ...tx.meta,
-            fee: typeof tx.meta.fee === 'bigint' ? bigintToNumber(tx.meta.fee) : tx.meta.fee,
-            preBalances: tx.meta.preBalances?.map((b: any) => 
-                typeof b === 'bigint' ? bigintToNumber(b) : b
-            ),
-            postBalances: tx.meta.postBalances?.map((b: any) => 
-                typeof b === 'bigint' ? bigintToNumber(b) : b
-            ),
-            preTokenBalances: convertAddresses(tx.meta.preTokenBalances),
-            postTokenBalances: convertAddresses(tx.meta.postTokenBalances),
-        } : tx.meta,
-    } as ParsedTransactionWithMeta;
+      }
+    }
+    if (Array.isArray(obj)) {
+      return obj.map(convertAddresses);
+    }
+    if (typeof obj === 'object') {
+      const converted: any = {};
+      for (const key in obj) {
+        if (key === 'pubkey' || key === 'owner' || key === 'mint' || key === 'authority') {
+          try {
+            converted[key] = new PublicKey(obj[key]);
+          } catch {
+            converted[key] = obj[key];
+          }
+        } else {
+          converted[key] = convertAddresses(obj[key]);
+        }
+      }
+      return converted;
+    }
+    return obj;
+  };
+
+  return {
+    ...tx,
+    slot: typeof tx.slot === 'bigint' ? bigintToNumber(tx.slot) : tx.slot,
+    blockTime: typeof tx.blockTime === 'bigint' ? bigintToNumber(tx.blockTime) : tx.blockTime,
+    transaction: convertAddresses(tx.transaction),
+    meta: tx.meta
+      ? {
+          ...tx.meta,
+          fee: typeof tx.meta.fee === 'bigint' ? bigintToNumber(tx.meta.fee) : tx.meta.fee,
+          preBalances: tx.meta.preBalances?.map((b: any) => (typeof b === 'bigint' ? bigintToNumber(b) : b)),
+          postBalances: tx.meta.postBalances?.map((b: any) => (typeof b === 'bigint' ? bigintToNumber(b) : b)),
+          preTokenBalances: convertAddresses(tx.meta.preTokenBalances),
+          postTokenBalances: convertAddresses(tx.meta.postTokenBalances),
+        }
+      : tx.meta,
+  } as ParsedTransactionWithMeta;
 }
 
 /**
@@ -195,14 +199,14 @@ export function toLegacyParsedTransaction(tx: any): ParsedTransactionWithMeta | 
  * @returns ConfirmedSignatureInfo from @solana/web3.js
  */
 export function toLegacySignatureInfo(sig: any): ConfirmedSignatureInfo {
-    if (!sig) return sig;
-    
-    return {
-        signature: sig.signature,
-        slot: typeof sig.slot === 'bigint' ? bigintToNumber(sig.slot) : sig.slot,
-        err: sig.err,
-        memo: sig.memo,
-        blockTime: typeof sig.blockTime === 'bigint' ? bigintToNumber(sig.blockTime) : sig.blockTime,
-        confirmationStatus: sig.confirmationStatus,
-    } as ConfirmedSignatureInfo;
+  if (!sig) return sig;
+
+  return {
+    signature: sig.signature,
+    slot: typeof sig.slot === 'bigint' ? bigintToNumber(sig.slot) : sig.slot,
+    err: sig.err,
+    memo: sig.memo,
+    blockTime: typeof sig.blockTime === 'bigint' ? bigintToNumber(sig.blockTime) : sig.blockTime,
+    confirmationStatus: sig.confirmationStatus,
+  } as ConfirmedSignatureInfo;
 }

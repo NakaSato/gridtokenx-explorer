@@ -6,41 +6,41 @@ import React from 'react';
 import { InstructionCard } from './InstructionCard';
 
 export function MemoDetailsCard({
-    ix,
-    index,
-    result,
-    innerCards,
-    childIndex,
+  ix,
+  index,
+  result,
+  innerCards,
+  childIndex,
 }: {
-    ix: ParsedInstruction;
-    index: number;
-    result: SignatureResult;
-    innerCards?: JSX.Element[];
-    childIndex?: number;
+  ix: ParsedInstruction;
+  index: number;
+  result: SignatureResult;
+  innerCards?: JSX.Element[];
+  childIndex?: number;
 }) {
-    const data = wrap(ix.parsed, 50);
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title="Memo Program: Memo"
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Program</td>
-                <td className="lg:text-right">
-                    <Address pubkey={ix.programId} alignRight link />
-                </td>
-            </tr>
+  const data = wrap(ix.parsed, 50);
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title="Memo Program: Memo"
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Program</td>
+        <td className="lg:text-right">
+          <Address pubkey={ix.programId} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Data (UTF-8)</td>
-                <td className="lg:text-right">
-                    <pre className="d-inlinblock text-start mb-0">{data}</pre>
-                </td>
-            </tr>
-        </InstructionCard>
-    );
+      <tr>
+        <td>Data (UTF-8)</td>
+        <td className="lg:text-right">
+          <pre className="d-inlinblock mb-0 text-start">{data}</pre>
+        </td>
+      </tr>
+    </InstructionCard>
+  );
 }

@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -24,34 +20,14 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@components/*": [
-        "./app/components/*"
-      ],
-      "@img/*": [
-        "./app/img/*"
-      ],
-      "@providers/*": [
-        "./app/providers/*"
-      ],
-      "@utils/*": [
-        "./app/utils/*"
-      ],
-      "@validators/*": [
-        "./app/validators/*"
-      ]
+      "@/*": ["./*"],
+      "@components/*": ["./app/components/*"],
+      "@img/*": ["./app/img/*"],
+      "@providers/*": ["./app/providers/*"],
+      "@utils/*": ["./app/utils/*"],
+      "@validators/*": ["./app/validators/*"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

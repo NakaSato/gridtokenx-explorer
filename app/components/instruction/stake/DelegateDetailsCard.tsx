@@ -6,51 +6,51 @@ import { InstructionCard } from '../InstructionCard';
 import { DelegateInfo } from './types';
 
 export function DelegateDetailsCard(props: {
-    ix: ParsedInstruction;
-    index: number;
-    result: SignatureResult;
-    info: DelegateInfo;
-    innerCards?: JSX.Element[];
-    childIndex?: number;
+  ix: ParsedInstruction;
+  index: number;
+  result: SignatureResult;
+  info: DelegateInfo;
+  innerCards?: JSX.Element[];
+  childIndex?: number;
 }) {
-    const { ix, index, result, info, innerCards, childIndex } = props;
+  const { ix, index, result, info, innerCards, childIndex } = props;
 
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title="Stake Program: Delegate Stake"
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Program</td>
-                <td className="lg:text-right">
-                    <Address pubkey={StakeProgram.programId} alignRight link />
-                </td>
-            </tr>
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title="Stake Program: Delegate Stake"
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Program</td>
+        <td className="lg:text-right">
+          <Address pubkey={StakeProgram.programId} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Stake Address</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.stakeAccount} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Stake Address</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.stakeAccount} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Delegated Vote Address</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.voteAccount} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Delegated Vote Address</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.voteAccount} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Authority Address</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.stakeAuthority} alignRight link />
-                </td>
-            </tr>
-        </InstructionCard>
-    );
+      <tr>
+        <td>Authority Address</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.stakeAuthority} alignRight link />
+        </td>
+      </tr>
+    </InstructionCard>
+  );
 }

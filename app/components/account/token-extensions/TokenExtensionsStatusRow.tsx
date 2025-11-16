@@ -8,34 +8,34 @@ import { TokenExtensionBadges } from '../../common/TokenExtensionBadges';
 import { ParsedTokenExtension } from '../types';
 
 export function TokenExtensionsStatusRow({ address, extensions }: { address: string; extensions: TokenExtension[] }) {
-    const extension = useTokenExtensionNavigation({ uriComponent: `/address/${address}` });
-    // bypass root uriComponent to not play guessing inside the compoent as Row might be rendered at different pages
+  const extension = useTokenExtensionNavigation({ uriComponent: `/address/${address}` });
+  // bypass root uriComponent to not play guessing inside the compoent as Row might be rendered at different pages
 
-    const parsedExtensions = useMemo(() => {
-        return extensions.reduce((acc, ext) => {
-            acc.push({
-                extension: ext.extension,
-                parsed: ext,
-                ...populatePartialParsedTokenExtension(ext.extension),
-            });
+  const parsedExtensions = useMemo(() => {
+    return extensions.reduce((acc, ext) => {
+      acc.push({
+        extension: ext.extension,
+        parsed: ext,
+        ...populatePartialParsedTokenExtension(ext.extension),
+      });
 
-            return acc;
-        }, [] as ParsedTokenExtension[]);
-    }, [extensions]);
+      return acc;
+    }, [] as ParsedTokenExtension[]);
+  }, [extensions]);
 
-    const onClick = useCallback(
-        (ext: { extensionName: TokenExtension['extension'] }) => {
-            extension.navigateToExtension(ext.extensionName);
-        },
-        [extension]
-    );
+  const onClick = useCallback(
+    (ext: { extensionName: TokenExtension['extension'] }) => {
+      extension.navigateToExtension(ext.extensionName);
+    },
+    [extension],
+  );
 
-    return (
-        <tr>
-            <td>Extensions</td>
-            <td className="lg:text-right">
-                <TokenExtensionBadges className="lg:justify-end" extensions={parsedExtensions} onClick={onClick} />
-            </td>
-        </tr>
-    );
+  return (
+    <tr>
+      <td>Extensions</td>
+      <td className="lg:text-right">
+        <TokenExtensionBadges className="lg:justify-end" extensions={parsedExtensions} onClick={onClick} />
+      </td>
+    </tr>
+  );
 }

@@ -8,51 +8,51 @@ import { InstructionDetailsProps } from '@/app/components/transaction/Instructio
 import { ExtendLookupTableInfo } from './types';
 
 export function ExtendLookupTableDetailsCard(props: InstructionDetailsProps & { info: ExtendLookupTableInfo }) {
-    const { ix, index, result, innerCards, childIndex, info } = props;
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title="Address Lookup Table: Extend Lookup Table"
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Program</td>
-                <td className="lg:text-right">
-                    <Address pubkey={AddressLookupTableProgram.programId} alignRight link />
-                </td>
-            </tr>
-            <tr>
-                <td>Lookup Table</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.lookupTableAccount} alignRight link />
-                </td>
-            </tr>
-            <tr>
-                <td>Lookup Table Authority</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.lookupTableAuthority} alignRight link />
-                </td>
-            </tr>
-            <tr>
-                <td>New Addresses</td>
-                <td style={{ paddingRight: '1rem' }}>
-                    <table>
-                        <tbody>
-                            {info.newAddresses.map((address, index) => (
-                                <tr key={address.toString()}>
-                                    <td className="w-1 font-mono">{index}</td>
-                                    <td className="lg:text-right">
-                                        <Address pubkey={addressToPublicKey(toAddress(address))} alignRight link />
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </InstructionCard>
-    );
+  const { ix, index, result, innerCards, childIndex, info } = props;
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title="Address Lookup Table: Extend Lookup Table"
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Program</td>
+        <td className="lg:text-right">
+          <Address pubkey={AddressLookupTableProgram.programId} alignRight link />
+        </td>
+      </tr>
+      <tr>
+        <td>Lookup Table</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.lookupTableAccount} alignRight link />
+        </td>
+      </tr>
+      <tr>
+        <td>Lookup Table Authority</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.lookupTableAuthority} alignRight link />
+        </td>
+      </tr>
+      <tr>
+        <td>New Addresses</td>
+        <td style={{ paddingRight: '1rem' }}>
+          <table>
+            <tbody>
+              {info.newAddresses.map((address, index) => (
+                <tr key={address.toString()}>
+                  <td className="w-1 font-mono">{index}</td>
+                  <td className="lg:text-right">
+                    <Address pubkey={addressToPublicKey(toAddress(address))} alignRight link />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </InstructionCard>
+  );
 }

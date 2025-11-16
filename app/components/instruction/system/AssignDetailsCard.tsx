@@ -6,44 +6,44 @@ import { InstructionCard } from '../InstructionCard';
 import { AssignInfo } from './types';
 
 export function AssignDetailsCard(props: {
-    ix: ParsedInstruction;
-    index: number;
-    result: SignatureResult;
-    info: AssignInfo;
-    innerCards?: JSX.Element[];
-    childIndex?: number;
+  ix: ParsedInstruction;
+  index: number;
+  result: SignatureResult;
+  info: AssignInfo;
+  innerCards?: JSX.Element[];
+  childIndex?: number;
 }) {
-    const { ix, index, result, info, innerCards, childIndex } = props;
+  const { ix, index, result, info, innerCards, childIndex } = props;
 
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title="System Program: Assign Account"
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Program</td>
-                <td className="lg:text-right">
-                    <Address pubkey={SystemProgram.programId} alignRight link />
-                </td>
-            </tr>
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title="System Program: Assign Account"
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Program</td>
+        <td className="lg:text-right">
+          <Address pubkey={SystemProgram.programId} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Account Address</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.account} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Account Address</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.account} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Assigned Program Id</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.owner} alignRight link />
-                </td>
-            </tr>
-        </InstructionCard>
-    );
+      <tr>
+        <td>Assigned Program Id</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.owner} alignRight link />
+        </td>
+      </tr>
+    </InstructionCard>
+  );
 }

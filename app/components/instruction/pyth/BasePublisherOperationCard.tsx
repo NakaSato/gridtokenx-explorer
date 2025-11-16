@@ -6,51 +6,51 @@ import { InstructionCard } from '../InstructionCard';
 import { BasePublisherOperationParams } from './program';
 
 export default function BasePublisherOperationCard({
-    ix,
-    index,
-    result,
-    operationName,
-    info,
-    innerCards,
-    childIndex,
+  ix,
+  index,
+  result,
+  operationName,
+  info,
+  innerCards,
+  childIndex,
 }: {
-    ix: TransactionInstruction;
-    index: number;
-    result: SignatureResult;
-    operationName: string;
-    info: BasePublisherOperationParams;
-    innerCards?: JSX.Element[];
-    childIndex?: number;
+  ix: TransactionInstruction;
+  index: number;
+  result: SignatureResult;
+  operationName: string;
+  info: BasePublisherOperationParams;
+  innerCards?: JSX.Element[];
+  childIndex?: number;
 }) {
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title={`Pyth: ${operationName}`}
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Program</td>
-                <td className="lg:text-right">
-                    <Address pubkey={ix.programId} alignRight link />
-                </td>
-            </tr>
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title={`Pyth: ${operationName}`}
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Program</td>
+        <td className="lg:text-right">
+          <Address pubkey={ix.programId} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Price Account</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.pricePubkey} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Price Account</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.pricePubkey} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Publisher</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.publisherPubkey} alignRight link />
-                </td>
-            </tr>
-        </InstructionCard>
-    );
+      <tr>
+        <td>Publisher</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.publisherPubkey} alignRight link />
+        </td>
+      </tr>
+    </InstructionCard>
+  );
 }

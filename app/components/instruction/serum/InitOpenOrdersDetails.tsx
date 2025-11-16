@@ -5,53 +5,53 @@ import { InstructionCard } from '../InstructionCard';
 import { InitOpenOrders, SerumIxDetailsProps } from './types';
 
 export function InitOpenOrdersDetailsCard(props: SerumIxDetailsProps<InitOpenOrders>) {
-    const { ix, index, result, programName, info, innerCards, childIndex } = props;
+  const { ix, index, result, programName, info, innerCards, childIndex } = props;
 
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title={`${programName} Program: Init Open Orders`}
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Program</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.programId} alignRight link />
-                </td>
-            </tr>
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title={`${programName} Program: Init Open Orders`}
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Program</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.programId} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Open Orders</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.openOrders} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Open Orders</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.openOrders} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Open Orders Owner</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.openOrdersOwner} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Open Orders Owner</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.openOrdersOwner} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Market</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.market} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Market</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.market} alignRight link />
+        </td>
+      </tr>
 
-            {info.accounts.openOrdersMarketAuthority && (
-                <tr>
-                    <td>Open Orders Market Authority</td>
-                    <td className="lg:text-right">
-                        <Address pubkey={info.accounts.openOrdersMarketAuthority} alignRight link />
-                    </td>
-                </tr>
-            )}
-        </InstructionCard>
-    );
+      {info.accounts.openOrdersMarketAuthority && (
+        <tr>
+          <td>Open Orders Market Authority</td>
+          <td className="lg:text-right">
+            <Address pubkey={info.accounts.openOrdersMarketAuthority} alignRight link />
+          </td>
+        </tr>
+      )}
+    </InstructionCard>
+  );
 }

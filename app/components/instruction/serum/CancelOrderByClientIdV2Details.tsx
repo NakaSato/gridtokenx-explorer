@@ -5,63 +5,63 @@ import { InstructionCard } from '../InstructionCard';
 import { CancelOrderByClientIdV2, SerumIxDetailsProps } from './types';
 
 export function CancelOrderByClientIdV2DetailsCard(props: SerumIxDetailsProps<CancelOrderByClientIdV2>) {
-    const { ix, index, result, info, innerCards, childIndex } = props;
+  const { ix, index, result, info, innerCards, childIndex } = props;
 
-    return (
-        <InstructionCard
-            ix={ix}
-            index={index}
-            result={result}
-            title="Serum Program: Cancel Order By Client Id v2"
-            innerCards={innerCards}
-            childIndex={childIndex}
-        >
-            <tr>
-                <td>Market</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.market} alignRight link />
-                </td>
-            </tr>
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title="Serum Program: Cancel Order By Client Id v2"
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Market</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.market} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Bids</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.bids} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Bids</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.bids} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Asks</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.asks} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Asks</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.asks} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Open Orders</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.openOrders} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Open Orders</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.openOrders} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Open Orders Owner</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.openOrdersOwner} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Open Orders Owner</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.openOrdersOwner} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Event Queue</td>
-                <td className="lg:text-right">
-                    <Address pubkey={info.accounts.eventQueue} alignRight link />
-                </td>
-            </tr>
+      <tr>
+        <td>Event Queue</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.eventQueue} alignRight link />
+        </td>
+      </tr>
 
-            <tr>
-                <td>Client Id</td>
-                <td className="lg:text-right">{info.data.clientId.toString(10)}</td>
-            </tr>
-        </InstructionCard>
-    );
+      <tr>
+        <td>Client Id</td>
+        <td className="lg:text-right">{info.data.clientId.toString(10)}</td>
+      </tr>
+    </InstructionCard>
+  );
 }
