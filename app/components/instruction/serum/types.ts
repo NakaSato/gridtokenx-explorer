@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
 
-import { decodeInstruction, MARKETS } from '@project-serum/serum';
 import { AccountMeta, PublicKey, SignatureResult, TransactionInstruction } from '@solana/web3.js';
 import { BigIntFromString } from '@validators/number';
 import { create, enums, Infer, number, type } from 'superstruct';
+import React from 'react';
+
+// Lazy-loaded Serum utilities to prevent SSR issues
+import { getDecodeInstruction, getMarkets } from './serum-utils';
 
 export const OPEN_BOOK_PROGRAM_ID = 'srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX';
 
@@ -60,6 +63,7 @@ export const InitializeMarketInstruction = type({
 });
 
 export function decodeInitializeMarket(ix: TransactionInstruction): InitializeMarket {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             asks: ix.keys[4].pubkey,
@@ -104,6 +108,7 @@ export const NewOrderInstruction = type({
 });
 
 export function decodeNewOrder(ix: TransactionInstruction): NewOrder {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             baseVault: ix.keys[5].pubkey,
@@ -137,6 +142,7 @@ export const MatchOrdersInstruction = type({
 });
 
 export function decodeMatchOrders(ix: TransactionInstruction): MatchOrders {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             asks: ix.keys[4].pubkey,
@@ -165,6 +171,7 @@ export const ConsumeEventsInstruction = type({
 });
 
 export function decodeConsumeEvents(ix: TransactionInstruction): ConsumeEvents {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             eventQueue: ix.keys[ix.keys.length - 3].pubkey,
@@ -194,6 +201,7 @@ export const CancelOrderInstruction = type({
 });
 
 export function decodeCancelOrder(ix: TransactionInstruction): CancelOrder {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             market: ix.keys[0].pubkey,
@@ -254,6 +262,7 @@ export const CancelOrderByClientIdInstruction = type({
 });
 
 export function decodeCancelOrderByClientId(ix: TransactionInstruction): CancelOrderByClientId {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             market: ix.keys[0].pubkey,
@@ -338,6 +347,7 @@ export const NewOrderV3Instruction = type({
 });
 
 export function decodeNewOrderV3(ix: TransactionInstruction): NewOrderV3 {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             asks: ix.keys[5].pubkey,
@@ -376,6 +386,7 @@ export const CancelOrderV2Instruction = type({
 });
 
 export function decodeCancelOrderV2(ix: TransactionInstruction): CancelOrderV2 {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             asks: ix.keys[2].pubkey,
@@ -408,6 +419,7 @@ export const CancelOrderByClientIdV2Instruction = type({
 });
 
 export function decodeCancelOrderByClientIdV2(ix: TransactionInstruction): CancelOrderByClientIdV2 {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             asks: ix.keys[2].pubkey,
@@ -485,6 +497,7 @@ export const PruneInstruction = type({
 });
 
 export function decodePrune(ix: TransactionInstruction): Prune {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             asks: ix.keys[2].pubkey,
@@ -516,6 +529,7 @@ export const ConsumeEventsPermissionedInstruction = type({
 });
 
 export function decodeConsumeEventsPermissioned(ix: TransactionInstruction): ConsumeEventsPermissioned {
+    const decodeInstruction = getDecodeInstruction();
     return {
         accounts: {
             crankAuthority: ix.keys[ix.keys.length - 1].pubkey,
@@ -529,13 +543,15 @@ export function decodeConsumeEventsPermissioned(ix: TransactionInstruction): Con
 }
 
 export function isSerumInstruction(instruction: TransactionInstruction) {
+    const MARKETS = getMarkets();
     return (
         SERUM_PROGRAM_IDS.includes(instruction.programId.toBase58()) ||
-        MARKETS.some(market => market.programId && market.programId.equals(instruction.programId))
+        MARKETS.some((market: any) => market.programId && market.programId.equals(instruction.programId))
     );
 }
 
 export function parseSerumInstructionKey(instruction: TransactionInstruction): string {
+    const decodeInstruction = getDecodeInstruction();
     const decoded = decodeInstruction(instruction.data);
     const keys = Object.keys(decoded);
 
@@ -587,6 +603,6 @@ export type SerumIxDetailsProps<T> = {
     result: SignatureResult;
     info: T;
     programName: string;
-    innerCards?: JSX.Element[];
+    innerCards?: React.ReactElement[];
     childIndex?: number;
 };
