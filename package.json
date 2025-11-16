@@ -10,6 +10,7 @@
         "format:ci": "format",
         "gen": "dlx shadcn@latest add",
         "lint": "next lint",
+        "postinstall": "echo 'module.exports = require(\"./src/index.js\");' > node_modules/@solana/spl-account-compression/dist/cjs/index.js",
         "scan": "next dev & react-scan localhost:3000",
         "start": "next start",
         "test": "vitest --project specs run",
