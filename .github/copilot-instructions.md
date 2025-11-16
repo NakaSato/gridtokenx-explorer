@@ -101,6 +101,7 @@ Examples: `app/api/anchor/`, `app/api/token-info/`, `app/api/metadata/proxy/`
 1. **borsh deserialization**: `postinstall` script fixes CJS module issue for `@solana/spl-account-compression`
 2. **Webpack config**: Extensive client-side externals for Node.js-dependent packages (Anchor, Serum)
 3. **Build with webpack**: `next build --webpack` (Turbopack disabled due to module resolution issues)
+4. **Serum/Anchor SSR prevention**: Use wrapper pattern in `app/components/instruction/serum/serum-utils.ts` to prevent Node.js module loading during SSR. Always check `typeof window === 'undefined'` before importing these packages.
 
 ## Development Workflows
 
