@@ -22,7 +22,7 @@ const nextConfig = {
         pagesBufferLength: 2,
     },
     // Keep webpack config for fallback
-    webpack: (config, { isServer, dev }) => {
+    webpack: (config, { isServer, dev, webpack }) => {
         config.resolve.alias = {
             ...(config.resolve.alias || {}),
             // Fix borsh import by pointing to the package root
@@ -43,7 +43,6 @@ const nextConfig = {
         ];
 
         if (!isServer) {
-            // Fixes npm packages that depend on Node.js modules in browser
             config.resolve.fallback = {
                 ...config.resolve.fallback,
                 fs: false,
@@ -52,10 +51,15 @@ const nextConfig = {
                 crypto: false,
                 stream: false,
                 util: false,
-                buffer: false,
             };
 
-            // For client-side, make all problematic packages external to prevent bundling Node.js modules
+            // Provide buffer polyfill for browser
+            config.plugins.push(
+                new webpack.ProvidePlugin({
+                    Buffer: ['buffer', 'Buffer'],
+                    process: 'process/browser',
+                })
+            );            // For client-side, make all problematic packages external to prevent bundling Node.js modules
             config.externals = config.externals || [];
             config.externals.push({
                 // Anchor packages that use Node.js modules
@@ -76,14 +80,13 @@ const nextConfig = {
                 'avsc': 'commonjs avsc',
                 // Solflare UTL SDK that uses Metaplex
                 '@solflare-wallet/utl-sdk': 'commonjs @solflare-wallet/utl-sdk',
-                // Node.js built-in modules
+                // Node.js built-in modules (but NOT buffer - we're polyfilling it)
                 'fs': 'fs',
                 'os': 'os',
                 'path': 'path',
                 'crypto': 'crypto',
                 'util': 'util',
                 'stream': 'stream',
-                'buffer': 'buffer',
             });
         }
 

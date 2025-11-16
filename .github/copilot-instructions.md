@@ -103,6 +103,7 @@ Examples: `app/api/anchor/`, `app/api/token-info/`, `app/api/metadata/proxy/`
 3. **Build with webpack**: `next build --webpack` (Turbopack disabled due to module resolution issues)
 4. **Serum/Anchor SSR prevention**: Use wrapper pattern in `app/components/instruction/serum/serum-utils.ts` to prevent Node.js module loading during SSR. Always check `typeof window === 'undefined'` before importing these packages.
 5. **borsh v2 compatibility**: Warning about `deserializeUnchecked` not exported from borsh is expected - it's a compatibility issue between `@solana/web3.js` v1 and `borsh` v2. The warning is suppressed in webpack builds via `ignoreWarnings` and doesn't affect functionality.
+6. **Buffer polyfill**: Uses webpack `ProvidePlugin` to inject Buffer and process polyfills for browser compatibility with Solana packages.
 
 ## Development Workflows
 
