@@ -25,7 +25,7 @@ export function Navbar({ children }: INavbarProps) {
   const selectedLayoutSegment = useSelectedLayoutSegment();
   const selectedLayoutSegments = useSelectedLayoutSegments();
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/90 shadow-sm backdrop-blur-md dark:border-gray-700 dark:bg-gray-900/90">
+    <nav className="sticky top-0 z-50 w-full border-b border-gray-200 shadow-sm backdrop-blur-md dark:border-gray-700">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}

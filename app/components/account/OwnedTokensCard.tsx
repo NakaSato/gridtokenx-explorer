@@ -275,13 +275,13 @@ const DisplayDropdown = ({ display, toggle, show }: DropdownProps) => {
   return (
     <div className="relative">
       <button
-        className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+        className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
         type="button"
         onClick={toggle}
       >
         {display === 'detail' ? 'Detailed' : 'Summary'} <ChevronDown size={15} className="align-text-top" />
       </button>
-      <div className={`absolute right-0 mt-2 rounded-md border bg-white shadow-lg z-10${show ? 'block' : 'hidden'}`}>
+      <div className={`absolute right-0 mt-2 rounded-md border shadow-lg z-10${show ? 'block' : 'hidden'}`}>
         {DISPLAY_OPTIONS.map(displayOption => {
           return (
             <Link

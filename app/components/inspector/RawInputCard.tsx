@@ -286,7 +286,7 @@ export function RawInput({
         <div className="align-items-center flex justify-between">
           <h3 className="text-lg font-semibold">Inspector Input</h3>
           <button
-            className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+            className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
             onClick={clearInput}
             type="button"
           >

@@ -96,7 +96,7 @@ export function AccountsCard({ message }: { message: VersionedMessage }) {
       <div className="flex items-center justify-between border-b px-6 py-4">
         <h3 className="text-lg font-semibold">{`Account List (${numAccounts})`}</h3>
         <button
-          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${expanded ? 'bg-gray-800 text-white' : 'border bg-white text-black hover:bg-gray-100'}`}
+          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${expanded ? 'bg-gray-800 text-white' : 'border hover:bg-gray-100'}`}
           onClick={() => setExpanded(e => !e)}
         >
           {expanded ? 'Collapse' : 'Expand'}

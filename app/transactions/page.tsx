@@ -13,8 +13,8 @@ import { TransactionDetailsCard } from '@components/transaction/TransactionDetai
 import { MonitoringGuideCard } from '@components/transaction/MonitoringGuideCard';
 import { useCluster } from '@providers/cluster';
 import { ClusterStatus } from '@utils/cluster';
-import { createSolanaRpc, address } from '@solana/kit';
-import { toAddress, toLegacySignatureInfo, createLegacyConnection, addressToPublicKey } from '@utils/rpc';
+import { createSolanaRpc } from '@solana/kit';
+import { toAddress, toSignature, createRpc, toLegacyParsedTransaction } from '@utils/rpc';
 
 const MAX_TRANSACTIONS = 50;
 const REFRESH_INTERVAL = 5000; // 5 seconds
@@ -51,14 +51,27 @@ export default function RealtimeTransactionsPage() {
       let signatures: Transaction[] = [];
 
       // Helper to convert kit signature to Transaction type
-      const convertSignature = (sig: any): Transaction => ({
-        signature: sig.signature,
-        slot: typeof sig.slot === 'bigint' ? Number(sig.slot) : sig.slot,
-        err: sig.err,
-        memo: sig.memo || null,
-        blockTime: sig.blockTime ? (typeof sig.blockTime === 'bigint' ? Number(sig.blockTime) : sig.blockTime) : null,
-        confirmationStatus: sig.confirmationStatus as 'processed' | 'confirmed' | 'finalized' | undefined,
-      });
+      const convertSignature = (sig: any): Transaction => {
+        // Properly handle blockTime conversion - it comes as bigint (seconds) or null
+        // Solana blockTime is in seconds, but we store as number for compatibility
+        let blockTime: number | null = null;
+        if (sig.blockTime !== null && sig.blockTime !== undefined) {
+          blockTime = typeof sig.blockTime === 'bigint' 
+            ? Number(sig.blockTime) 
+            : typeof sig.blockTime === 'number'
+              ? sig.blockTime
+              : null;
+        }
+
+        return {
+          signature: sig.signature,
+          slot: typeof sig.slot === 'bigint' ? Number(sig.slot) : sig.slot,
+          err: sig.err,
+          memo: sig.memo || null,
+          blockTime,
+          confirmationStatus: sig.confirmationStatus as 'processed' | 'confirmed' | 'finalized' | undefined,
+        };
+      };
 
       // If custom program ID is provided, monitor it
       if (customProgramId) {
@@ -90,19 +103,20 @@ export default function RealtimeTransactionsPage() {
       setError(null);
       setConnectionErrorCount(0); // Reset error count on success
     } catch (err) {
-      const isConnectionError = err instanceof TypeError && err.message === 'Failed to fetch';
+      const isConnectionError = err instanceof TypeError && err.message.includes('fetch');
+      const isNetworkError = err instanceof Error && (err.message.includes('ECONNREFUSED') || err.message.includes('network'));
 
-      // Increment error count for connection errors
-      if (isConnectionError) {
+      // Increment error count for connection/network errors
+      if (isConnectionError || isNetworkError) {
         setConnectionErrorCount(prev => prev + 1);
       }
 
-      // Only log once
+      // Only log once to avoid console spam
       if (connectionErrorCount === 0) {
         console.error('Error fetching transactions:', err);
       }
 
-      const errorMessage = isConnectionError
+      const errorMessage = isConnectionError || isNetworkError
         ? 'Cannot connect to RPC endpoint. Please check your cluster settings or ensure a local validator is running.'
         : err instanceof Error
           ? err.message
@@ -121,23 +135,51 @@ export default function RealtimeTransactionsPage() {
 
       setDetailsLoading(true);
       try {
-        // Use legacy Connection for getTransaction due to third-party library compatibility
-        const connection = createLegacyConnection(url);
-        const details = await connection.getTransaction(tx.signature, {
-          maxSupportedTransactionVersion: 0,
-        });
+        // Use @solana/kit for modern RPC calls
+        const rpc = createRpc(url);
+        const kitTransaction = await rpc
+          .getTransaction(toSignature(tx.signature), {
+            commitment: 'confirmed',
+            encoding: 'jsonParsed',
+            maxSupportedTransactionVersion: 0,
+          })
+          .send();
+
+        if (!kitTransaction) {
+          console.error('Transaction not found:', tx.signature);
+          setDetailsLoading(false);
+          return;
+        }
+
+        // Convert kit response to legacy format for compatibility
+        const details = toLegacyParsedTransaction(kitTransaction);
 
         if (details) {
-          const programIds = details.transaction.message
-            .getAccountKeys()
-            .staticAccountKeys.filter((_, idx) => {
-              return details.transaction.message.compiledInstructions.some(ix => ix.programIdIndex === idx);
-            })
-            .map(key => key.toBase58());
+          // Extract program IDs from instructions
+          const programIds: string[] = [];
+          const accountKeys: string[] = [];
 
-          const accountKeys = details.transaction.message.getAccountKeys().staticAccountKeys.map(key => key.toBase58());
+          // Handle both legacy and versioned transaction formats
+          const instructions = details.transaction?.message?.instructions || [];
+          instructions.forEach((ix: any) => {
+            if (ix.programId) {
+              const programIdStr = typeof ix.programId === 'string' ? ix.programId : ix.programId.toBase58();
+              if (!programIds.includes(programIdStr)) {
+                programIds.push(programIdStr);
+              }
+            }
+          });
 
-          // Extract compute units from meta
+          // Extract account keys
+          if (details.transaction?.message?.accountKeys) {
+            const keys = details.transaction.message.accountKeys;
+            keys.forEach((key: any) => {
+              const keyStr = typeof key === 'string' ? key : (key.pubkey?.toBase58() || key.toBase58());
+              accountKeys.push(keyStr);
+            });
+          }
+
+          // Extract compute units and fee from meta
           const computeUnits = details.meta?.computeUnitsConsumed;
           const fee = details.meta?.fee;
 

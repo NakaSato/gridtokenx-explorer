@@ -234,7 +234,7 @@ export function AnchorProgramKeyDisplay({
         <div className="flex items-center justify-between">
           <h6 className="card-title mb-0">{programName || 'Anchor Program'}</h6>
           {isAnchorNetwork && (
-            <span className="text-primary inline-flex items-center rounded-full bg-white px-2 py-0.5 text-xs font-medium">
+            <span className="text-primary inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
               🔧 Custom RPC
             </span>
           )}

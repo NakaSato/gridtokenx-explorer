@@ -22,7 +22,7 @@ export function LocalhostDeveloperGuide({ isLocalhost }: LocalhostDeveloperGuide
           </div>
           <div className="flex-shrink-0">
             <button
-              className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+              className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
               onClick={() => setIsExpanded(!isExpanded)}
             >
               {isExpanded ? 'Hide Guide' : 'Show Guide'}

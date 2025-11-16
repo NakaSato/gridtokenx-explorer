@@ -69,7 +69,7 @@ export function BaseInstructionCard({
 
         <button
           disabled={defaultRaw}
-          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${showRaw ? 'bg-gray-800 text-white' : 'border bg-white text-black hover:bg-gray-100'}`}
+          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${showRaw ? 'bg-gray-800 text-white' : 'border hover:bg-gray-100'}`}
           onClick={rawClickHandler}
         >
           <Code className="mr-2" size={13} /> Raw

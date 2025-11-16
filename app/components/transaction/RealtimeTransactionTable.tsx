@@ -179,7 +179,8 @@ export function RealtimeTransactionTable({
                 </TableCell>
                 <TableCell className="whitespace-nowrap">
                   {tx.blockTime ? (
-                    <TimestampToggle unixTimestamp={tx.blockTime} shorter />
+                    // Solana blockTime is in seconds, multiply by 1000 to convert to milliseconds for Date
+                    <TimestampToggle unixTimestamp={tx.blockTime * 1000} shorter />
                   ) : (
                     <span className="text-muted-foreground">-</span>
                   )}

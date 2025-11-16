@@ -238,7 +238,7 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
       <div className="flex items-center border-b px-6 py-4">
         <h3 className="text-lg font-semibold">Overview</h3>
         <Link
-          className="mr-2 rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+          className="mr-2 rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
           href={inspectPath}
         >
           <Settings className="mr-2 align-text-top" size={13} />
@@ -248,7 +248,7 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
           <span className="inline-block h-4 w-4 animate-pulse rounded-full bg-current"></span>
         ) : (
           <button
-            className="rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+            className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
             onClick={() => fetchStatus(signature)}
           >
             <RefreshCw className="mr-2 align-text-top" size={13} />

@@ -76,7 +76,7 @@ export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; addr
           >
             Creators <ChevronDown size={15} className="align-text-top" />
           </button>
-          <div className="absolute z-10 mt-12 rounded-md border bg-white shadow-lg">
+          <div className="absolute z-10 mt-12 rounded-md border shadow-lg">
             {getCreatorDropdownItems(metadata.data.creators)}
           </div>
         </div>

@@ -79,7 +79,7 @@ export function ProgramSecurityTxtCard({
           Security.txt
           <SecurityTxtVersionBadge version={pmpSecurityTxt ? 'pmp' : 'neodyme'} />
         </h3>
-        <div className="flex items-center rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100">
+        <div className="flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100">
           <DownloadableButton
             data={downloadData}
             filename={`${programAddress}-security-txt.json`}

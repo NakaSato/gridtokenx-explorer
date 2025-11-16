@@ -437,7 +437,7 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
         <div className="flex items-center justify-between border-b px-6 py-4">
           <h3 className="text-lg font-semibold">Transaction Overview</h3>
           <button
-            className="flex items-center rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100"
+            className="flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
             onClick={onClear}
           >
             Clear

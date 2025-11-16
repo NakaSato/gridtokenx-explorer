@@ -16,7 +16,7 @@ export const CLUSTERS = [Cluster.MainnetBeta, Cluster.Testnet, Cluster.Devnet, C
 export function clusterSlug(cluster: Cluster): string {
   switch (cluster) {
     case Cluster.MainnetBeta:
-      return 'mainnet-beta';
+      return 'mainnet';
     case Cluster.Testnet:
       return 'testnet';
     case Cluster.Devnet:
@@ -42,6 +42,7 @@ export function clusterName(cluster: Cluster): string {
 export const MAINNET_BETA_URL = 'https://api.mainnet-beta.solana.com';
 export const TESTNET_URL = 'https://api.testnet.solana.com';
 export const DEVNET_URL = 'https://api.devnet.solana.com';
+export const LOCAL_URL = 'http://localhost:8899';
 
 const modifyUrl = (url: string): string => {
   // Only modify URL for production non-localhost environments
@@ -50,6 +51,9 @@ const modifyUrl = (url: string): string => {
 };
 
 export function clusterUrl(cluster: Cluster, customUrl: string): string {
+  // Support local development from .env.local
+  const localRpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP;
+  
   switch (cluster) {
     case Cluster.Devnet:
       return process.env.NEXT_PUBLIC_DEVNET_RPC_URL ?? modifyUrl(DEVNET_URL);
@@ -58,11 +62,15 @@ export function clusterUrl(cluster: Cluster, customUrl: string): string {
     case Cluster.Testnet:
       return process.env.NEXT_PUBLIC_TESTNET_RPC_URL ?? modifyUrl(TESTNET_URL);
     case Cluster.Custom:
-      return customUrl;
+      // Use custom URL, or fall back to local RPC from env, or default local URL
+      return customUrl || localRpcUrl || LOCAL_URL;
   }
 }
 
 export function serverClusterUrl(cluster: Cluster, customUrl: string): string {
+  // Support local development from .env.local (server-side)
+  const localRpcUrl = process.env.SOLANA_RPC_HTTP || process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP;
+  
   switch (cluster) {
     case Cluster.Devnet:
       return process.env.DEVNET_RPC_URL ?? modifyUrl(DEVNET_URL);
@@ -71,7 +79,8 @@ export function serverClusterUrl(cluster: Cluster, customUrl: string): string {
     case Cluster.Testnet:
       return process.env.TESTNET_RPC_URL ?? modifyUrl(TESTNET_URL);
     case Cluster.Custom:
-      return customUrl;
+      // Use custom URL, or fall back to local RPC from env, or default local URL
+      return customUrl || localRpcUrl || LOCAL_URL;
   }
 }
 

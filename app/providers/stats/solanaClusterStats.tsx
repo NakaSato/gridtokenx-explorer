@@ -113,9 +113,21 @@ export function SolanaClusterStatsProvider({ children }: Props) {
           type: DashboardInfoActionType.SetPerfSamples,
         });
       } catch (error) {
-        if (cluster !== Cluster.Custom) {
-          console.error(error, { url });
+        // Check if it's a 403 error (method not supported by RPC endpoint)
+        const is403Error = error instanceof Error && 
+          (error.message.includes('403') || error.message.includes('Forbidden'));
+        
+        // Only log non-403 errors to avoid console spam for unsupported methods
+        if (!is403Error && cluster !== Cluster.Custom) {
+          console.error('Error fetching performance samples:', error, { url });
         }
+        
+        // For 403 errors, silently skip - the RPC doesn't support this method
+        if (is403Error) {
+          // Don't set error state, just skip performance samples
+          return;
+        }
+        
         if (error instanceof Error) {
           dispatchPerformanceInfo({
             data: error.toString(),

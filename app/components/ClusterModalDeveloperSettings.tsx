@@ -24,7 +24,7 @@ export default function ClusterModalDeveloperSettings() {
           <input
             type="checkbox"
             defaultChecked={enableCustomUrl}
-            className="checked:bg-primary h-4 w-4 rounded border-gray-300 bg-white transition"
+            className="checked:bg-primary h-4 w-4 rounded border-gray-300 transition"
             id="cardToggle"
             onChange={onToggleCustomUrlFeature}
           />

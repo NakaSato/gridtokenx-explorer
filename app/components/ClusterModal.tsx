@@ -19,7 +19,7 @@ export function ClusterModal() {
   return (
     <>
       <div
-        className={`fixed inset-y-0 right-0 w-80 transform bg-white shadow-lg transition-transform duration-300 ease-in-out ${show ? 'translate-x-0' : 'translate-x-full'} z-50`}
+        className={`fixed inset-y-0 right-0 w-80 transform shadow-lg transition-transform duration-300 ease-in-out ${show ? 'translate-x-0' : 'translate-x-full'} z-50`}
       >
         <div className="h-full overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
           <span className="cursor-pointer text-2xl text-gray-500 hover:text-gray-700" onClick={onClose}>
@@ -50,7 +50,7 @@ function CustomClusterInput({ activeSuffix, active }: InputProps) {
 
   const btnClass = active
     ? `border-blue-500 text-blue-500 bg-blue-50`
-    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50';
+    : 'border-gray-300 text-gray-700 hover:bg-gray-50';
 
   const onUrlInput = useDebounceCallback((url: string) => {
     updateCustomUrl(url);
@@ -119,7 +119,7 @@ function ClusterToggle() {
         if (net === Cluster.Custom)
           return <CustomClusterInput key={index} activeSuffix={activeColor} active={active} />;
 
-        const btnClass = active ? activeColor : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50';
+        const btnClass = active ? activeColor : 'border-gray-300 text-gray-700 hover:bg-gray-50';
 
         const nextSearchParams = new URLSearchParams(searchParams?.toString());
         const slug = clusterSlug(net);

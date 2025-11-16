@@ -121,7 +121,7 @@ export function ClusterDropdown() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full right-0 z-50 mt-2 w-72 sm:w-80 md:w-96 rounded-md border border-gray-200 bg-white shadow-lg">
+        <div className="absolute top-full right-0 z-50 mt-2 w-72 sm:w-80 md:w-96 rounded-md border border-gray-200 shadow-lg">
           <div className="p-3 sm:p-4">
             <h3 className="mb-3 text-sm font-semibold text-gray-900">Choose a Cluster</h3>
 

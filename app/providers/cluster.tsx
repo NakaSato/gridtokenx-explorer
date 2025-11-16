@@ -35,7 +35,8 @@ interface State {
   status: ClusterStatus;
 }
 
-const DEFAULT_CUSTOM_URL = 'http://localhost:8899';
+// Use local RPC URL from environment or fallback to localhost:8899
+const DEFAULT_CUSTOM_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP || 'http://localhost:8899';
 
 function clusterReducer(state: State, action: Action): State {
   switch (action.status) {
