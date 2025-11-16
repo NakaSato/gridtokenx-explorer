@@ -1,11 +1,12 @@
 'use client';
 
 import { TableCardBody } from '@components/common/TableCardBody';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@components/shared/ui/card';
 import { StatsNotReady } from '@components/StatsNotReady';
 import { ClusterStatsStatus, PERF_UPDATE_SEC, usePerformanceInfo } from '@providers/stats/solanaClusterStats';
 import { PerformanceInfo } from '@providers/stats/solanaPerformanceInfo';
 import { BarElement, CategoryScale, Chart, ChartData, ChartOptions, LinearScale, Tooltip } from 'chart.js';
-import classNames from 'classnames';
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import CountUp from 'react-countup';
@@ -33,14 +34,12 @@ const SERIES_INFO = {
 export function LiveTransactionStatsCard() {
     const [series, setSeries] = React.useState<Series>('short');
     return (
-        <div className="flex h-full flex-col rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-900">
-            <div className="border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4 dark:border-gray-700">
-                <h4 className="text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
-                    Live Transaction Stats
-                </h4>
-            </div>
+        <Card className="flex h-full flex-col">
+            <CardHeader className="border-b">
+                <CardTitle className="text-base sm:text-lg">Live Transaction Stats</CardTitle>
+            </CardHeader>
             <TpsCardBody series={series} setSeries={setSeries} />
-        </div>
+        </Card>
     );
 }
 
@@ -178,49 +177,42 @@ function TpsBarChart({ performanceInfo, series, setSeries }: TpsBarChartProps) {
     };
 
     return (
-        <div className="flex flex-grow flex-col">
+        <CardContent className="flex flex-grow flex-col p-0">
             <TableCardBody>
                 <tr>
-                    <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                    <td className="text-muted-foreground w-full px-3 py-2 text-sm sm:px-4 sm:text-base">
                         Transaction count
                     </td>
-                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base dark:text-gray-100">
+                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
                         {transactionCount}
                     </td>
                 </tr>
                 <tr>
-                    <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                    <td className="text-muted-foreground w-full px-3 py-2 text-sm sm:px-4 sm:text-base">
                         Transactions per second (TPS)
                     </td>
-                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base dark:text-gray-100">
+                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
                         {averageTps}
                     </td>
                 </tr>
             </TableCardBody>
 
-            <hr className="my-0 border-gray-200 dark:border-gray-700" />
+            <hr className="border-border my-0" />
 
             <div className="flex flex-grow flex-col px-4 py-3 sm:px-6">
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">TPS history</span>
+                    <span className="text-sm font-medium">TPS history</span>
 
                     <div className="flex flex-wrap gap-2">
                         {SERIES.map(key => (
-                            <button
+                            <Button
                                 key={key}
+                                variant={series === key ? 'default' : 'outline'}
+                                size="sm"
                                 onClick={() => setSeries(key)}
-                                className={classNames(
-                                    'rounded-md border px-3 py-1.5 text-sm font-medium transition-all duration-200',
-                                    {
-                                        'border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-500 dark:bg-blue-900/30 dark:text-blue-400':
-                                            series === key,
-                                        'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700':
-                                            series !== key,
-                                    },
-                                )}
                             >
                                 {SERIES_INFO[key].interval}
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 </div>
@@ -229,14 +221,14 @@ function TpsBarChart({ performanceInfo, series, setSeries }: TpsBarChartProps) {
                     <Bar data={chartData} options={chartOptions} style={{ height: '100%' }} />
                 </div>
 
-                <div className="mt-3 text-center text-xs text-gray-600 sm:text-sm dark:text-gray-400">
+                <div className="text-muted-foreground mt-3 text-center text-xs sm:text-sm">
                     <p className="mb-0">
                         For transaction confirmation time statistics, please visit{' '}
                         <a
                             href="https://www.validators.app"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline dark:text-blue-400"
+                            className="text-primary hover:underline"
                         >
                             validators.app
                         </a>{' '}
@@ -245,14 +237,14 @@ function TpsBarChart({ performanceInfo, series, setSeries }: TpsBarChartProps) {
                             href="https://solscan.io"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline dark:text-blue-400"
+                            className="text-primary hover:underline"
                         >
                             solscan.io
                         </a>
                     </p>
                 </div>
             </div>
-        </div>
+        </CardContent>
     );
 }
 

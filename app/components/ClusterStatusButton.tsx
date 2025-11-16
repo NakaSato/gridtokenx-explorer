@@ -1,9 +1,10 @@
 'use client';
 
+import { Button } from '@components/shared/ui/button';
 import { useCluster, useClusterModal } from '@providers/cluster';
 import { Cluster, ClusterStatus } from '@utils/cluster';
 import React, { useCallback } from 'react';
-import { AlertCircle, CheckCircle } from 'react-feather';
+import { AlertCircle, CheckCircle, Loader } from 'react-feather';
 
 function getCustomUrlClusterName(customUrl: string) {
     try {
@@ -24,36 +25,29 @@ export const ClusterStatusButton = () => {
     const onClickHandler = useCallback(() => setShow(true), [setShow]);
     const statusName = cluster !== Cluster.Custom ? `${name}` : getCustomUrlClusterName(customUrl);
 
-    const btnClasses = (variant: string) => {
-        return `btn d-block btn-${variant}`;
-    };
-
-    const spinnerClasses =
-        'inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin align-text-top mr-2';
-
     switch (status) {
         case ClusterStatus.Connected:
             return (
-                <span className={btnClasses('primary')} onClick={onClickHandler}>
-                    <CheckCircle className="fe mr-2" size={15} />
+                <Button variant="default" size="sm" onClick={onClickHandler}>
+                    <CheckCircle size={14} />
                     {statusName}
-                </span>
+                </Button>
             );
 
         case ClusterStatus.Connecting:
             return (
-                <span className={btnClasses('warning')} onClick={onClickHandler}>
-                    <span className={spinnerClasses} role="status" aria-hidden="true"></span>
+                <Button variant="secondary" size="sm" onClick={onClickHandler} disabled>
+                    <Loader size={14} className="animate-spin" />
                     {statusName}
-                </span>
+                </Button>
             );
 
         case ClusterStatus.Failure:
             return (
-                <span className={btnClasses('danger')} onClick={onClickHandler}>
-                    <AlertCircle className="mr-2" size={15} />
+                <Button variant="destructive" size="sm" onClick={onClickHandler}>
+                    <AlertCircle size={14} />
                     {statusName}
-                </span>
+                </Button>
             );
     }
 };

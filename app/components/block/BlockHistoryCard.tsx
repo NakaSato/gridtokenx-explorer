@@ -2,6 +2,7 @@ import { Address } from '@components/common/Address';
 import { ErrorCard } from '@components/common/ErrorCard';
 import { Signature } from '@components/common/Signature';
 import { SolBalance } from '@components/common/SolBalance';
+import { StatusBadge } from '@components/shared/StatusBadge';
 import { useCluster } from '@providers/cluster';
 import {
     ConfirmedTransactionMeta,
@@ -299,16 +300,8 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                         </thead>
                         <tbody className="list">
                             {filteredTransactions.slice(0, numDisplayed).map((tx, i) => {
-                                let statusText;
-                                let statusClass;
+                                const isSuccess = !tx.meta?.err && tx.signature;
                                 let signature: React.ReactNode;
-                                if (tx.meta?.err || !tx.signature) {
-                                    statusClass = 'bg-yellow-100 text-yellow-800';
-                                    statusText = 'Failed';
-                                } else {
-                                    statusClass = 'bg-green-100 text-green-800';
-                                    statusText = 'Success';
-                                }
 
                                 if (tx.signature) {
                                     signature = <Signature signature={tx.signature} link truncateChars={32} />;
@@ -321,11 +314,10 @@ export function BlockHistoryCard({ block, epoch }: { block: VersionedBlockRespon
                                     <tr key={i}>
                                         <td>{tx.index + 1}</td>
                                         <td>
-                                            <span
-                                                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusClass}`}
-                                            >
-                                                {statusText}
-                                            </span>
+                                            <StatusBadge
+                                                status={isSuccess ? 'success' : 'error'}
+                                                label={isSuccess ? 'Success' : 'Failed'}
+                                            />
                                         </td>
 
                                         <td>{signature}</td>
@@ -508,7 +500,7 @@ function FilterLink({
     }, [currentPathname, currentSearchParams, name, programId]);
     return (
         <Link
-            className={`block px-4 py-2 hover:bg-gray-100${programId === currentFilter ? ' bg-gray-100 font-semibold' : ''}`}
+            className={`block px-4 py-2 hover:bg-gray-100${programId === currentFilter ? 'bg-gray-100 font-semibold' : ''}`}
             href={href}
             key={programId}
         >

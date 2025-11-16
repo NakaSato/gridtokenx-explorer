@@ -1,3 +1,4 @@
+import { Button } from '@components/shared/ui/button';
 import { useCluster } from '@providers/cluster';
 import { useStatsProvider } from '@providers/stats/solanaClusterStats';
 import React from 'react';
@@ -24,23 +25,18 @@ export function StatsNotReady({ error }: { error: boolean }) {
     if (error || !active) {
         return (
             <div className="p-6 text-center">
-                There was a problem loading cluster stats.{' '}
-                <button
-                    className="bg-white text-gray-800 px-3 py-1.5 rounded text-sm font-medium hover:bg-gray-100 inline-flex items-center gap-1.5"
-                    onClick={() => {
-                        retry();
-                    }}
-                >
-                    <RefreshCw className="align-text-top" size={13} />
+                <p className="text-muted-foreground mb-3">There was a problem loading cluster stats.</p>
+                <Button variant="outline" size="sm" onClick={() => retry()}>
+                    <RefreshCw size={14} />
                     Try Again
-                </button>
+                </Button>
             </div>
         );
     }
 
     return (
         <div className="p-6 text-center">
-            <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin align-text-top mr-2"></span>
+            <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent align-text-top"></span>
             Loading
         </div>
     );
