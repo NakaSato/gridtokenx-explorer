@@ -14,13 +14,14 @@ import { getTokenInfo, getTokenInfoSwrKey } from '@/app/utils/token-info';
 
 import { InstructionCard } from '../InstructionCard';
 import { IX_STRUCTS, IX_TITLES, TokenAmountUi, TokenInstructionType } from './types';
+import { toAddress, addressToPublicKey } from '@/app/utils/rpc';
 
 type DetailsProps = {
     tx: ParsedTransaction;
     ix: ParsedInstruction;
     result: SignatureResult;
     index: number;
-    innerCards?: JSX.Element[];
+    innerCards?: React.ReactElement[];
     childIndex?: number;
 };
 
@@ -39,12 +40,12 @@ type InfoProps = {
     result: SignatureResult;
     index: number;
     title: string;
-    innerCards?: JSX.Element[];
+    innerCards?: React.ReactElement[];
     childIndex?: number;
 };
 
 async function fetchTokenInfo([_, address, cluster, url]: ['get-token-info', string, Cluster, string]) {
-    return await getTokenInfo(new PublicKey(address), cluster, url);
+    return await getTokenInfo(addressToPublicKey(toAddress(address)), cluster, url);
 }
 
 function TokenInstruction(props: InfoProps) {
@@ -75,13 +76,13 @@ function TokenInstruction(props: InfoProps) {
 
     React.useEffect(() => {
         if (tokenAddress && !tokenInfo) {
-            fetchAccountInfo(new PublicKey(tokenAddress), 'parsed');
+            fetchAccountInfo(addressToPublicKey(toAddress(tokenAddress)), 'parsed');
         }
     }, [fetchAccountInfo, tokenAddress]); // eslint-disablline react-hooks/exhaustivdeps
 
     React.useEffect(() => {
         if (mintAddress && !mintInfo) {
-            fetchAccountInfo(new PublicKey(mintAddress), 'parsed');
+            fetchAccountInfo(addressToPublicKey(toAddress(mintAddress)), 'parsed');
         }
     }, [fetchAccountInfo, mintAddress]); // eslint-disablline react-hooks/exhaustivdeps
 
@@ -91,7 +92,7 @@ function TokenInstruction(props: InfoProps) {
         fetchTokenInfo
     );
 
-    const attributes: JSX.Element[] = [];
+    const attributes: React.ReactElement[] = [];
     let decimals = mintInfo?.decimals;
     let tokenSymbol = '';
 
@@ -108,7 +109,7 @@ function TokenInstruction(props: InfoProps) {
             <tr key={mintAddress}>
                 <td>Token</td>
                 <td className="lg:text-right">
-                    <Address pubkey={new PublicKey(mintAddress)} alignRight link fetchTokenLabelInfo />
+                    <Address pubkey={addressToPublicKey(toAddress(mintAddress))} alignRight link fetchTokenLabelInfo />
                 </td>
             </tr>
         );

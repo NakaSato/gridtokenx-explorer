@@ -1,4 +1,5 @@
 import { Connection, PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import axios from 'axios';
 import bs58 from 'bs58';
 import pLimit from 'p-limit';
@@ -19,7 +20,7 @@ export namespace NftokenFetcher {
         rpcUrl: string;
     }): Promise<NftokenTypes.NftInfo[]> => {
         const connection = new Connection(rpcUrl);
-        const accounts = await connection.getProgramAccounts(new PublicKey(NFTOKEN_ADDRESS), {
+        const accounts = await connection.getProgramAccounts(addressToPublicKey(toAddress(NFTOKEN_ADDRESS)), {
             filters: [
                 {
                     memcmp: {

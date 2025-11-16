@@ -1,4 +1,4 @@
-import { PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 
 import { Account } from '../../../providers/accounts';
 import { NFTOKEN_ADDRESS } from './nftoken';
@@ -16,24 +16,24 @@ export const parseNFTokenNFTAccount = (account: Account): NftokenTypes.NftAccoun
     }
 
     try {
-        const parsed = NftokenTypes.nftAccountLayout.decode(account.data.raw!);
+        const parsed = NftokenTypes.nftAccountLayout.decode(account.data.raw!) as any;
 
         if (!parsed) {
             return null;
         }
 
-        if (Buffer.from(parsed!.discriminator).toString('base64') !== nftokenAccountDisc) {
+        if (Buffer.from(parsed.discriminator).toString('base64') !== nftokenAccountDisc) {
             return null;
         }
 
         return {
             address: account.pubkey.toBase58(),
-            authority: new PublicKey(parsed.authority).toBase58(),
+            authority: addressToPublicKey(toAddress(parsed.authority)).toBase58(),
             authority_can_update: Boolean(parsed.authority_can_update),
-            collection: new PublicKey(parsed.collection).toBase58(),
+            collection: addressToPublicKey(toAddress(parsed.collection)).toBase58(),
 
-            delegate: new PublicKey(parsed.delegate).toBase58(),
-            holder: new PublicKey(parsed.holder).toBase58(),
+            delegate: addressToPublicKey(toAddress(parsed.delegate)).toBase58(),
+            holder: addressToPublicKey(toAddress(parsed.holder)).toBase58(),
 
             metadata_url: parsed.metadata_url?.replace(/\0/g, '') ?? null,
         };
@@ -50,7 +50,7 @@ export const parseNFTokenCollectionAccount = (account: Account): NftokenTypes.Co
     }
 
     try {
-        const parsed = NftokenTypes.collectionAccountLayout.decode(account.data.raw!);
+        const parsed = NftokenTypes.collectionAccountLayout.decode(account.data.raw!) as any;
 
         if (!parsed) {
             return null;

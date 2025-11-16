@@ -1,9 +1,10 @@
 import { PublicKey, TransactionInstruction } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import { PublicKeyFromString } from '@validators/pubkey';
 import { Infer, type } from 'superstruct';
 
 const PROGRAM_ADDRESS = 'Ed25519SigVerify111111111111111111111111111';
-export const PROGRAM_ID = new PublicKey(PROGRAM_ADDRESS);
+export const PROGRAM_ID = addressToPublicKey(toAddress(PROGRAM_ADDRESS));
 
 export type Ed25519Info = Infer<typeof Ed25519Info>;
 export const Ed25519Info = type({

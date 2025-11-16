@@ -36,6 +36,7 @@ import { SPL_ACCOUNT_COMPRESSION_PROGRAM_ID as ACCOUNT_COMPRESSION_ID } from '@s
 import { PublicKey } from '@solana/web3.js';
 import { TOKEN_2022_PROGRAM_ADDRESS } from '@solana-program/token-2022';
 import { Cluster, ClusterStatus } from '@utils/cluster';
+import { addressToPublicKey, toAddress } from '@utils/rpc';
 import { FEATURE_PROGRAM_ID } from '@utils/parseFeatureAccount';
 import { useClusterPath } from '@utils/url';
 import Link from 'next/link';
@@ -191,7 +192,7 @@ const TOKEN_TABS_HIDDEN = ['spl-token:mint', 'spl-token-2022:mint', 'config', 'v
 type Props = PropsWithChildren<{ params: Promise<{ address: string }> }>;
 
 async function fetchFullTokenInfo([_, pubkey, cluster, url]: ['get-full-token-info', string, Cluster, string]) {
-    return await getFullTokenInfo(new PublicKey(pubkey), cluster, url);
+    return await getFullTokenInfo(addressToPublicKey(toAddress(pubkey)), cluster, url);
 }
 
 function AddressLayoutInner({ children, params }: Props) {
@@ -203,7 +204,7 @@ function AddressLayoutInner({ children, params }: Props) {
     let pubkey: PublicKey | undefined;
 
     try {
-        pubkey = new PublicKey(address);
+        pubkey = addressToPublicKey(toAddress(address));
     } catch (err) {
         /* empty */
     }

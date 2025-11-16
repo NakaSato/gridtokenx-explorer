@@ -74,12 +74,26 @@ const WHITELISTED_RPCS = [
     'engine.mirror.ad',
 ];
 
+// Track last error to prevent spam
+const lastErrorCache = new Map<string, number>();
+const ERROR_DEBOUNCE_MS = 5000; // Only log same error once per 5 seconds
+
 function isWhitelistedRpc(url: string) {
     try {
         return WHITELISTED_RPCS.includes(new URL(url).hostname);
     } catch (e) {
         return false;
     }
+}
+
+function shouldLogError(errorKey: string): boolean {
+    const now = Date.now();
+    const lastLogged = lastErrorCache.get(errorKey);
+    if (!lastLogged || now - lastLogged > ERROR_DEBOUNCE_MS) {
+        lastErrorCache.set(errorKey, now);
+        return true;
+    }
+    return false;
 }
 
 type ClusterProviderProps = { children: React.ReactNode };
@@ -266,32 +280,31 @@ async function updateCluster(dispatch: Dispatch, cluster: Cluster, customUrl: st
             url: transportUrl,
             isCustom: cluster === Cluster.Custom,
             errorType,
-            errorMessage,
-            ...(errorStack && { 
-                errorStack: errorStack.split('\n').slice(0, 3).join('\n') 
-            }),
-            errorDetails,
+            errorMessage: errorMessage.substring(0, 200), // Truncate long messages
         };
 
-        // Provide more informative error messages
-        if (errorMessage.includes('<!DOCTYPE') || errorMessage.includes('not valid JSON')) {
-            console.error('RPC endpoint returned HTML instead of JSON (not a valid Solana RPC):', {
-                ...errorLog,
-                errorMessage: errorMessage.substring(0, 200), // Truncate HTML
-            });
-        } else if (errorMessage.includes('fetch') || errorMessage.includes('network') || errorMessage.includes('ECONNREFUSED')) {
-            console.error('Network error connecting to RPC:', {
-                ...errorLog,
-                hint: cluster === Cluster.Custom 
-                    ? 'Check that the RPC URL is correct and accessible from your network'
-                    : 'Check your internet connection',
-            });
-        } else {
-            // Log all cluster connection errors with proper context
-            console.error('Failed to connect to cluster:', errorLog);
-            
-            // Also log the raw error separately for debugging
-            console.error('Raw error object:', error);
+        // Create unique key for this error to prevent spam
+        const errorKey = `${cluster}-${errorType}-${errorMessage.substring(0, 50)}`;
+        
+        // Only log in development and if not recently logged
+        const isDev = process.env.NODE_ENV === 'development';
+        const shouldLog = isDev && shouldLogError(errorKey);
+
+        // Provide more informative error messages (but only log once per error type)
+        if (shouldLog) {
+            if (errorMessage.includes('<!DOCTYPE') || errorMessage.includes('not valid JSON')) {
+                console.warn('⚠️ RPC endpoint returned HTML instead of JSON (not a valid Solana RPC)', errorLog);
+            } else if (errorMessage.includes('fetch') || errorMessage.includes('network') || errorMessage.includes('ECONNREFUSED')) {
+                console.warn('⚠️ Network error connecting to RPC', {
+                    cluster: errorLog.cluster,
+                    url: errorLog.url,
+                    hint: cluster === Cluster.Custom 
+                        ? 'Check that the RPC URL is correct and accessible'
+                        : 'Check your internet connection or try switching clusters',
+                });
+            } else {
+                console.warn('⚠️ Failed to connect to cluster', errorLog);
+            }
         }
 
         dispatch({

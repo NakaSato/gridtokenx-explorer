@@ -14,7 +14,8 @@ import { MonitoringGuideCard } from '@components/transaction/MonitoringGuideCard
 import { useCluster } from '@providers/cluster';
 import { ClusterStatus } from '@utils/cluster';
 import { createSolanaRpc, address } from '@solana/kit';
-import { ConfirmedSignatureInfo, Connection, PublicKey } from '@solana/web3.js';
+import { ConfirmedSignatureInfo, Connection } from '@solana/web3.js';
+import { toAddress, addressToPublicKey } from '@utils/rpc';
 
 const MAX_TRANSACTIONS = 50;
 const REFRESH_INTERVAL = 5000; // 5 seconds
@@ -29,6 +30,8 @@ export default function RealtimeTransactionsPage() {
     const [selectedTx, setSelectedTx] = React.useState<EnhancedTransaction | null>(null);
     const [detailsLoading, setDetailsLoading] = React.useState(false);
     const [customProgramId, setCustomProgramId] = React.useState<string>('');
+    const [connectionErrorCount, setConnectionErrorCount] = React.useState(0);
+    const maxConnectionErrors = 3; // Stop retrying after 3 consecutive errors
 
     const fetchTransactions = React.useCallback(async () => {
         if (status !== ClusterStatus.Connected || isPaused) return;
@@ -49,20 +52,20 @@ export default function RealtimeTransactionsPage() {
             // If custom program ID is provided, monitor it
             if (customProgramId) {
                 try {
-                    const programPubkey = new PublicKey(customProgramId);
+                    const programPubkey = addressToPublicKey(toAddress(customProgramId));
                     signatures = await connection.getSignaturesForAddress(programPubkey, {
                         limit: MAX_TRANSACTIONS,
                     });
                 } catch (err) {
                     console.error('Invalid program ID, falling back to system program');
-                    const systemProgramId = new PublicKey('11111111111111111111111111111111');
+                    const systemProgramId = addressToPublicKey(toAddress('11111111111111111111111111111111'));
                     signatures = await connection.getSignaturesForAddress(systemProgramId, {
                         limit: MAX_TRANSACTIONS,
                     });
                 }
             } else {
                 // Get signatures from a well-known program to ensure we get recent activity
-                const systemProgramId = new PublicKey('11111111111111111111111111111111');
+                const systemProgramId = addressToPublicKey(toAddress('11111111111111111111111111111111'));
                 signatures = await connection.getSignaturesForAddress(systemProgramId, {
                     limit: MAX_TRANSACTIONS,
                 });
@@ -72,11 +75,18 @@ export default function RealtimeTransactionsPage() {
             setLoading(false);
             setError(null);
         } catch (err) {
-            console.error('Error fetching transactions:', err);
-            setError(err instanceof Error ? err.message : 'Failed to fetch transactions');
+            // Only log connection errors once, not repeatedly
+            if (!error) {
+                console.error('Error fetching transactions:', err);
+            }
+            const isConnectionError = err instanceof TypeError && err.message === 'Failed to fetch';
+            const errorMessage = isConnectionError 
+                ? 'Cannot connect to RPC endpoint. Please check your cluster settings or ensure a local validator is running.'
+                : err instanceof Error ? err.message : 'Failed to fetch transactions';
+            setError(errorMessage);
             setLoading(false);
         }
-    }, [url, status, isPaused, customProgramId]);
+    }, [url, status, isPaused, customProgramId, error]);
 
     const fetchTransactionDetails = React.useCallback(
         async (tx: EnhancedTransaction) => {
