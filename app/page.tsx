@@ -31,17 +31,25 @@ import { UpcomingFeatures } from './utils/feature-gate/UpcomingFeatures';
 
 export default function Page() {
     return (
-        <Suspense fallback={<div className="container mx-auto px-4 mt-4"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" role="status"><span className="sr-only">Loading...</span></div></div>}>
+        <Suspense
+            fallback={
+                <div className="container mx-auto mt-4 px-4">
+                    <div className="border-primary h-12 w-12 animate-spin rounded-full border-b-2" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div>
+                </div>
+            }
+        >
             <StatsProvider>
                 <SupplyProvider>
-                    <div className="container mx-auto px-4 mt-4">
+                    <div className="container mx-auto px-4 py-4">
                         <StakingComponent />
 
-                        <div className="flex flex-wrap -mx-2">
-                            <div className="w-full md:w-1/2 px-2 flex">
+                        <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                            <div className="w-full">
                                 <StatsCardBody />
                             </div>
-                            <div className="w-full md:w-1/2 px-2 flex">
+                            <div className="w-full">
                                 <LiveTransactionStatsCard />
                             </div>
                         </div>
@@ -73,7 +81,10 @@ function StakingComponent() {
 
     const delinquentStake = React.useMemo(() => {
         if (voteAccounts) {
-            return voteAccounts.delinquent.reduce((prev: bigint, current: any) => prev + current.activatedStake, BigInt(0));
+            return voteAccounts.delinquent.reduce(
+                (prev: bigint, current: any) => prev + current.activatedStake,
+                BigInt(0),
+            );
         }
     }, [voteAccounts]);
 
@@ -111,33 +122,45 @@ function StakingComponent() {
     }
 
     return (
-        <div className="flex flex-wrap -mx-2">
-            <div className="w-1/2 xl:w-auto px-2">
-                <div className="bg-white rounded-lg shadow-md border border-gray-200">
-                    <div className="p-6">
-                        <h4 className="text-lg font-semibold text-gray-900">Circulating Supply</h4>
-                        <h1 className="text-2xl font-bold text-gray-900">
-                            <em className="text-blue-600">{displayLamports(supply.circulating)}</em> /{' '}
-                            <small className="text-gray-600">{displayLamports(supply.total)}</small>
+        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="w-full">
+                <div className="h-full rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-900">
+                    <div className="p-4 sm:p-6">
+                        <h4 className="mb-2 text-sm font-semibold text-gray-900 sm:text-lg dark:text-white">
+                            Circulating Supply
+                        </h4>
+                        <h1 className="mb-1 text-xl font-bold break-words text-gray-900 sm:text-2xl dark:text-white">
+                            <em className="text-blue-600 dark:text-blue-400">{displayLamports(supply.circulating)}</em>{' '}
+                            /{' '}
+                            <small className="text-gray-600 dark:text-gray-400">{displayLamports(supply.total)}</small>
                         </h1>
-                        <h5 className="text-base font-medium text-gray-700">
-                            <em className="text-blue-600">{circulatingPercentage}%</em> is circulating
+                        <h5 className="text-sm font-medium text-gray-700 sm:text-base dark:text-gray-300">
+                            <em className="text-blue-600 dark:text-blue-400">{circulatingPercentage}%</em> is
+                            circulating
                         </h5>
                     </div>
                 </div>
             </div>
-            <div className="w-1/2 xl:w-auto px-2">
-                <div className="bg-white rounded-lg shadow-md border border-gray-200">
-                    <div className="p-6">
-                        <h4 className="text-lg font-semibold text-gray-900">Active Stake</h4>
+            <div className="w-full">
+                <div className="h-full rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-900">
+                    <div className="p-4 sm:p-6">
+                        <h4 className="mb-2 text-sm font-semibold text-gray-900 sm:text-lg dark:text-white">
+                            Active Stake
+                        </h4>
                         {activeStake ? (
-                            <h1 className="text-2xl font-bold text-gray-900">
-                                <em className="text-blue-600">{displayLamports(activeStake)}</em> / <small className="text-gray-600">{displayLamports(supply.total)}</small>
+                            <h1 className="mb-1 text-xl font-bold break-words text-gray-900 sm:text-2xl dark:text-white">
+                                <em className="text-blue-600 dark:text-blue-400">{displayLamports(activeStake)}</em> /{' '}
+                                <small className="text-gray-600 dark:text-gray-400">
+                                    {displayLamports(supply.total)}
+                                </small>
                             </h1>
-                        ) : null}
+                        ) : (
+                            <div className="mb-1 h-8 animate-pulse rounded bg-gray-200 dark:bg-gray-800"></div>
+                        )}
                         {delinquentStakePercentage && (
-                            <h5 className="text-base font-medium text-gray-700">
-                                Delinquent stake: <em className="text-blue-600">{delinquentStakePercentage}%</em>
+                            <h5 className="text-sm font-medium text-gray-700 sm:text-base dark:text-gray-300">
+                                Delinquent stake:{' '}
+                                <em className="text-blue-600 dark:text-blue-400">{delinquentStakePercentage}%</em>
                             </h5>
                         )}
                     </div>
@@ -177,58 +200,78 @@ function StatsCardBody() {
     const { blockHeight, absoluteSlot } = epochInfo;
 
     return (
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-grow">
-            <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex flex-wrap -mx-2 items-center">
-                    <div className="flex-1 px-2">
-                        <h4 className="text-lg font-semibold text-gray-900">Live Cluster Stats</h4>
-                    </div>
-                </div>
+        <div className="h-full rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-900">
+            <div className="border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4 dark:border-gray-700">
+                <h4 className="text-base font-semibold text-gray-900 sm:text-lg dark:text-white">Live Cluster Stats</h4>
             </div>
             <TableCardBody>
                 <tr>
-                    <td className="w-full py-2 px-4 text-gray-700">Slot</td>
-                    <td className="py-2 px-4 text-right lg:text-right font-mono">
+                    <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                        Slot
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
                         <Slot slot={absoluteSlot} link />
                     </td>
                 </tr>
                 {blockHeight !== undefined && (
                     <tr>
-                        <td className="w-full py-2 px-4 text-gray-700">Block height</td>
-                        <td className="py-2 px-4 text-right lg:text-right font-mono">
+                        <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                            Block height
+                        </td>
+                        <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
                             <Slot slot={blockHeight} />
                         </td>
                     </tr>
                 )}
                 {blockTime && (
                     <tr>
-                        <td className="w-full py-2 px-4 text-gray-700">Cluster time</td>
-                        <td className="py-2 px-4 text-right lg:text-right font-mono">
+                        <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                            Cluster time
+                        </td>
+                        <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
                             <TimestampToggle unixTimestamp={blockTime} shorter></TimestampToggle>
                         </td>
                     </tr>
                 )}
                 <tr>
-                    <td className="w-full py-2 px-4 text-gray-700">Slot time (1min average)</td>
-                    <td className="py-2 px-4 text-right lg:text-right font-mono">{averageSlotTime}ms</td>
+                    <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                        Slot time (1min average)
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
+                        {averageSlotTime}ms
+                    </td>
                 </tr>
                 <tr>
-                    <td className="w-full py-2 px-4 text-gray-700">Slot time (1hr average)</td>
-                    <td className="py-2 px-4 text-right lg:text-right font-mono">{hourlySlotTime}ms</td>
+                    <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                        Slot time (1hr average)
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
+                        {hourlySlotTime}ms
+                    </td>
                 </tr>
                 <tr>
-                    <td className="w-full py-2 px-4 text-gray-700">Epoch</td>
-                    <td className="py-2 px-4 text-right lg:text-right font-mono">
+                    <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                        Epoch
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
                         <Epoch epoch={epochInfo.epoch} link />
                     </td>
                 </tr>
                 <tr>
-                    <td className="w-full py-2 px-4 text-gray-700">Epoch progress</td>
-                    <td className="py-2 px-4 text-right lg:text-right font-mono">{epochProgress}</td>
+                    <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                        Epoch progress
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
+                        {epochProgress}
+                    </td>
                 </tr>
                 <tr>
-                    <td className="w-full py-2 px-4 text-gray-700">Epoch time remaining (approx.)</td>
-                    <td className="py-2 px-4 text-right lg:text-right font-mono">~{epochTimeRemaining}</td>
+                    <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                        Epoch time remaining (approx.)
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
+                        ~{epochTimeRemaining}
+                    </td>
                 </tr>
             </TableCardBody>
         </div>

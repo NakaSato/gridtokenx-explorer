@@ -33,9 +33,11 @@ const SERIES_INFO = {
 export function LiveTransactionStatsCard() {
     const [series, setSeries] = React.useState<Series>('short');
     return (
-        <div className="card flex flex-grow flex-col">
-            <div className="border-b px-6 py-4">
-                <h4 className="text-lg font-semibold">Live Transaction Stats</h4>
+        <div className="flex h-full flex-col rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-900">
+            <div className="border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4 dark:border-gray-700">
+                <h4 className="text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
+                    Live Transaction Stats
+                </h4>
             </div>
             <TpsCardBody series={series} setSeries={setSeries} />
         </div>
@@ -53,6 +55,8 @@ function TpsCardBody({ series, setSeries }: { series: Series; setSeries: SetSeri
 }
 
 const TPS_CHART_OPTIONS = (historyMaxTps: number): ChartOptions<'bar'> => {
+    const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
+
     return {
         animation: false,
         interaction: {
@@ -125,19 +129,20 @@ const TPS_CHART_OPTIONS = (historyMaxTps: number): ChartOptions<'bar'> => {
             },
             y: {
                 grid: {
-                    display: false,
+                    color: isDark ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)',
+                    display: true,
                 },
                 min: 0,
                 suggestedMax: historyMaxTps,
                 ticks: {
-                    count: 10,
+                    color: isDark ? '#9CA3AF' : '#6B7280',
+                    count: 5,
                     display: true,
                     font: {
                         size: 10,
                     },
                     precision: 0,
                     stepSize: 500,
-                    textStrokeColor: '#EEE',
                 },
             },
         },
@@ -160,7 +165,8 @@ function TpsBarChart({ performanceInfo, series, setSeries }: TpsBarChartProps) {
     const chartData: ChartData<'bar'> = {
         datasets: [
             {
-                backgroundColor: '#00D192',
+                backgroundColor: '#14F195',
+                borderRadius: 4,
                 borderWidth: 0,
                 data: seriesData.map(val => val || 0),
                 hoverBackgroundColor: '#00D192',
@@ -175,30 +181,41 @@ function TpsBarChart({ performanceInfo, series, setSeries }: TpsBarChartProps) {
         <div className="flex flex-grow flex-col">
             <TableCardBody>
                 <tr>
-                    <td className="w-full">Transaction count</td>
-                    <td className="font-mono lg:text-right">{transactionCount} </td>
+                    <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                        Transaction count
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base dark:text-gray-100">
+                        {transactionCount}
+                    </td>
                 </tr>
                 <tr>
-                    <td className="w-full">Transactions per second (TPS)</td>
-                    <td className="font-mono lg:text-right">{averageTps} </td>
+                    <td className="w-full px-3 py-2 text-sm text-gray-700 sm:px-4 sm:text-base dark:text-gray-300">
+                        Transactions per second (TPS)
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base dark:text-gray-100">
+                        {averageTps}
+                    </td>
                 </tr>
             </TableCardBody>
 
-            <hr className="my-0" />
+            <hr className="my-0 border-gray-200 dark:border-gray-700" />
 
-            <div className="flex flex-grow flex-col px-6 py-3">
-                <div className="flex w-100 justify-between">
-                    <span className="mb-0 text-sm">TPS history</span>
+            <div className="flex flex-grow flex-col px-4 py-3 sm:px-6">
+                <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">TPS history</span>
 
-                    <div className="text-sm">
+                    <div className="flex flex-wrap gap-2">
                         {SERIES.map(key => (
                             <button
                                 key={key}
                                 onClick={() => setSeries(key)}
                                 className={classNames(
-                                    'ml-2 rounded-md border bg-white px-3 py-1.5 text-sm text-black hover:bg-gray-100',
+                                    'rounded-md border px-3 py-1.5 text-sm font-medium transition-all duration-200',
                                     {
-                                        active: series === key,
+                                        'border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-500 dark:bg-blue-900/30 dark:text-blue-400':
+                                            series === key,
+                                        'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700':
+                                            series !== key,
                                     },
                                 )}
                             >
@@ -212,14 +229,24 @@ function TpsBarChart({ performanceInfo, series, setSeries }: TpsBarChartProps) {
                     <Bar data={chartData} options={chartOptions} style={{ height: '100%' }} />
                 </div>
 
-                <div className="text-muted-foreground mt-3 text-center">
+                <div className="mt-3 text-center text-xs text-gray-600 sm:text-sm dark:text-gray-400">
                     <p className="mb-0">
                         For transaction confirmation time statistics, please visit{' '}
-                        <a href="https://www.validators.app" target="_blank" rel="noopener noreferrer">
+                        <a
+                            href="https://www.validators.app"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline dark:text-blue-400"
+                        >
                             validators.app
                         </a>{' '}
                         or{' '}
-                        <a href="https://solscan.io" target="_blank" rel="noopener noreferrer">
+                        <a
+                            href="https://solscan.io"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline dark:text-blue-400"
+                        >
                             solscan.io
                         </a>
                     </p>

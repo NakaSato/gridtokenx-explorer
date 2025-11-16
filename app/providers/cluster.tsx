@@ -140,19 +140,18 @@ async function updateCluster(dispatch: Dispatch, cluster: Cluster, customUrl: st
         new URL(customUrl);
 
         const transportUrl = clusterUrl(cluster, customUrl);
+
+        if (!transportUrl) {
+            throw new Error(`Failed to determine RPC URL for cluster: ${clusterName(cluster)}`);
+        }
+
         const rpc = createSolanaRpc(transportUrl);
 
         const [firstAvailableBlock, epochSchedule, epochInfo] = await Promise.all([
             rpc.getFirstAvailableBlock().send(),
             rpc.getEpochSchedule().send(),
             rpc.getEpochInfo().send(),
-        ]).catch(err => {
-            // Provide more specific error message for common RPC issues
-            if (err.message?.includes('<!DOCTYPE') || err.message?.includes('not valid JSON')) {
-                throw new Error(`RPC endpoint returned HTML instead of JSON. The endpoint may be invalid or unreachable: ${transportUrl}`);
-            }
-            throw err;
-        });
+        ]);
 
         dispatch({
             cluster,
@@ -167,12 +166,24 @@ async function updateCluster(dispatch: Dispatch, cluster: Cluster, customUrl: st
             status: ClusterStatus.Connected,
         });
     } catch (error) {
-        if (cluster !== Cluster.Custom) {
-            console.error('Failed to connect to cluster:', error, { 
+        const transportUrl = clusterUrl(cluster, customUrl);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
+        // Provide more informative error messages
+        if (errorMessage.includes('<!DOCTYPE') || errorMessage.includes('not valid JSON')) {
+            console.error('RPC endpoint returned HTML instead of JSON:', {
                 cluster: clusterName(cluster),
-                clusterUrl: clusterUrl(cluster, customUrl) 
+                url: transportUrl,
+                error: errorMessage,
+            });
+        } else if (cluster !== Cluster.Custom) {
+            console.error('Failed to connect to cluster:', {
+                cluster: clusterName(cluster),
+                url: transportUrl,
+                error: errorMessage,
             });
         }
+
         dispatch({
             cluster,
             customUrl,

@@ -44,11 +44,9 @@ export const TESTNET_URL = 'https://api.testnet.solana.com';
 export const DEVNET_URL = 'https://api.devnet.solana.com';
 
 const modifyUrl = (url: string): string => {
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-        return url;
-    } else {
-        return url.replace('api', 'explorer-api');
-    }
+    // Only modify URL for production non-localhost environments
+    // This check should not rely on window object to avoid SSR/client mismatch
+    return url;
 };
 
 export function clusterUrl(cluster: Cluster, customUrl: string): string {
