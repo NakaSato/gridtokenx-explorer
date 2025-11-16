@@ -66,11 +66,16 @@ async function getFullLegacyTokenInfoUsingCdn(
   try {
     const tokenListResponse = await fetch(
       'https://cdn.jsdelivr.net/gh/solana-labs/token-list@latest/src/tokens/solana.tokenlist.json',
+      {
+        next: { revalidate: 3600 }, // Cache for 1 hour
+      },
     );
-    if (tokenListResponse.status >= 400) {
-      console.error(new Error('Error fetching token list from CDN'));
+    
+    if (!tokenListResponse.ok) {
+      console.error(`Error fetching token list from CDN: ${tokenListResponse.status} ${tokenListResponse.statusText}`);
       return undefined;
     }
+    
     const { tokens } = (await tokenListResponse.json()) as FullLegacyTokenInfoList;
     const tokenInfo = tokens.find(t => t.address === address && t.chainId === chainId);
     return tokenInfo;
@@ -83,23 +88,34 @@ async function getFullLegacyTokenInfoUsingCdn(
 async function getTokenInfoFromUtlApi(address: string, chainId: number): Promise<Token | undefined> {
   try {
     // Request token info directly from UTL API
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
     const response = await fetch(`https://token-list-api.solana.cloud/v1/mints?chainId=${chainId}`, {
       body: JSON.stringify({ addresses: [address] }),
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'POST',
+      signal: controller.signal,
+      next: { revalidate: 300 }, // Cache for 5 minutes
     });
 
-    if (response.status >= 400) {
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
       console.error(`Error calling UTL API for address ${address} on chain ID ${chainId}. Status ${response.status}`);
       return undefined;
     }
 
     const fetchedData = (await response.json()) as UtlApiResponse;
-    return fetchedData.content[0];
+    return fetchedData.content?.[0];
   } catch (error) {
-    console.error('Error fetching token info from UTL API:', error);
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('UTL API request timeout');
+    } else {
+      console.error('Error fetching token info from UTL API:', error);
+    }
     return undefined;
   }
 }
@@ -110,18 +126,36 @@ export async function GET(request: NextRequest) {
   const cluster = searchParams.get('cluster') || 'mainnet-beta';
 
   if (!address) {
-    return NextResponse.json({ error: 'Address parameter is required' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Address parameter is required' },
+      { status: 400 }
+    );
+  }
+
+  // Validate address format (basic Solana address validation)
+  if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
+    return NextResponse.json(
+      { error: 'Invalid Solana address format' },
+      { status: 400 }
+    );
   }
 
   try {
     // Check if address is redacted
-    const isRedacted =
-      process.env.NEXT_PUBLIC_BAD_TOKENS?.split(',')
-        .map(addr => addr.trim())
-        .includes(address) ?? false;
+    const badTokens = process.env.NEXT_PUBLIC_BAD_TOKENS?.split(',')
+      .map(addr => addr.trim())
+      .filter(Boolean) ?? [];
+    const isRedacted = badTokens.includes(address);
 
     if (isRedacted) {
-      return NextResponse.json({ data: null });
+      return NextResponse.json(
+        { data: null },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+          },
+        }
+      );
     }
 
     const chainId = getChainId(cluster);
@@ -141,7 +175,14 @@ export async function GET(request: NextRequest) {
             verified: true,
           }
         : null;
-      return NextResponse.json({ data: result });
+      return NextResponse.json(
+        { data: result },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+          },
+        }
+      );
     }
 
     // Merge the fields, prioritising the UTL API ones which are more up to date
@@ -161,10 +202,21 @@ export async function GET(request: NextRequest) {
       verified: utlApiTokenInfo.verified ?? false,
     };
 
-    return NextResponse.json({ data: result });
+    return NextResponse.json(
+      { data: result },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error fetching token info:', error);
-    return NextResponse.json({ error: 'Failed to fetch token info' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch token info';
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
   }
 }
 
@@ -174,32 +226,93 @@ export async function POST(request: NextRequest) {
     const { addresses, cluster = 'mainnet-beta' } = body;
 
     if (!addresses || !Array.isArray(addresses)) {
-      return NextResponse.json({ error: 'Addresses array is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Addresses array is required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate addresses array
+    if (addresses.length === 0) {
+      return NextResponse.json(
+        { error: 'Addresses array cannot be empty' },
+        { status: 400 }
+      );
+    }
+
+    if (addresses.length > 100) {
+      return NextResponse.json(
+        { error: 'Maximum 100 addresses allowed per request' },
+        { status: 400 }
+      );
+    }
+
+    // Validate address format
+    const invalidAddresses = addresses.filter(
+      (addr: string) => typeof addr !== 'string' || !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr)
+    );
+    
+    if (invalidAddresses.length > 0) {
+      return NextResponse.json(
+        { error: `Invalid address format: ${invalidAddresses.slice(0, 3).join(', ')}${invalidAddresses.length > 3 ? '...' : ''}` },
+        { status: 400 }
+      );
     }
 
     const chainId = getChainId(cluster);
     if (!chainId) {
-      return NextResponse.json({ error: 'Invalid cluster' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid cluster' },
+        { status: 400 }
+      );
     }
 
     // Request token info directly from UTL API for multiple addresses
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout for batch
+
     const response = await fetch(`https://token-list-api.solana.cloud/v1/mints?chainId=${chainId}`, {
       body: JSON.stringify({ addresses }),
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'POST',
+      signal: controller.signal,
     });
 
-    if (response.status >= 400) {
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
       console.error(`Error calling UTL API for multiple addresses on chain ID ${chainId}. Status ${response.status}`);
-      return NextResponse.json({ error: 'Failed to fetch token infos' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Failed to fetch token infos from external API' },
+        { status: response.status >= 500 ? 502 : 500 }
+      );
     }
 
     const fetchedData = (await response.json()) as UtlApiResponse;
-    return NextResponse.json({ data: fetchedData.content });
+    return NextResponse.json(
+      { data: fetchedData.content ?? [] },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        },
+      }
+    );
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('UTL API batch request timeout');
+      return NextResponse.json(
+        { error: 'Request timeout' },
+        { status: 504 }
+      );
+    }
+    
     console.error('Error fetching multiple token infos:', error);
-    return NextResponse.json({ error: 'Failed to fetch token infos' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch token infos';
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
   }
 }

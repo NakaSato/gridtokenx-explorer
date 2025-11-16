@@ -18,9 +18,10 @@ import React, { PropsWithChildren } from 'react';
 import { estimateRequestedComputeUnits } from '@/app/utils/compute-units-schedule';
 import { getEpochForSlot, getMaxComputeUnitsInBlock } from '@/app/utils/epoch-schedule';
 
-type Props = PropsWithChildren<{ params: { slot: string } }>;
+type Props = PropsWithChildren<{ params: Promise<{ slot: string }> }>;
 
-function BlockLayoutInner({ children, params: { slot } }: Props) {
+function BlockLayoutInner({ children, params }: Props) {
+  const { slot } = React.use(params);
   const slotNumber = Number(slot);
   if (isNaN(slotNumber) || slotNumber >= Number.MAX_SAFE_INTEGER || slotNumber % 1 !== 0) {
     notFound();

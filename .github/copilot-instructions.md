@@ -1,259 +1,279 @@
 # Solana Explorer - AI Coding Agent Instructions
 
-## Project Overview
+> A Next.js 16 blockchain explorer for Solana supporting multiple clusters, protocol integrations (SPL tokens, Anchor programs, compressed NFTs), and real-time on-chain data inspection.
 
-This is a Next.js 16 blockchain explorer for Solana, allowing users to inspect transactions, accounts, blocks, and on-chain data. The app supports multiple Solana clusters (mainnet-beta, testnet, devnet, custom) and integrates with numerous Solana protocols (SPL tokens, Anchor programs, compressed NFTs, etc.).
+## Quick Start
 
-## Architecture & Key Patterns
-
-### Next.js App Router Structure
-- **Server components by default**: Most pages are server-rendered unless they use hooks or client interactivity
-- **Client components marked explicitly**: Files using React hooks MUST have `'use client'` directive at the top
-- **Page patterns**: 
-  - Server page at `app/[route]/page.tsx` imports client component
-  - Client logic in `app/[route]/page-client.tsx` with `'use client'` directive
-  - Layout components handle tabs and shared UI (see `app/address/[address]/layout.tsx`)
-
-### Path Aliases (Critical for imports)
-```typescript
-@components/* → ./app/components/*
-@providers/* → ./app/providers/*
-@utils/* → ./app/utils/*
-@validators/* → ./app/validators/*
-@img/* → ./app/img/*
+**Build & Run:**
+```bash
+bun dev              # Development (port 3000, HMR enabled)
+bun run build        # Production (webpack, NOT turbopack)
+bun run test         # Vitest with jsdom environment
+bun run lint         # ESLint validation
+bun run gen          # Add shadcn/ui components interactively
 ```
-Always use these aliases. Never use relative paths like `../../components/`.
 
-### Cluster Management Pattern
-- **ClusterProvider** wraps the entire app (`app/providers/cluster.tsx`)
-- Cluster selection via URL query params: `?cluster=devnet&customUrl=http://localhost:8899`
-- Access cluster state via `useCluster()` hook
-- RPC URLs configured per cluster with environment variable fallbacks
-- State machine: `Connecting` → `Connected` | `Failure`
+**Key Setup Facts:**
+- Path aliases required: `@components/*`, `@providers/*`, `@utils/*`, `@validators/*`, `@img/*` (see `tsconfig.json`)
+- TypeScript strict mode enabled; `ignoreBuildErrors: true` temporarily in next.config for faster builds
+- Uses `bun` package manager (not npm/yarn)
+- BigInt serialization: Import `@/app/types/bigint` at TOP of any page/layout that serializes to JSON (applies toJSON polyfill globally)
+- Environment variables: RPC URLs configurable via `.env.local` (e.g., `MAINNET_RPC_URL`, `DEVNET_RPC_URL`)
+- Backup files: `.bak` files throughout codebase are intentional backups during refactoring - ignore them
 
-### State Management via Cache Provider Pattern
-The app uses a custom cache provider pattern (not Redux/Zustand):
+## Architecture Overview
+
+### Component & Page Structure
+
+**Server/Client Pattern:**
+- **Server pages** (`page.tsx`): Default - use for layout, data fetching at build/request time
+- **Client pages** (`page-client.tsx`): MUST have `'use client'` at top - for hooks, interactivity, state
+- **Server page imports client**: Allows passing server-fetched data as props to client components
+- **Layout components**: Handle persistent UI (tabs, headers) - see `app/address/[address]/layout.tsx` for complex tab routing
+
+**Key Example:** Address pages
 ```typescript
-// app/providers/cache.tsx defines:
+// app/address/[address]/page.tsx (server)
+export default function AddressPage({ params }) {
+  return <AddressLayout address={params.address} />; // Wraps client content
+}
+
+// app/address/[address]/layout.tsx (client, uses hooks)
+'use client';
+export default function AddressLayout({ children }) {
+  const { cluster } = useCluster();  // OK - in 'use client'
+  return <Tabs>{children}</Tabs>;
+}
+```
+
+### State Management: Custom Cache Pattern
+
+**Why not Redux/Zustand?** Solana RPC data is request-specific, not global app state. Custom pattern handles per-URL caching elegantly.
+
+**Core Types** (`app/providers/cache.tsx`):
+```typescript
 enum FetchStatus { Fetching, FetchFailed, Fetched }
 type CacheEntry<T> = { status: FetchStatus; data?: T }
-
-// Usage pattern in all providers (accounts, transactions, blocks):
-const [state, dispatch] = useReducer(url);
-dispatch({ type: ActionType.Update, key, status, data });
 ```
 
-**Example**: `app/providers/accounts/` - see `history.tsx`, `tokens.tsx`, `rewards.tsx`
-- Each provider exports: fetch function + custom hook
-- Hook pattern: `useFetchAccountInfo()` + `useAccountInfo(address)`
+**Provider Pattern** - Every data provider (accounts, transactions, blocks):
+1. Exports a fetch function: `async fetchAccountInfo(url, address)`
+2. Exports two hooks:
+   - `useFetchAccountInfo()` - returns fetch function for manual triggers
+   - `useAccountInfo(address)` - returns cached `CacheEntry<T>` or undefined
 
-### Component Architecture
+**Usage Example:**
+```typescript
+const { status: clusterStatus } = useCluster();
+const accountCache = useAccountInfo(address);  // CacheEntry | undefined
+const fetchAccount = useFetchAccountInfo();
 
-#### ParsedAccountRenderer Pattern
-Reusable account detail page pattern (see `app/address/[address]/concurrent-merkle-tree/page-client.tsx`):
-```tsx
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
-
-export function MyAccountPage({ address }: { address: string }) {
-  return <ParsedAccountRenderer 
-    address={address} 
-    renderComponent={MyCardRenderer} 
-  />;
+if (accountCache?.status === FetchStatus.Fetching) return <LoadingCard />;
+if (accountCache?.status === FetchStatus.FetchFailed) {
+  return <ErrorCard retry={() => fetchAccount(pubkey, 'parsed')} />;
 }
-
-// Renderer receives: { account, onNotFound }
-function MyCardRenderer({ account, onNotFound }) {
-  if (!isValidAccount(account)) onNotFound();
-  return <div>...</div>;
-}
+// accountCache.data available here
 ```
 
-#### Styling with Tailwind & shadcn/ui
-- **Utility function**: `cn()` from `@components/shared/utils` merges Tailwind classes
-- **shadcn/ui components**: Located in `app/components/shared/ui/`
-- **UI System Spec**: Complete specification in `docs/ui-system-spec.md`
-- **Dark mode**: Implemented via `class` strategy (see `tailwind.config.ts`)
-- **Theme toggle**: Managed by `ThemeProvider` in `app/providers/theme.tsx`
-- **Custom breakpoints**: `xxs, xs, sm, md, lg, xl, xxl` (see `tailwind.config.ts`)
+**See:** `app/providers/accounts/history.tsx`, `rewards.tsx`, `tokens.tsx` for implementations.
 
-```tsx
+### Cluster Management
+
+**ClusterProvider** (`app/providers/cluster.tsx`):
+- Wraps entire app, manages RPC connection state
+- Access via `useCluster()` hook → `{ cluster, customUrl, clusterInfo, status }`
+- Status machine: `Connecting` → `Connected` | `Failure`
+- Cluster selected via URL: `?cluster=devnet&customUrl=http://localhost:8899`
+- RPC URLs: environment variables fallback (e.g., `MAINNET_RPC_URL`)
+
+**Query Parameter Routing:**
+```typescript
+parseQuery(searchParams): Cluster.MainnetBeta | Cluster.Devnet | Cluster.Testnet | Cluster.Custom
+// Parsed from ?cluster=devnet (default: mainnet-beta)
+```
+
+### Account Detail Pages (TABS_LOOKUP Pattern)
+
+**Registration** (`app/address/[address]/layout.tsx` lines ~60+):
+```typescript
+const TABS_LOOKUP = {
+  'spl-token-2022:mint': [
+    { path: 'metadata', slug: 'metadata', title: 'Metadata' },
+    { path: 'transfers', slug: 'transfers', title: 'Transfers' },
+  ],
+  // ... other account types
+};
+```
+
+**Adding new protocol:**
+1. Register in `TABS_LOOKUP` with path/slug/title
+2. Create file: `app/address/[address]/[protocol]/page-client.tsx`
+3. Use `ParsedAccountRenderer` component (see below)
+
+### Reusable Component Patterns
+
+**ParsedAccountRenderer** (`app/components/account/ParsedAccountRenderer.tsx`):
+```typescript
+<ParsedAccountRenderer
+  address={address}
+  renderComponent={({ account, onNotFound }) => {
+    if (!isMyProtocol(account)) onNotFound();  // Redirects if invalid
+    return <MyCardRenderer account={account} />;
+  }}
+/>
+```
+
+**Styling** - Always use `cn()` utility from `@components/shared/utils`:
+```typescript
 import { cn } from '@components/shared/utils';
-<div className={cn('card', 'hover:shadow-lg', className)} />
+export default function Card({ className }) {
+  return <div className={cn('rounded-lg border', className)} />;
+}
 ```
 
-#### Available shadcn/ui Components
-All installed in `app/components/shared/ui/`:
-- accordion, alert, badge, button, card, dialog, dropdown-menu
-- input, label, popover, progress, scroll-area, select
-- separator, skeleton, switch, table, tabs, textarea, tooltip
+**UI System:** Tailwind + shadcn/ui with custom breakpoints:
+- Breakpoints: `xxs(320px), xs(375px), sm(576px), md(768px), lg(992px), xl(1200px), xxl(1400px)`
+- Dark mode: `class` strategy in `tailwind.config.ts`
+- Components: `app/components/shared/ui/` (button, card, dialog, tabs, etc.)
+- Add components: `bun run gen` (interactive) or `bunx shadcn@latest add [component]`
+- Configuration: `components.json` defines component paths and styling
+- Full design system spec: `docs/ui-system-spec.md` (color system, status badges, typography)
 
-Add new components: `bun run gen` or `bunx shadcn@latest add [component]`
+## Solana Integration Deep Dive
 
-### API Routes Pattern
-Next.js App Router API routes at `app/api/[endpoint]/route.ts`:
+### RPC Layer: @solana/kit vs web3.js v1
+
+**Current Status: 100% Migration Complete** ✅
+- All **production code** uses `@solana/kit` (web3.js 2.0)
+- Test files intentionally retain v1 patterns for mock compatibility
+- Legacy adapters maintained for third-party library compatibility
+
+**Use `@solana/kit` for:**
+- Account fetching, balance checking, transaction status
+- Block information, slot tracking
+- Any modern RPC call
+
+**Use legacy web3.js v1 + LegacyAdapter for:**
+- Anchor programs: `adapter.getAnchorProgram(programId, idl)`
+- Serum markets: `adapter.getSerumMarket(marketAddress)`
+- Mango markets: `adapter.getMangoClient()`
+- Metaplex NFTs: `adapter.getMetaplexNFT(mint)`
+- Name services: `adapter.resolveSNS(domain)`, `adapter.resolveANS(domain)`
+
+**RPC Utilities** (`@utils/rpc.ts`):
+```typescript
+createRpc(url)                           // → Rpc (kit)
+createLegacyConnection(url, commitment)  // → Connection (v1)
+toAddress(string | PublicKey)            // → Address (kit)
+addressToPublicKey(Address)              // → PublicKey (v1)
+toSignature(string)                      // → Signature (kit)
+bigintToNumber(value)                    // → Safe number conversion
+```
+
+**Legacy Adapter** (`@utils/legacy-adapters.ts`):
+```typescript
+const adapter = new LegacyAdapter(rpcUrl, 'confirmed');
+const program = adapter.getAnchorProgram(programId, idl);
+// Pass adapter.getConnection() to third-party libraries requiring Connection
+```
+
+### Critical Webpack Workarounds
+
+1. **Build Command:** `bun run build --webpack` (Turbopack breaks module resolution)
+2. **Externals** (`next.config.mjs`): Anchor, Serum, Mango, Metaplex marked as external on client to prevent Node.js bundling
+3. **SSR Prevention:** Check `typeof window === 'undefined'` before importing Anchor/Serum (see `app/components/instruction/serum/serum-utils.ts`)
+4. **borsh v2:** Warning about `deserializeUnchecked` is expected; suppressed in webpack via `ignoreWarnings`
+5. **Buffer Polyfill:** Webpack `ProvidePlugin` injects Buffer/process for browser compatibility
+6. **postinstall Script:** Fixes CJS module issue for `@solana/spl-account-compression`
+
+## Data Fetching & Async Patterns
+
+### Provider Data Flow
+
+**Typical fetch pattern** (`app/providers/accounts/index.tsx`):
+```typescript
+async function fetchAccount(rpc: Rpc, pubkey: PublicKey, encoding: 'parsed' | 'base64') {
+  const account = await rpc.getAccount(toAddress(pubkey.toBase58()), { encoding }).send();
+  // Parse account.data based on program
+  return parsedAccount;
+}
+
+export function useAccountInfo(address: string) {
+  const [state] = useReducer(clusterUrl);  // Cache keyed by RPC URL
+  return state.entries[address]?.data;      // CacheEntry<Account> | undefined
+}
+```
+
+### API Routes
+
+Standard Next.js App Router pattern at `app/api/[endpoint]/route.ts`:
 ```typescript
 export async function GET(request: Request) {
-  // Server-side only logic
+  const url = new URL(request.url);
+  // Server-side only logic (Node.js APIs available)
   return Response.json({ data });
 }
 ```
-Examples: `app/api/anchor/`, `app/api/token-info/`, `app/api/metadata/proxy/`
 
-### Data Visualization with Nivo
-- **Charts library**: Use [Nivo](https://nivo.rocks/) for all data visualizations
-- **Installation**: `bun add @nivo/core @nivo/line @nivo/bar @nivo/pie`
-- **Theme integration**: Use semantic color tokens (`hsl(var(--foreground))`) for dark mode support
-- **Common charts**: ResponsiveLine, ResponsiveBar, ResponsivePie, ResponsiveArea
-- **Wrapper pattern**: Combine with shadcn/ui Card components for consistent layouts
-
-```tsx
-import { ResponsiveLine } from '@nivo/line';
-import { Card, CardContent, CardHeader, CardTitle } from '@components/shared/ui/card';
-
-<Card>
-  <CardHeader><CardTitle>Chart Title</CardTitle></CardHeader>
-  <CardContent>
-    <div className="h-[300px]">
-      <ResponsiveLine
-        data={data}
-        theme={{
-          text: { fill: 'hsl(var(--foreground))' },
-          grid: { line: { stroke: 'hsl(var(--border))' } }
-        }}
-      />
-    </div>
-  </CardContent>
-</Card>
-```
-
-See `docs/ui-system-spec.md` for complete Nivo integration patterns.
-
-### Solana Integration Specifics
-
-#### RPC Layer
-- **Primary**: Uses `@solana/kit` (web3.js 2.0) for modern RPC calls
-  - `ClusterProvider` uses `createSolanaRpc(url)` for cluster management
-  - `EpochProvider`, `RichListProvider`, and `BlockProvider` fully migrated to @solana/kit
-  - `TransactionProvider` (parsed.tsx) migrated to kit with type converters
-  - `TransactionStatusProvider` (index.tsx) migrated to kit for signature status checking
-  - `AccountProvider` (index.tsx) migrated to kit for batch account fetching
-  - `AccountHistoryProvider`, `TokensProvider`, and `VoteAccountsProvider` migrated to kit
-  - `RewardsProvider` migrated to kit
-  - `SupplyProvider` and `SolanaClusterStatsProvider` migrated to kit
-  - New code should prefer `createRpc()` from `@utils/rpc.ts`
-- **Legacy**: `@solana/web3.js` v1 maintained for:
-  - Transaction decompiling (TransactionMessage.decompile in raw.tsx)
-  - Parsed account validation (uses v1-specific validators in accounts/index.tsx)
-  - Third-party library compatibility (Anchor, SPL, Metaplex, Mango, Serum)
-  - Use `LegacyAdapter` from `@utils/legacy-adapters.ts` for these integrations
-- **Helper utilities** in `@utils/rpc.ts`:
-  - `createRpc(url)`: Create @solana/kit RPC client
-  - `createLegacyConnection(url, commitment)`: Create v1 Connection when needed
-  - Type conversion utilities: 
-    - `toAddress()`, `toSignature()`: Convert to kit types
-    - `publicKeyToAddress()`, `addressToPublicKey()`: Convert between formats
-    - `bigintToNumber()`: Safe bigint to number conversion
-    - `toLegacyAccountInfo()`, `toLegacyBlockResponse()`, `toLegacyParsedTransaction()`, `toLegacySignatureInfo()`: Convert kit responses to legacy format
-- **Legacy Adapter** in `@utils/legacy-adapters.ts`:
-  - `createLegacyAdapter(url)`: Create adapter for third-party libraries
-  - Methods: `getAnchorProgram()`, `getSerumMarket()`, `getMangoClient()`, `getMetaplexNFT()`, `resolveSNS()`, `resolveANS()`
-- **Migration strategy**: See `docs/SOLANA_KIT_MIGRATION_PLAN.md` for comprehensive migration roadmap
-  - **Current status: 100% COMPLETE!** 🎉✅🚀
-  - Phase 1 complete: Type converters and test suite (20 tests passing)
-  - Phase 2 complete: All provider layer migrations (13 files)
-  - Phase 3 complete: All UI components (40+ files total)
-    - Phase 3.1: Block components (4 files)
-    - Phase 3.2: Account components (21 files)
-    - Phase 3.3: NFToken components (1 file)
-    - Phase 3.4: Transaction & Inspector components (6 files)
-    - Phase 3.5: Instruction Parsers & Common components (7 files)
-  - Phase 4 complete: API Routes & Utilities (4 files)
-  - Phase 5 complete: Server Pages (transactions page, address layout, nftoken files, ed25519 types, token details)
-  - **65+ production files migrated** - All production code now uses @solana/kit! 🎊
-  - Test files intentionally retain v1 patterns for mock data
-  - Legacy adapters maintained for third-party library compatibility (Anchor, Serum, Mango)
-
-#### Critical Workarounds
-1. **borsh deserialization**: `postinstall` script fixes CJS module issue for `@solana/spl-account-compression`
-2. **Webpack config**: Extensive client-side externals for Node.js-dependent packages (Anchor, Serum)
-3. **Build with webpack**: `next build --webpack` (Turbopack disabled due to module resolution issues)
-4. **Serum/Anchor SSR prevention**: Use wrapper pattern in `app/components/instruction/serum/serum-utils.ts` to prevent Node.js module loading during SSR. Always check `typeof window === 'undefined'` before importing these packages.
-5. **borsh v2 compatibility**: Warning about `deserializeUnchecked` not exported from borsh is expected - it's a compatibility issue between `@solana/web3.js` v1 and `borsh` v2. The warning is suppressed in webpack builds via `ignoreWarnings` and doesn't affect functionality.
-6. **Buffer polyfill**: Uses webpack `ProvidePlugin` to inject Buffer and process polyfills for browser compatibility with Solana packages.
+**Examples:** `app/api/anchor/`, `app/api/token-info/`, `app/api/metadata/proxy/`
 
 ## Development Workflows
 
-### Build & Development
+### Testing
+
+- **Config:** `vite.config.mts` + `vitest.workspace.ts`
+- **Run:** `bun run test` (jsdom environment, jsdom globals enabled)
+- **Watch:** `bun run test:watch`
+- **Coverage:** `bun run coverage`
+- **Location:** `__tests__/` directories adjacent to source files
+- **Pattern:** `@testing-library/react` for component tests
+- **Mocks:** See `app/__tests__/mocks.ts` for common patterns
+- **Note:** Test files use web3.js v1 patterns for mock compatibility (production uses @solana/kit)
+
+### Environment Setup
+
+Create `.env.local` for custom RPC endpoints:
 ```bash
-bun dev                  # Development server (port 3000)
-bun run build            # Production build (uses webpack)
-bun run test             # Run Vitest specs
-bun run test:watch       # Watch mode
-bun run lint             # ESLint
-bun run format           # Prettier check
-bun run gen              # Add shadcn/ui components
+MAINNET_RPC_URL=https://your-mainnet-rpc.com
+DEVNET_RPC_URL=https://api.devnet.solana.com
+TESTNET_RPC_URL=https://api.testnet.solana.com
 ```
 
-### Testing with Vitest
-- Config: `vite.config.mts` + `vitest.workspace.ts`
-- Tests in `__tests__/` directories adjacent to source files
-- Uses `@testing-library/react` for component tests
-- Mock patterns: See `app/__tests__/mocks.ts` and `mock-stubs.ts`
+Fallback URLs are built-in if not specified.
 
-### Adding New Protocol Support
-1. Create provider in `app/providers/[protocol].tsx` with fetch + hook
-2. Add account renderer in `app/components/account/[Protocol]Card.tsx`
-3. Register in `app/address/[address]/layout.tsx` TABS_LOOKUP
-4. Create route at `app/address/[address]/[protocol]/page-client.tsx`
+### Adding New Protocols
 
-## Common Gotchas
+1. **Create provider** `app/providers/[protocol].tsx`
+   - Export fetch function and hooks (follow cache pattern)
+2. **Create UI component** `app/components/account/[Protocol]Card.tsx`
+   - Receive `Account` prop, render protocol-specific data
+3. **Register tab** in `app/address/[address]/layout.tsx` → `TABS_LOOKUP`
+4. **Create page** `app/address/[address]/[protocol]/page-client.tsx`
+   - Use `ParsedAccountRenderer` + your component
 
-### Module Resolution
-- **Never externalize in webpack on accident**: Check `next.config.mjs` before adding new Solana dependencies
-- **BigInt serialization**: Import `@/app/types/bigint` polyfill in pages that serialize BigInt to JSON
+### File Naming
 
-### TypeScript
-- `typescript.ignoreBuildErrors: true` in next.config (temporary for faster builds)
-- Custom type definitions: `app/types/` directory
-- Strict mode enabled
-
-### Environment Variables
-- Client: `NEXT_PUBLIC_*` prefix required
-- Server: No prefix needed
-- RPC URLs: `MAINNET_RPC_URL`, `DEVNET_RPC_URL`, `TESTNET_RPC_URL`
-
-## File Naming Conventions
-- React components: PascalCase (`AccountHeader.tsx`)
-- Utilities: camelCase (`cluster.ts`, `token-info.ts`)
-- Client pages: `page-client.tsx` (with `'use client'`)
+- React components: `PascalCase` (`AccountHeader.tsx`)
+- Utils/helpers: `camelCase` (`cluster.ts`, `token-info.ts`)
+- Client pages: `page-client.tsx` (must have `'use client'`)
 - Server pages: `page.tsx` (no directive)
-- Tests: `*.spec.ts` or `*.test.ts` in `__tests__/` folders
+- Tests: `*.spec.ts` or `*.test.ts` in `__tests__/`
 
-## When Making Changes
+## Common Patterns & Gotchas
 
-### Adding Components
-1. Use shadcn/ui when possible: `bun run gen`
-2. Place shared components in `app/components/shared/`
-3. Use `cn()` for className merging
-4. Wrap client logic in `'use client'` components
-5. Follow patterns in `docs/ui-system-spec.md` for consistency
+| Gotcha | Solution |
+|--------|----------|
+| Import loops with relative paths | Always use path aliases: `@components/*`, `@utils/*`, etc. |
+| BigInt in JSON responses | Import `@/app/types/bigint` polyfill in pages that serialize |
+| Webpack bundling Node.js code | Check `next.config.mjs` externals; use `typeof window === 'undefined'` before Anchor/Serum imports |
+| Stale RPC data across clusters | Cache is keyed by URL; `ClusterProvider` handles URL changes → new cache |
+| Account not found errors | Redirect using `ParsedAccountRenderer`'s `onNotFound()` callback |
+| TypeScript strict mode issues | Use `@utils/rpc.ts` type converters; strict mode enabled everywhere |
 
-### Adding Data Visualizations
-1. Install required Nivo packages: `bun add @nivo/[chart-type]`
-2. Use `ResponsiveXxx` components for automatic sizing
-3. Wrap charts in shadcn/ui Card for consistent styling
-4. Apply semantic color tokens for theme compatibility
-5. Create reusable chart wrapper components when needed
-6. See `docs/ui-system-spec.md` for complete examples
+## Reference Files
 
-### Adding Features
-1. Check if similar pattern exists (search for analogous features)
-2. Follow provider pattern for data fetching
-3. Add tests in adjacent `__tests__/` directory
-4. Update `TABS_LOOKUP` if adding account detail pages
-
-### Debugging
-- Check browser console for client errors
-- Check terminal for server errors
-- Verify cluster connection status (top-right of UI)
-- Use `npm run test` to validate changes before commit
+- **Core:** `app/providers/cluster.tsx`, `cache.tsx`, `app/providers/accounts/index.tsx`
+- **RPC Utilities:** `app/utils/rpc.ts`, `legacy-adapters.ts`
+- **UI:** `app/components/shared/utils.ts` (cn function), `tailwind.config.ts`
+- **Config:** `next.config.mjs` (webpack, externals), `tsconfig.json` (aliases), `package.json` (scripts)
+- **Layout Example:** `app/address/[address]/layout.tsx` (TABS_LOOKUP registration)

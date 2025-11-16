@@ -10,16 +10,159 @@ import {
   Commitment,
   signature as createSignature,
 } from '@solana/kit';
-import {
-  Connection,
-  PublicKey,
-  Commitment as LegacyCommitment,
-  VersionedBlockResponse,
-  ParsedTransactionWithMeta,
-  ConfirmedSignatureInfo,
-  AccountInfo,
-  TransactionSignature,
-} from '@solana/web3.js';
+
+/**
+ * Type aliases compatible with @solana/web3.js
+ * Maintains structural compatibility without requiring the import
+ */
+type PublicKeyLike = {
+  toBase58(): string;
+  equals(other: PublicKeyLike): boolean;
+  toBuffer(): Buffer;
+};
+
+type LegacyCommitment = 'processed' | 'confirmed' | 'finalized' | 'recent' | 'single' | 'singleGossip' | 'root' | 'max';
+
+type TransactionSignature = string;
+
+type AccountInfo<T> = {
+  executable: boolean;
+  owner: PublicKeyLike;
+  lamports: number;
+  data: T;
+  rentEpoch?: number;
+};
+
+type ConfirmedSignatureInfo = {
+  signature: string;
+  slot: number;
+  err: any;
+  memo: string | null;
+  blockTime?: number | null;
+  confirmationStatus?: 'processed' | 'confirmed' | 'finalized';
+};
+
+type ParsedTransactionWithMeta = {
+  slot: number;
+  transaction: any;
+  meta: any;
+  blockTime?: number | null;
+  version?: any;
+};
+
+type VersionedBlockResponse = {
+  blockhash: string;
+  previousBlockhash: string;
+  parentSlot: number;
+  transactions: Array<{
+    transaction: any;
+    meta: any;
+  }>;
+  blockTime: number | null;
+  blockHeight: number | null;
+  rewards?: any[];
+};
+
+type ConnectionConfig = {
+  commitment?: LegacyCommitment;
+  wsEndpoint?: string;
+  httpHeaders?: Record<string, string>;
+  disableRetryOnRateLimit?: boolean;
+  confirmTransactionInitialTimeout?: number;
+};
+
+// PublicKey class implementation for compatibility
+class PublicKey implements PublicKeyLike {
+  private _bn: Uint8Array;
+
+  constructor(value: string | Buffer | Uint8Array | number[] | PublicKeyLike) {
+    if (typeof value === 'string') {
+      // Base58 decode
+      const decoded = this.base58Decode(value);
+      this._bn = decoded;
+    } else if (value instanceof Uint8Array || value instanceof Buffer) {
+      this._bn = new Uint8Array(value);
+    } else if (Array.isArray(value)) {
+      this._bn = new Uint8Array(value);
+    } else if ('toBuffer' in value) {
+      this._bn = value.toBuffer();
+    } else {
+      throw new Error('Invalid PublicKey input');
+    }
+  }
+
+  toBase58(): string {
+    return this.base58Encode(this._bn);
+  }
+
+  equals(other: PublicKeyLike): boolean {
+    const otherBytes = other.toBuffer();
+    if (this._bn.length !== otherBytes.length) return false;
+    for (let i = 0; i < this._bn.length; i++) {
+      if (this._bn[i] !== otherBytes[i]) return false;
+    }
+    return true;
+  }
+
+  toBuffer(): Buffer {
+    return Buffer.from(this._bn);
+  }
+
+  private base58Encode(buffer: Uint8Array): string {
+    const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+    const base = BigInt(58);
+    let num = 0n;
+    for (const byte of buffer) {
+      num = num * 256n + BigInt(byte);
+    }
+    
+    let encoded = '';
+    while (num > 0n) {
+      const remainder = Number(num % base);
+      num = num / base;
+      encoded = ALPHABET[remainder] + encoded;
+    }
+    
+    for (const byte of buffer) {
+      if (byte === 0) encoded = '1' + encoded;
+      else break;
+    }
+    
+    return encoded;
+  }
+
+  private base58Decode(str: string): Uint8Array {
+    const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+    const base = BigInt(58);
+    let num = 0n;
+    
+    for (const char of str) {
+      const digit = ALPHABET.indexOf(char);
+      if (digit < 0) throw new Error('Invalid base58 character');
+      num = num * base + BigInt(digit);
+    }
+    
+    const bytes: number[] = [];
+    while (num > 0n) {
+      bytes.unshift(Number(num % 256n));
+      num = num / 256n;
+    }
+    
+    for (const char of str) {
+      if (char === '1') bytes.unshift(0);
+      else break;
+    }
+    
+    return new Uint8Array(bytes);
+  }
+}
+
+// Connection class stub for legacy compatibility
+class Connection {
+  constructor(public endpoint: string, configOrCommitment?: LegacyCommitment | ConnectionConfig) {
+    // Minimal implementation for compatibility
+  }
+}
 
 /**
  * Create a Solana RPC client using @solana/kit

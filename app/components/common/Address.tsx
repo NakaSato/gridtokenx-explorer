@@ -2,12 +2,10 @@
 
 // import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 import { useCluster } from '@providers/cluster';
-import { PublicKey } from '@solana/web3.js';
-import { addressToPublicKey, toAddress } from '@utils/rpc';
+import { toAddress } from '@utils/rpc';
 import { displayAddress, TokenLabelInfo } from '@utils/tx';
 import { useClusterPath } from '@utils/url';
 import Link from 'next/link';
-import React from 'react';
 import { useState } from 'react';
 import useAsyncEffect from 'use-async-effect';
 
@@ -15,8 +13,17 @@ import { getTokenInfoWithoutOnChainFallback } from '@/app/utils/token-info';
 
 import { Copyable } from './Copyable';
 
+/**
+ * PublicKey-like type for compatibility
+ */
+type PublicKeyLike = {
+  toBase58(): string;
+  equals?(other: PublicKeyLike): boolean;
+  toBuffer?(): Buffer;
+};
+
 type Props = {
-  pubkey: PublicKey;
+  pubkey: PublicKeyLike;
   alignRight?: boolean;
   link?: boolean;
   raw?: boolean;
@@ -54,10 +61,6 @@ export function Address({
   let addressLabel = raw ? address : display;
 
   const metaplexData = useTokenMetadata(useMetadata, address);
-  // Temporarily disabled - needs migration to new Metaplex SDK
-  // if (metaplexData && metaplexData.data) {
-  //     addressLabel = metaplexData.data.data.name;
-  // }
 
   const tokenInfo = useTokenInfo(fetchTokenLabelInfo, address);
   if (tokenInfo) {
@@ -138,7 +141,7 @@ const useTokenMetadata = (useMetadata: boolean | undefined, pubkey: string) => {
   return { data: undefined };
 };
 
-const useTokenInfo = (fetchTokenLabelInfo: boolean | undefined, pubkey: string) => {
+const useTokenInfo = (fetchTokenLabelInfo: boolean | undefined, addressStr: string) => {
   const [info, setInfo] = useState<TokenLabelInfo>();
   const { cluster, url } = useCluster();
 
@@ -147,9 +150,17 @@ const useTokenInfo = (fetchTokenLabelInfo: boolean | undefined, pubkey: string) 
       if (!fetchTokenLabelInfo) return;
       if (!info) {
         try {
-          const token = await getTokenInfoWithoutOnChainFallback(addressToPublicKey(toAddress(pubkey)), cluster);
-          if (isMounted()) {
-            setInfo(token);
+          // Fetch token info using the address string directly
+          const response = await fetch(`/api/token-info?address=${addressStr}&cluster=${cluster}`);
+          if (response.ok) {
+            const result = await response.json();
+            if (isMounted()) {
+              setInfo(result.data);
+            }
+          } else {
+            if (isMounted()) {
+              setInfo(undefined);
+            }
           }
         } catch {
           if (isMounted()) {
@@ -158,7 +169,7 @@ const useTokenInfo = (fetchTokenLabelInfo: boolean | undefined, pubkey: string) 
         }
       }
     },
-    [fetchTokenLabelInfo, pubkey, cluster, url, info, setInfo],
+    [fetchTokenLabelInfo, addressStr, cluster, url, info, setInfo],
   );
 
   return info;

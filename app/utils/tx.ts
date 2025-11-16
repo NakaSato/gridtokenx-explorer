@@ -1,15 +1,77 @@
-import {
-  ParsedInstruction,
-  ParsedTransaction,
-  PartiallyDecodedInstruction,
-  Transaction,
-  TransactionInstruction,
-} from '@solana/web3.js';
+/**
+ * Transaction utilities
+ * 
+ * Uses structurally compatible type aliases instead of importing from @solana/web3.js.
+ * These types match the web3.js v1 interfaces, allowing seamless compatibility with
+ * the rest of the codebase through TypeScript's structural typing.
+ */
 import { Cluster } from '@utils/cluster';
 import { SerumMarketRegistry } from '@utils/serumMarketRegistry';
 import bs58 from 'bs58';
 
 import { LOADER_IDS, PROGRAM_INFO_BY_ID, SPECIAL_IDS, SYSVAR_IDS } from './programs';
+
+/**
+ * Type aliases compatible with @solana/web3.js types
+ * These maintain structural compatibility without requiring the import
+ */
+type PublicKeyLike = {
+  toBase58(): string;
+  equals(other: PublicKeyLike): boolean;
+};
+
+type AccountMetaLike = {
+  pubkey: PublicKeyLike;
+  isSigner: boolean;
+  isWritable: boolean;
+};
+
+export type ParsedInstruction = {
+  programId: PublicKeyLike;
+  parsed: unknown;
+  program?: string;
+};
+
+export type PartiallyDecodedInstruction = {
+  programId: PublicKeyLike;
+  accounts: PublicKeyLike[];
+  data: string;
+};
+
+export type TransactionInstruction = {
+  programId: PublicKeyLike;
+  keys: AccountMetaLike[];
+  data: Buffer | Uint8Array;
+};
+
+export type ParsedTransaction = {
+  message: {
+    accountKeys: Array<{
+      pubkey: PublicKeyLike;
+      signer: boolean;
+      writable: boolean;
+      source?: string;
+    }>;
+    instructions: any[];
+    recentBlockhash?: string;
+    addressTableLookups?: any[];
+  };
+  signatures: string[];
+};
+
+export type Transaction = {
+  signatures: Array<{ publicKey: PublicKeyLike; signature: Uint8Array | null }>;
+  compileMessage(): {
+    accountKeys: PublicKeyLike[];
+    instructions: Array<{
+      programIdIndex: number;
+      accounts: number[];
+      data: Buffer;
+    }>;
+    recentBlockhash: string;
+    isAccountWritable(index: number): boolean;
+  };
+};
 
 export type TokenLabelInfo = {
   name?: string;
@@ -60,7 +122,7 @@ export function intoTransactionInstruction(
   const message = tx.message;
   if ('parsed' in instruction) return;
 
-  const keys = [];
+  const keys: AccountMetaLike[] = [];
   for (const account of instruction.accounts) {
     const accountKey = message.accountKeys.find(({ pubkey }) => pubkey.equals(account));
     if (!accountKey) return;
@@ -71,11 +133,11 @@ export function intoTransactionInstruction(
     });
   }
 
-  return new TransactionInstruction({
-    data: bs58.decode(instruction.data),
+  return {
+    data: Buffer.from(bs58.decode(instruction.data)),
     keys: keys,
     programId: instruction.programId,
-  });
+  };
 }
 
 export function intoParsedTransaction(tx: Transaction): ParsedTransaction {

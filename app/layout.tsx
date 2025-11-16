@@ -4,6 +4,7 @@ import NavbarWrapper from '@components/NavbarWrapper';
 import SearchBarWrapper from '@components/SearchBarWrapper';
 import { ClusterProvider } from '@providers/cluster';
 import { ScrollAnchorProvider } from '@providers/scroll-anchor';
+import { ThemeProvider } from '@providers/theme';
 import type { Viewport } from 'next';
 import { Rubik } from 'next/font/google';
 import { Metadata } from 'next/types';
@@ -48,28 +49,30 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body>
-        <Suspense fallback={<div>Loading...</div>}>
-          <ScrollAnchorProvider>
-            <Suspense fallback={<div>Loading...</div>}>
-              <ClusterProvider>
-                <div className="main-content pb-16">
-                  <NavbarWrapper>
-                    <SearchBarWrapper />
-                  </NavbarWrapper>
-                  <MessageBanner />
-                  <div className="container mx-auto my-3 px-4 lg:hidden">
-                    <SearchBarWrapper />
+        <ThemeProvider>
+          <Suspense fallback={<div>Loading...</div>}>
+            <ScrollAnchorProvider>
+              <Suspense fallback={<div>Loading...</div>}>
+                <ClusterProvider>
+                  <div className="main-content pb-16">
+                    <NavbarWrapper>
+                      <SearchBarWrapper />
+                    </NavbarWrapper>
+                    <MessageBanner />
+                    <div className="container mx-auto my-3 px-4 lg:hidden">
+                      <SearchBarWrapper />
+                    </div>
+                    <div className="container mx-auto my-3 px-4 lg:hidden">
+                      <ClusterStatusButton />
+                    </div>
+                    {children}
                   </div>
-                  <div className="container mx-auto my-3 px-4 lg:hidden">
-                    <ClusterStatusButton />
-                  </div>
-                  {children}
-                </div>
-              </ClusterProvider>
-            </Suspense>
-          </ScrollAnchorProvider>
-        </Suspense>
-        {analytics}
+                </ClusterProvider>
+              </Suspense>
+            </ScrollAnchorProvider>
+          </Suspense>
+          {analytics}
+        </ThemeProvider>
       </body>
     </html>
   );

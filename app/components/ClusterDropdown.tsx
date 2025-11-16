@@ -110,19 +110,19 @@ export function ClusterDropdown() {
         variant="outline"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex min-w-[200px] items-center justify-between gap-2 ${getStatusButtonClass()}`}
+        className={`flex min-w-[140px] sm:min-w-[160px] md:min-w-[180px] lg:min-w-[200px] items-center justify-between gap-2 ${getStatusButtonClass()}`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           {getStatusIcon()}
-          <span className="truncate">{statusName}</span>
+          <span className="truncate text-xs sm:text-sm">{statusName}</span>
         </div>
-        <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={14} className={`transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </Button>
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full right-0 z-50 mt-2 w-80 rounded-md border border-gray-200 bg-white shadow-lg">
-          <div className="p-4">
+        <div className="absolute top-full right-0 z-50 mt-2 w-72 sm:w-80 md:w-96 rounded-md border border-gray-200 bg-white shadow-lg">
+          <div className="p-3 sm:p-4">
             <h3 className="mb-3 text-sm font-semibold text-gray-900">Choose a Cluster</h3>
 
             {/* Cluster Options */}
@@ -132,14 +132,14 @@ export function ClusterDropdown() {
 
                 if (net === Cluster.Custom) {
                   return (
-                    <div key={index}>
+                    <div key={index} className="space-y-2">
                       <Button
                         variant={active ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => handleClusterSelect(net)}
-                        className={`w-full justify-start ${active ? 'bg-blue-500 text-white' : ''}`}
+                        className={`w-full justify-start h-10 sm:h-9 ${active ? 'bg-blue-500 text-white' : ''}`}
                       >
-                        Custom RPC URL
+                        <span className="text-xs sm:text-sm">Custom RPC URL</span>
                       </Button>
 
                       {showCustomInput && (
@@ -150,7 +150,8 @@ export function ClusterDropdown() {
                             onChange={e => setCustomUrlInput(e.target.value)}
                             onBlur={e => onUrlInput(e.target.value)}
                             placeholder="Enter custom RPC URL"
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
+                            autoFocus
                           />
                         </div>
                       )}
@@ -164,9 +165,9 @@ export function ClusterDropdown() {
                     variant={active ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => handleClusterSelect(net)}
-                    className={`w-full justify-start ${active ? 'bg-blue-500 text-white' : ''}`}
+                    className={`w-full justify-start h-10 sm:h-9 ${active ? 'bg-blue-500 text-white' : ''}`}
                   >
-                    {clusterName(net)}
+                    <span className="text-xs sm:text-sm">{clusterName(net)}</span>
                   </Button>
                 );
               })}
@@ -174,7 +175,7 @@ export function ClusterDropdown() {
 
             {/* Developer Settings */}
             <div className="mt-4 border-t border-gray-200 pt-4">
-              <React.Suspense fallback={<div>Loading...</div>}>
+              <React.Suspense fallback={<div className="text-sm text-gray-500">Loading...</div>}>
                 <ClusterModalDeveloperSettings />
               </React.Suspense>
             </div>

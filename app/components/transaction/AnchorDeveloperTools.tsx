@@ -3,6 +3,10 @@
 import { Idl } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import React from 'react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/shared/ui/accordion';
+import { Badge } from '@components/shared/ui/badge';
+import { Button } from '@components/shared/ui/button';
+import { Card, CardContent, CardHeader } from '@components/shared/ui/card';
 
 interface AnchorDeveloperToolsProps {
   programId: string;
@@ -64,33 +68,30 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
 
   if (!programId) {
     return (
-      <div className="bg-card rounded-lg border shadow-sm">
-        <div className="p-6">
+      <Card>
+        <CardContent className="p-6">
           <h5 className="text-lg font-semibold">Anchor Developer Tools</h5>
           <p className="text-muted-foreground">Enter a program ID above to access Anchor developer tools.</p>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-card mb-4 rounded-lg border shadow-sm">
-      <div className="border-b px-6 py-4">
+    <Card className="mb-4">
+      <CardHeader className="border-b">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <h5 className="mb-0 text-lg font-semibold">🔧 Anchor Developer Tools</h5>
           </div>
           <div className="flex-shrink-0">
-            <button
-              className="border-primary text-primary hover:bg-primary/10 rounded-md border px-3 py-1.5 text-sm"
-              onClick={() => setShowIdlInput(!showIdlInput)}
-            >
+            <Button variant="outline" size="sm" onClick={() => setShowIdlInput(!showIdlInput)}>
               {showIdlInput ? 'Hide' : 'Manual IDL'}
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
-      <div className="p-6">
+      </CardHeader>
+      <CardContent className="p-6">
         {loading && (
           <div className="py-4 text-center">
             <div
@@ -106,12 +107,9 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
         {error && !showIdlInput && (
           <div className="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
             <strong>Note:</strong> {error}
-            <button
-              className="border-primary text-primary hover:bg-primary/10 ml-3 rounded-md border px-3 py-1.5 text-sm"
-              onClick={() => setShowIdlInput(true)}
-            >
+            <Button variant="outline" size="sm" className="ml-3" onClick={() => setShowIdlInput(true)}>
               Paste IDL Manually
-            </button>
+            </Button>
           </div>
         )}
 
@@ -125,12 +123,9 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
               onChange={e => setManualIdl(e.target.value)}
               placeholder='{"version": "0.1.0", "name": "your_program", ...}'
             />
-            <button
-              className="bg-primary text-primary-foreground hover:bg-primary/90 mt-2 rounded-md px-4 py-2"
-              onClick={handleManualIdl}
-            >
+            <Button className="mt-2" onClick={handleManualIdl}>
               Load IDL
-            </button>
+            </Button>
           </div>
         )}
 
@@ -154,114 +149,104 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
             {/* Instructions */}
             {idlData.instructions && idlData.instructions.length > 0 && (
               <div className="mb-4">
-                <h5 className="border-bottom pb-2">📋 Instructions ({idlData.instructions.length})</h5>
-                <div className="accordion" id="instructionsDetails">
+                <h5 className="mb-4 border-b pb-2 text-base font-semibold">
+                  Instructions ({idlData.instructions.length})
+                </h5>
+                <Accordion type="single" collapsible className="space-y-2">
                   {idlData.instructions.map((instruction: any, idx: number) => (
-                    <div key={idx} className="accordion-item">
-                      <h2 className="accordion-header">
-                        <button
-                          className="accordion-button collapsed"
-                          type="button"
-                          data-bs-toggle="collapse"
-                          data-bs-target={`#ix-${idx}`}
-                        >
-                          <code className="mr-2">{instruction.name}</code>
-                          <span className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">
+                    <AccordionItem key={idx} value={`instruction-${idx}`} className="rounded-lg border">
+                      <AccordionTrigger className="px-4 hover:no-underline">
+                        <div className="flex items-center gap-2">
+                          <code className="text-sm font-semibold">{instruction.name}</code>
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                             {instruction.accounts?.length || 0} accounts
-                          </span>
-                          <span className="ml-2 rounded-full bg-gray-200 px-2 py-1 text-xs text-gray-800">
+                          </Badge>
+                          <Badge variant="secondary" className="bg-gray-100 text-gray-800">
                             {instruction.args?.length || 0} args
-                          </span>
-                        </button>
-                      </h2>
-                      <div
-                        id={`ix-${idx}`}
-                        className="accordion-collapse collapse"
-                        data-bs-parent="#instructionsDetails"
-                      >
-                        <div className="accordion-body">
-                          {instruction.accounts && instruction.accounts.length > 0 && (
-                            <div className="mb-3">
-                              <h6 className="mb-2 font-semibold">Accounts:</h6>
-                              <ul className="space-y-2">
-                                {instruction.accounts.map((account: any, i: number) => (
-                                  <li key={i} className="rounded border px-3 py-2">
-                                    <code>{account.name}</code>
-                                    {account.isMut && (
-                                      <span className="ml-2 rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">
-                                        mut
-                                      </span>
-                                    )}
-                                    {account.isSigner && (
-                                      <span className="ml-2 rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
-                                        signer
-                                      </span>
-                                    )}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          {instruction.args && instruction.args.length > 0 && (
-                            <div>
-                              <h6 className="mb-2 font-semibold">Arguments:</h6>
-                              <ul className="space-y-2">
-                                {instruction.args.map((arg: any, i: number) => (
-                                  <li key={i} className="rounded border px-3 py-2">
-                                    <code>{arg.name}</code>
-                                    <span className="text-muted-foreground ml-2">: {JSON.stringify(arg.type)}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                          </Badge>
                         </div>
-                      </div>
-                    </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4">
+                        {instruction.accounts && instruction.accounts.length > 0 && (
+                          <div className="mb-3">
+                            <h6 className="mb-2 text-sm font-semibold">Accounts:</h6>
+                            <ul className="space-y-2">
+                              {instruction.accounts.map((account: any, i: number) => (
+                                <li key={i} className="rounded border px-3 py-2">
+                                  <code className="text-sm">{account.name}</code>
+                                  {account.isMut && (
+                                    <Badge variant="secondary" className="ml-2 bg-yellow-100 text-yellow-800">
+                                      mut
+                                    </Badge>
+                                  )}
+                                  {account.isSigner && (
+                                    <Badge variant="secondary" className="ml-2 bg-green-100 text-green-800">
+                                      signer
+                                    </Badge>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {instruction.args && instruction.args.length > 0 && (
+                          <div>
+                            <h6 className="mb-2 text-sm font-semibold">Arguments:</h6>
+                            <ul className="space-y-2">
+                              {instruction.args.map((arg: any, i: number) => (
+                                <li key={i} className="rounded border px-3 py-2">
+                                  <code className="text-sm">{arg.name}</code>
+                                  <span className="text-muted-foreground ml-2 text-sm">
+                                    : {JSON.stringify(arg.type)}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
                   ))}
-                </div>
+                </Accordion>
               </div>
             )}
 
             {/* Accounts/State */}
             {idlData.accounts && idlData.accounts.length > 0 && (
               <div className="mb-4">
-                <h5 className="border-bottom pb-2">💾 Account Types ({idlData.accounts.length})</h5>
-                <div className="accordion" id="accountsDetails">
+                <h5 className="mb-4 border-b pb-2 text-base font-semibold">
+                  Account Types ({idlData.accounts.length})
+                </h5>
+                <Accordion type="single" collapsible className="space-y-2">
                   {idlData.accounts.map((account: any, idx: number) => (
-                    <div key={idx} className="accordion-item">
-                      <h2 className="accordion-header">
-                        <button
-                          className="accordion-button collapsed"
-                          type="button"
-                          data-bs-toggle="collapse"
-                          data-bs-target={`#acc-${idx}`}
-                        >
-                          <code>{account.name}</code>
-                        </button>
-                      </h2>
-                      <div id={`acc-${idx}`} className="accordion-collapse collapse" data-bs-parent="#accountsDetails">
-                        <div className="accordion-body">
-                          <pre className="rounded bg-gray-50 p-2">{JSON.stringify(account.type, null, 2)}</pre>
-                        </div>
-                      </div>
-                    </div>
+                    <AccordionItem key={idx} value={`account-${idx}`} className="rounded-lg border">
+                      <AccordionTrigger className="px-4 hover:no-underline">
+                        <code className="text-sm font-semibold">{account.name}</code>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4">
+                        <pre className="overflow-x-auto rounded bg-gray-50 p-3 text-sm">
+                          {JSON.stringify(account.type, null, 2)}
+                        </pre>
+                      </AccordionContent>
+                    </AccordionItem>
                   ))}
-                </div>
+                </Accordion>
               </div>
             )}
 
             {/* Events */}
             {idlData.events && idlData.events.length > 0 && (
               <div className="mb-4">
-                <h5 className="border-bottom pb-2">📡 Events ({idlData.events.length})</h5>
-                <div className="list-group">
+                <h5 className="mb-4 border-b pb-2 text-base font-semibold">Events ({idlData.events.length})</h5>
+                <div className="space-y-3">
                   {idlData.events.map((event: any, idx: number) => (
-                    <div key={idx} className="list-group-item">
-                      <h6>
+                    <div key={idx} className="rounded border p-4">
+                      <h6 className="mb-3 text-sm font-semibold">
                         <code>{event.name}</code>
                       </h6>
-                      <pre className="mb-0 rounded bg-gray-50 p-2">{JSON.stringify(event.fields, null, 2)}</pre>
+                      <pre className="mb-0 overflow-x-auto rounded bg-gray-50 p-3 text-sm">
+                        {JSON.stringify(event.fields, null, 2)}
+                      </pre>
                     </div>
                   ))}
                 </div>
@@ -271,26 +256,26 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
             {/* Errors */}
             {idlData.errors && idlData.errors.length > 0 && (
               <div className="mb-4">
-                <h5 className="border-b pb-2">⚠️ Error Codes ({idlData.errors.length})</h5>
-                <div className="overflow-x-auto">
+                <h5 className="mb-4 border-b pb-2 text-base font-semibold">Error Codes ({idlData.errors.length})</h5>
+                <div className="overflow-x-auto rounded border">
                   <table className="w-full text-sm">
-                    <thead>
+                    <thead className="bg-muted">
                       <tr>
-                        <th>Code</th>
-                        <th>Name</th>
-                        <th>Message</th>
+                        <th className="px-4 py-3 text-left font-semibold">Code</th>
+                        <th className="px-4 py-3 text-left font-semibold">Name</th>
+                        <th className="px-4 py-3 text-left font-semibold">Message</th>
                       </tr>
                     </thead>
                     <tbody>
                       {idlData.errors.map((error: any, idx: number) => (
-                        <tr key={idx}>
-                          <td>
-                            <code>{error.code}</code>
+                        <tr key={idx} className="border-t">
+                          <td className="px-4 py-3">
+                            <code className="text-sm">{error.code}</code>
                           </td>
-                          <td>
-                            <code>{error.name}</code>
+                          <td className="px-4 py-3">
+                            <code className="text-sm">{error.name}</code>
                           </td>
-                          <td>{error.msg}</td>
+                          <td className="px-4 py-3">{error.msg}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -305,8 +290,8 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                 <span>
                   <strong>Developer Tip:</strong> You can download the full IDL for offline use
                 </span>
-                <button
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1.5 text-sm"
+                <Button
+                  size="sm"
                   onClick={() => {
                     const blob = new Blob([JSON.stringify(idlData, null, 2)], {
                       type: 'application/json',
@@ -319,12 +304,12 @@ export function AnchorDeveloperTools({ programId, clusterUrl }: AnchorDeveloperT
                   }}
                 >
                   Download IDL
-                </button>
+                </Button>
               </div>
             </div>
           </>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

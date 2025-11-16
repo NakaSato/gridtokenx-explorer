@@ -8,26 +8,25 @@ import { LoadingCard } from '@components/common/LoadingCard';
 import { AnchorDeveloperTools } from '@components/transaction/AnchorDeveloperTools';
 import { TransactionAnalytics } from '@components/transaction/TransactionAnalytics';
 import { ProgramMonitorCard } from '@components/transaction/ProgramMonitorCard';
-import { RealtimeTransactionTable, EnhancedTransaction } from '@components/transaction/RealtimeTransactionTable';
+import { RealtimeTransactionTable, Transaction } from '@components/transaction/RealtimeTransactionTable';
 import { TransactionDetailsCard } from '@components/transaction/TransactionDetailsCard';
 import { MonitoringGuideCard } from '@components/transaction/MonitoringGuideCard';
 import { useCluster } from '@providers/cluster';
 import { ClusterStatus } from '@utils/cluster';
 import { createSolanaRpc, address } from '@solana/kit';
-import { ConfirmedSignatureInfo, Connection } from '@solana/web3.js';
-import { toAddress, addressToPublicKey } from '@utils/rpc';
+import { toAddress, toLegacySignatureInfo, createLegacyConnection, addressToPublicKey } from '@utils/rpc';
 
 const MAX_TRANSACTIONS = 50;
 const REFRESH_INTERVAL = 5000; // 5 seconds
 
 export default function RealtimeTransactionsPage() {
   const { cluster, url, status } = useCluster();
-  const [transactions, setTransactions] = React.useState<EnhancedTransaction[]>([]);
+  const [transactions, setTransactions] = React.useState<Transaction[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [isPaused, setIsPaused] = React.useState(false);
   const [lastSlot, setLastSlot] = React.useState<number | null>(null);
-  const [selectedTx, setSelectedTx] = React.useState<EnhancedTransaction | null>(null);
+  const [selectedTx, setSelectedTx] = React.useState<Transaction | null>(null);
   const [detailsLoading, setDetailsLoading] = React.useState(false);
   const [customProgramId, setCustomProgramId] = React.useState<string>('');
   const [connectionErrorCount, setConnectionErrorCount] = React.useState(0);
@@ -49,34 +48,44 @@ export default function RealtimeTransactionsPage() {
       const slot = await rpc.getSlot().send();
       setLastSlot(Number(slot));
 
-      // For getSignaturesForAddress, we still need to use Connection for now
-      // until we update the type handling throughout the app
-      const connection = new Connection(url);
-      let signatures: ConfirmedSignatureInfo[] = [];
+      let signatures: Transaction[] = [];
+
+      // Helper to convert kit signature to Transaction type
+      const convertSignature = (sig: any): Transaction => ({
+        signature: sig.signature,
+        slot: typeof sig.slot === 'bigint' ? Number(sig.slot) : sig.slot,
+        err: sig.err,
+        memo: sig.memo || null,
+        blockTime: sig.blockTime ? (typeof sig.blockTime === 'bigint' ? Number(sig.blockTime) : sig.blockTime) : null,
+        confirmationStatus: sig.confirmationStatus as 'processed' | 'confirmed' | 'finalized' | undefined,
+      });
 
       // If custom program ID is provided, monitor it
       if (customProgramId) {
         try {
-          const programPubkey = addressToPublicKey(toAddress(customProgramId));
-          signatures = await connection.getSignaturesForAddress(programPubkey, {
+          const programAddress = toAddress(customProgramId);
+          const kitSignatures = await rpc.getSignaturesForAddress(programAddress, {
             limit: MAX_TRANSACTIONS,
-          });
+          }).send();
+          signatures = kitSignatures.map(convertSignature);
         } catch (err) {
           console.error('Invalid program ID, falling back to system program');
-          const systemProgramId = addressToPublicKey(toAddress('11111111111111111111111111111111'));
-          signatures = await connection.getSignaturesForAddress(systemProgramId, {
+          const systemProgramId = toAddress('11111111111111111111111111111111');
+          const kitSignatures = await rpc.getSignaturesForAddress(systemProgramId, {
             limit: MAX_TRANSACTIONS,
-          });
+          }).send();
+          signatures = kitSignatures.map(convertSignature);
         }
       } else {
         // Get signatures from a well-known program to ensure we get recent activity
-        const systemProgramId = addressToPublicKey(toAddress('11111111111111111111111111111111'));
-        signatures = await connection.getSignaturesForAddress(systemProgramId, {
+        const systemProgramId = toAddress('11111111111111111111111111111111');
+        const kitSignatures = await rpc.getSignaturesForAddress(systemProgramId, {
           limit: MAX_TRANSACTIONS,
-        });
+        }).send();
+        signatures = kitSignatures.map(convertSignature);
       }
 
-      setTransactions(signatures as EnhancedTransaction[]);
+      setTransactions(signatures);
       setLoading(false);
       setError(null);
       setConnectionErrorCount(0); // Reset error count on success
@@ -104,7 +113,7 @@ export default function RealtimeTransactionsPage() {
   }, [url, status, isPaused, customProgramId, connectionErrorCount, maxConnectionErrors]);
 
   const fetchTransactionDetails = React.useCallback(
-    async (tx: EnhancedTransaction) => {
+    async (tx: Transaction) => {
       if (tx.details) {
         setSelectedTx(tx);
         return;
@@ -112,7 +121,8 @@ export default function RealtimeTransactionsPage() {
 
       setDetailsLoading(true);
       try {
-        const connection = new Connection(url);
+        // Use legacy Connection for getTransaction due to third-party library compatibility
+        const connection = createLegacyConnection(url);
         const details = await connection.getTransaction(tx.signature, {
           maxSupportedTransactionVersion: 0,
         });
@@ -131,7 +141,7 @@ export default function RealtimeTransactionsPage() {
           const computeUnits = details.meta?.computeUnitsConsumed;
           const fee = details.meta?.fee;
 
-          const enhancedTx: EnhancedTransaction = {
+          const enhancedTx: Transaction = {
             ...tx,
             accountKeys,
             computeUnits,

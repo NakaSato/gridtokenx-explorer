@@ -1,5 +1,4 @@
-import { address } from '@solana/kit';
-import { ComputeBudgetProgram, ParsedInstruction, PartiallyDecodedInstruction, PublicKey } from '@solana/web3.js';
+import { address, Address } from '@solana/kit';
 import {
   ComputeBudgetInstruction,
   identifyComputeBudgetInstruction,
@@ -9,6 +8,28 @@ import {
 import bs58 from 'bs58';
 
 import { Cluster } from '@/app/utils/cluster';
+
+/**
+ * Compute Budget Program ID
+ */
+const COMPUTE_BUDGET_PROGRAM_ID = 'ComputeBudget111111111111111111111111111111';
+
+/**
+ * Minimal type aliases for instruction types
+ * Compatible with @solana/web3.js types but doesn't require the import
+ */
+type ProgramIdLike = { toBase58(): string };
+
+type ParsedInstructionLike = {
+  programId: ProgramIdLike;
+  parsed?: unknown;
+};
+
+type PartiallyDecodedInstructionLike = {
+  programId: ProgramIdLike;
+  data: string;
+  accounts: unknown[];
+};
 
 /**
  * Built-in programs that have minimal reserved compute units (3k)
@@ -132,16 +153,27 @@ export function getReservedComputeUnits({
 /**
  * Helper to extract compute units from a compute budget instruction
  */
-function extractComputeUnitsFromInstruction(instruction: { programId: PublicKey; data: Uint8Array }): number | null {
-  if (instruction.programId.toBase58() !== ComputeBudgetProgram.programId.toBase58()) {
+function extractComputeUnitsFromInstruction(instruction: { 
+  programId: string | { toBase58(): string }; 
+  data: Uint8Array 
+}): number | null {
+  const programIdStr = typeof instruction.programId === 'string' 
+    ? instruction.programId 
+    : instruction.programId.toBase58();
+  
+  if (programIdStr !== COMPUTE_BUDGET_PROGRAM_ID) {
     return null;
   }
 
   try {
+    const programIdStr = typeof instruction.programId === 'string' 
+      ? instruction.programId 
+      : instruction.programId.toBase58();
+    
     const ix = {
       accounts: [],
       data: Buffer.from(instruction.data),
-      programAddress: address(instruction.programId.toBase58()),
+      programAddress: address(programIdStr),
     };
 
     const type = identifyComputeBudgetInstruction(ix);
@@ -162,7 +194,7 @@ function extractComputeUnitsFromInstruction(instruction: { programId: PublicKey;
 
 /**
  * Estimate the requested compute units for a transaction
- * @param tx - The transaction to analyze
+ * @param tx - The transaction to analyze (from VersionedBlockResponse)
  * @param epoch - The epoch of the transaction
  * @param cluster - The cluster the transaction is on
  * @returns The estimated compute units requested
@@ -175,7 +207,10 @@ export function estimateRequestedComputeUnits(
           programIdIndex: number;
           data: Uint8Array;
         }>;
-        staticAccountKeys: PublicKey[];
+        getAccountKeys: (args?: any) => { 
+          staticAccountKeys: Array<{ toBase58(): string }>;
+          get: (index: number) => { toBase58(): string } | undefined;
+        };
       };
     };
   },
@@ -184,11 +219,22 @@ export function estimateRequestedComputeUnits(
 ): number {
   // First, check for explicit compute budget instructions
   let totalReservedUnits = 0;
+  
+  // Get account keys from the versioned transaction message
+  const accountKeys = tx.transaction.message.getAccountKeys();
+  
+  if (!accountKeys?.staticAccountKeys || !tx.transaction.message.compiledInstructions) {
+    return DEFAULT_COMPUTE_UNITS;
+  }
+  
   for (const instruction of tx.transaction.message.compiledInstructions) {
-    const programId = tx.transaction.message.staticAccountKeys[instruction.programIdIndex];
+    // Use .get() method which handles both static and lookup table accounts
+    const programId = accountKeys.get(instruction.programIdIndex);
+    if (!programId) continue;
+    
     const requestedUnits = extractComputeUnitsFromInstruction({
       data: instruction.data,
-      programId,
+      programId: programId.toBase58(),
     });
 
     if (requestedUnits !== null) {
@@ -214,7 +260,7 @@ export function estimateRequestedComputeUnits(
 export function estimateRequestedComputeUnitsForParsedTransaction(
   parsedTransaction: {
     message: {
-      instructions: Array<ParsedInstruction | PartiallyDecodedInstruction>;
+      instructions: Array<ParsedInstructionLike | PartiallyDecodedInstructionLike>;
     };
   },
   epoch: bigint | undefined,
@@ -226,7 +272,7 @@ export function estimateRequestedComputeUnitsForParsedTransaction(
     if ('data' in instruction && typeof instruction.data === 'string') {
       const requestedUnits = extractComputeUnitsFromInstruction({
         data: bs58.decode(instruction.data),
-        programId: instruction.programId,
+        programId: instruction.programId.toBase58(),
       });
 
       if (requestedUnits !== null) {

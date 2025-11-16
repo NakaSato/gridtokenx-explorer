@@ -2,10 +2,60 @@
 
 import * as Cache from '@providers/cache';
 import { useCluster } from '@providers/cluster';
-import { PublicKey, VersionedBlockResponse } from '@solana/web3.js';
 import { Cluster } from '@utils/cluster';
 import { createRpc, bigintToNumber, addressToPublicKey } from '@utils/rpc';
 import React from 'react';
+
+/**
+ * Type aliases compatible with @solana/web3.js types
+ * Maintains structural compatibility without requiring the import
+ */
+type PublicKeyLike = {
+  toBase58(): string;
+  equals(other: PublicKeyLike): boolean;
+};
+
+type VersionedBlockResponseLike = {
+  blockhash: string;
+  previousBlockhash: string;
+  parentSlot: number;
+  transactions: Array<{
+    transaction: {
+      message: {
+        compiledInstructions: Array<{
+          programIdIndex: number;
+          data: Uint8Array;
+        }>;
+        getAccountKeys: (args?: any) => {
+          staticAccountKeys: Array<{ toBase58(): string }>;
+          get: (index: number) => { toBase58(): string } | undefined;
+        };
+      };
+      signatures: string[];
+    };
+    meta: {
+      err: any;
+      fee: number;
+      computeUnitsConsumed?: number;
+      costUnits?: number;
+      innerInstructions?: Array<{
+        index: number;
+        instructions: Array<{ programIdIndex: number }>;
+      }>;
+      logMessages?: string[] | null;
+      loadedAddresses?: any;
+    } | null;
+  }>;
+  blockTime: number | null;
+  blockHeight: number | null;
+  rewards?: Array<{
+    pubkey: string;
+    lamports: number;
+    postBalance: number;
+    rewardType: string | null;
+    commission: number | null;
+  }>;
+};
 
 export enum FetchStatus {
   Fetching,
@@ -13,17 +63,12 @@ export enum FetchStatus {
   Fetched,
 }
 
-export enum ActionType {
-  Update,
-  Clear,
-}
-
 type Block = {
-  block?: VersionedBlockResponse;
-  blockLeader?: PublicKey;
+  block?: VersionedBlockResponseLike;
+  blockLeader?: PublicKeyLike;
   childSlot?: number;
-  childLeader?: PublicKey;
-  parentLeader?: PublicKey;
+  childLeader?: PublicKeyLike;
+  parentLeader?: PublicKeyLike;
 };
 
 type State = Cache.State<Block>;
@@ -36,10 +81,12 @@ type BlockProviderProps = { children: React.ReactNode };
 
 export function BlockProvider({ children }: BlockProviderProps) {
   const { url } = useCluster();
-  const [state, dispatch] = Cache.useReducer<Block>(url);
+  const reducerResult = Cache.useReducer<Block>(url);
+  const state = reducerResult[0] as unknown as State;
+  const dispatch = reducerResult[1] as unknown as Dispatch;
 
   React.useEffect(() => {
-    dispatch({ type: ActionType.Clear, url });
+    dispatch({ type: Cache.ActionType.Clear, url });
   }, [dispatch, url]);
 
   return (
@@ -63,7 +110,7 @@ export async function fetchBlock(dispatch: Dispatch, url: string, cluster: Clust
   dispatch({
     key: slot,
     status: FetchStatus.Fetching,
-    type: ActionType.Update,
+    type: Cache.ActionType.Update,
     url,
   });
 
@@ -82,14 +129,14 @@ export async function fetchBlock(dispatch: Dispatch, url: string, cluster: Clust
       data = {};
       status = FetchStatus.Fetched;
     } else {
-      // Convert kit response to legacy VersionedBlockResponse format
-      const block = blockResponse as unknown as VersionedBlockResponse;
+      // Convert kit response to VersionedBlockResponseLike format
+      const block = blockResponse as unknown as VersionedBlockResponseLike;
       const childSlots = await rpc.getBlocks(BigInt(slot + 1), BigInt(slot + 100), { commitment: 'confirmed' }).send();
       const childSlotArray = Array.from(childSlots);
       const childSlot = childSlotArray.length > 0 ? bigintToNumber(childSlotArray[0]) : undefined;
       const firstLeaderSlot = block.parentSlot;
 
-      let leaders: PublicKey[] = [];
+      let leaders: PublicKeyLike[] = [];
       try {
         const lastLeaderSlot = childSlot !== undefined ? childSlot : slot;
         const slotLeadersLimit = lastLeaderSlot - block.parentSlot + 1;
@@ -100,7 +147,7 @@ export async function fetchBlock(dispatch: Dispatch, url: string, cluster: Clust
       }
 
       const getLeader = (slot: number) => {
-        return leaders.at(slot - firstLeaderSlot);
+        return leaders.at(slot - Number(firstLeaderSlot));
       };
 
       data = {
@@ -108,7 +155,7 @@ export async function fetchBlock(dispatch: Dispatch, url: string, cluster: Clust
         blockLeader: getLeader(slot),
         childLeader: childSlot !== undefined ? getLeader(childSlot) : undefined,
         childSlot,
-        parentLeader: getLeader(block.parentSlot),
+        parentLeader: getLeader(Number(block.parentSlot)),
       };
       status = FetchStatus.Fetched;
     }
@@ -123,7 +170,7 @@ export async function fetchBlock(dispatch: Dispatch, url: string, cluster: Clust
     data,
     key: slot,
     status,
-    type: ActionType.Update,
+    type: Cache.ActionType.Update,
     url,
   });
 }

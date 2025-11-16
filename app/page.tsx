@@ -9,7 +9,6 @@ import { Epoch } from '@components/common/EpochWrapper';
 import { ErrorCard } from '@components/common/ErrorCard';
 import { LoadingCard } from '@components/common/LoadingCard';
 import { Slot } from '@components/common/SlotWrapper';
-import { TableCardBody } from '@components/common/TableCardBody';
 import { TimestampToggle } from '@components/common/TimestampToggle';
 import { LiveTransactionStatsCard } from '@components/LiveTransactionStatsCard';
 import { Badge } from '@components/shared/ui/badge';
