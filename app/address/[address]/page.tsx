@@ -1,20 +1,32 @@
 import { TransactionHistoryCard } from '@components/account/history/TransactionHistoryCard';
 import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readable-title-from-address';
 import { Metadata } from 'next/types';
+import React from 'react';
 
 type Props = Readonly<{
-    params: {
+    params: Promise<{
         address: string;
-    };
+    }>;
+    searchParams: Promise<{
+        cluster: string;
+        customUrl?: string;
+    }>;
 }>;
 
 export async function generateMetadata(props: AddressPageMetadataProps): Promise<Metadata> {
+    const { address } = await props.params;
     return {
-        description: `History of all transactions involving the address ${props.params.address} on Solana`,
+        description: `History of all transactions involving the address ${address} on Solana`,
         title: `Transaction History | ${await getReadableTitleFromAddress(props)} | Solana`,
     };
 }
 
-export default function TransactionHistoryPage({ params: { address } }: Props) {
-    return <TransactionHistoryCard address={address} />;
+export default function TransactionHistoryPage({ params, searchParams }: Props) {
+    const { address } = React.use(params);
+    
+    return (
+        <div className="container mt-4">
+            <TransactionHistoryCard address={address} />
+        </div>
+    );
 }

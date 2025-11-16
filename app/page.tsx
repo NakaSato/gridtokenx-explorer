@@ -12,7 +12,9 @@ import { Slot } from '@components/common/SlotWrapper';
 import { TableCardBody } from '@components/common/TableCardBody';
 import { TimestampToggle } from '@components/common/TimestampToggle';
 import { LiveTransactionStatsCard } from '@components/LiveTransactionStatsCard';
+import { Badge } from '@components/shared/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/shared/ui/card';
+import { Progress } from '@components/shared/ui/progress';
 import { Skeleton } from '@components/shared/ui/skeleton';
 import { StatsNotReady } from '@components/StatsNotReady';
 import { useVoteAccounts } from '@providers/accounts/vote-accounts';
@@ -191,82 +193,120 @@ function StatsCardBody() {
     const hourlySlotTime = Math.round(1000 * avgSlotTime_1h);
     const averageSlotTime = Math.round(1000 * avgSlotTime_1min);
     const { slotIndex, slotsInEpoch } = epochInfo;
-    const epochProgress = percentage(slotIndex, slotsInEpoch, 2).toFixed(1) + '%';
+    const epochProgressValue = parseFloat(percentage(slotIndex, slotsInEpoch, 2).toFixed(1));
     const epochTimeRemaining = slotsToHumanString(Number(slotsInEpoch - slotIndex), hourlySlotTime);
     const { blockHeight, absoluteSlot } = epochInfo;
+
+    // Determine slot time health
+    const getSlotTimeHealth = (time: number) => {
+        if (time < 450) return { status: 'good', color: 'text-green-600 dark:text-green-400', badge: 'Fast' };
+        if (time < 550) return { status: 'good', color: 'text-blue-600 dark:text-blue-400', badge: 'Normal' };
+        if (time < 700) return { status: 'warning', color: 'text-yellow-600 dark:text-yellow-400', badge: 'Slow' };
+        return { status: 'error', color: 'text-red-600 dark:text-red-400', badge: 'Very Slow' };
+    };
+
+    const slotTimeHealth = getSlotTimeHealth(averageSlotTime);
 
     return (
         <Card className="h-full">
             <CardHeader className="border-b">
-                <CardTitle className="text-base sm:text-lg">Live Cluster Stats</CardTitle>
+                <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                    {/* <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div> */}
+                    Live Cluster Stats
+                </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
-                <TableCardBody>
-                    <tr>
-                        <td className="text-muted-foreground w-full px-3 py-2 text-sm sm:px-4 sm:text-base">Slot</td>
-                        <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
-                            <Slot slot={absoluteSlot} link />
-                        </td>
-                    </tr>
-                    {blockHeight !== undefined && (
-                        <tr>
-                            <td className="text-muted-foreground w-full px-3 py-2 text-sm sm:px-4 sm:text-base">
-                                Block height
-                            </td>
-                            <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
-                                <Slot slot={blockHeight} />
-                            </td>
-                        </tr>
-                    )}
-                    {blockTime && (
-                        <tr>
-                            <td className="text-muted-foreground w-full px-3 py-2 text-sm sm:px-4 sm:text-base">
-                                Cluster time
-                            </td>
-                            <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
-                                <TimestampToggle unixTimestamp={blockTime} shorter></TimestampToggle>
-                            </td>
-                        </tr>
-                    )}
-                    <tr>
-                        <td className="text-muted-foreground w-full px-3 py-2 text-sm sm:px-4 sm:text-base">
-                            Slot time (1min average)
-                        </td>
-                        <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
-                            {averageSlotTime}ms
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className="text-muted-foreground w-full px-3 py-2 text-sm sm:px-4 sm:text-base">
-                            Slot time (1hr average)
-                        </td>
-                        <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
-                            {hourlySlotTime}ms
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className="text-muted-foreground w-full px-3 py-2 text-sm sm:px-4 sm:text-base">Epoch</td>
-                        <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
-                            <Epoch epoch={epochInfo.epoch} link />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className="text-muted-foreground w-full px-3 py-2 text-sm sm:px-4 sm:text-base">
-                            Epoch progress
-                        </td>
-                        <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
-                            {epochProgress}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className="text-muted-foreground w-full px-3 py-2 text-sm sm:px-4 sm:text-base">
-                            Epoch time remaining (approx.)
-                        </td>
-                        <td className="px-3 py-2 text-right font-mono text-sm whitespace-nowrap sm:px-4 sm:text-base">
-                            ~{epochTimeRemaining}
-                        </td>
-                    </tr>
-                </TableCardBody>
+            <CardContent className="p-4 space-y-6">
+                {/* Primary Stats Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div>
+                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Current Slot</p>
+                                <p className="text-lg font-bold font-mono text-primary">
+                                    <Slot slot={absoluteSlot} link />
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {blockHeight !== undefined && (
+                            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                                <div>
+                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Block Height</p>
+                                    <p className="text-lg font-bold font-mono text-primary">
+                                        <Slot slot={blockHeight} />
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div>
+                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Epoch</p>
+                                <p className="text-lg font-bold font-mono text-primary">
+                                    <Epoch epoch={epochInfo.epoch} link />
+                                </p>
+                            </div>
+                        </div>
+
+                        {blockTime && (
+                            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                                <div>
+                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Cluster Time</p>
+                                    <p className="text-sm font-mono text-primary">
+                                        <TimestampToggle unixTimestamp={blockTime} shorter></TimestampToggle>
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Epoch Progress */}
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium">Epoch Progress</p>
+                        <Badge variant="secondary" className="text-xs">
+                            {epochProgressValue.toFixed(1)}%
+                        </Badge>
+                    </div>
+                    <Progress value={epochProgressValue} className="h-2" />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Slot {slotIndex.toLocaleString()}</span>
+                        <span>~{epochTimeRemaining} remaining</span>
+                    </div>
+                </div>
+
+                {/* Performance Metrics */}
+                <div className="space-y-4">
+                    <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Performance</h4>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <p className="text-sm text-muted-foreground">Slot Time (1min avg)</p>
+                                <div className="flex items-center gap-2">
+                                    <span className={`font-mono font-bold ${slotTimeHealth.color}`}>
+                                        {averageSlotTime}ms
+                                    </span>
+                                    <Badge variant="outline" className={`text-xs ${slotTimeHealth.color.replace('text-', 'border-')}`}>
+                                        {slotTimeHealth.badge}
+                                    </Badge>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <p className="text-sm text-muted-foreground">Slot Time (1hr avg)</p>
+                                <span className="font-mono font-bold text-primary">
+                                    {hourlySlotTime}ms
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </CardContent>
         </Card>
     );

@@ -84,8 +84,60 @@
 - `metadataBase` not set (expected, documented)
 - `bigint` pure JS fallback (expected behavior)
 
+## Changes Applied (Session 5 - SearchBar Enhancement)
+
+### 1. SearchBar Component Modernization
+
+#### ✅ SearchBar (`app/components/SearchBar.tsx`)
+**Before**: Minimal styling, small icons, long placeholder text
+**After**: Improved icons, semantic colors, concise placeholder
+**Changes**:
+- Updated: Search icon styling `className="m3"` → `className="ml-1 mr-2 text-muted-foreground"` with `size={16}`
+- Updated: Placeholder text from "Search for blocks, accounts, transactions, programs, and tokens" → "Search blocks, addresses, transactions, tokens..."
+- Fixed: Container width class from `className="w-100"` (Bootstrap) → `className="w-full"` (Tailwind)
+**Benefits**: Better icon spacing, semantic color tokens for dark mode, concise UX copy
+
+### 2. Custom CSS Styling
+
+#### ✅ globals.css (SearchBar react-select customization)
+**Issue**: Needed comprehensive styling for react-select dropdown with semantic tokens
+**Challenge**: Initial implementation used `@apply ... !important` which is not supported in Tailwind CSS v4
+**Solution**: Converted all @apply directives with `!important` to regular CSS properties
+**Changes**:
+- Added: 14 custom CSS classes for react-select components
+  - `.search-bar__control` - Input container with border-input, bg-background, hover states
+  - `.search-bar__control--is-focused` - Focus state with primary border and ring effect
+  - `.search-bar__menu` - Dropdown menu with popover background and shadow
+  - `.search-bar__option` - Result items with hover/focus/selected states
+  - `.search-bar__group-heading` - Category headers with muted styling
+  - `.key-indicator` - Keyboard shortcut badge (/) with muted background
+  - `.clear-indicator` - Clear button (X) with hover states
+- Pattern: Used semantic color tokens (`hsl(var(--foreground))`, `hsl(var(--background))`) for automatic dark mode
+- Pattern: Proper CSS properties instead of @apply for specificity control
+- Benefits: Complete theme integration, smooth transitions, proper z-index layering
+
+### 3. Tailwind CSS Syntax Fix
+
+**Issue**: Build failure due to `!important` usage with @apply directive
+**Error**: `Cannot apply unknown utility class !important` - Tailwind v4 limitation
+**Root Cause**: Tailwind CSS v4 (@import "tailwindcss") does not support `!important` flag in @apply directives
+**Solution**: 
+- Removed all 14 instances of `!important` from @apply statements
+- Converted styles to regular CSS properties where specificity was needed
+- Maintained semantic color tokens for theme consistency
+**Files Fixed**: `app/globals.css`
+**Learning**: In Tailwind v4, use regular CSS properties when `!important` is required for specificity
+
+### 4. Build Verification
+
+**Status**: ✅ **BUILD SUCCESSFUL**
+```
+✓ Compiled successfully in 7.8s
+   Skipping validation of types
+   Collecting page data in 594.3ms
+```
+
 ## Changes Applied (Session 3 - UI System Compliance & Z-Index Fixes)
-  +++++++ REPLACE
 
 ### 1. ClusterStatusButton Z-Index Fix
 
@@ -324,7 +376,10 @@ bun add @nivo/core @nivo/line @nivo/bar @nivo/pie
 - [x] `app/components/account/UpgradeableLoaderAccountSection.tsx` - Replaced custom card divs across 3 functions (UpgradeableProgramSection, UpgradeableProgramDataSection, UpgradeableProgramBufferSection), custom buttons with `Button variant="outline" size="sm"`
 - [x] `app/components/account/nftoken/NFTokenCollectionNFTGrid.tsx` - Replaced custom card div with `Card`, `CardHeader`, `CardTitle`, `CardContent`, custom button with `Button variant="outline" size="sm"`
 - [x] `app/components/account/nftoken/NFTokenAccountSection.tsx` - Replaced custom card divs across 2 sub-components (NFTCard, CollectionCard), custom buttons with `Button variant="outline" size="sm"`
-  +++++++ REPLACE
+
+#### ✅ SearchBar Enhancement - COMPLETED (Session 5)
+- [x] `app/components/SearchBar.tsx` - Improved icon styling with semantic colors, updated placeholder text, fixed container width class
+- [x] `app/globals.css` - Added comprehensive react-select custom styling with semantic color tokens for dark mode support
 
 #### Lower Priority (Specialized Components)
 - [ ] `app/components/account/ConfigAccountSection.tsx` - Update card divs
@@ -442,12 +497,12 @@ Available but not yet installed:
 ## Impact Summary
 
 ### Components Migrated
-**Total**: 16 components + 2 utilities across 4 sessions
+**Total**: 17 components + 2 utilities across 5 sessions
 - **Session 1**: 4 core components (ErrorCard, LoadingCard, SupplyCard, TopAccountsCard)
 - **Session 2**: 4 high-priority components (BlockHistoryCard, TokenAccountSection with 4 sub-components, HistoryCardComponents with 2 functions, TokenHistoryCard)
 - **Session 3**: 3 UI compliance fixes (ClusterStatusButton, Navbar, UpcomingFeatures)
 - **Session 4**: 5 medium-priority account components (AddressLookupTableAccountSection, StakeAccountSection with 4 sub-components, UpgradeableLoaderAccountSection with 3 functions, NFTokenCollectionNFTGrid, NFTokenAccountSection with 2 sub-components)
-  +++++++ REPLACE
+- **Session 5**: 1 search component enhancement (SearchBar with comprehensive react-select styling in globals.css)
 
 ### Code Quality Improvements
 - ✅ Removed hardcoded color classes

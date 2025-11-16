@@ -188,13 +188,14 @@ const TABS_LOOKUP: { [id: string]: Tab[] } = {
 
 const TOKEN_TABS_HIDDEN = ['spl-token:mint', 'spl-token-2022:mint', 'config', 'vote', 'sysvar', 'config'];
 
-type Props = PropsWithChildren<{ params: { address: string } }>;
+type Props = PropsWithChildren<{ params: Promise<{ address: string }> }>;
 
 async function fetchFullTokenInfo([_, pubkey, cluster, url]: ['get-full-token-info', string, Cluster, string]) {
     return await getFullTokenInfo(new PublicKey(pubkey), cluster, url);
 }
 
-function AddressLayoutInner({ children, params: { address } }: Props) {
+function AddressLayoutInner({ children, params }: Props) {
+    const { address } = React.use(params);
     const fetchAccount = useFetchAccountInfo();
     const { status, cluster, url } = useCluster();
     const info = useAccountInfo(address);

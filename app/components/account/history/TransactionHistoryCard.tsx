@@ -10,7 +10,9 @@ import { PublicKey } from '@solana/web3.js';
 import { displayTimestampUtc } from '@utils/date';
 import React, { useMemo } from 'react';
 import Moment from 'react-moment';
-
+import { Card, CardContent } from '@components/shared/ui/card';
+import { Badge } from '@components/shared/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/shared/ui/table';
 import { getTransactionRows, HistoryCardFooter, HistoryCardHeader } from '../HistoryCardComponents';
 
 export function TransactionHistoryCard({ address }: { address: string }) {
@@ -49,63 +51,59 @@ export function TransactionHistoryCard({ address }: { address: string }) {
     const detailsList: React.ReactNode[] = transactionRows.map(
         ({ slot, signature, blockTime, statusClass, statusText }) => {
             return (
-                <tr key={signature}>
-                    <td>
+                <TableRow key={signature}>
+                    <TableCell>
                         <Signature signature={signature} link truncateChars={60} />
-                    </td>
+                    </TableCell>
 
-                    <td className="w-1">
+                    <TableCell className="whitespace-nowrap">
                         <Slot slot={slot} link />
-                    </td>
+                    </TableCell>
 
                     {hasTimestamps && (
                         <>
-                            <td className="text-muted-foreground">
+                            <TableCell className="whitespace-nowrap text-muted-foreground">
                                 {blockTime ? <Moment date={blockTime * 1000} fromNow /> : '---'}
-                            </td>
-                            <td className="text-muted-foreground">
+                            </TableCell>
+                            <TableCell className="whitespace-nowrap text-muted-foreground">
                                 {blockTime ? displayTimestampUtc(blockTime * 1000, true) : '---'}
-                            </td>
+                            </TableCell>
                         </>
                     )}
 
-                    <td>
-                        <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                                statusClass === 'success' ? 'bg-green-100 text-green-800' : 'bg-gray-800 text-white'
-                            }`}
-                        >
+                    <TableCell className="whitespace-nowrap">
+                        <Badge variant={statusClass === 'success' ? 'default' : 'secondary'}>
                             {statusText}
-                        </span>
-                    </td>
-                </tr>
+                        </Badge>
+                    </TableCell>
+                </TableRow>
             );
         },
     );
 
     const fetching = history.status === FetchStatus.Fetching;
     return (
-        <div className="bg-card rounded-lg border shadow-sm">
+        <Card>
             <HistoryCardHeader fetching={fetching} refresh={() => refresh()} title="Transaction History" />
-            <div className="mb-0 overflow-x-auto">
-                <table className="w-full text-sm">
-                    <thead>
-                        <tr>
-                            <th className="text-muted-foreground w-1">Transaction Signature</th>
-                            <th className="text-muted-foreground w-1">Block</th>
+            <CardContent className="p-0">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Transaction Signature</TableHead>
+                            <TableHead>Block</TableHead>
                             {hasTimestamps && (
                                 <>
-                                    <th className="text-muted-foreground w-1">Age</th>
-                                    <th className="text-muted-foreground w-1">Timestamp</th>
+                                    <TableHead>Age</TableHead>
+                                    <TableHead>Timestamp</TableHead>
                                 </>
                             )}
-                            <th className="text-muted-foreground">Result</th>
-                        </tr>
-                    </thead>
-                    <tbody className="list">{detailsList}</tbody>
-                </table>
-            </div>
+                            <TableHead>Result</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>{detailsList}</TableBody>
+                </Table>
+            </CardContent>
             <HistoryCardFooter fetching={fetching} foundOldest={history.data.foundOldest} loadMore={() => loadMore()} />
-        </div>
+        </Card>
     );
 }

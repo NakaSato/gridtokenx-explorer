@@ -32,13 +32,13 @@ export function TimestampToggle({ unixTimestamp, shorter }: { unixTimestamp: num
     };
 
     return (
-        <div className="popover-container w-100" style={tooltipContainer}>
+        <span className="popover-container w-100" style={tooltipContainer}>
             <span onClick={toggle} onMouseOver={() => toggleTooltip('show')} onMouseOut={() => toggleTooltip('hide')}>
                 {isTimestampTypeUtc === true
                     ? displayTimestampUtc(unixTimestamp, shorter)
                     : displayTimestamp(unixTimestamp, shorter)}
             </span>
             <Tooltip state={showTooltip} />
-        </div>
+        </span>
     );
 }

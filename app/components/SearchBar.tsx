@@ -99,7 +99,7 @@ export function SearchBar() {
 
                 return (
                     <components.Control {...props}>
-                        <Search className="m3" size={15} />
+                        <Search className="ml-1 mr-2 text-muted-foreground" size={16} />
                         {children}
                         {hasValue ? (
                             <ClearIndicator onClick={clearHandler} onTouchStart={clearHandler} />
@@ -130,7 +130,7 @@ export function SearchBar() {
     const id = useId();
 
     return (
-        <div className="w-100">
+        <div className="w-full">
             <AsyncSelect
                 cacheOptions
                 defaultOptions
@@ -140,7 +140,7 @@ export function SearchBar() {
                 inputId={id}
                 noOptionsMessage={noOptionsMessageHandler}
                 loadingMessage={loadingMessageHandler}
-                placeholder="Search for blocks, accounts, transactions, programs, and tokens"
+                placeholder="Search blocks, addresses, transactions, tokens..."
                 value={RESET_VALUE}
                 inputValue={search}
                 blurInputOnSelect
