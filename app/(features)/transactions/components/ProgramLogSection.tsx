@@ -1,5 +1,5 @@
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
-import { ProgramLogsCardBody } from '@/app/components/ProgramLogsCardBody';
+import { ProgramLogsCardBody } from '@/app/(features)/transactions/components';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { useTransactionDetails } from '@/app/(core)/providers/transactions';
 import { SignatureProps } from '@/app/(shared)/utils/index';

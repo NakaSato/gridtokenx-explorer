@@ -1,4 +1,4 @@
-import { TransactionInspectorPage } from '@/app/components/inspector/InspectorPage';
+import { TransactionInspectorPage } from '@/app/(features)/transactions/components';
 import { Metadata } from 'next/types';
 
 type Props = Readonly<{

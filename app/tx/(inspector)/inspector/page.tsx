@@ -1,4 +1,4 @@
-import { TransactionInspectorPage } from '@/app/components/inspector/InspectorPage';
+import { TransactionInspectorPage } from '@/app/(features)/transactions/components';
 
 type Props = Readonly<{
   params: Readonly<{

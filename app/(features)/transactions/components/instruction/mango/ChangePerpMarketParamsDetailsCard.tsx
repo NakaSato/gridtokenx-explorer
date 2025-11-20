@@ -1,3 +1,5 @@
+'use client';
+
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { SignatureResult, TransactionInstruction } from '@solana/web3.js';
 import moment from 'moment';

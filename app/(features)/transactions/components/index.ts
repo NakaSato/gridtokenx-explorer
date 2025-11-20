@@ -13,6 +13,9 @@ export { MonitoringGuideCard } from './MonitoringGuideCard';
 
 // Program Components
 export { ProgramLogSection } from './ProgramLogSection';
+export { ProgramLogsCardBody } from './ProgramLogsCardBody';
 
-// Export all components with proper barrel organization
-export * from './instruction';
+// Inspector Components
+export { TransactionInspectorPage } from './InspectorPage';
+
+// Note: Instruction subcomponents will be added as index files are created

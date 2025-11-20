@@ -1,3 +1,5 @@
+'use client';
+
 import { Address } from '@/app/(shared)/components/common/Address';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { SignatureResult, TransactionInstruction } from '@solana/web3.js';

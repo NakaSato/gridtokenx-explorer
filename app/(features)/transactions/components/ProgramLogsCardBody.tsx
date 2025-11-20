@@ -1,3 +1,5 @@
+'use client';
+
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
 import { ParsedMessage, PublicKey, VersionedMessage } from '@solana/web3.js';
 import { Cluster } from '@/app/(shared)/utils/cluster';
