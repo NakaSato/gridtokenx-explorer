@@ -18,8 +18,9 @@ import {
   SolanaAttestationServiceInstruction,
 } from 'sas-lib';
 
-import { Address } from '../../common/Address';
+import { Address } from '@/app/(shared)/components/common/Address';
 import { upcastTransactionInstruction } from '../../inspector/into-parsed-data';
+import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import { mapCodamaIxArgsToRows } from '../codama/codamaUtils';
 import { InstructionCard } from '../InstructionCard';
 
@@ -37,7 +38,7 @@ export function SolanaAttestationDetailsCard({
   ix: TransactionInstruction;
   index: number;
   result: SignatureResult;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
 }) {
   const _ix = upcastTransactionInstruction(ix);

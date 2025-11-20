@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef } from 'react';
 
 export function useDebouncedAsync<TArgs extends any[], TResult>(

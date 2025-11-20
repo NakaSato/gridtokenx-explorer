@@ -1,5 +1,5 @@
 import { Address } from '@/app/(shared)/components/common/Address';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { ParsedInstruction, SignatureResult, StakeProgram } from '@solana/web3.js';
 import React from 'react';
 
@@ -11,7 +11,7 @@ export function WithdrawDetailsCard(props: {
   index: number;
   result: SignatureResult;
   info: WithdrawInfo;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
 }) {
   const { ix, index, result, info, innerCards, childIndex } = props;

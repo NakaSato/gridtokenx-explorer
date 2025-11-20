@@ -1,4 +1,4 @@
-import { Cluster, serverClusterUrl } from '../../../utils/cluster';
+import { Cluster, serverClusterUrl } from '@/app/(shared)/utils/cluster';
 
 /**
  * Match cluster to the list of supported ones

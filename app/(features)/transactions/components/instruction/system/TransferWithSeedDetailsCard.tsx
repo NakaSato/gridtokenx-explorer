@@ -1,6 +1,6 @@
 import { Address } from '@/app/(shared)/components/common/Address';
-import { Copyable } from '@/app/(shared)/components/common/Copyable';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { Copyable } from '@/app/(shared)/components/Copyable';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { ParsedInstruction, SignatureResult, SystemProgram } from '@solana/web3.js';
 import React from 'react';
 
@@ -12,7 +12,7 @@ export function TransferWithSeedDetailsCard(props: {
   index: number;
   result: SignatureResult;
   info: TransferWithSeedInfo;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
 }) {
   const { ix, index, result, info, innerCards, childIndex } = props;

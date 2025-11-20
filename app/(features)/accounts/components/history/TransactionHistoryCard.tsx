@@ -2,7 +2,7 @@
 
 import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
-import { Signature } from '@/app/(shared)/components/common/Signature';
+import { Signature } from '@/app/(shared)/components/Signature';
 import { Slot } from '@/app/(shared)/components/common/Slot';
 import { useAccountHistory, useFetchAccountHistory } from '@/app/(core)/providers/accounts/history';
 import { FetchStatus } from '@/app/(core)/providers/cache';
@@ -11,9 +11,9 @@ import { PublicKey } from '@solana/web3.js';
 import { displayTimestampUtc } from '@/app/(shared)/utils/date';
 import React, { useMemo } from 'react';
 import Moment from 'react-moment';
-import { Card, CardContent } from '@/app/(shared)/components/shared/ui/card';
-import { Badge } from '@/app/(shared)/components/shared/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/shared/ui/table';
+import { Card, CardContent } from '@/app/(shared)/components/ui/card';
+import { Badge } from '@/app/(shared)/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/ui/table';
 import { getTransactionRows, HistoryCardFooter, HistoryCardHeader } from '../HistoryCardComponents';
 
 export function TransactionHistoryCard({ address }: { address: string }) {

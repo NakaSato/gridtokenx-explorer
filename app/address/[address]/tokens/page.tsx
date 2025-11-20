@@ -1,10 +1,12 @@
-import { OwnedTokensCard } from '@/app/(shared)/components/account/OwnedTokensCard';
-import { TokenHistoryCard } from '@/app/(shared)/components/account/TokenHistoryCard';
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@/app/(shared)/utils/get-readable-title-from-address';
+import { OwnedTokensCard } from '@/app/(features)/accounts/components/OwnedTokensCard';
+import { TokenHistoryCard } from '@/app/(features)/accounts/components/TokenHistoryCard';
+import getReadableTitleFromAddress, {
+  AddressPageMetadataProps,
+} from '@/app/(shared)/utils/get-readable-title-from-address';
 import { Metadata } from 'next/types';
 import React, { Suspense } from 'react';
 
-import { TransactionsProvider } from '@/app/providers/transactions';
+import { TransactionsProvider } from '@/app/(core)/providers/transactions';
 
 type Props = Readonly<{
   params: Promise<{
@@ -13,14 +15,15 @@ type Props = Readonly<{
 }>;
 
 export async function generateMetadata(props: AddressPageMetadataProps): Promise<Metadata> {
+  const { address } = await props.params;
   return {
-    description: `All tokens owned by the address ${props.params.address} on Solana`,
+    description: `All tokens owned by address ${address} on Solana`,
     title: `Tokens | ${await getReadableTitleFromAddress(props)} | Solana`,
   };
 }
 
-export default function OwnedTokensPage({ params }: Props) {
-  const { address } = React.use(params);
+export default async function OwnedTokensPage({ params }: Props) {
+  const { address } = await params;
   return (
     <Suspense
       fallback={

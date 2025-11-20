@@ -8,9 +8,10 @@ import {
 import bs58 from 'bs58';
 import React from 'react';
 
-import { Address } from '../../common/Address';
-import { Copyable } from '../../common/Copyable';
+import { Address } from '@/app/(shared)/components/common/Address';
+import { Copyable } from '@/app/(shared)/components/Copyable';
 import { InstructionCard } from '../InstructionCard';
+import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import { PROGRAM_ID as ED25519_PROGRAM_ID } from './types';
 
 const ED25519_SELF_REFERENCE_INSTRUCTION_INDEX = 65535;
@@ -20,7 +21,7 @@ type DetailsProps = {
   ix: TransactionInstruction;
   index: number;
   result: SignatureResult;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
 };
 
@@ -154,7 +155,7 @@ export function Ed25519DetailsCard(props: DetailsProps) {
               <td>Public Key</td>
               <td className="lg:text-right">
                 {pubkey ? (
-                  <Address pubkey={addressToPublicKey(toAddress(pubkey))} alignRight link />
+                  <Address pubkey={addressToPublicKey(toAddress(pubkey.toString()))} alignRight link />
                 ) : (
                   'Invalid reference'
                 )}

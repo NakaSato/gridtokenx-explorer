@@ -3,7 +3,7 @@
 import { Address } from '@/app/(shared)/components/common/Address';
 import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
-import { Signature } from '@/app/(shared)/components/common/Signature';
+import { Signature } from '@/app/(shared)/components/Signature';
 import { useAccountHistory } from '@/app/(core)/providers/accounts';
 import { useFetchAccountHistory } from '@/app/(core)/providers/accounts/history';
 import { FetchStatus } from '@/app/(core)/providers/cache';

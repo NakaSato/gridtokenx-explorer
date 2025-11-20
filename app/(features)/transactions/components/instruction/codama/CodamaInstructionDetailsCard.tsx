@@ -4,7 +4,7 @@ import { PublicKey, TransactionInstruction } from '@solana/web3.js';
 import { SignatureResult } from '@solana/web3.js';
 import React from 'react';
 
-import { Address } from '../../common/Address';
+import { Address } from '@/app/(shared)/components/common/Address';
 import { InstructionCard } from '../InstructionCard';
 import { UnknownDetailsCard } from '../UnknownDetailsCard';
 import { mapCodamaIxArgsToRows } from './codamaUtils';
@@ -19,7 +19,7 @@ export function CodamaInstructionCard({
   ix: TransactionInstruction;
   result: SignatureResult;
   index: number;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   parsedIx: ReturnType<typeof parseInstruction>;
 }) {
   if (parsedIx?.path[0].kind !== 'rootNode') {

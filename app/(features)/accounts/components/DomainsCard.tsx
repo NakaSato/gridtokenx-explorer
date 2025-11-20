@@ -7,9 +7,9 @@ import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { useUserDomains } from '@/app/(shared)/utils/name-service';
 import React from 'react';
 
-import { DomainInfo } from '@/app/utils/domain-info';
+import { DomainInfo } from '@/app/(shared)/utils/domain-info';
 
-import { useUserANSDomains } from '../../utils/ans-domains';
+import { useUserANSDomains } from '@/app/(shared)/utils/ans-domains';
 
 export function DomainsCard({ address }: { address: string }) {
   const [domains, domainsLoading] = useUserDomains(address);

@@ -1,8 +1,8 @@
 import { Address } from '@/app/(shared)/components/common/Address';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
 import { Account, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/app/(shared)/components/shared/ui/card';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/app/(shared)/components/ui/card';
 import { PublicKey } from '@solana/web3.js';
 import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import { Suspense, useState } from 'react';

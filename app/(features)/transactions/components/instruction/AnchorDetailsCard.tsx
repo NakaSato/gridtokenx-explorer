@@ -8,7 +8,7 @@ import {
   getAnchorProgramName,
   instructionIsSelfCPI,
   mapIxArgsToRows,
-} from '@utils/anchor';
+} from '@/app/(shared)/utils/anchor';
 import { camelToTitleCase } from '@/app/(shared)/utils/index';
 import { useMemo } from 'react';
 
@@ -19,7 +19,7 @@ export default function AnchorDetailsCard(props: {
   index: number;
   result: SignatureResult;
   signature: string;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
   anchorProgram: Program<Idl>;
 }) {

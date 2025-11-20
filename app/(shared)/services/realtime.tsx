@@ -1,7 +1,9 @@
 // Real-time data service for WebSocket connections and live updates
 import { useState, useEffect } from 'react';
 
-interface SubscriptionCallback<T> = (data: T) => void;
+interface SubscriptionCallback<T> {
+  (data: T): void;
+}
 interface SubscriptionOptions {
   reconnect?: boolean;
   reconnectInterval?: number;
@@ -34,26 +36,26 @@ class RealtimeService {
           console.log('WebSocket connected');
           this.isConnecting = false;
           this.reconnectAttempts = 0;
-          
+
           // Resubscribe to all existing subscriptions
           this.resubscribeAll();
           resolve();
         };
 
-        this.ws.onmessage = (event) => {
+        this.ws.onmessage = event => {
           this.handleMessage(event);
         };
 
-        this.ws.onclose = (event) => {
+        this.ws.onclose = event => {
           console.log('WebSocket disconnected:', event.code, event.reason);
           this.isConnecting = false;
-          
+
           if (options.reconnect && this.reconnectAttempts < (options.maxReconnectAttempts || 5)) {
             this.scheduleReconnect(options.reconnectInterval || 3000);
           }
         };
 
-        this.ws.onerror = (error) => {
+        this.ws.onerror = error => {
           console.error('WebSocket error:', error);
           this.isConnecting = false;
           reject(error);
@@ -109,11 +111,13 @@ class RealtimeService {
   // Send message to WebSocket
   private send(data: any): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({
-        ...data,
-        id: ++this.lastMessageId,
-        timestamp: Date.now()
-      }));
+      this.ws.send(
+        JSON.stringify({
+          ...data,
+          id: ++this.lastMessageId,
+          timestamp: Date.now(),
+        }),
+      );
     }
   }
 
@@ -121,11 +125,11 @@ class RealtimeService {
   private handleMessage(event: MessageEvent): void {
     try {
       const message = JSON.parse(event.data);
-      
+
       if (message.channel && message.data) {
         const callbacks = this.subscriptions.get(message.channel);
         if (callbacks) {
-          callbacks.forEach((callback) => callback(message.data));
+          callbacks.forEach(callback => callback(message.data));
         }
       }
     } catch (error) {
@@ -137,7 +141,7 @@ class RealtimeService {
   private sendSubscriptionMessage(channel: string): void {
     this.send({
       action: 'subscribe',
-      channel
+      channel,
     });
   }
 
@@ -145,7 +149,7 @@ class RealtimeService {
   private sendUnsubscribeMessage(channel: string): void {
     this.send({
       action: 'unsubscribe',
-      channel
+      channel,
     });
   }
 
@@ -161,11 +165,11 @@ class RealtimeService {
     this.reconnectTimer = setTimeout(async () => {
       this.reconnectAttempts++;
       console.log(`Attempting to reconnect (${this.reconnectAttempts}/5)...`);
-      
+
       try {
         await this.connect({
           reconnect: true,
-          reconnectInterval: interval
+          reconnectInterval: interval,
         });
       } catch (error) {
         console.error('Reconnection failed:', error);
@@ -182,11 +186,16 @@ class RealtimeService {
   get connectionState(): string {
     if (!this.ws) return 'disconnected';
     switch (this.ws.readyState) {
-      case WebSocket.CONNECTING: return 'connecting';
-      case WebSocket.OPEN: return 'connected';
-      case WebSocket.CLOSING: return 'closing';
-      case WebSocket.CLOSED: return 'disconnected';
-      default: return 'unknown';
+      case WebSocket.CONNECTING:
+        return 'connecting';
+      case WebSocket.OPEN:
+        return 'connected';
+      case WebSocket.CLOSING:
+        return 'closing';
+      case WebSocket.CLOSED:
+        return 'disconnected';
+      default:
+        return 'unknown';
     }
   }
 }

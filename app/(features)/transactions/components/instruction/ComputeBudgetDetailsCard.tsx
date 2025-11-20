@@ -1,5 +1,5 @@
 import { Address } from '@/app/(shared)/components/common/Address';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { address } from '@solana/kit';
 import { SignatureResult, TransactionInstruction } from '@solana/web3.js';
@@ -12,7 +12,16 @@ import {
   parseSetComputeUnitPriceInstruction,
   parseSetLoadedAccountsDataSizeLimitInstruction,
 } from '@solana-program/compute-budget';
-import { microLamportsToLamportsString } from '@/app/(shared)/utils/index';
+import { lamportsToSolString } from '@/app/(shared)/utils/math';
+
+// Helper function to convert microLamports to lamports string
+function microLamportsToLamportsString(microLamports: number | bigint): string {
+  const lamports = Number(microLamports) / 1_000_000;
+  return lamports.toLocaleString('en-US', {
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  });
+}
 import React from 'react';
 
 import { InstructionCard } from './InstructionCard';
@@ -30,7 +39,7 @@ export function ComputeBudgetDetailsCard({
   index: number;
   result: SignatureResult;
   signature: string;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
   InstructionCardComponent?: React.FC<Parameters<typeof InstructionCard>[0]>;
 }) {

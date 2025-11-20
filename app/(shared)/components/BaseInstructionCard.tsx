@@ -1,7 +1,7 @@
 import { Address } from '@/app/(shared)/components/common/Address';
-import { useScrollAnchor } from '@providers/scroll-anchor';
+import { useScrollAnchor } from '@/app/(core)/providers/scroll-anchor';
 import { ParsedInstruction, SignatureResult, TransactionInstruction } from '@solana/web3.js';
-import getInstructionCardScrollAnchorId from '@utils/get-instruction-card-scroll-anchor-id';
+import getInstructionCardScrollAnchorId from '@/app/(shared)/utils/get-instruction-card-scroll-anchor-id';
 import React from 'react';
 import { Code } from 'react-feather';
 
@@ -15,7 +15,7 @@ type InstructionProps = {
   index: number;
   ix: TransactionInstruction | ParsedInstruction;
   defaultRaw?: boolean;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
   // raw can be used to display raw instruction information
   raw?: TransactionInstruction;

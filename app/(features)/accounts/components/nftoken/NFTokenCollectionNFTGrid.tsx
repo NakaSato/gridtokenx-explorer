@@ -1,8 +1,8 @@
 'use client';
 
 import { useClusterPath } from '@/app/(shared)/utils/url';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/app/(shared)/components/shared/ui/card';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/app/(shared)/components/ui/card';
 import Link from 'next/link';
 import React from 'react';
 import { RefreshCw } from 'react-feather';

@@ -1,6 +1,6 @@
 import { Address } from '@/app/(shared)/components/common/Address';
-import { BalanceDelta } from '@/app/(shared)/components/common/BalanceDelta';
-import { useTransactionDetails } from '@providers/transactions';
+import { BalanceDelta } from '@/app/(shared)/components/BalanceDelta';
+import { useTransactionDetails } from '@/app/(core)/providers/transactions';
 import { ParsedMessageAccount, PublicKey, TokenBalance } from '@solana/web3.js';
 import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import { SignatureProps } from '@/app/(shared)/utils/index';
@@ -8,11 +8,11 @@ import { BigNumber } from 'bignumber.js';
 import { useState } from 'react';
 import useAsyncEffect from 'use-async-effect';
 
-import { useScaledUiAmountForMint } from '@/app/providers/accounts/tokens';
-import { useCluster } from '@/app/providers/cluster';
+import { useScaledUiAmountForMint } from '@/app/(core)/providers/accounts/tokens';
+import { useCluster } from '@/app/(core)/providers/cluster';
 import { getTokenInfos } from '@/app/(shared)/utils/token-info';
 
-import ScaledUiAmountMultiplierTooltip from '../account/token-extensions/ScaledUiAmountMultiplierTooltip';
+import ScaledUiAmountMultiplierTooltip from '@/app/(features)/accounts/components/token-extensions/ScaledUiAmountMultiplierTooltip';
 
 type TokenBalanceRow = {
   account: PublicKey;

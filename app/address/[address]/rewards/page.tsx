@@ -1,20 +1,24 @@
-import { RewardsCard } from '@/app/(shared)/components/account/RewardsCard';
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@/app/(shared)/utils/get-readable-title-from-address';
+import { RewardsCard } from '@/app/(features)/accounts/components/RewardsCard';
+import getReadableTitleFromAddress, {
+  AddressPageMetadataProps,
+} from '@/app/(shared)/utils/get-readable-title-from-address';
 import { Metadata } from 'next/types';
 
 type Props = Readonly<{
-  params: {
+  params: Promise<{
     address: string;
-  };
+  }>;
 }>;
 
 export async function generateMetadata(props: AddressPageMetadataProps): Promise<Metadata> {
+  const { address } = await props.params;
   return {
-    description: `Rewards due to the address ${props.params.address} by epoch on Solana`,
+    description: `Rewards due to the address ${address} by epoch on Solana`,
     title: `Address Rewards | ${await getReadableTitleFromAddress(props)} | Solana`,
   };
 }
 
-export default function BlockRewardsPage({ params: { address } }: Props) {
+export default async function BlockRewardsPage({ params }: Props) {
+  const { address } = await params;
   return <RewardsCard address={address} />;
 }

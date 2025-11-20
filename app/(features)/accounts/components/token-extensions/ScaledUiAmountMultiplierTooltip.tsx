@@ -1,4 +1,4 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/app/(shared)/components/shared/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/app/(shared)/components/ui/tooltip';
 import { Info } from 'react-feather';
 
 function ScaledUiAmountMultiplierTooltip({

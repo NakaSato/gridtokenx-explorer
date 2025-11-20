@@ -83,3 +83,10 @@ export function slotsToHumanString(slots: number, slotTimeMs: number): string {
     return `${totalSeconds}s`;
   }
 }
+
+/**
+ * Normalize token amount by dividing by 10^decimals
+ */
+export function normalizeTokenAmount(amount: number | bigint, decimals: number): number {
+  return Number(amount) / Math.pow(10, decimals);
+}

@@ -86,3 +86,8 @@ export function isFeatureEnabled(feature: keyof EnvConfig): boolean {
   const value = envConfig[feature];
   return typeof value === 'boolean' ? value : !!value;
 }
+
+// Environment variable utility
+export function isEnvEnabled(variable: undefined | string) {
+  return variable === 'true';
+}

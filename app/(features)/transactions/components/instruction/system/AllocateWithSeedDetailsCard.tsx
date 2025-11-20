@@ -1,5 +1,5 @@
 import { Address } from '@/app/(shared)/components/common/Address';
-import { Copyable } from '@/app/(shared)/components/common/Copyable';
+import { Copyable } from '@/app/(shared)/components/Copyable';
 import { ParsedInstruction, SignatureResult, SystemProgram } from '@solana/web3.js';
 import React from 'react';
 
@@ -11,7 +11,7 @@ export function AllocateWithSeedDetailsCard(props: {
   index: number;
   result: SignatureResult;
   info: AllocateWithSeedInfo;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
 }) {
   const { ix, index, result, info, innerCards, childIndex } = props;

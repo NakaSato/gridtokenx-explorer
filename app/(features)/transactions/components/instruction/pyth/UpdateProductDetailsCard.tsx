@@ -1,5 +1,5 @@
 import { Address } from '@/app/(shared)/components/common/Address';
-import { Copyable } from '@/app/(shared)/components/common/Copyable';
+import { Copyable } from '@/app/(shared)/components/Copyable';
 import { SignatureResult, TransactionInstruction } from '@solana/web3.js';
 import React from 'react';
 
@@ -18,7 +18,7 @@ export default function UpdateProductDetailsCard({
   index: number;
   result: SignatureResult;
   info: UpdateProductParams;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
 }) {
   const attrsJSON = JSON.stringify(Object.fromEntries(info.attributes), null, 2);

@@ -1,5 +1,5 @@
 'use client';
-import ScaledUiAmountMultiplierTooltip from '@/app/(shared)/components/account/token-extensions/ScaledUiAmountMultiplierTooltip';
+import ScaledUiAmountMultiplierTooltip from '@/app/(features)/accounts/components/token-extensions/ScaledUiAmountMultiplierTooltip';
 import { Address } from '@/app/(shared)/components/common/Address';
 import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
@@ -21,7 +21,7 @@ import { ChevronDown } from 'react-feather';
 
 import { getProxiedUri } from '@/app/features/metadata/utils';
 import TokenLogoPlaceholder from '@/app/img/logos-solana/low-contrast-solana-logo.svg';
-import { normalizeTokenAmount } from '@/app/utils';
+import { normalizeTokenAmount } from '@/app/(shared)/utils/index';
 
 type Display = 'summary' | 'detail' | null;
 
@@ -274,11 +274,7 @@ const DisplayDropdown = ({ display, toggle, show }: DropdownProps) => {
   const DISPLAY_OPTIONS: Display[] = [null, 'detail'];
   return (
     <div className="relative">
-      <button
-        className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
-        type="button"
-        onClick={toggle}
-      >
+      <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100" type="button" onClick={toggle}>
         {display === 'detail' ? 'Detailed' : 'Summary'} <ChevronDown size={15} className="align-text-top" />
       </button>
       <div className={`absolute right-0 mt-2 rounded-md border shadow-lg z-10${show ? 'block' : 'hidden'}`}>

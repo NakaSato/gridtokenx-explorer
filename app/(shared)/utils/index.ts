@@ -62,6 +62,12 @@ export * from './use-debounce-async';
 export * from './use-tab-visibility';
 export * from './verified-builds';
 
+// Add missing exports
+export const INNER_INSTRUCTIONS_START_SLOT = 116970341;
+export function wrap<T>(value: T | null | undefined): T | null {
+  return value || null;
+}
+
 // Feature gate utilities
 export * from './feature-gate/types';
 export * from './feature-gate/utils';

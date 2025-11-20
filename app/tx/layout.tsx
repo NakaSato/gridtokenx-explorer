@@ -1,7 +1,7 @@
-import { TransactionsProvider } from '@providers/transactions';
+import { TransactionsProvider } from '@/app/(core)/providers/transactions';
 import { PropsWithChildren } from 'react';
 
-import { AccountsProvider } from '../providers/accounts';
+import { AccountsProvider } from '@/app/(core)/providers/accounts';
 
 export default function TxLayout({ children }: PropsWithChildren<Record<string, never>>) {
   return (

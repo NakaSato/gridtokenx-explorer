@@ -1,7 +1,7 @@
 import { AddressLookupTableProgram, ParsedInstruction, ParsedTransaction, SignatureResult } from '@solana/web3.js';
 
 import { Address } from '@/app/(shared)/components/common/Address';
-import { InstructionCard } from '@/app/(shared)/components/instruction/InstructionCard';
+import { InstructionCard } from '../InstructionCard';
 
 import { FreezeLookupTableInfo } from './types';
 
@@ -10,7 +10,7 @@ type DetailsProps = {
   index: number;
   result: SignatureResult;
   tx: ParsedTransaction;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
 };
 

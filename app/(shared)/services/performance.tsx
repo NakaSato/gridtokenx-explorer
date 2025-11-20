@@ -43,7 +43,7 @@ class PerformanceMonitor {
     cacheHits: 0,
     cacheMisses: 0,
     errorCount: 0,
-    userInteractions: 0
+    userInteractions: 0,
   };
 
   private alerts: PerformanceAlert[] = [];
@@ -60,21 +60,27 @@ class PerformanceMonitor {
         renderTime: 100, // 100ms
         memoryUsage: 100, // 100MB
         errorRate: 5, // 5%
-        cacheHitRate: 80 // 80%
+        cacheHitRate: 80, // 80%
       },
       enableConsoleLogging: true,
       enableReporting: false,
-      ...options
+      ...options,
     };
 
-    if (this.options.enableTracking && this.shouldSample()) {
+    // Only enable tracking on client-side
+    if (this.options.enableTracking && this.shouldSample() && this.isClientSide()) {
       this.enableTracking();
     }
   }
 
+  // Check if we're on client-side
+  private isClientSide(): boolean {
+    return typeof window !== 'undefined' && typeof window.fetch !== 'undefined';
+  }
+
   // Enable performance tracking
   enableTracking(): void {
-    if (this.isEnabled) return;
+    if (this.isEnabled || !this.isClientSide()) return;
 
     this.isEnabled = true;
     this.setupObservers();
@@ -119,7 +125,7 @@ class PerformanceMonitor {
         threshold: this.options.alertThresholds.renderTime,
         currentValue: renderTime,
         timestamp: new Date(),
-        component: componentName
+        component: componentName,
       });
     }
 
@@ -183,7 +189,7 @@ class PerformanceMonitor {
       type: 'error',
       message: `${error.message}${context ? ` in ${context}` : ''}`,
       timestamp: new Date(),
-      component: context
+      component: context,
     });
     this.logPerformance(`Error tracked: ${error.message}`);
   }
@@ -213,8 +219,8 @@ class PerformanceMonitor {
   private setupObservers(): void {
     if (typeof PerformanceObserver !== 'undefined') {
       // Observer for render performance
-      const renderObserver = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
+      const renderObserver = new PerformanceObserver(list => {
+        list.getEntries().forEach(entry => {
           if (entry.entryType === 'measure' && entry.name.includes('render')) {
             this.metrics.renderTime = (this.metrics.renderTime + entry.duration) / 2;
           }
@@ -225,8 +231,8 @@ class PerformanceMonitor {
       this.observers.push(renderObserver);
 
       // Observer for navigation timing
-      const navigationObserver = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
+      const navigationObserver = new PerformanceObserver(list => {
+        list.getEntries().forEach(entry => {
           if (entry.entryType === 'navigation') {
             this.logPerformance(`Page load time: ${entry.duration.toFixed(2)}ms`);
           }
@@ -255,14 +261,13 @@ class PerformanceMonitor {
       this.metrics.memoryUsage = memoryMB;
 
       // Check threshold
-      if (this.options.alertThresholds?.memoryUsage && 
-          memoryMB > this.options.alertThresholds.memoryUsage) {
+      if (this.options.alertThresholds?.memoryUsage && memoryMB > this.options.alertThresholds.memoryUsage) {
         this.addAlert({
           type: 'warning',
           message: `High memory usage detected`,
           threshold: this.options.alertThresholds.memoryUsage,
           currentValue: memoryMB,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
       }
     }
@@ -270,6 +275,9 @@ class PerformanceMonitor {
 
   // Start network tracking
   private startNetworkTracking(): void {
+    // Only override fetch on client-side
+    if (!this.isClientSide()) return;
+
     // Override fetch to track requests
     const originalFetch = window.fetch;
     window.fetch = async (...args) => {
@@ -293,7 +301,7 @@ class PerformanceMonitor {
   // Add performance alert
   private addAlert(alert: PerformanceAlert): void {
     this.alerts.unshift(alert);
-    
+
     // Keep only last 50 alerts
     if (this.alerts.length > 50) {
       this.alerts = this.alerts.slice(0, 50);
@@ -319,7 +327,7 @@ class PerformanceMonitor {
   }
 }
 
-// Create singleton instance
+// Create singleton instance with SSR protection
 export const performanceMonitor = new PerformanceMonitor();
 
 // React hooks for performance monitoring
@@ -356,15 +364,12 @@ export function usePerformanceMonitor(componentName: string) {
   return {
     trackInteraction,
     getMetrics: () => performanceMonitor.getMetrics(),
-    getAlerts: () => performanceMonitor.getAlerts()
+    getAlerts: () => performanceMonitor.getAlerts(),
   };
 }
 
 // Higher-order component for performance tracking
-export function withPerformanceTracking<P extends object>(
-  Component: React.ComponentType<P>,
-  componentName?: string
-) {
+export function withPerformanceTracking<P extends object>(Component: React.ComponentType<P>, componentName?: string) {
   const WrappedComponent = React.forwardRef<any, P>((props, ref) => {
     const name = componentName || Component.displayName || Component.name || 'Unknown';
     const { trackInteraction } = usePerformanceMonitor(name);
@@ -385,16 +390,12 @@ export function withPerformanceTracking<P extends object>(
   });
 
   WrappedComponent.displayName = `withPerformanceTracking(${componentName || Component.displayName || Component.name})`;
-  
+
   return WrappedComponent;
 }
 
 // Performance utilities
-export const measurePerformance = <T>(
-  name: string,
-  fn: () => T,
-  track = true
-): T => {
+export function measurePerformance<T>(name: string, fn: () => T, track = true): T {
   if (!track) return fn();
 
   const start = performance.now();
@@ -403,14 +404,25 @@ export const measurePerformance = <T>(
 
   console.log(`[Performance] ${name}: ${(end - start).toFixed(2)}ms`);
   return result;
-};
+}
 
-export const createPerformanceReport = (): string => {
+export function createPerformanceReport(): string {
   const metrics = performanceMonitor.getMetrics();
   const alerts = performanceMonitor.getAlerts();
-  
-  return `
-Performance Report - ${new Date().toISOString()}
+
+  const cacheHitRate =
+    metrics.cacheHits + metrics.cacheMisses > 0
+      ? ((metrics.cacheHits / (metrics.cacheHits + metrics.cacheMisses)) * 100).toFixed(2)
+      : 'N/A';
+
+  const recentAlerts = alerts
+    .slice(0, 5)
+    .map(
+      (alert: PerformanceAlert) => `- ${alert.type.toUpperCase()}: ${alert.message} (${alert.timestamp.toISOString()})`,
+    )
+    .join('\n');
+
+  const report = `Performance Report - ${new Date().toISOString()}
 
 Metrics:
 - Render Time: ${metrics.renderTime.toFixed(2)}ms
@@ -422,15 +434,13 @@ Metrics:
 - Error Count: ${metrics.errorCount}
 - User Interactions: ${metrics.userInteractions}
 
-Cache Hit Rate: ${metrics.cacheHits + metrics.cacheMisses > 0 
-    ? ((metrics.cacheHits / (metrics.cacheHits + metrics.cacheMisses)) * 100).toFixed(2)
-    : 'N/A'}%
+Cache Hit Rate: ${cacheHitRate}%
 
 Recent Alerts:
-${alerts.slice(0, 5).map(alert => 
-  `- ${alert.type.toUpperCase()}: ${alert.message} (${alert.timestamp.toISOString()})`
-).join('\n')}
+${recentAlerts}
 
 ---
-  `.trim();
-};
+  `;
+
+  return report.trim();
+}

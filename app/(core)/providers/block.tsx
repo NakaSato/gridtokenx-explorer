@@ -63,6 +63,11 @@ export enum FetchStatus {
   Fetched,
 }
 
+export enum ActionType {
+  Clear,
+  Update,
+}
+
 type Block = {
   block?: VersionedBlockResponseLike;
   blockLeader?: PublicKeyLike;

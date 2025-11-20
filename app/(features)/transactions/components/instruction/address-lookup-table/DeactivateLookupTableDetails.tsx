@@ -1,8 +1,8 @@
 import { AddressLookupTableProgram } from '@solana/web3.js';
 
 import { Address } from '@/app/(shared)/components/common/Address';
-import { InstructionCard } from '@/app/(shared)/components/instruction/InstructionCard';
-import { InstructionDetailsProps } from '@/app/(shared)/components/transaction/InstructionsSection';
+import { InstructionCard } from '../InstructionCard';
+import { InstructionDetailsProps } from '../../InstructionsSection';
 
 import { DeactivateLookupTableInfo } from './types';
 

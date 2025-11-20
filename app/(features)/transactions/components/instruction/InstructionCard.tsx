@@ -1,5 +1,5 @@
-import { BaseInstructionCard } from '@/app/(shared)/components/common/BaseInstructionCard';
-import { useFetchRawTransaction, useRawTransactionDetails } from '@providers/transactions/raw';
+import { BaseInstructionCard } from '@/app/(shared)/components/BaseInstructionCard';
+import { useFetchRawTransaction, useRawTransactionDetails } from '@/app/(core)/providers/transactions/raw';
 import { ParsedInstruction, SignatureResult, TransactionInstruction } from '@solana/web3.js';
 import React, { useCallback, useContext } from 'react';
 
@@ -12,7 +12,7 @@ type InstructionProps = {
   index: number;
   ix: TransactionInstruction | ParsedInstruction;
   defaultRaw?: boolean;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   childIndex?: number;
 };
 

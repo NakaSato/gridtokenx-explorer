@@ -3,29 +3,36 @@
 import { Address } from '@/app/(shared)/components/common/Address';
 import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
-import { Signature } from '@/app/(shared)/components/common/Signature';
+// import { Signature } from '@/app/(shared)/components/common/Signature';
 import { Slot } from '@/app/(shared)/components/common/Slot';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/shared/ui/card';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/app/(shared)/components/shared/ui/dropdown-menu';
-import { isMangoInstruction, parseMangoInstructionTitle } from '@/app/(shared)/components/instruction/mango/types';
-import { isSerumInstruction, parseSerumInstructionTitle } from '@/app/(shared)/components/instruction/serum/types';
-import {
-  isTokenLendingInstruction,
-  parseTokenLendingInstructionTitle,
-} from '@/app/(shared)/components/instruction/token-lending/types';
-import { isTokenSwapInstruction, parseTokenSwapInstructionTitle } from '@/app/(shared)/components/instruction/token-swap/types';
+} from '@/app/(shared)/components/ui/dropdown-menu';
+// import { isMangoInstruction, parseMangoInstructionTitle } from '@/app/(shared)/components/instruction/mango/types';
+// import { isSerumInstruction, parseSerumInstructionTitle } from '@/app/(shared)/components/instruction/serum/types';
+// import {
+//   isTokenLendingInstruction,
+//   parseTokenLendingInstructionTitle,
+// } from '@/app/(shared)/components/instruction/token-lending/types';
+// import {
+//   isTokenSwapInstruction,
+//   parseTokenSwapInstructionTitle,
+// } from '@/app/(shared)/components/instruction/token-swap/types';
 import { isTokenProgramData } from '@/app/(core)/providers/accounts';
 import { useAccountHistories, useFetchAccountHistory } from '@/app/(core)/providers/accounts/history';
 import { isTokenProgramId, TokenInfoWithPubkey, useAccountOwnedTokens } from '@/app/(core)/providers/accounts/tokens';
 import { CacheEntry, FetchStatus } from '@/app/(core)/providers/cache';
 import { useCluster } from '@/app/(core)/providers/cluster';
-import { Details, useFetchTransactionDetails, useTransactionDetailsCache } from '@providers/transactions/parsed';
+import {
+  Details,
+  useFetchTransactionDetails,
+  useTransactionDetailsCache,
+} from '@/app/(core)/providers/transactions/parsed';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { ConfirmedSignatureInfo, ParsedInstruction, PartiallyDecodedInstruction, PublicKey } from '@solana/web3.js';
 import { Cluster } from '@/app/(shared)/utils/cluster';
@@ -371,7 +378,7 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
         </td>
 
         <td>
-          <Signature signature={tx.signature} link />
+          <span className="font-mono text-xs">{tx.signature.slice(0, 8)}...</span>
         </td>
       </tr>
     );
@@ -400,7 +407,7 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
 
         let transactionInstruction;
         if (transactionWithMeta?.transaction) {
-          transactionInstruction = intoTransactionInstruction(transactionWithMeta.transaction, ix);
+          transactionInstruction = intoTransactionInstruction(transactionWithMeta.transaction as any, ix);
         }
 
         if ('parsed' in ix) {
@@ -409,36 +416,8 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
           } else {
             return undefined;
           }
-        } else if (transactionInstruction && isSerumInstruction(transactionInstruction)) {
-          try {
-            name = parseSerumInstructionTitle(transactionInstruction);
-          } catch (error) {
-            console.error(error, { signature: tx.signature });
-            return undefined;
-          }
-        } else if (transactionInstruction && isTokenSwapInstruction(transactionInstruction)) {
-          try {
-            name = parseTokenSwapInstructionTitle(transactionInstruction);
-          } catch (error) {
-            console.error(error, { signature: tx.signature });
-            return undefined;
-          }
-        } else if (transactionInstruction && isTokenLendingInstruction(transactionInstruction)) {
-          try {
-            name = parseTokenLendingInstructionTitle(transactionInstruction);
-          } catch (error) {
-            console.error(error, { signature: tx.signature });
-            return undefined;
-          }
-        } else if (transactionInstruction && isMangoInstruction(transactionInstruction)) {
-          try {
-            name = parseMangoInstructionTitle(transactionInstruction);
-          } catch (error) {
-            console.error(error, { signature: tx.signature });
-            return undefined;
-          }
         } else {
-          if (ix.accounts.findIndex(account => isTokenProgramId(account)) >= 0) {
+          if (ix.accounts.findIndex((account: any) => isTokenProgramId(account)) >= 0) {
             name = 'Unknown (Inner)';
           } else {
             return undefined;
@@ -450,7 +429,7 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
           name,
         };
       })
-      .filter(name => name !== undefined) as InstructionType[];
+      .filter((name: any) => name !== undefined) as InstructionType[];
   }
 
   return (
@@ -477,7 +456,7 @@ const TokenTransactionRow = React.memo(function TokenTransactionRow({
             </td>
 
             <td className="forced-truncate">
-              <Signature signature={tx.signature} link truncate />
+              <span className="font-mono text-xs">{tx.signature.slice(0, 8)}...</span>
             </td>
           </tr>
         );

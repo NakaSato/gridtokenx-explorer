@@ -1,5 +1,7 @@
-import { FeatureGateCard } from '@/app/(shared)/components/account/FeatureGateCard';
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@/app/(shared)/utils/get-readable-title-from-address';
+import { FeatureGateCard } from '@/app/(features)/accounts/components/FeatureGateCard';
+import getReadableTitleFromAddress, {
+  AddressPageMetadataProps,
+} from '@/app/(shared)/utils/get-readable-title-from-address';
 import { Metadata } from 'next/types';
 import ReactMarkdown from 'react-markdown';
 import remarkFrontmatter from 'remark-frontmatter';

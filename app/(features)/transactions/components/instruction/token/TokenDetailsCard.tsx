@@ -7,14 +7,14 @@ import React from 'react';
 import { create } from 'superstruct';
 import useSWR from 'swr';
 
-import { useCluster } from '@/app/providers/cluster';
-import { Cluster } from '@/app/utils/cluster';
-import { TOKEN_IDS } from '@/app/utils/programs';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { Cluster } from '@/app/(shared)/utils/cluster';
+import { TOKEN_IDS } from '@/app/(shared)/utils/programs';
 import { getTokenInfo, getTokenInfoSwrKey } from '@/app/(shared)/utils/token-info';
 
 import { InstructionCard } from '../InstructionCard';
 import { IX_STRUCTS, IX_TITLES, TokenAmountUi, TokenInstructionType } from './types';
-import { toAddress, addressToPublicKey } from '@/app/utils/rpc';
+import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 
 type DetailsProps = {
   tx: ParsedTransaction;

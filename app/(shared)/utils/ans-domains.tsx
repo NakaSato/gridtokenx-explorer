@@ -1,3 +1,5 @@
+'use client';
+
 import { NameRecordHeader, TldParser } from '@onsol/tldparser';
 import { Connection } from '@solana/web3.js';
 import pLimit from 'p-limit';

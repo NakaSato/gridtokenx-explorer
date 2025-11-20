@@ -27,9 +27,9 @@ import {
 } from 'lighthouse-sdk';
 import React from 'react';
 
-import { camelToTitleCase } from '@/app/utils';
+import { camelToTitleCase } from '@/app/(shared)/utils/index';
 
-import { Address } from '../../common/Address';
+import { Address } from '@/app/(shared)/components/common/Address';
 import { upcastTransactionInstruction } from '../../inspector/into-parsed-data';
 import { mapCodamaIxArgsToRows } from '../codama/codamaUtils';
 import { InstructionCard } from '../InstructionCard';

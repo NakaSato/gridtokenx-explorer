@@ -1,7 +1,7 @@
 import { ConfirmedSignatureInfo, TransactionError } from '@solana/web3.js';
 import React from 'react';
 import { RefreshCw } from 'react-feather';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
+import { Button } from '@/app/(shared)/components/ui/button';
 
 export type TransactionRow = {
   slot: number;

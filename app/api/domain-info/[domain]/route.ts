@@ -1,8 +1,8 @@
 import { Connection } from '@solana/web3.js';
 import { NextResponse } from 'next/server';
 
-import { MAINNET_BETA_URL } from '@/app/utils/cluster';
-import { getANSDomainInfo, getDomainInfo } from '@/app/utils/domain-info';
+import { MAINNET_BETA_URL } from '@/app/(shared)/utils/cluster';
+import { getANSDomainInfo, getDomainInfo } from '@/app/(shared)/utils/domain-info';
 
 type Params = {
   params: {

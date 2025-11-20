@@ -1,5 +1,5 @@
 import { Address } from '@/app/(shared)/components/common/Address';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
 import { Account } from '@/app/(core)/providers/accounts';
 import { useCluster } from '@/app/(core)/providers/cluster';

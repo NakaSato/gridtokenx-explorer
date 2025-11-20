@@ -3,9 +3,9 @@ import React from 'react';
 import { CornerDownRight } from 'react-feather';
 
 import { Address } from '@/app/(shared)/components/common/Address';
-import { ExpandableRow } from '@/app/utils/anchor';
+import { ExpandableRow } from '@/app/(shared)/utils/anchor';
 
-import { Copyable } from '../../common/Copyable';
+import { Copyable } from '@/app/(shared)/components/Copyable';
 
 export function mapCodamaIxArgsToRows(data: any, nestingLevel = 0) {
   return Object.entries(data).map(([key, value], index) => {
