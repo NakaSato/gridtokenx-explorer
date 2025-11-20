@@ -1,9 +1,9 @@
 import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/shared/ui/card';
-import { Status, useFetchSupply, useSupply } from '@providers/supply';
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
+import { Status, useFetchSupply, useSupply } from '@/app/(core)/providers/supply';
 import React from 'react';
 
 export function SupplyCard() {

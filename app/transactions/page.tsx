@@ -5,12 +5,15 @@ export const dynamic = 'force-dynamic';
 import React, { Suspense } from 'react';
 import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
-import { AnchorDeveloperTools } from '@/app/(shared)/components/transaction/AnchorDeveloperTools';
-import { TransactionAnalytics } from '@/app/(shared)/components/transaction/TransactionAnalytics';
-import { ProgramMonitorCard } from '@/app/(shared)/components/transaction/ProgramMonitorCard';
-import { RealtimeTransactionTable, Transaction } from '@/app/(shared)/components/transaction/RealtimeTransactionTable';
-import { TransactionDetailsCard } from '@/app/(shared)/components/transaction/TransactionDetailsCard';
-import { MonitoringGuideCard } from '@/app/(shared)/components/transaction/MonitoringGuideCard';
+import { AnchorDeveloperTools } from '@/app/(features)/transactions/components/AnchorDeveloperTools';
+import { TransactionAnalytics } from '@/app/(features)/transactions/components/TransactionAnalytics';
+import { ProgramMonitorCard } from '@/app/(features)/transactions/components/ProgramMonitorCard';
+import {
+  RealtimeTransactionTable,
+  Transaction,
+} from '@/app/(features)/transactions/components/RealtimeTransactionTable';
+import { TransactionDetailsCard } from '@/app/(features)/transactions/components/TransactionDetailsCard';
+import { MonitoringGuideCard } from '@/app/(features)/transactions/components/MonitoringGuideCard';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { ClusterStatus } from '@/app/(shared)/utils/cluster';
 import { createSolanaRpc } from '@solana/kit';
@@ -56,11 +59,12 @@ export default function RealtimeTransactionsPage() {
         // Solana blockTime is in seconds, but we store as number for compatibility
         let blockTime: number | null = null;
         if (sig.blockTime !== null && sig.blockTime !== undefined) {
-          blockTime = typeof sig.blockTime === 'bigint' 
-            ? Number(sig.blockTime) 
-            : typeof sig.blockTime === 'number'
-              ? sig.blockTime
-              : null;
+          blockTime =
+            typeof sig.blockTime === 'bigint'
+              ? Number(sig.blockTime)
+              : typeof sig.blockTime === 'number'
+                ? sig.blockTime
+                : null;
         }
 
         return {
@@ -77,24 +81,30 @@ export default function RealtimeTransactionsPage() {
       if (customProgramId) {
         try {
           const programAddress = toAddress(customProgramId);
-          const kitSignatures = await rpc.getSignaturesForAddress(programAddress, {
-            limit: MAX_TRANSACTIONS,
-          }).send();
+          const kitSignatures = await rpc
+            .getSignaturesForAddress(programAddress, {
+              limit: MAX_TRANSACTIONS,
+            })
+            .send();
           signatures = kitSignatures.map(convertSignature);
         } catch (err) {
           console.error('Invalid program ID, falling back to system program');
           const systemProgramId = toAddress('11111111111111111111111111111111');
-          const kitSignatures = await rpc.getSignaturesForAddress(systemProgramId, {
-            limit: MAX_TRANSACTIONS,
-          }).send();
+          const kitSignatures = await rpc
+            .getSignaturesForAddress(systemProgramId, {
+              limit: MAX_TRANSACTIONS,
+            })
+            .send();
           signatures = kitSignatures.map(convertSignature);
         }
       } else {
         // Get signatures from a well-known program to ensure we get recent activity
         const systemProgramId = toAddress('11111111111111111111111111111111');
-        const kitSignatures = await rpc.getSignaturesForAddress(systemProgramId, {
-          limit: MAX_TRANSACTIONS,
-        }).send();
+        const kitSignatures = await rpc
+          .getSignaturesForAddress(systemProgramId, {
+            limit: MAX_TRANSACTIONS,
+          })
+          .send();
         signatures = kitSignatures.map(convertSignature);
       }
 
@@ -104,7 +114,8 @@ export default function RealtimeTransactionsPage() {
       setConnectionErrorCount(0); // Reset error count on success
     } catch (err) {
       const isConnectionError = err instanceof TypeError && err.message.includes('fetch');
-      const isNetworkError = err instanceof Error && (err.message.includes('ECONNREFUSED') || err.message.includes('network'));
+      const isNetworkError =
+        err instanceof Error && (err.message.includes('ECONNREFUSED') || err.message.includes('network'));
 
       // Increment error count for connection/network errors
       if (isConnectionError || isNetworkError) {
@@ -116,11 +127,12 @@ export default function RealtimeTransactionsPage() {
         console.error('Error fetching transactions:', err);
       }
 
-      const errorMessage = isConnectionError || isNetworkError
-        ? 'Cannot connect to RPC endpoint. Please check your cluster settings or ensure a local validator is running.'
-        : err instanceof Error
-          ? err.message
-          : 'Failed to fetch transactions';
+      const errorMessage =
+        isConnectionError || isNetworkError
+          ? 'Cannot connect to RPC endpoint. Please check your cluster settings or ensure a local validator is running.'
+          : err instanceof Error
+            ? err.message
+            : 'Failed to fetch transactions';
       setError(errorMessage);
       setLoading(false);
     }
@@ -174,7 +186,7 @@ export default function RealtimeTransactionsPage() {
           if (details.transaction?.message?.accountKeys) {
             const keys = details.transaction.message.accountKeys;
             keys.forEach((key: any) => {
-              const keyStr = typeof key === 'string' ? key : (key.pubkey?.toBase58() || key.toBase58());
+              const keyStr = typeof key === 'string' ? key : key.pubkey?.toBase58() || key.toBase58();
               accountKeys.push(keyStr);
             });
           }

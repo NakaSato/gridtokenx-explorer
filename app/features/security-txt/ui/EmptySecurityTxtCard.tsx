@@ -1,4 +1,4 @@
-import { Copyable } from '@/app/(shared)/components/common/Copyable';
+import { Copyable } from '@/app/(shared)/components/Copyable';
 
 import { NO_SECURITY_TXT_ERROR } from '../lib/constants';
 

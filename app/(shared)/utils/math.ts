@@ -62,3 +62,24 @@ export function snakeToTitleCase(str: string): string {
 export function numberWithSeparator(value: string): string {
   return value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
+
+/**
+ * Convert slots to human-readable time string
+ */
+export function slotsToHumanString(slots: number, slotTimeMs: number): string {
+  const totalMs = slots * slotTimeMs;
+  const totalSeconds = Math.floor(totalMs / 1000);
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const totalDays = Math.floor(totalHours / 24);
+
+  if (totalDays > 0) {
+    return `${totalDays}d ${totalHours % 24}h`;
+  } else if (totalHours > 0) {
+    return `${totalHours}h ${totalMinutes % 60}m`;
+  } else if (totalMinutes > 0) {
+    return `${totalMinutes}m ${totalSeconds % 60}s`;
+  } else {
+    return `${totalSeconds}s`;
+  }
+}

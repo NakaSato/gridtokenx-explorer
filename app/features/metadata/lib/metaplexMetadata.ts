@@ -1,4 +1,4 @@
-import { isTokenProgramData, type NFTData, type ParsedData } from '@/app/providers/accounts';
+import { isTokenProgramData, type NFTData, type ParsedData } from '@/app/(core)/providers/accounts';
 
 export function extractMetaplexMetadata(parsedData: ParsedData): NFTData['metadata'] | undefined {
   if (!isTokenProgramData(parsedData)) return undefined;

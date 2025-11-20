@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/(shared)/components/shared/ui/card';
-import { Input } from '@/app/(shared)/components/shared/ui/input';
-import { Alert, AlertDescription } from '@/app/(shared)/components/shared/ui/alert';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
+import { Input } from '@/app/(shared)/components/ui/input';
+import { Alert, AlertDescription } from '@/app/(shared)/components/ui/alert';
 import React from 'react';
 
 interface ProgramMonitorCardProps {

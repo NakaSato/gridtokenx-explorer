@@ -1,25 +1,25 @@
 import { Address } from '@/app/(shared)/components/common/Address';
 import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
-import { Badge } from '@/app/(shared)/components/shared/ui/badge';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/shared/ui/card';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
+import { Badge } from '@/app/(shared)/components/ui/badge';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/app/(shared)/components/shared/ui/dropdown-menu';
-import { Status, useFetchRichList, useRichList } from '@providers/richList';
-import { useSupply } from '@providers/supply';
+} from '@/app/(shared)/components/ui/dropdown-menu';
+import { Status, useFetchRichList, useRichList } from '@/app/(core)/providers/richList';
+import { useSupply } from '@/app/(core)/providers/supply';
 import { AccountBalancePair } from '@solana/web3.js';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
 
-import { percentage } from '../utils/math';
+import { percentage } from '@/app/(shared)/utils/math';
 
 type Filter = 'circulating' | 'nonCirculating' | 'all' | null;
 

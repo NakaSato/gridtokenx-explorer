@@ -1,18 +1,18 @@
 'use client';
 
-import { Address } from '@/app/(shared)/components/common/Address';
-import { BalanceDelta } from '@/app/(shared)/components/common/BalanceDelta';
-import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
-import { InfoTooltip } from '@/app/(shared)/components/common/InfoTooltip';
-import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
-import { Signature } from '@/app/(shared)/components/common/Signature';
-import { Slot } from '@/app/(shared)/components/common/Slot';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
-import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
-import { SignatureContext } from '@/app/(shared)/components/instruction/SignatureContext';
-import { InstructionsSection } from '@/app/(shared)/components/transaction/InstructionsSection';
-import { ProgramLogSection } from '@/app/(shared)/components/transaction/ProgramLogSection';
-import { TokenBalancesCard } from '@/app/(shared)/components/transaction/TokenBalancesCard';
+import { Address } from '@/app/(shared)/components/Address';
+import { BalanceDelta } from '@/app/(shared)/components/BalanceDelta';
+import { ErrorCard } from '@/app/(shared)/components/ErrorCard';
+import { InfoTooltip } from '@/app/(shared)/components/InfoTooltip';
+import { LoadingCard } from '@/app/(shared)/components/LoadingCard';
+import { Signature } from '@/app/(shared)/components/Signature';
+import { Slot } from '@/app/(shared)/components/Slot';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
+import { TableCardBody } from '@/app/(shared)/components/TableCardBody';
+import { SignatureContext } from '@/app/(features)/transactions/components/instruction/SignatureContext';
+import { InstructionsSection } from '@/app/(features)/transactions/components/InstructionsSection';
+import { ProgramLogSection } from '@/app/(features)/transactions/components/ProgramLogSection';
+import { TokenBalancesCard } from '@/app/(features)/transactions/components/TokenBalancesCard';
 import { FetchStatus } from '@/app/(core)/providers/cache';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import {
@@ -20,8 +20,8 @@ import {
   useFetchTransactionStatus,
   useTransactionDetails,
   useTransactionStatus,
-} from '@providers/transactions';
-import { useFetchTransactionDetails } from '@providers/transactions/parsed';
+} from '@/app/(core)/providers/transactions';
+import { useFetchTransactionDetails } from '@/app/(core)/providers/transactions/parsed';
 import { ParsedTransaction, SystemInstruction, SystemProgram, TransactionSignature } from '@solana/web3.js';
 import { Cluster, ClusterStatus } from '@/app/(shared)/utils/cluster';
 import { displayTimestamp } from '@/app/(shared)/utils/date';
@@ -237,10 +237,7 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
     <div className="bg-card rounded-lg border shadow-sm">
       <div className="flex items-center border-b px-6 py-4">
         <h3 className="text-lg font-semibold">Overview</h3>
-        <Link
-          className="mr-2 rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
-          href={inspectPath}
-        >
+        <Link className="mr-2 rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100" href={inspectPath}>
           <Settings className="mr-2 align-text-top" size={13} />
           Inspect
         </Link>

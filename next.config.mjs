@@ -69,7 +69,9 @@ const nextConfig = {
           Buffer: ['buffer', 'Buffer'],
           process: 'process/browser',
         }),
-      ); // For client-side, make all problematic packages external to prevent bundling Node.js modules
+      );
+
+      // For client-side, make all problematic packages external to prevent bundling Node.js modules
       config.externals = config.externals || [];
       config.externals.push({
         // Anchor packages that use Node.js modules
@@ -103,6 +105,22 @@ const nextConfig = {
         crypto: 'crypto',
         util: 'util',
         stream: 'stream',
+      });
+
+      // Additional webpack config to prevent bundling of these packages
+      config.module = config.module || {};
+      config.module.rules = config.module.rules || [];
+
+      // Add rule to exclude problematic packages from client bundle
+      config.module.rules.push({
+        test: /\.(js|ts|tsx)$/,
+        include: [
+          /node_modules\/@project-serum\/serum/,
+          /node_modules\/@project-serum\/anchor/,
+          /node_modules\/@coral-xyz\/anchor/,
+          /node_modules\/@blockworks-foundation\/mango-client/,
+        ],
+        use: 'null-loader',
       });
     }
 

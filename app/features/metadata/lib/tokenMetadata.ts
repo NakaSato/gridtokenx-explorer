@@ -1,4 +1,4 @@
-import { isTokenProgramData, type ParsedData } from '@/app/providers/accounts';
+import { isTokenProgramData, type ParsedData } from '@/app/(core)/providers/accounts';
 import type { TokenExtension } from '@/app/validators/accounts/token-extension';
 
 export function extractTokenMetadata(parsedData: ParsedData): Record<string, unknown> | undefined {

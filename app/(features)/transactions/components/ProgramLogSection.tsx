@@ -1,7 +1,7 @@
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
-import { ProgramLogsCardBody } from '@/app/(shared)/components/ProgramLogsCardBody';
+import { ProgramLogsCardBody } from '@/app/components/ProgramLogsCardBody';
 import { useCluster } from '@/app/(core)/providers/cluster';
-import { useTransactionDetails } from '@providers/transactions';
+import { useTransactionDetails } from '@/app/(core)/providers/transactions';
 import { SignatureProps } from '@/app/(shared)/utils/index';
 import { parseProgramLogs } from '@/app/(shared)/utils/program-logs';
 import React from 'react';

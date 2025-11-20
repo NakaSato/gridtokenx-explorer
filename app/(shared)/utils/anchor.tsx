@@ -1,3 +1,5 @@
+'use client';
+
 import { Address } from '@/app/(shared)/components/Address';
 import { SolarizedJsonViewer as ReactJson } from '@/app/(shared)/components/JsonViewer';
 import { BorshInstructionCoder, Idl, Program } from '@coral-xyz/anchor';
@@ -5,6 +7,7 @@ import { IdlDefinedFields } from '@coral-xyz/anchor/dist/cjs/idl';
 import { IdlField, IdlInstruction, IdlType, IdlTypeDef } from '@coral-xyz/anchor/dist/cjs/idl';
 import { useAnchorProgram } from '@/app/(core)/providers/anchor';
 import { PublicKey, TransactionInstruction } from '@solana/web3.js';
+
 import { Cluster } from '@/app/(shared)/utils/cluster';
 import { camelToTitleCase, numberWithSeparator, snakeToTitleCase } from '@/app/(shared)/utils';
 import React, { Fragment, ReactNode, useState } from 'react';

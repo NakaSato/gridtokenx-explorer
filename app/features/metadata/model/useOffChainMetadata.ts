@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 
-import { useCluster } from '@/app/providers/cluster';
+import { useCluster } from '@/app/(core)/providers/cluster';
 import { useMetadataJsonLink } from '@/app/(core)/providers/compressed-nft';
 import { useCompressedNft as useAsset } from '@/app/(core)/providers/compressed-nft';
 

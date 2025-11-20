@@ -80,13 +80,23 @@ export class LegacyAdapter {
    * @returns Anchor Program instance
    */
   async getAnchorProgram<T = any>(programId: Address | string, idl: any): Promise<any> {
-    // Note: Import Anchor dynamically to avoid SSR issues
-    const { Program, AnchorProvider } = await import('@coral-xyz/anchor');
-    const { Wallet: ServerWallet } = await import('@coral-xyz/anchor/dist/cjs/nodewallet');
+    // Check if we're in a browser environment for client-side usage
+    if (typeof window === 'undefined') {
+      throw new Error('Anchor programs can only be used in browser environment');
+    }
 
-    const provider = new AnchorProvider(this.connection, new ServerWallet(), {});
-    const pubkey = this.toPublicKey(programId);
-    return new Program(idl, pubkey, provider);
+    try {
+      // Note: Import Anchor dynamically to avoid SSR issues
+      const { Program, AnchorProvider } = await import('@coral-xyz/anchor');
+      const { Wallet: ServerWallet } = await import('@coral-xyz/anchor/dist/cjs/nodewallet');
+
+      const provider = new AnchorProvider(this.connection, new ServerWallet(), {});
+      const pubkey = this.toPublicKey(programId);
+      return new Program(idl, pubkey, provider);
+    } catch (error) {
+      console.error('Failed to load Anchor program:', error);
+      throw new Error('Anchor is not available in this environment');
+    }
   }
 
   /**

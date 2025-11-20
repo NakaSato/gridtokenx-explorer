@@ -1,7 +1,7 @@
 'use client';
 
-import { Alert, AlertDescription } from '@/app/(shared)/components/shared/ui/alert';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/(shared)/components/shared/ui/card';
+import { Alert, AlertDescription } from '@/app/(shared)/components/ui/alert';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import React from 'react';
 
 export function MonitoringGuideCard() {

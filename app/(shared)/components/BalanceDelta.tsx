@@ -1,4 +1,4 @@
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { BigNumber } from 'bignumber.js';
 import React from 'react';
 

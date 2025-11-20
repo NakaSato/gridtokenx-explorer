@@ -1,13 +1,13 @@
 'use client';
 
-import { Badge } from '@/app/(shared)/components/shared/ui/badge';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/(shared)/components/shared/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/shared/ui/table';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/(shared)/components/shared/ui/tooltip';
-import { Signature } from '@/app/(shared)/components/common/Signature';
-import { Slot } from '@/app/(shared)/components/common/Slot';
-import { TimestampToggle } from '@/app/(shared)/components/common/TimestampToggle';
+import { Badge } from '@/app/(shared)/components/ui/badge';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/(shared)/components/ui/tooltip';
+import { Signature } from '@/app/(shared)/components/Signature';
+import { Slot } from '@/app/(shared)/components/Slot';
+import { TimestampToggle } from '@/app/(shared)/components/TimestampToggle';
 import { PlayIcon, PauseIcon, UpdateIcon } from '@radix-ui/react-icons';
 
 /**
@@ -58,7 +58,7 @@ export function RealtimeTransactionTable({
 }: RealtimeTransactionTableProps) {
   return (
     <Card>
-      <CardHeader className="space-y-4 bg-gradient-to-r from-background to-muted/20">
+      <CardHeader className="from-background to-muted/20 space-y-4 bg-gradient-to-r">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-3">
@@ -101,28 +101,30 @@ export function RealtimeTransactionTable({
               {lastSlot && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="group relative flex items-center justify-between gap-3 rounded-xl border bg-gradient-to-r from-background/80 to-background/60 px-4 py-3 text-sm shadow-lg backdrop-blur-md transition-all duration-300 hover:from-background hover:to-background/90 hover:shadow-xl hover:border-primary/20 hover:scale-[1.02] min-w-[200px]">
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                      <div className="relative flex items-center gap-3 flex-1">
-                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                          <UpdateIcon className="h-4 w-4 text-primary group-hover:rotate-180 transition-transform duration-500" />
+                    <div className="group from-background/80 to-background/60 hover:from-background hover:to-background/90 hover:border-primary/20 relative flex min-w-[200px] items-center justify-between gap-3 rounded-xl border bg-gradient-to-r px-4 py-3 text-sm shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
+                      <div className="from-primary/5 absolute inset-0 rounded-xl bg-gradient-to-r to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                      <div className="relative flex flex-1 items-center gap-3">
+                        <div className="bg-primary/10 group-hover:bg-primary/20 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-colors">
+                          <UpdateIcon className="text-primary h-4 w-4 transition-transform duration-500 group-hover:rotate-180" />
                         </div>
-                        <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide whitespace-nowrap">Current Slot</span>
-                          <div className="font-mono font-semibold text-foreground truncate">
+                        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                          <span className="text-muted-foreground text-xs font-medium tracking-wide whitespace-nowrap uppercase">
+                            Current Slot
+                          </span>
+                          <div className="text-foreground truncate font-mono font-semibold">
                             <Slot slot={lastSlot} link />
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center flex-shrink-0">
-                        <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse opacity-75" />
+                      <div className="flex flex-shrink-0 items-center">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-green-500 opacity-75" />
                       </div>
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-popover/95 backdrop-blur-sm border-primary/20">
+                  <TooltipContent side="bottom" className="bg-popover/95 border-primary/20 backdrop-blur-sm">
                     <div className="flex flex-col gap-1">
                       <p className="font-medium">Latest blockchain slot</p>
-                      <p className="text-xs text-muted-foreground">Slot {lastSlot.toLocaleString()}</p>
+                      <p className="text-muted-foreground text-xs">Slot {lastSlot.toLocaleString()}</p>
                     </div>
                   </TooltipContent>
                 </Tooltip>

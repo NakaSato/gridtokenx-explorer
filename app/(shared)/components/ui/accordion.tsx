@@ -2,7 +2,7 @@ import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import * as React from 'react';
 import { ChevronDown } from 'react-feather';
 
-import { cn } from '@/app/(shared)/components/shared/utils';
+import { cn } from '@/app/(shared)/utils';
 
 const Accordion = AccordionPrimitive.Root;
 

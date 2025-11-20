@@ -2,8 +2,8 @@
 
 import { VersionedTransactionResponse } from '@solana/web3.js';
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/shared/ui/card';
-import { Badge } from '@/app/(shared)/components/shared/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
+import { Badge } from '@/app/(shared)/components/ui/badge';
 
 interface TransactionAnalyticsProps {
   transactions: Array<{

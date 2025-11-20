@@ -5,8 +5,10 @@
 
 // Dynamic import wrapper to prevent SSR evaluation
 let serumModule: any = null;
+let decodeInstruction: any = null;
+let markets: any = null;
 
-export async function getSerumModule() {
+async function loadSerumModule() {
   if (typeof window === 'undefined') {
     // Return null on server-side
     return null;
@@ -14,8 +16,14 @@ export async function getSerumModule() {
 
   if (!serumModule) {
     serumModule = await import('@project-serum/serum');
+    decodeInstruction = serumModule.decodeInstruction;
+    markets = serumModule.MARKETS;
   }
   return serumModule;
+}
+
+export async function getSerumModule() {
+  return await loadSerumModule();
 }
 
 // Synchronous access (assumes module is already loaded or we're on client)
@@ -23,14 +31,22 @@ export function getDecodeInstruction() {
   if (typeof window === 'undefined') {
     throw new Error('Serum decodeInstruction can only be used on the client');
   }
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  return require('@project-serum/serum').decodeInstruction;
+
+  if (!decodeInstruction) {
+    throw new Error('Serum module not loaded. Call getSerumModule() first.');
+  }
+
+  return decodeInstruction;
 }
 
 export function getMarkets() {
   if (typeof window === 'undefined') {
     return [];
   }
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  return require('@project-serum/serum').MARKETS;
+
+  if (!markets) {
+    throw new Error('Serum module not loaded. Call getSerumModule() first.');
+  }
+
+  return markets;
 }

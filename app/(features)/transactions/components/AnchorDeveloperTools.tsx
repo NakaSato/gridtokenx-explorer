@@ -3,10 +3,10 @@
 import { Idl } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import React from 'react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/app/(shared)/components/shared/ui/accordion';
-import { Badge } from '@/app/(shared)/components/shared/ui/badge';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardContent, CardHeader } from '@/app/(shared)/components/shared/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/app/(shared)/components/ui/accordion';
+import { Badge } from '@/app/(shared)/components/ui/badge';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/app/(shared)/components/ui/card';
 
 interface AnchorDeveloperToolsProps {
   programId: string;

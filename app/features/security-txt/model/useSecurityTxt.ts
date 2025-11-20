@@ -1,7 +1,7 @@
 'use client';
 
 import { useProgramMetadataSecurityTxt } from '@/app/entities/program-metadata';
-import { useCluster } from '@/app/providers/cluster';
+import { useCluster } from '@/app/(core)/providers/cluster';
 import type { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeable-program';
 
 import { fromProgramData } from '../lib/fromProgramData';

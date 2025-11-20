@@ -2,11 +2,11 @@ import { useCluster } from '@/app/(core)/providers/cluster';
 import React from 'react';
 import { create } from 'superstruct';
 
-import { CloseLookupTableDetailsCard } from '@/app/(shared)/components/instruction/address-lookup-table/CloseLookupTableDetails';
-import { CreateLookupTableDetailsCard } from '@/app/(shared)/components/instruction/address-lookup-table/CreateLookupTableDetails';
-import { DeactivateLookupTableDetailsCard } from '@/app/(shared)/components/instruction/address-lookup-table/DeactivateLookupTableDetails';
-import { ExtendLookupTableDetailsCard } from '@/app/(shared)/components/instruction/address-lookup-table/ExtendLookupTableDetails';
-import { FreezeLookupTableDetailsCard } from '@/app/(shared)/components/instruction/address-lookup-table/FreezeLookupTableDetails';
+import { CloseLookupTableDetailsCard } from './address-lookup-table/CloseLookupTableDetails';
+import { CreateLookupTableDetailsCard } from './address-lookup-table/CreateLookupTableDetails';
+import { DeactivateLookupTableDetailsCard } from './address-lookup-table/DeactivateLookupTableDetails';
+import { ExtendLookupTableDetailsCard } from './address-lookup-table/ExtendLookupTableDetails';
+import { FreezeLookupTableDetailsCard } from './address-lookup-table/FreezeLookupTableDetails';
 import {
   AddressLookupTableInstructionInfo,
   CloseLookupTableInfo,
@@ -14,9 +14,9 @@ import {
   DeactivateLookupTableInfo,
   ExtendLookupTableInfo,
   FreezeLookupTableInfo,
-} from '@/app/(shared)/components/instruction/address-lookup-table/types';
-import { UnknownDetailsCard } from '@/app/(shared)/components/instruction/UnknownDetailsCard';
-import { InstructionDetailsProps } from '@/app/(shared)/components/transaction/InstructionsSection';
+} from './address-lookup-table/types';
+import { UnknownDetailsCard } from './UnknownDetailsCard';
+import { InstructionDetailsProps } from '../InstructionsSection';
 
 export function AddressLookupTableDetailsCard(props: InstructionDetailsProps) {
   const { ix } = props;

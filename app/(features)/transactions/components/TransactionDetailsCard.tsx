@@ -1,13 +1,13 @@
 'use client';
 
-import { Address } from '@/app/(shared)/components/common/Address';
-import { Signature } from '@/app/(shared)/components/common/Signature';
-import { Slot } from '@/app/(shared)/components/common/Slot';
-import { Badge } from '@/app/(shared)/components/shared/ui/badge';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/shared/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/shared/ui/table';
-import { AnchorEventDecoder } from '@/app/(shared)/components/transaction/AnchorEventDecoder';
+import { Address } from '@/app/(shared)/components/Address';
+import { Signature } from '@/app/(shared)/components/Signature';
+import { Slot } from '@/app/(shared)/components/Slot';
+import { Badge } from '@/app/(shared)/components/ui/badge';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/ui/table';
+import { AnchorEventDecoder } from '@/app/(features)/transactions/components/AnchorEventDecoder';
 import { PublicKey } from '@solana/web3.js';
 import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import React from 'react';

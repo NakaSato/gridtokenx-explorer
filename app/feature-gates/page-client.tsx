@@ -6,10 +6,10 @@ import Link from 'next/link';
 
 import FEATURES from '@/app/(shared)/utils/feature-gate/featureGates.json';
 
-import { Address } from '../components/common/Address';
-import { useCluster } from '../providers/cluster';
-import { Cluster, clusterSlug } from '../utils/cluster';
-import { FeatureInfoType } from '../utils/feature-gate/types';
+import { Address } from '@/app/(shared)/components/common/Address';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { Cluster, clusterSlug } from '@/app/(shared)/utils/cluster';
+import { FeatureInfoType } from '@/app/(shared)/utils/feature-gate/types';
 
 export default function FeatureGatesPageClient() {
   const { cluster } = useCluster();

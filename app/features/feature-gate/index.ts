@@ -1,8 +1,9 @@
 import fetch from 'cross-fetch';
 
-import { Cluster } from '@/app/utils/cluster';
-import { FeatureInfoType } from '@/app/utils/feature-gate/types';
+import { Cluster } from '@/app/(shared)/utils/cluster';
+import { FeatureInfoType } from '@/app/(shared)/utils/feature-gate/types';
 import Logger from '@/app/(shared)/utils/logger';
+import { envConfig } from '@/app/(config)/env';
 
 // Good candidate to move to environment variables, but at the moment repository is public, so we leave them hardcoded (could be changed later)
 const OWNER = 'solana-foundation';
@@ -47,6 +48,11 @@ export async function fetchFeatureGateInformation(featureInfo?: FeatureInfoType)
 }
 
 export function isFeatureActivated(feature: FeatureInfoType, cluster: Cluster) {
+  // Check if feature gates are disabled
+  if (!envConfig.enableFeatureGates) {
+    return true;
+  }
+
   switch (cluster) {
     case Cluster.MainnetBeta:
       return feature.mainnet_activation_epoch !== null;

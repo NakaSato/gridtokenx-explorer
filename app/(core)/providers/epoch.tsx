@@ -6,7 +6,7 @@ import { Cluster } from '@/app/(shared)/utils/cluster';
 import { createRpc, bigintToNumber } from '@/app/(shared)/utils/rpc';
 import React from 'react';
 
-import { EpochSchedule, getFirstSlotInEpoch, getLastSlotInEpoch } from '../utils/epoch-schedule';
+import { EpochSchedule, getFirstSlotInEpoch, getLastSlotInEpoch } from '@/app/(shared)/utils/epoch-schedule';
 
 export enum FetchStatus {
   Fetching,

@@ -1,31 +1,31 @@
-import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
-import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
-import { AddressLookupTableDetailsCard } from '@/app/(shared)/components/instruction/AddressLookupTableDetailsCard';
-import { AssociatedTokenDetailsCard } from '@/app/(shared)/components/instruction/associated-token/AssociatedTokenDetailsCard';
-import { BpfLoaderDetailsCard } from '@/app/(shared)/components/instruction/bpf-loader/BpfLoaderDetailsCard';
-import { BpfUpgradeableLoaderDetailsCard } from '@/app/(shared)/components/instruction/bpf-upgradeable-loader/BpfUpgradeableLoaderDetailsCard';
-import { ComputeBudgetDetailsCard } from '@/app/(shared)/components/instruction/ComputeBudgetDetailsCard';
-import { MangoDetailsCard } from '@/app/(shared)/components/instruction/MangoDetails';
-import { MemoDetailsCard } from '@/app/(shared)/components/instruction/MemoDetailsCard';
-import { PythDetailsCard } from '@/app/(shared)/components/instruction/pyth/PythDetailsCard';
-import { isPythInstruction } from '@/app/(shared)/components/instruction/pyth/types';
-import { isSerumInstruction } from '@/app/(shared)/components/instruction/serum/types';
-import { SerumDetailsCard } from '@/app/(shared)/components/instruction/SerumDetailsCard';
-import { StakeDetailsCard } from '@/app/(shared)/components/instruction/stake/StakeDetailsCard';
-import { SystemDetailsCard } from '@/app/(shared)/components/instruction/system/SystemDetailsCard';
-import { TokenDetailsCard } from '@/app/(shared)/components/instruction/token/TokenDetailsCard';
-import { isTokenLendingInstruction } from '@/app/(shared)/components/instruction/token-lending/types';
-import { isTokenSwapInstruction } from '@/app/(shared)/components/instruction/token-swap/types';
-import { TokenLendingDetailsCard } from '@/app/(shared)/components/instruction/TokenLendingDetailsCard';
-import { TokenSwapDetailsCard } from '@/app/(shared)/components/instruction/TokenSwapDetailsCard';
-import { UnknownDetailsCard } from '@/app/(shared)/components/instruction/UnknownDetailsCard';
-import { VoteDetailsCard } from '@/app/(shared)/components/instruction/vote/VoteDetailsCard';
-import { isWormholeInstruction } from '@/app/(shared)/components/instruction/wormhole/types';
-import { WormholeDetailsCard } from '@/app/(shared)/components/instruction/WormholeDetailsCard';
+import { ErrorCard } from '@/app/(shared)/components/ErrorCard';
+import { LoadingCard } from '@/app/(shared)/components/LoadingCard';
+import { AddressLookupTableDetailsCard } from '@/app/(features)/transactions/components/instruction/AddressLookupTableDetailsCard';
+import { AssociatedTokenDetailsCard } from '@/app/(features)/transactions/components/instruction/associated-token/AssociatedTokenDetailsCard';
+import { BpfLoaderDetailsCard } from '@/app/(features)/transactions/components/instruction/bpf-loader/BpfLoaderDetailsCard';
+import { BpfUpgradeableLoaderDetailsCard } from '@/app/(features)/transactions/components/instruction/bpf-upgradeable-loader/BpfUpgradeableLoaderDetailsCard';
+import { ComputeBudgetDetailsCard } from '@/app/(features)/transactions/components/instruction/ComputeBudgetDetailsCard';
+import { MangoDetailsCard } from '@/app/(features)/transactions/components/instruction/MangoDetails';
+import { MemoDetailsCard } from '@/app/(features)/transactions/components/instruction/MemoDetailsCard';
+import { PythDetailsCard } from '@/app/(features)/transactions/components/instruction/pyth/PythDetailsCard';
+import { isPythInstruction } from '@/app/(features)/transactions/components/instruction/pyth/types';
+import { isSerumInstruction } from '@/app/(features)/transactions/components/instruction/serum/types';
+import { SerumDetailsCard } from '@/app/(features)/transactions/components/instruction/SerumDetailsCard';
+import { StakeDetailsCard } from '@/app/(features)/transactions/components/instruction/stake/StakeDetailsCard';
+import { SystemDetailsCard } from '@/app/(features)/transactions/components/instruction/system/SystemDetailsCard';
+import { TokenDetailsCard } from '@/app/(features)/transactions/components/instruction/token/TokenDetailsCard';
+import { isTokenLendingInstruction } from '@/app/(features)/transactions/components/instruction/token-lending/types';
+import { isTokenSwapInstruction } from '@/app/(features)/transactions/components/instruction/token-swap/types';
+import { TokenLendingDetailsCard } from '@/app/(features)/transactions/components/instruction/TokenLendingDetailsCard';
+import { TokenSwapDetailsCard } from '@/app/(features)/transactions/components/instruction/TokenSwapDetailsCard';
+import { UnknownDetailsCard } from '@/app/(features)/transactions/components/instruction/UnknownDetailsCard';
+import { VoteDetailsCard } from '@/app/(features)/transactions/components/instruction/vote/VoteDetailsCard';
+import { isWormholeInstruction } from '@/app/(features)/transactions/components/instruction/wormhole/types';
+import { WormholeDetailsCard } from '@/app/(features)/transactions/components/instruction/WormholeDetailsCard';
 import { useAnchorProgram } from '@/app/(core)/providers/anchor';
 import { useCluster } from '@/app/(core)/providers/cluster';
-import { useTransactionDetails, useTransactionStatus } from '@providers/transactions';
-import { useFetchTransactionDetails } from '@providers/transactions/parsed';
+import { useTransactionDetails, useTransactionStatus } from '@/app/(core)/providers/transactions';
+import { useFetchTransactionDetails } from '@/app/(core)/providers/transactions/parsed';
 import {
   ComputeBudgetProgram,
   ParsedInnerInstruction,
@@ -43,17 +43,17 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { useProgramMetadataIdl } from '@/app/entities/program-metadata';
 
-import AnchorDetailsCard from '../instruction/AnchorDetailsCard';
-import { Ed25519DetailsCard } from '../instruction/ed25519/Ed25519DetailsCard';
-import { isEd25519Instruction } from '../instruction/ed25519/types';
-import { LighthouseDetailsCard } from '../instruction/lighthouse/LighthouseDetailsCard';
-import { isLighthouseInstruction } from '../instruction/lighthouse/types';
-import { isMangoInstruction } from '../instruction/mango/types';
-import { ProgramMetadataIdlInstructionDetailsCard } from '../instruction/program-metadata-idl/ProgramMetadataIdlInstructionDetailsCard';
+import AnchorDetailsCard from '@/app/(features)/transactions/components/instruction/AnchorDetailsCard';
+import { Ed25519DetailsCard } from '@/app/(features)/transactions/components/instruction/ed25519/Ed25519DetailsCard';
+import { isEd25519Instruction } from '@/app/(features)/transactions/components/instruction/ed25519/types';
+import { LighthouseDetailsCard } from '@/app/(features)/transactions/components/instruction/lighthouse/LighthouseDetailsCard';
+import { isLighthouseInstruction } from '@/app/(features)/transactions/components/instruction/lighthouse/types';
+import { isMangoInstruction } from '@/app/(features)/transactions/components/instruction/mango/types';
+import { ProgramMetadataIdlInstructionDetailsCard } from '@/app/(features)/transactions/components/instruction/program-metadata-idl/ProgramMetadataIdlInstructionDetailsCard';
 import {
   isSolanaAttestationInstruction,
   SolanaAttestationDetailsCard,
-} from '../instruction/sas/SolanaAttestationDetailsCard';
+} from '@/app/(features)/transactions/components/instruction/sas/SolanaAttestationDetailsCard';
 
 export type InstructionDetailsProps = {
   tx: ParsedTransaction;

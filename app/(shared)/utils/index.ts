@@ -1,6 +1,11 @@
 // Shared Utilities Barrel Export
 // Export all shared utilities for clean imports
 
+// Type definitions
+export type SignatureProps = {
+  signature: string;
+};
+
 // Core utility functions
 export function abbreviatedNumber(value: number): string {
   if (value === 0) return '0';
@@ -35,7 +40,6 @@ export * from './get-instruction-card-scroll-anchor-id';
 export * from './get-readable-title-from-address';
 export * from './instruction';
 export * from './kit-wrapper';
-export * from './legacy-adapters';
 export * from './local-storage';
 export * from './logger';
 export * from './math';

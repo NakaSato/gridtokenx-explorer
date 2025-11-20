@@ -1,8 +1,8 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { SupplyCard } from '@/app/(shared)/components/SupplyCard';
-import { TopAccountsCard } from '@/app/(shared)/components/TopAccountsCard';
+import { SupplyCard } from '@/app/(features)/analytics/components/SupplyCard';
+import { TopAccountsCard } from '@/app/(features)/analytics/components/TopAccountsCard';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { Cluster } from '@/app/(shared)/utils/cluster';
 
