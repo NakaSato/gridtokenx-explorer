@@ -1,12 +1,12 @@
-import { FeatureGateCard } from '@components/account/FeatureGateCard';
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readable-title-from-address';
+import { FeatureGateCard } from '@/app/(shared)/components/account/FeatureGateCard';
+import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@/app/(shared)/utils/get-readable-title-from-address';
 import { Metadata } from 'next/types';
 import ReactMarkdown from 'react-markdown';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGFM from 'remark-gfm';
 
 import { fetchFeatureGateInformation } from '@/app/features/feature-gate';
-import { getFeatureInfo } from '@/app/utils/feature-gate/utils';
+import { getFeatureInfo } from '@/app/(shared)/utils/feature-gate/utils';
 
 type Props = Readonly<{
   params: Promise<{

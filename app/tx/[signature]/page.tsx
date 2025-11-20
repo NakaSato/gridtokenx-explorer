@@ -1,4 +1,4 @@
-import { SignatureProps } from '@utils/index';
+import { SignatureProps } from '@/app/(shared)/utils/index';
 import { Metadata } from 'next/types';
 import React from 'react';
 

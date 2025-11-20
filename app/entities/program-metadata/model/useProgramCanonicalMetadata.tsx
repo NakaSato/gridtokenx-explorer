@@ -4,7 +4,7 @@ import { fetch } from 'cross-fetch';
 import useSWRImmutable from 'swr/immutable';
 
 import { Cluster } from '@/app/utils/cluster';
-import Logger from '@/app/utils/logger';
+import Logger from '@/app/(shared)/utils/logger';
 
 import { getProgramCanonicalMetadata } from '../api/getProgramCanonicalMetadata';
 

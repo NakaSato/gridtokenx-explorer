@@ -3,8 +3,8 @@
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { ParsedAccountRenderer } from '@/app/components/account/ParsedAccountRenderer';
-import { ErrorCard } from '@/app/components/common/ErrorCard';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { SecurityCard } from '@/app/features/security-txt/ui/SecurityCard';
 
 type Props = Readonly<{

@@ -1,4 +1,4 @@
-import { TableCardBody } from '@components/common/TableCardBody';
+import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
 
 import type { NeodymeSecurityTXT } from '../lib/types';
 import { CodeCell, ContactInfo, ExternalLinkCell, StringCell } from './common';

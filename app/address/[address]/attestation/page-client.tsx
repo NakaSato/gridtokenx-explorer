@@ -1,10 +1,10 @@
 'use client';
 
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
 import React, { Suspense } from 'react';
 
-import { AttestationDataCard } from '@/app/components/account/sas/AttestationDataCard';
-import { LoadingCard } from '@/app/components/common/LoadingCard';
+import { AttestationDataCard } from '@/app/(shared)/components/account/sas/AttestationDataCard';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
 
 type Props = Readonly<{
   params: {

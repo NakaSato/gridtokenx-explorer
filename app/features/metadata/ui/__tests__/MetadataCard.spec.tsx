@@ -12,7 +12,7 @@ import {
 } from '../../mocks';
 import { MetadataCard } from '../MetadataCard';
 
-vi.mock('@/app/components/common/JsonViewer', () => ({
+vi.mock('@/app/(shared)/components/common/JsonViewer', () => ({
   SolarizedJsonViewer: ({ src }: { src: any }) => <div data-testid="json-viewer">{JSON.stringify(src, null, 2)}</div>,
 }));
 

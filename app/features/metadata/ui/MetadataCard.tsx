@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
-import { ErrorCard } from '@/app/components/common/ErrorCard';
-import { SolarizedJsonViewer as ReactJson } from '@/app/components/common/JsonViewer';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/shared/ui/tabs';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
+import { SolarizedJsonViewer as ReactJson } from '@/app/(shared)/components/common/JsonViewer';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/(shared)/components/shared/ui/tabs';
 import type { Account } from '@/app/providers/accounts';
 
 import { extractMetaplexMetadata } from '../lib/metaplexMetadata';

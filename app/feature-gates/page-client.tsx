@@ -4,7 +4,7 @@ import React, { Suspense } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 
-import FEATURES from '@/app/utils/feature-gate/featureGates.json';
+import FEATURES from '@/app/(shared)/utils/feature-gate/featureGates.json';
 
 import { Address } from '../components/common/Address';
 import { useCluster } from '../providers/cluster';

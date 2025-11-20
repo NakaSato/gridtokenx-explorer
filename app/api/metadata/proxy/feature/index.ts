@@ -1,6 +1,6 @@
 import { default as fetch, Headers, Response as NodeFetchResponse } from 'node-fetch';
 
-import Logger from '@/app/utils/logger';
+import Logger from '@/app/(shared)/utils/logger';
 
 import {
   errors,

@@ -1,8 +1,8 @@
 'use client';
 
-import { LookupTableEntriesCard } from '@components/account/address-lookup-table/LookupTableEntriesCard';
-import { isAddressLookupTableAccount } from '@components/account/address-lookup-table/types';
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
+import { LookupTableEntriesCard } from '@/app/(shared)/components/account/address-lookup-table/LookupTableEntriesCard';
+import { isAddressLookupTableAccount } from '@/app/(shared)/components/account/address-lookup-table/types';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
 import { Address } from '@solana/kit';
 import React from 'react';
 

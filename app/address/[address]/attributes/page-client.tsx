@@ -1,10 +1,10 @@
 'use client';
 
-import { MetaplexNFTAttributesCard } from '@components/account/MetaplexNFTAttributesCard';
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
+import { MetaplexNFTAttributesCard } from '@/app/(shared)/components/account/MetaplexNFTAttributesCard';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
 import React, { Suspense } from 'react';
 
-import { LoadingCard } from '@/app/components/common/LoadingCard';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
 
 type Props = Readonly<{
   params: {

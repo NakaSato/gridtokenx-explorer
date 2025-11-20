@@ -2,8 +2,8 @@
 
 import React, { Suspense } from 'react';
 
-import { ParsedAccountRenderer } from '@/app/components/account/ParsedAccountRenderer';
-import { LoadingCard } from '@/app/components/common/LoadingCard';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
 import { MetadataCard } from '@/app/features/metadata';
 
 type Props = Readonly<{

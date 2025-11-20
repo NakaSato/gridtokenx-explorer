@@ -1,9 +1,9 @@
-import { ClusterStatusButton } from '@components/ClusterStatusButton';
-import { MessageBanner } from '@components/MessageBanner';
-import NavbarWrapper from '@components/NavbarWrapper';
-import SearchBarWrapper from '@components/SearchBarWrapper';
-import { ClusterProvider } from '@providers/cluster';
-import { ScrollAnchorProvider } from '@providers/scroll-anchor';
+import { ClusterStatusButton } from '@/app/(core)/components/ClusterStatusButton';
+import { MessageBanner } from '@/app/(core)/components/MessageBanner';
+import NavbarWrapper from '@/app/(core)/components/NavbarWrapper';
+import SearchBarWrapper from '@/app/(core)/components/SearchBarWrapper';
+import { ClusterProvider } from '@/app/(core)/providers/cluster';
+import { ScrollAnchorProvider } from '@/app/(core)/providers/scroll-anchor';
 import type { Viewport } from 'next';
 import { Rubik } from 'next/font/google';
 import { Metadata } from 'next/types';

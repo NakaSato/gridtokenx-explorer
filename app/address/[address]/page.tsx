@@ -1,5 +1,5 @@
-import { TransactionHistoryCard } from '@components/account/history/TransactionHistoryCard';
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readable-title-from-address';
+import { TransactionHistoryCard } from '@/app/(shared)/components/account/history/TransactionHistoryCard';
+import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@/app/(shared)/utils/get-readable-title-from-address';
 import { Metadata } from 'next/types';
 import React, { Suspense } from 'react';
 

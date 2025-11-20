@@ -1,11 +1,11 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { BlockHistoryCard } from '@components/block/BlockHistoryCard';
-import { useBlock, useFetchBlock } from '@providers/block';
-import { useCluster } from '@providers/cluster';
-import { ClusterStatus } from '@utils/cluster';
-import { getEpochForSlot } from '@utils/epoch-schedule';
+import { BlockHistoryCard } from '@/app/(shared)/components/block/BlockHistoryCard';
+import { useBlock, useFetchBlock } from '@/app/(core)/providers/block';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { ClusterStatus } from '@/app/(shared)/utils/cluster';
+import { getEpochForSlot } from '@/app/(shared)/utils/epoch-schedule';
 import { notFound } from 'next/navigation';
 
 type Props = Readonly<{ params: { slot: string } }>;

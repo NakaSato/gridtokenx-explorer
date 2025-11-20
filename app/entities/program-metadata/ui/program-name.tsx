@@ -1,6 +1,6 @@
 import { rootNodeFromAnchor } from '@codama/nodes-from-anchor';
 import { PublicKey } from '@solana/web3.js';
-import { Cluster } from '@utils/cluster';
+import { Cluster } from '@/app/(shared)/utils/cluster';
 import { RootNode } from 'codama';
 
 import { useProgramMetadataIdl } from '../model/useProgramMetadataIdl';

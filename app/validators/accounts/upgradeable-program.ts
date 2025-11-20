@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
 
-import { ParsedInfo } from '@validators/index';
+import { ParsedInfo } from '@/app/validators/index';
 import { PublicKeyFromString } from '@validators/pubkey';
 import { any, coerce, create, Infer, literal, nullable, number, string, tuple, type, union } from 'superstruct';
 

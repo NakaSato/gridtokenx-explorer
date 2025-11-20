@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import { useClusterPath } from '@utils/url';
+import { useClusterPath } from '@/app/(shared)/utils/url';
 import { ProgramDataAccountInfo } from '@validators/accounts/upgradeable-program';
 import Link from 'next/link';
 

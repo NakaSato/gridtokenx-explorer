@@ -3,7 +3,7 @@ import Link from 'next/link';
 import React from 'react';
 import { ExternalLink } from 'react-feather';
 
-import { InfoTooltip } from '@/app/components/common/InfoTooltip';
+import { InfoTooltip } from '@/app/(shared)/components/common/InfoTooltip';
 import { useProgramMetadataSecurityTxt } from '@/app/entities/program-metadata';
 import { useCluster } from '@/app/providers/cluster';
 

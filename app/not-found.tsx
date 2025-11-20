@@ -1,4 +1,4 @@
-import { ErrorCard } from '@components/common/ErrorCard';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 
 // Force dynamic rendering to avoid static generation issues
 export const dynamic = 'force-dynamic';

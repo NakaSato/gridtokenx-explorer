@@ -1,18 +1,18 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { Epoch } from '@components/common/Epoch';
-import { ErrorCard } from '@components/common/ErrorCard';
-import { LoadingCard } from '@components/common/LoadingCard';
-import { Slot } from '@components/common/Slot';
-import { TableCardBody } from '@components/common/TableCardBody';
-import { FetchStatus } from '@providers/cache';
-import { useCluster } from '@providers/cluster';
-import { useEpoch, useFetchEpoch } from '@providers/epoch';
-import { ClusterStatus } from '@utils/cluster';
-import { displayTimestampUtc } from '@utils/date';
+import { Epoch } from '@/app/(shared)/components/common/Epoch';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
+import { Slot } from '@/app/(shared)/components/common/Slot';
+import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
+import { FetchStatus } from '@/app/(core)/providers/cache';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { useEpoch, useFetchEpoch } from '@/app/(core)/providers/epoch';
+import { ClusterStatus } from '@/app/(shared)/utils/cluster';
+import { displayTimestampUtc } from '@/app/(shared)/utils/date';
 
-import { getFirstSlotInEpoch, getLastSlotInEpoch } from '@/app/utils/epoch-schedule';
+import { getFirstSlotInEpoch, getLastSlotInEpoch } from '@/app/(shared)/utils/epoch-schedule';
 
 type Props = {
   params: {

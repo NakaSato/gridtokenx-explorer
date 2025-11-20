@@ -1,0 +1,325 @@
+import { ProgramLogsCardBody } from '@/app/(shared)/components/ProgramLogsCardBody';
+import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@/app/(core)/providers/accounts/tokens';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { AccountLayout, MintLayout } from '@solana/spl-token';
+import {
+  AccountInfo,
+  AddressLookupTableAccount,
+  Connection,
+  MessageAddressTableLookup,
+  ParsedAccountData,
+  ParsedMessageAccount,
+  SimulatedTransactionAccountInfo,
+  TokenBalance,
+  VersionedMessage,
+  VersionedTransaction,
+} from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
+import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
+import { InstructionLogs, parseProgramLogs } from '@/app/(shared)/utils/program-logs';
+import React from 'react';
+
+import {
+  generateTokenBalanceRows,
+  TokenBalancesCardInner,
+  TokenBalancesCardInnerProps,
+} from '../transaction/TokenBalancesCard';
+
+export function SimulatorCard({
+  message,
+  showTokenBalanceChanges,
+}: {
+  message: VersionedMessage;
+  showTokenBalanceChanges: boolean;
+}) {
+  const { cluster, url } = useCluster();
+  const {
+    simulate,
+    simulating,
+    simulationLogs: logs,
+    simulationError,
+    simulationTokenBalanceRows,
+  } = useSimulator(message);
+  if (simulating) {
+    return (
+      <div className="bg-card rounded-lg border shadow-sm">
+        <div className="border-b px-6 py-4">
+          <h3 className="text-lg font-semibold">Transaction Simulation</h3>
+        </div>
+        <div className="p-6 text-center">
+          <span className="spinner-grow spinner-grow-sm m2"></span>
+          Simulating
+        </div>
+      </div>
+    );
+  } else if (!logs) {
+    return (
+      <div className="rounded-lg border shadow-sm">
+        <div className="flex items-center justify-between border-b px-6 py-4">
+          <h3 className="text-lg font-semibold">Transaction Simulation</h3>
+          <button
+            className="flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
+            onClick={simulate}
+          >
+            {simulationError ? 'Retry' : 'Simulate'}
+          </button>
+        </div>
+        <div className="p-6">
+          {simulationError ? (
+            <>
+              Simulation Failure:
+              <span className="text-warning ms-2">{simulationError}</span>
+            </>
+          ) : (
+            <ul className="text-muted-foreground">
+              <li>Simulation is free and will run this transaction against the latest confirmed ledger state.</li>
+              <li>No state changes will be persisted and all signature checks will be disabled.</li>
+            </ul>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="rounded-lg border shadow-sm">
+        <div className="flex items-center justify-between border-b px-6 py-4">
+          <h3 className="text-lg font-semibold">Transaction Simulation</h3>
+          <button
+            className="flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
+            onClick={simulate}
+          >
+            Retry
+          </button>
+        </div>
+        <ProgramLogsCardBody message={message} logs={logs} cluster={cluster} url={url} />
+      </div>
+      {showTokenBalanceChanges &&
+      simulationTokenBalanceRows &&
+      !simulationError &&
+      simulationTokenBalanceRows.rows.length ? (
+        <TokenBalancesCardInner rows={simulationTokenBalanceRows.rows} />
+      ) : null}
+    </>
+  );
+}
+
+function useSimulator(message: VersionedMessage) {
+  const { cluster, url } = useCluster();
+  const [simulating, setSimulating] = React.useState(false);
+  const [logs, setLogs] = React.useState<Array<InstructionLogs> | null>(null);
+  const [error, setError] = React.useState<string>();
+  const [tokenBalanceRows, setTokenBalanceRows] = React.useState<TokenBalancesCardInnerProps>();
+
+  React.useEffect(() => {
+    setLogs(null);
+    setSimulating(false);
+    setError(undefined);
+  }, [url]);
+
+  const onClick = React.useCallback(() => {
+    if (simulating) return;
+    setError(undefined);
+    setSimulating(true);
+
+    const connection = new Connection(url, 'confirmed');
+    (async () => {
+      try {
+        const addressTableLookups: MessageAddressTableLookup[] = message.addressTableLookups;
+        const addressTableLookupKeys: PublicKey[] = addressTableLookups.map(
+          (addressTableLookup: MessageAddressTableLookup) => {
+            return addressTableLookup.accountKey;
+          },
+        );
+        const addressTableLookupsFetched: (AccountInfo<Buffer> | null)[] =
+          await connection.getMultipleAccountsInfo(addressTableLookupKeys);
+        const nonNullAddressTableLookups: AccountInfo<Buffer>[] = addressTableLookupsFetched.filter(
+          (o): o is AccountInfo<Buffer> => !!o,
+        );
+
+        const addressLookupTablesParsed: AddressLookupTableAccount[] = nonNullAddressTableLookups.map(
+          (addressTableLookup: AccountInfo<Buffer>, index) => {
+            return new AddressLookupTableAccount({
+              key: addressTableLookupKeys[index],
+              state: AddressLookupTableAccount.deserialize(addressTableLookup.data),
+            });
+          },
+        );
+
+        // Fetch all the accounts before simulating
+        const accountKeys = message.getAccountKeys({
+          addressLookupTableAccounts: addressLookupTablesParsed,
+        }).staticAccountKeys;
+        const parsedAccountsPre = await connection.getMultipleParsedAccounts(accountKeys);
+
+        // Simulate without signers to skip signer verification. Request
+        // all account data after the simulation.
+        const resp = await connection.simulateTransaction(new VersionedTransaction(message), {
+          accounts: {
+            addresses: accountKeys.map(function (key) {
+              return key.toBase58();
+            }),
+            encoding: 'base64',
+          },
+          replaceRecentBlockhash: true,
+        });
+
+        const mintToDecimals: { [mintPk: string]: number } = getMintDecimals(
+          accountKeys,
+          parsedAccountsPre.value,
+          resp.value.accounts as SimulatedTransactionAccountInfo[],
+        );
+
+        const preTokenBalances: TokenBalance[] = [];
+        const postTokenBalances: TokenBalance[] = [];
+        const tokenAccountKeys: ParsedMessageAccount[] = [];
+
+        for (let index = 0; index < accountKeys.length; index++) {
+          const key = accountKeys[index];
+          const parsedAccountPre = parsedAccountsPre.value[index];
+          const accountDataPost = resp.value.accounts?.at(index)?.data[0];
+          const accountOwnerPost = resp.value.accounts?.at(index)?.owner;
+
+          if (
+            parsedAccountPre &&
+            isTokenProgramBase58(parsedAccountPre.owner.toBase58()) &&
+            (parsedAccountPre.data as ParsedAccountData).parsed.type === 'account'
+          ) {
+            const mint = (parsedAccountPre?.data as ParsedAccountData).parsed.info.mint;
+            const owner = (parsedAccountPre?.data as ParsedAccountData).parsed.info.owner;
+            const tokenAmount = (parsedAccountPre?.data as ParsedAccountData).parsed.info.tokenAmount;
+            const preTokenBalance = {
+              accountIndex: tokenAccountKeys.length,
+              mint: mint,
+              owner: owner,
+              uiTokenAmount: tokenAmount,
+            };
+            preTokenBalances.push(preTokenBalance);
+          }
+
+          if (
+            accountOwnerPost &&
+            isTokenProgramBase58(accountOwnerPost) &&
+            Buffer.from(accountDataPost!, 'base64').length >= 165
+          ) {
+            const accountParsedPost = AccountLayout.decode(Buffer.from(accountDataPost!, 'base64'));
+            const mint = addressToPublicKey(toAddress(accountParsedPost.mint));
+            const owner = addressToPublicKey(toAddress(accountParsedPost.owner));
+            const postRawAmount = Number(accountParsedPost.amount.readBigUInt64LE(0));
+
+            const decimals = mintToDecimals[mint.toBase58()];
+            const tokenAmount = postRawAmount / 10 ** decimals;
+
+            const postTokenBalance = {
+              accountIndex: tokenAccountKeys.length,
+              mint: mint.toBase58(),
+              owner: owner.toBase58(),
+              uiTokenAmount: {
+                amount: postRawAmount.toString(),
+                decimals: decimals,
+                uiAmount: tokenAmount,
+                uiAmountString: tokenAmount.toString(),
+              },
+            };
+            postTokenBalances.push(postTokenBalance);
+          }
+          // All fields are ignored other than key, so set placeholders.
+          const parsedMessageAccount = {
+            pubkey: key,
+            signer: false,
+            writable: true,
+          };
+          tokenAccountKeys.push(parsedMessageAccount);
+        }
+
+        const tokenBalanceRows = generateTokenBalanceRows(preTokenBalances, postTokenBalances, tokenAccountKeys);
+        if (tokenBalanceRows) {
+          setTokenBalanceRows({ rows: tokenBalanceRows });
+        }
+
+        if (resp.value.logs === null) {
+          throw new Error('Expected to receive logs from simulation');
+        }
+
+        if (resp.value.logs.length === 0 && typeof resp.value.err === 'string') {
+          setLogs(null);
+          setError(resp.value.err);
+        } else {
+          // Prettify logs
+          setLogs(parseProgramLogs(resp.value.logs, resp.value.err, cluster));
+        }
+        // If the response has an error, the logs will say what it it, so no need to parse here.
+        if (resp.value.err) {
+          setError('TransactionError');
+        }
+      } catch (err) {
+        console.error(err);
+        setLogs(null);
+        if (err instanceof Error) {
+          setError(err.message);
+        }
+      } finally {
+        setSimulating(false);
+      }
+    })();
+  }, [cluster, url, message, simulating]);
+  return {
+    simulate: onClick,
+    simulating,
+    simulationError: error,
+    simulationLogs: logs,
+    simulationTokenBalanceRows: tokenBalanceRows,
+  };
+}
+
+function isTokenProgramBase58(programIdBase58: string): boolean {
+  return programIdBase58 === TOKEN_PROGRAM_ID.toBase58() || programIdBase58 === TOKEN_2022_PROGRAM_ID.toBase58();
+}
+
+function getMintDecimals(
+  accountKeys: PublicKey[],
+  parsedAccountsPre: (AccountInfo<ParsedAccountData | Buffer> | null)[],
+  accountDatasPost: SimulatedTransactionAccountInfo[],
+): { [mintPk: string]: number } {
+  const mintToDecimals: { [mintPk: string]: number } = {};
+  // Get all the necessary mint decimals by looking at parsed token accounts
+  // and mints before, as well as mints after.
+  for (let index = 0; index < accountKeys.length; index++) {
+    const parsedAccount = parsedAccountsPre[index];
+    const key = accountKeys[index];
+
+    // Token account before
+    if (
+      parsedAccount &&
+      isTokenProgramBase58(parsedAccount.owner.toBase58()) &&
+      (parsedAccount.data as ParsedAccountData).parsed.type === 'account'
+    ) {
+      mintToDecimals[(parsedAccount?.data as ParsedAccountData).parsed.info.mint] = (
+        parsedAccount?.data as ParsedAccountData
+      ).parsed.info.tokenAmount.decimals;
+    }
+    // Mint account before
+    if (
+      parsedAccount &&
+      isTokenProgramBase58(parsedAccount.owner.toBase58()) &&
+      (parsedAccount?.data as ParsedAccountData).parsed.type === 'mint'
+    ) {
+      mintToDecimals[key.toBase58()] = (parsedAccount?.data as ParsedAccountData).parsed.info.decimals;
+    }
+
+    // Token account after
+    const accountDataPost = accountDatasPost.at(index)?.data[0];
+    const accountOwnerPost = accountDatasPost.at(index)?.owner;
+    if (
+      accountOwnerPost &&
+      isTokenProgramBase58(accountOwnerPost) &&
+      Buffer.from(accountDataPost!, 'base64').length === 82
+    ) {
+      const accountParsedPost = MintLayout.decode(Buffer.from(accountDataPost!, 'base64'));
+      mintToDecimals[key.toBase58()] = accountParsedPost.decimals;
+    }
+  }
+
+  return mintToDecimals;
+}

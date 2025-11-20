@@ -2,7 +2,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { type MoreTabs } from '@/app/address/[address]/layout';
-import { ParsedTokenExtension } from '@/app/components/account/types';
+import { ParsedTokenExtension } from '@/app/(shared)/components/account/types';
 import { TokenExtension } from '@/app/validators/accounts/token-extension';
 
 // extract type for the tab to not loose the functionality of the token extension navigation

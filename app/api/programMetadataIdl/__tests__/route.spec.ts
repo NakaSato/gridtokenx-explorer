@@ -3,7 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Cluster } from '@/app/utils/cluster';
-import Logger from '@/app/utils/logger';
+import Logger from '@/app/(shared)/utils/logger';
 
 vi.mock('@/app/entities/program-metadata/api/getProgramCanonicalMetadata', async () => {
   const originalImpl = await vi.importActual('@/app/entities/program-metadata/api/getProgramCanonicalMetadata');
@@ -22,7 +22,7 @@ vi.mock('@/app/entities/program-metadata/api/getProgramCanonicalMetadata', async
   };
 });
 
-vi.mock('@/app/utils/logger', () => ({
+vi.mock('@/app/(shared)/utils/logger', () => ({
   default: {
     error: vi.fn(),
   },

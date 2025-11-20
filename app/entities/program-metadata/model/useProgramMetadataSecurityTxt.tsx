@@ -1,5 +1,5 @@
 import { Cluster } from '@/app/utils/cluster';
-import { isEnvEnabled } from '@/app/utils/env';
+import { isEnvEnabled } from '@/app/(config)/env';
 
 import { SECURITY_TXT_SEED } from '../api/getProgramCanonicalMetadata';
 import { useProgramCanonicalMetadata } from './useProgramCanonicalMetadata';

@@ -1,11 +1,11 @@
 'use client';
 
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { VerifiedBuildCard } from '@/app/components/account/VerifiedBuildCard';
-import { ErrorCard } from '@/app/components/common/ErrorCard';
+import { VerifiedBuildCard } from '@/app/(shared)/components/account/VerifiedBuildCard';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 
 type Props = Readonly<{
   params: {

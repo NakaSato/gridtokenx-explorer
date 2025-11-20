@@ -25,7 +25,11 @@
       "@img/*": ["./app/img/*"],
       "@providers/*": ["./app/providers/*"],
       "@utils/*": ["./app/utils/*"],
-      "@validators/*": ["./app/validators/*"]
+      "@validators/*": ["./app/validators/*"],
+      "@/app/(shared)/*": ["./app/(shared)/*"],
+      "@/app/(core)/*": ["./app/(core)/*"],
+      "@/app/(features)/*": ["./app/(features)/*"],
+      "@/app/(config)/*": ["./app/(config)/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],

@@ -1,9 +1,9 @@
 'use client';
 
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
 import React from 'react';
 
-import { ProgramMultisigCard } from '@/app/components/account/ProgramMultisigCard';
+import { ProgramMultisigCard } from '@/app/(shared)/components/account/ProgramMultisigCard';
 
 type Props = Readonly<{
   params: {

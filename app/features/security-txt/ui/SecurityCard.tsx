@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AlertCircle } from 'react-feather';
 
-import { DownloadableButton } from '@/app/components/common/Downloadable';
-import { ErrorCard } from '@/app/components/common/ErrorCard';
+import { DownloadableButton } from '@/app/(shared)/components/common/Downloadable';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { useProgramMetadataSecurityTxt } from '@/app/entities/program-metadata';
 import type { UpgradeableLoaderAccountData } from '@/app/providers/accounts';
 import { useCluster } from '@/app/providers/cluster';

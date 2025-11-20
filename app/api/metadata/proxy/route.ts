@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Headers as NodeFetchHeaders } from 'node-fetch';
 
-import Logger from '@/app/utils/logger';
+import Logger from '@/app/(shared)/utils/logger';
 
 import { fetchResource, StatusError } from './feature';
 import { errors } from './feature/errors';

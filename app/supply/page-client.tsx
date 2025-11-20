@@ -1,10 +1,10 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { SupplyCard } from '@components/SupplyCard';
-import { TopAccountsCard } from '@components/TopAccountsCard';
-import { useCluster } from '@providers/cluster';
-import { Cluster } from '@utils/cluster';
+import { SupplyCard } from '@/app/(shared)/components/SupplyCard';
+import { TopAccountsCard } from '@/app/(shared)/components/TopAccountsCard';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { Cluster } from '@/app/(shared)/utils/cluster';
 
 export default function SupplyPageClient() {
   const cluster = useCluster();

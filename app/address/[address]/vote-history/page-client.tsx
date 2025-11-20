@@ -1,7 +1,7 @@
 'use client';
 
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
-import { VotesCard } from '@components/account/VotesCard';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
+import { VotesCard } from '@/app/(shared)/components/account/VotesCard';
 import React from 'react';
 
 type Props = Readonly<{

@@ -1,12 +1,12 @@
 'use client';
 
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { create } from 'superstruct';
 
-import { TokenExtensionsCard } from '@/app/components/account/TokenExtensionsCard';
-import { ErrorCard } from '@/app/components/common/ErrorCard';
+import { TokenExtensionsCard } from '@/app/(shared)/components/account/TokenExtensionsCard';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { MintAccountInfo, TokenAccountInfo } from '@/app/validators/accounts/token';
 
 export type Props = Readonly<{

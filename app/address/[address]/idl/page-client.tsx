@@ -1,11 +1,11 @@
 'use client';
 
-import { LoadingCard } from '@components/common/LoadingCard';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
 import { ComponentProps, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { IdlCard } from '@/app/components/account/idl/IdlCard';
-import { ErrorCard } from '@/app/components/common/ErrorCard';
+import { IdlCard } from '@/app/(shared)/components/account/idl/IdlCard';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 
 type Props = Readonly<{
   params: {

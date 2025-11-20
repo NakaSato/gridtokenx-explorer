@@ -1,7 +1,7 @@
 import _dns from 'dns';
 import Address, { parse } from 'ipaddr.js';
 
-import Logger from '@/app/utils/logger';
+import Logger from '@/app/(shared)/utils/logger';
 
 const dns = _dns.promises;
 

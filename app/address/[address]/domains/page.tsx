@@ -1,5 +1,5 @@
-import { DomainsCard } from '@components/account/DomainsCard';
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readable-title-from-address';
+import { DomainsCard } from '@/app/(shared)/components/account/DomainsCard';
+import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@/app/(shared)/utils/get-readable-title-from-address';
 import { Metadata } from 'next/types';
 
 type Props = Readonly<{

@@ -1,23 +1,23 @@
 'use client';
-import '@/app/types/bigint'; // polyfill toJSON for BigInt
+import '@/app/(shared)/types/bigint'; // polyfill toJSON for BigInt
 
-import { AddressLookupTableAccountSection } from '@components/account/address-lookup-table/AddressLookupTableAccountSection';
-import { isAddressLookupTableAccount } from '@components/account/address-lookup-table/types';
-import { ConfigAccountSection } from '@components/account/ConfigAccountSection';
-import { FeatureAccountSection } from '@components/account/FeatureAccountSection';
-import { isNFTokenAccount, parseNFTokenCollectionAccount } from '@components/account/nftoken/isNFTokenAccount';
-import { NFTOKEN_ADDRESS } from '@components/account/nftoken/nftoken';
-import { NFTokenAccountSection } from '@components/account/nftoken/NFTokenAccountSection';
-import { NonceAccountSection } from '@components/account/NonceAccountSection';
-import { StakeAccountSection } from '@components/account/StakeAccountSection';
-import { SysvarAccountSection } from '@components/account/SysvarAccountSection';
-import { TokenAccountSection } from '@components/account/TokenAccountSection';
-import { UnknownAccountCard } from '@components/account/UnknownAccountCard';
-import { UpgradeableLoaderAccountSection } from '@components/account/UpgradeableLoaderAccountSection';
-import { VoteAccountSection } from '@components/account/VoteAccountSection';
-import { ErrorCard } from '@components/common/ErrorCard';
-import { LoadingCard } from '@components/common/LoadingCard';
-import { Header } from '@components/Header';
+import { AddressLookupTableAccountSection } from '@/app/(shared)/components/account/address-lookup-table/AddressLookupTableAccountSection';
+import { isAddressLookupTableAccount } from '@/app/(shared)/components/account/address-lookup-table/types';
+import { ConfigAccountSection } from '@/app/(shared)/components/account/ConfigAccountSection';
+import { FeatureAccountSection } from '@/app/(shared)/components/account/FeatureAccountSection';
+import { isNFTokenAccount, parseNFTokenCollectionAccount } from '@/app/(shared)/components/account/nftoken/isNFTokenAccount';
+import { NFTOKEN_ADDRESS } from '@/app/(shared)/components/account/nftoken/nftoken';
+import { NFTokenAccountSection } from '@/app/(shared)/components/account/nftoken/NFTokenAccountSection';
+import { NonceAccountSection } from '@/app/(shared)/components/account/NonceAccountSection';
+import { StakeAccountSection } from '@/app/(shared)/components/account/StakeAccountSection';
+import { SysvarAccountSection } from '@/app/(shared)/components/account/SysvarAccountSection';
+import { TokenAccountSection } from '@/app/(shared)/components/account/TokenAccountSection';
+import { UnknownAccountCard } from '@/app/(shared)/components/account/UnknownAccountCard';
+import { UpgradeableLoaderAccountSection } from '@/app/(shared)/components/account/UpgradeableLoaderAccountSection';
+import { VoteAccountSection } from '@/app/(shared)/components/account/VoteAccountSection';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
+import { Header } from '@/app/(shared)/components/Header';
 import {
   Account,
   AccountsProvider,
@@ -26,19 +26,19 @@ import {
   UpgradeableLoaderAccountData,
   useAccountInfo,
   useFetchAccountInfo,
-} from '@providers/accounts';
-import FLAGGED_ACCOUNTS_WARNING from '@providers/accounts/flagged-accounts';
-import { useAnchorProgram } from '@providers/anchor';
-import { CacheEntry, FetchStatus } from '@providers/cache';
-import { useCluster } from '@providers/cluster';
+} from '@/app/(core)/providers/accounts';
+import FLAGGED_ACCOUNTS_WARNING from '@/app/(core)/providers/accounts/flagged-accounts';
+import { useAnchorProgram } from '@/app/(core)/providers/anchor';
+import { CacheEntry, FetchStatus } from '@/app/(core)/providers/cache';
+import { useCluster } from '@/app/(core)/providers/cluster';
 import { Address } from '@solana/kit';
 import { SPL_ACCOUNT_COMPRESSION_PROGRAM_ID as ACCOUNT_COMPRESSION_ID } from '@solana/spl-account-compression';
 import { PublicKey } from '@solana/web3.js';
 import { TOKEN_2022_PROGRAM_ADDRESS } from '@solana-program/token-2022';
-import { Cluster, ClusterStatus } from '@utils/cluster';
-import { addressToPublicKey, toAddress } from '@utils/rpc';
-import { FEATURE_PROGRAM_ID } from '@utils/parseFeatureAccount';
-import { useClusterPath } from '@utils/url';
+import { Cluster, ClusterStatus } from '@/app/(shared)/utils/cluster';
+import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
+import { FEATURE_PROGRAM_ID } from '@/app/(shared)/utils/parseFeatureAccount';
+import { useClusterPath } from '@/app/(shared)/utils/url';
 import Link from 'next/link';
 import { redirect, useSelectedLayoutSegment } from 'next/navigation';
 import React, { PropsWithChildren, Suspense } from 'react';
@@ -46,15 +46,15 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { SOLANA_ATTESTATION_SERVICE_PROGRAM_ADDRESS as SAS_PROGRAM_ID } from 'sas-lib';
 import useSWRImmutable from 'swr/immutable';
 
-import { CompressedNftCard } from '@/app/components/account/CompressedNftCard';
-import { SolanaAttestationServiceCard } from '@/app/components/account/sas/SolanaAttestationCard';
+import { CompressedNftCard } from '@/app/(shared)/components/account/CompressedNftCard';
+import { SolanaAttestationServiceCard } from '@/app/(shared)/components/account/sas/SolanaAttestationCard';
 import { useProgramMetadataIdl } from '@/app/entities/program-metadata';
 import { hasTokenMetadata } from '@/app/features/metadata';
-import { useCompressedNft } from '@/app/providers/compressed-nft';
-import { useSquadsMultisigLookup } from '@/app/providers/squadsMultisig';
-import { isAttestationAccount } from '@/app/utils/attestation-service';
-import { getFeatureInfo, useFeatureInfo } from '@/app/utils/feature-gate/utils';
-import { FullTokenInfo, getFullTokenInfo, isRedactedTokenAddress } from '@/app/utils/token-info';
+import { useCompressedNft } from '@/app/(core)/providers/compressed-nft';
+import { useSquadsMultisigLookup } from '@/app/(core)/providers/squadsMultisig';
+import { isAttestationAccount } from '@/app/(shared)/utils/attestation-service';
+import { getFeatureInfo, useFeatureInfo } from '@/app/(shared)/utils/feature-gate/utils';
+import { FullTokenInfo, getFullTokenInfo, isRedactedTokenAddress } from '@/app/(shared)/utils/token-info';
 
 const TABS_LOOKUP: { [id: string]: Tab[] } = {
   'address-lookup-table': [

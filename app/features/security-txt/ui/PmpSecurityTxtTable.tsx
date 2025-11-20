@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { TableCardBody } from '@/app/components/common/TableCardBody';
+import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
 
 import { PMP_SECURITY_TXT_KEYS } from '../lib/constants';
 import { CodeCell, ContactInfo, ExternalLinkCell, RenderCode, RenderExternalLink, StringCell } from './common';

@@ -10,6 +10,8 @@ const SUPPLY_ALIASES = ['accounts', 'accounts/top'];
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable standalone output for Docker
+  output: 'standalone',
   // Skip TypeScript checks temporarily for build
   typescript: {
     ignoreBuildErrors: true,

@@ -1,8 +1,8 @@
 'use client';
 
-import { AnchorAccountCard } from '@components/account/AnchorAccountCard';
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
-import { LoadingCard } from '@components/common/LoadingCard';
+import { AnchorAccountCard } from '@/app/(shared)/components/account/AnchorAccountCard';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
 import { Suspense } from 'react';
 import React from 'react';
 

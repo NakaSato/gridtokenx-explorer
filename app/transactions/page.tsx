@@ -3,18 +3,18 @@
 export const dynamic = 'force-dynamic';
 
 import React, { Suspense } from 'react';
-import { ErrorCard } from '@components/common/ErrorCard';
-import { LoadingCard } from '@components/common/LoadingCard';
-import { AnchorDeveloperTools } from '@components/transaction/AnchorDeveloperTools';
-import { TransactionAnalytics } from '@components/transaction/TransactionAnalytics';
-import { ProgramMonitorCard } from '@components/transaction/ProgramMonitorCard';
-import { RealtimeTransactionTable, Transaction } from '@components/transaction/RealtimeTransactionTable';
-import { TransactionDetailsCard } from '@components/transaction/TransactionDetailsCard';
-import { MonitoringGuideCard } from '@components/transaction/MonitoringGuideCard';
-import { useCluster } from '@providers/cluster';
-import { ClusterStatus } from '@utils/cluster';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
+import { AnchorDeveloperTools } from '@/app/(shared)/components/transaction/AnchorDeveloperTools';
+import { TransactionAnalytics } from '@/app/(shared)/components/transaction/TransactionAnalytics';
+import { ProgramMonitorCard } from '@/app/(shared)/components/transaction/ProgramMonitorCard';
+import { RealtimeTransactionTable, Transaction } from '@/app/(shared)/components/transaction/RealtimeTransactionTable';
+import { TransactionDetailsCard } from '@/app/(shared)/components/transaction/TransactionDetailsCard';
+import { MonitoringGuideCard } from '@/app/(shared)/components/transaction/MonitoringGuideCard';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { ClusterStatus } from '@/app/(shared)/utils/cluster';
 import { createSolanaRpc } from '@solana/kit';
-import { toAddress, toSignature, createRpc, toLegacyParsedTransaction } from '@utils/rpc';
+import { toAddress, toSignature, createRpc, toLegacyParsedTransaction } from '@/app/(shared)/utils/rpc';
 
 const MAX_TRANSACTIONS = 50;
 const REFRESH_INTERVAL = 5000; // 5 seconds

@@ -1,7 +1,7 @@
 'use client';
 
-import { ConcurrentMerkleTreeCard } from '@components/account/ConcurrentMerkleTreeCard';
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
+import { ConcurrentMerkleTreeCard } from '@/app/(shared)/components/account/ConcurrentMerkleTreeCard';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
 import { SPL_ACCOUNT_COMPRESSION_PROGRAM_ID as PROGRAM_ID } from '@solana/spl-account-compression';
 import React from 'react';
 

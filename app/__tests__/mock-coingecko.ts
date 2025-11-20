@@ -1,7 +1,7 @@
-import { Account } from '@providers/accounts';
+import { Account } from '@/app/(core)/providers/accounts';
 import { PublicKey } from '@solana/web3.js';
-import { CoinInfo } from '@utils/coingecko';
-import { FullTokenInfo } from '@utils/token-info';
+import { CoinInfo } from '@/app/(shared)/utils/coingecko';
+import { FullTokenInfo } from '@/app/(shared)/utils/token-info';
 
 export const coinInfo = (): CoinInfo => {
   return {

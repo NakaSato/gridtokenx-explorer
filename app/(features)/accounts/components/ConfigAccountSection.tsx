@@ -1,0 +1,114 @@
+import { AccountAddressRow, AccountBalanceRow, AccountHeader } from '@/app/(shared)/components/common/Account';
+import { Address } from '@/app/(shared)/components/common/Address';
+import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
+import { Account, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
+import { Card, CardContent } from '@/app/(shared)/components/shared/ui/card';
+import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
+import { PublicKey } from '@solana/web3.js';
+import { ConfigAccount, StakeConfigInfoAccount, ValidatorInfoAccount } from '@validators/accounts/config';
+import React from 'react';
+
+const MAX_SLASH_PENALTY = Math.pow(2, 8);
+
+export function ConfigAccountSection({ account, configAccount }: { account: Account; configAccount: ConfigAccount }) {
+  switch (configAccount.type) {
+    case 'stakeConfig':
+      return <StakeConfigCard account={account} configAccount={configAccount} />;
+    case 'validatorInfo':
+      return <ValidatorInfoCard account={account} configAccount={configAccount} />;
+  }
+}
+
+function StakeConfigCard({ account, configAccount }: { account: Account; configAccount: StakeConfigInfoAccount }) {
+  const refresh = useFetchAccountInfo();
+
+  const warmupCooldownFormatted = new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 2,
+    style: 'percent',
+  }).format(configAccount.info.warmupCooldownRate);
+
+  const slashPenaltyFormatted = new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 2,
+    style: 'percent',
+  }).format(configAccount.info.slashPenalty / MAX_SLASH_PENALTY);
+
+  return (
+    <Card>
+      <AccountHeader title="Stake Config" refresh={() => refresh(account.pubkey, 'parsed')} />
+
+      <CardContent>
+        <TableCardBody>
+          <AccountAddressRow account={account} />
+          <AccountBalanceRow account={account} />
+
+          <tr>
+            <td>Warmup / Cooldown Rate</td>
+            <td className="lg:text-right">{warmupCooldownFormatted}</td>
+          </tr>
+
+          <tr>
+            <td>Slash Penalty</td>
+            <td className="lg:text-right">{slashPenaltyFormatted}</td>
+          </tr>
+        </TableCardBody>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ValidatorInfoCard({ account, configAccount }: { account: Account; configAccount: ValidatorInfoAccount }) {
+  const refresh = useFetchAccountInfo();
+  return (
+    <Card>
+      <AccountHeader title="Validator Info" refresh={() => refresh(account.pubkey, 'parsed')} />
+
+      <CardContent>
+        <TableCardBody>
+          <AccountAddressRow account={account} />
+          <AccountBalanceRow account={account} />
+
+          {configAccount.info.configData.name && (
+            <tr>
+              <td>Name</td>
+              <td className="lg:text-right">{configAccount.info.configData.name}</td>
+            </tr>
+          )}
+
+          {configAccount.info.configData.keybaseUsername && (
+            <tr>
+              <td>Keybase Username</td>
+              <td className="lg:text-right">{configAccount.info.configData.keybaseUsername}</td>
+            </tr>
+          )}
+
+          {configAccount.info.configData.website && (
+            <tr>
+              <td>Website</td>
+              <td className="lg:text-right">
+                <a href={configAccount.info.configData.website} target="_blank" rel="noopener noreferrer">
+                  {configAccount.info.configData.website}
+                </a>
+              </td>
+            </tr>
+          )}
+
+          {configAccount.info.configData.details && (
+            <tr>
+              <td>Details</td>
+              <td className="lg:text-right">{configAccount.info.configData.details}</td>
+            </tr>
+          )}
+
+          {configAccount.info.keys && configAccount.info.keys.length > 1 && (
+            <tr>
+              <td>Signer</td>
+              <td className="lg:text-right">
+                <Address pubkey={addressToPublicKey(toAddress(configAccount.info.keys[1].pubkey))} link alignRight />
+              </td>
+            </tr>
+          )}
+        </TableCardBody>
+      </CardContent>
+    </Card>
+  );
+}

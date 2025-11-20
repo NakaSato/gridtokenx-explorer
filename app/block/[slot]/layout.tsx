@@ -1,22 +1,22 @@
 'use client';
 
-import { Address } from '@components/common/Address';
-import { Epoch } from '@components/common/Epoch';
-import { ErrorCard } from '@components/common/ErrorCard';
-import { LoadingCard } from '@components/common/LoadingCard';
-import { Slot } from '@components/common/Slot';
-import { TableCardBody } from '@components/common/TableCardBody';
-import { BlockProvider, FetchStatus, useBlock, useFetchBlock } from '@providers/block';
-import { useCluster } from '@providers/cluster';
-import { ClusterStatus } from '@utils/cluster';
-import { displayTimestamp, displayTimestampUtc } from '@utils/date';
-import { useClusterPath } from '@utils/url';
+import { Address } from '@/app/(shared)/components/common/Address';
+import { Epoch } from '@/app/(shared)/components/common/Epoch';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
+import { Slot } from '@/app/(shared)/components/common/Slot';
+import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
+import { BlockProvider, FetchStatus, useBlock, useFetchBlock } from '@/app/(core)/providers/block';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { ClusterStatus } from '@/app/(shared)/utils/cluster';
+import { displayTimestamp, displayTimestampUtc } from '@/app/(shared)/utils/date';
+import { useClusterPath } from '@/app/(shared)/utils/url';
 import Link from 'next/link';
 import { notFound, useSelectedLayoutSegment } from 'next/navigation';
 import React, { PropsWithChildren } from 'react';
 
-import { estimateRequestedComputeUnits } from '@/app/utils/compute-units-schedule';
-import { getEpochForSlot, getMaxComputeUnitsInBlock } from '@/app/utils/epoch-schedule';
+import { estimateRequestedComputeUnits } from '@/app/(shared)/utils/compute-units-schedule';
+import { getEpochForSlot, getMaxComputeUnitsInBlock } from '@/app/(shared)/utils/epoch-schedule';
 
 type Props = PropsWithChildren<{ params: Promise<{ slot: string }> }>;
 

@@ -1,6 +1,6 @@
-import { OwnedTokensCard } from '@components/account/OwnedTokensCard';
-import { TokenHistoryCard } from '@components/account/TokenHistoryCard';
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readable-title-from-address';
+import { OwnedTokensCard } from '@/app/(shared)/components/account/OwnedTokensCard';
+import { TokenHistoryCard } from '@/app/(shared)/components/account/TokenHistoryCard';
+import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@/app/(shared)/utils/get-readable-title-from-address';
 import { Metadata } from 'next/types';
 import React, { Suspense } from 'react';
 

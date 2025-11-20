@@ -1,10 +1,10 @@
-import { TableCardBody } from '@components/common/TableCardBody';
+import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
 import { ParsedMessage, PublicKey, VersionedMessage } from '@solana/web3.js';
-import { Cluster } from '@utils/cluster';
+import { Cluster } from '@/app/(shared)/utils/cluster';
 import getInstructionCardScrollAnchorId from '@utils/get-instruction-card-scroll-anchor-id';
-import { InstructionLogs } from '@utils/program-logs';
-import { ProgramName } from '@utils/program-name';
-import { useClusterPath } from '@utils/url';
+import { InstructionLogs } from '@/app/(shared)/utils/program-logs';
+import { ProgramName } from '@/app/(shared)/utils/program-name';
+import { useClusterPath } from '@/app/(shared)/utils/url';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';

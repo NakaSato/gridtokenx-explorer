@@ -1,12 +1,12 @@
 'use client';
 
-import { ParsedAccountRenderer } from '@components/account/ParsedAccountRenderer';
+import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
 import React, { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { CompressedNFTInfoCard } from '@/app/components/account/CompressedNFTInfoCard';
-import { ErrorCard } from '@/app/components/common/ErrorCard';
-import { LoadingCard } from '@/app/components/common/LoadingCard';
+import { CompressedNFTInfoCard } from '@/app/(shared)/components/account/CompressedNFTInfoCard';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
 
 type Props = Readonly<{
   params: {

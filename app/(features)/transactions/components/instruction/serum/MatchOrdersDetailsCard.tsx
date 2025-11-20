@@ -1,0 +1,67 @@
+import { Address } from '@/app/(shared)/components/common/Address';
+import React from 'react';
+
+import { InstructionCard } from '../InstructionCard';
+import { MatchOrders, SerumIxDetailsProps } from './types';
+
+export function MatchOrdersDetailsCard(props: SerumIxDetailsProps<MatchOrders>) {
+  const { ix, index, result, programName, info, innerCards, childIndex } = props;
+
+  return (
+    <InstructionCard
+      ix={ix}
+      index={index}
+      result={result}
+      title={`${programName} Program: Match Orders`}
+      innerCards={innerCards}
+      childIndex={childIndex}
+    >
+      <tr>
+        <td>Program</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.programId} alignRight link />
+        </td>
+      </tr>
+
+      <tr>
+        <td>Market</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.market} alignRight link />
+        </td>
+      </tr>
+
+      <tr>
+        <td>Request Queue</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.requestQueue} alignRight link />
+        </td>
+      </tr>
+
+      <tr>
+        <td>Event Queue</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.eventQueue} alignRight link />
+        </td>
+      </tr>
+
+      <tr>
+        <td>Bids</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.bids} alignRight link />
+        </td>
+      </tr>
+
+      <tr>
+        <td>Asks</td>
+        <td className="lg:text-right">
+          <Address pubkey={info.accounts.asks} alignRight link />
+        </td>
+      </tr>
+
+      <tr>
+        <td>Limit</td>
+        <td className="lg:text-right">{info.data.limit}</td>
+      </tr>
+    </InstructionCard>
+  );
+}

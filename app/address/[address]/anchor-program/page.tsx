@@ -1,4 +1,4 @@
-import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@utils/get-readable-title-from-address';
+import getReadableTitleFromAddress, { AddressPageMetadataProps } from '@/app/(shared)/utils/get-readable-title-from-address';
 import { redirect } from 'next/navigation';
 import { Metadata } from 'next/types';
 

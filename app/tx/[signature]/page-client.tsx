@@ -1,20 +1,20 @@
 'use client';
 
-import { Address } from '@components/common/Address';
-import { BalanceDelta } from '@components/common/BalanceDelta';
-import { ErrorCard } from '@components/common/ErrorCard';
-import { InfoTooltip } from '@components/common/InfoTooltip';
-import { LoadingCard } from '@components/common/LoadingCard';
-import { Signature } from '@components/common/Signature';
-import { Slot } from '@components/common/Slot';
-import { SolBalance } from '@components/common/SolBalance';
-import { TableCardBody } from '@components/common/TableCardBody';
-import { SignatureContext } from '@components/instruction/SignatureContext';
-import { InstructionsSection } from '@components/transaction/InstructionsSection';
-import { ProgramLogSection } from '@components/transaction/ProgramLogSection';
-import { TokenBalancesCard } from '@components/transaction/TokenBalancesCard';
-import { FetchStatus } from '@providers/cache';
-import { useCluster } from '@providers/cluster';
+import { Address } from '@/app/(shared)/components/common/Address';
+import { BalanceDelta } from '@/app/(shared)/components/common/BalanceDelta';
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
+import { InfoTooltip } from '@/app/(shared)/components/common/InfoTooltip';
+import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
+import { Signature } from '@/app/(shared)/components/common/Signature';
+import { Slot } from '@/app/(shared)/components/common/Slot';
+import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
+import { SignatureContext } from '@/app/(shared)/components/instruction/SignatureContext';
+import { InstructionsSection } from '@/app/(shared)/components/transaction/InstructionsSection';
+import { ProgramLogSection } from '@/app/(shared)/components/transaction/ProgramLogSection';
+import { TokenBalancesCard } from '@/app/(shared)/components/transaction/TokenBalancesCard';
+import { FetchStatus } from '@/app/(core)/providers/cache';
+import { useCluster } from '@/app/(core)/providers/cluster';
 import {
   TransactionStatusInfo,
   useFetchTransactionStatus,
@@ -23,21 +23,21 @@ import {
 } from '@providers/transactions';
 import { useFetchTransactionDetails } from '@providers/transactions/parsed';
 import { ParsedTransaction, SystemInstruction, SystemProgram, TransactionSignature } from '@solana/web3.js';
-import { Cluster, ClusterStatus } from '@utils/cluster';
-import { displayTimestamp } from '@utils/date';
-import { SignatureProps } from '@utils/index';
-import { getTransactionInstructionError } from '@utils/program-err';
-import { intoTransactionInstruction } from '@utils/tx';
-import { useClusterPath } from '@utils/url';
-import useTabVisibility from '@utils/use-tab-visibility';
+import { Cluster, ClusterStatus } from '@/app/(shared)/utils/cluster';
+import { displayTimestamp } from '@/app/(shared)/utils/date';
+import { SignatureProps } from '@/app/(shared)/utils/index';
+import { getTransactionInstructionError } from '@/app/(shared)/utils/program-err';
+import { intoTransactionInstruction } from '@/app/(shared)/utils/tx';
+import { useClusterPath } from '@/app/(shared)/utils/url';
+import useTabVisibility from '@/app/(shared)/utils/use-tab-visibility';
 import { BigNumber } from 'bignumber.js';
 import bs58 from 'bs58';
 import Link from 'next/link';
 import React, { Suspense, useEffect, useState } from 'react';
 import { RefreshCw, Settings } from 'react-feather';
 
-import { estimateRequestedComputeUnitsForParsedTransaction } from '@/app/utils/compute-units-schedule';
-import { getEpochForSlot } from '@/app/utils/epoch-schedule';
+import { estimateRequestedComputeUnitsForParsedTransaction } from '@/app/(shared)/utils/compute-units-schedule';
+import { getEpochForSlot } from '@/app/(shared)/utils/epoch-schedule';
 
 const AUTO_REFRESH_INTERVAL = 2000;
 const ZERO_CONFIRMATION_BAILOUT = 5;

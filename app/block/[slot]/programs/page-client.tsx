@@ -1,9 +1,9 @@
 'use client';
 
-import { BlockProgramsCard } from '@components/block/BlockProgramsCard';
-import { useBlock, useFetchBlock } from '@providers/block';
-import { useCluster } from '@providers/cluster';
-import { ClusterStatus } from '@utils/cluster';
+import { BlockProgramsCard } from '@/app/(shared)/components/block/BlockProgramsCard';
+import { useBlock, useFetchBlock } from '@/app/(core)/providers/block';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { ClusterStatus } from '@/app/(shared)/utils/cluster';
 import { notFound } from 'next/navigation';
 import React from 'react';
 

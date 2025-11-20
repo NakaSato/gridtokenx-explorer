@@ -1,0 +1,245 @@
+import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
+import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
+import { UpgradeableLoaderAccountData } from '@/app/(core)/providers/accounts';
+import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
+import { PublicKey } from '@solana/web3.js';
+import Link from 'next/link';
+import { ExternalLink } from 'react-feather';
+
+import { OsecRegistryInfo, useVerifiedProgram, VerificationStatus } from '@/app/utils/verified-builds';
+
+import { Address } from '../common/Address';
+import { Copyable } from '../common/Copyable';
+import { LoadingCard } from '../common/LoadingCard';
+
+export function VerifiedBuildCard({ data, pubkey }: { data: UpgradeableLoaderAccountData; pubkey: PublicKey }) {
+  const { data: registryInfo, isLoading } = useVerifiedProgram({
+    options: { suspense: true },
+    programAuthority: data.programData?.authority ? addressToPublicKey(toAddress(data.programData.authority)) : null,
+    programData: data.programData,
+    programId: pubkey,
+  });
+
+  if (!data.programData) {
+    return <ErrorCard text="Account has no data" />;
+  }
+
+  if (isLoading) {
+    return <LoadingCard message="Fetching last verified build hash" />;
+  }
+
+  if (!registryInfo) {
+    return (
+      <div className="bg-card rounded-lg border shadow-sm">
+        <div className="p-6 text-center">
+          Verified build information not yet uploaded by the program authority. For more information, see the{' '}
+          <Link href="https://solana.com/developers/guides/advanced/verified-builds" target="_blank">
+            Verified Build Guide
+          </Link>
+          .<br />
+          <br />
+          Note: Some programs were verified using older, deprecated versions of the API and may not include on-chain
+          verification details.
+        </div>
+      </div>
+    );
+  }
+
+  // Define the message based on the verification status
+  let verificationMessage;
+  if (
+    registryInfo.verification_status === VerificationStatus.Verified ||
+    registryInfo.verification_status === VerificationStatus.PdaUploaded
+  ) {
+    verificationMessage = 'Information provided by osec.io';
+  } else if (registryInfo.verification_status === VerificationStatus.NotVerified) {
+    verificationMessage = 'No verified build found';
+  }
+
+  return (
+    <div className="bg-card rounded-lg border shadow-sm">
+      <div className="border-b px-6 py-4">
+        <h3 className="mb-0 flex items-center text-lg font-semibold">Verified Build</h3>
+        <small>{verificationMessage}</small>
+      </div>
+      <div className="mt-2 mb-2 rounded-md px-4 py-3">
+        A verified build badge indicates that this program was built from source code that is publicly available, but
+        does not imply that this program has been audited. For more details, refer to the{' '}
+        <a
+          href="https://solana.com/developers/guides/advanced/verified-builds"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Verified Builds Guide <ExternalLink className="ms-1 align-text-top" size={13} />
+        </a>
+        .
+      </div>
+      <TableCardBody>
+        {ROWS.filter(x => x.key in registryInfo).map((x, idx) => {
+          return (
+            <tr key={idx}>
+              <td className="w-full">{x.display}</td>
+              <RenderEntry value={registryInfo[x.key]} type={x.type} />
+            </tr>
+          );
+        })}
+      </TableCardBody>
+    </div>
+  );
+}
+
+enum DisplayType {
+  Boolean,
+  String,
+  URL,
+  Date,
+  LongString,
+  PublicKey,
+}
+
+type TableRow = {
+  display: string;
+  key: keyof OsecRegistryInfo;
+  type: DisplayType;
+};
+
+const ROWS: TableRow[] = [
+  {
+    display: 'Verified',
+    key: 'is_verified',
+    type: DisplayType.Boolean,
+  },
+  {
+    display: 'Message',
+    key: 'message',
+    type: DisplayType.String,
+  },
+  {
+    display: 'Uploader',
+    key: 'signer',
+    type: DisplayType.PublicKey,
+  },
+  {
+    display: 'On Chain Hash',
+    key: 'on_chain_hash',
+    type: DisplayType.String,
+  },
+  {
+    display: 'Executable Hash',
+    key: 'executable_hash',
+    type: DisplayType.String,
+  },
+  {
+    display: 'Last Verified At',
+    key: 'last_verified_at',
+    type: DisplayType.Date,
+  },
+  {
+    display: 'Verify Command',
+    key: 'verify_command',
+    type: DisplayType.LongString,
+  },
+  {
+    display: 'Repository URL',
+    key: 'repo_url',
+    type: DisplayType.URL,
+  },
+];
+
+function RenderEntry({ value, type }: { value: OsecRegistryInfo[keyof OsecRegistryInfo]; type: DisplayType }) {
+  switch (type) {
+    case DisplayType.Boolean:
+      return (
+        <td className={'font-mono lg:text-right'}>
+          <span
+            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+              value ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }`}
+          >
+            {new String(value)}
+          </span>
+        </td>
+      );
+    case DisplayType.String:
+      if (Object.values(VerificationStatus).includes(value as VerificationStatus)) {
+        const isVerified = value === VerificationStatus.Verified;
+        const badgeClass = isVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+        const badgeValue = isVerified ? 'true' : 'false';
+        return (
+          <td className="font-mono lg:text-right">
+            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${badgeClass}`}>
+              {badgeValue}
+            </span>
+          </td>
+        );
+      }
+      return (
+        <td className="font-mono lg:text-right" style={{ whiteSpace: 'pre' }}>
+          {value && (value as string).length > 1 ? value : '-'}
+        </td>
+      );
+    case DisplayType.LongString:
+      return (
+        <td
+          className="font-mono lg:text-right"
+          style={{
+            overflowWrap: 'break-word',
+            position: 'relative',
+            whiteSpace: 'prwrap',
+            wordWrap: 'break-word',
+          }}
+        >
+          {value && (value as string).length > 1 ? (
+            <>
+              <Copyable text={value as string}> </Copyable>
+              <span>{value}</span>
+            </>
+          ) : (
+            '-'
+          )}
+        </td>
+      );
+    case DisplayType.URL:
+      if (isValidLink(value as string)) {
+        return (
+          <td className="lg:text-right">
+            <span className="font-mono">
+              <a rel="noopener noreferrer" target="_blank" href={value as string}>
+                {value}
+                <ExternalLink className="ms-2 align-text-top" size={13} />
+              </a>
+            </span>
+          </td>
+        );
+      }
+      return (
+        <td className="font-mono lg:text-right">
+          {value && (value as string).length > 1 ? (value as string).trim() : '-'}
+        </td>
+      );
+    case DisplayType.Date:
+      return (
+        <td className="font-mono lg:text-right">
+          {value && (value as string).length > 1 ? new Date(value as string).toUTCString() : '-'}
+        </td>
+      );
+    case DisplayType.PublicKey:
+      return (
+        <td className="font-mono lg:text-right">
+          <Address pubkey={addressToPublicKey(toAddress(value as string))} link alignRight />
+        </td>
+      );
+    default:
+      break;
+  }
+  return <></>;
+}
+
+function isValidLink(value: string) {
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol);
+  } catch (err) {
+    return false;
+  }
+}
