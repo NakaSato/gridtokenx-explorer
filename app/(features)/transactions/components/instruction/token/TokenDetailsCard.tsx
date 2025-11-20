@@ -87,10 +87,11 @@ function TokenInstruction(props: InfoProps) {
   }, [fetchAccountInfo, mintAddress]); // eslint-disablline react-hooks/exhaustivdeps
 
   const { cluster, url } = useCluster();
-  const { data: tokenDetails } = useSWR(
-    mintAddress ? getTokenInfoSwrKey(mintAddress, cluster, url) : null,
-    fetchTokenInfo,
-  );
+  // const { data: tokenDetails } = useSWR(
+  //   mintAddress ? getTokenInfoSwrKey(mintAddress, cluster, url) : null,
+  //   fetchTokenInfo,
+  // );
+  const tokenDetails = null;
 
   const attributes: React.ReactElement[] = [];
   let decimals = mintInfo?.decimals;
