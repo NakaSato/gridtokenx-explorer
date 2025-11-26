@@ -16,6 +16,6 @@ export { ProgramLogSection } from './ProgramLogSection';
 export { ProgramLogsCardBody } from './ProgramLogsCardBody';
 
 // Inspector Components
-export { TransactionInspectorPage } from './InspectorPage';
+export { TransactionInspectorPage } from './inspector/InspectorPage';
 
 // Note: Instruction subcomponents will be added as index files are created

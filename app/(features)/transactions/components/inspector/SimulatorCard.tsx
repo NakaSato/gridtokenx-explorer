@@ -1,4 +1,4 @@
-import { ProgramLogsCardBody } from '@/app/(shared)/components/ProgramLogsCardBody';
+import { ProgramLogsCardBody } from '@/app/(features)/transactions/components/ProgramLogsCardBody';
 import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@/app/(core)/providers/accounts/tokens';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { AccountLayout, MintLayout } from '@solana/spl-token';
@@ -19,11 +19,7 @@ import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import { InstructionLogs, parseProgramLogs } from '@/app/(shared)/utils/program-logs';
 import React from 'react';
 
-import {
-  generateTokenBalanceRows,
-  TokenBalancesCardInner,
-  TokenBalancesCardInnerProps,
-} from '../transaction/TokenBalancesCard';
+import { generateTokenBalanceRows, TokenBalancesCardInner, TokenBalancesCardInnerProps } from '../TokenBalancesCard';
 
 export function SimulatorCard({
   message,

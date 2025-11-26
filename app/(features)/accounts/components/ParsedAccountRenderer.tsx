@@ -1,16 +1,15 @@
-import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
-import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
+import { ErrorCard } from '@/app/(shared)/components/ErrorCard';
+import { LoadingCard } from '@/app/(shared)/components/LoadingCard';
 import { Account, useAccountInfo, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
 import { FetchStatus } from '@/app/(core)/providers/cache';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { ClusterStatus } from '@/app/(shared)/utils/cluster';
-import { RedirectType } from 'next/dist/client/components/redirect';
 import { redirect } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo } from 'react';
 
-import { useClusterPath } from '@/app/utils/url';
+import { useClusterPath } from '@/app/(shared)/utils/url';
 
 type ParsedAccountRendererProps = Readonly<{
   account: Account | undefined;
@@ -30,7 +29,7 @@ export function ParsedAccountRenderer({
   const pubkey = useMemo(() => addressToPublicKey(toAddress(address)), [address]);
   const rootAddressPathname = useClusterPath({ pathname: `/address/${address}` });
   const onNotFound = useCallback(() => {
-    redirect(rootAddressPathname, RedirectType.replace);
+    redirect(rootAddressPathname);
   }, [rootAddressPathname]);
   useEffect(() => {
     if (!accountInfoCacheEntry && status === ClusterStatus.Connected && address) {

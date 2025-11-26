@@ -1,7 +1,9 @@
-import { Address } from '@/app/(shared)/components/common/Address';
-import { InspectorInstructionCard } from '@/app/(shared)/components/common/InspectorInstructionCard';
+import { Address } from '@/app/(shared)/components/Address';
+import { InspectorInstructionCard } from '@/app/(shared)/components/InspectorInstructionCard';
 import { ParsedInstruction, SignatureResult, TransactionInstruction, VersionedMessage } from '@solana/web3.js';
 import React from 'react';
+
+type JSXElement = React.ReactElement;
 
 import { AddressWithContext } from '../AddressWithContext';
 
@@ -17,7 +19,7 @@ export function CreateDetailsCard({
 }: {
   childIndex?: number;
   index: number;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   ix: ParsedInstruction;
   message: VersionedMessage;
   raw: TransactionInstruction;

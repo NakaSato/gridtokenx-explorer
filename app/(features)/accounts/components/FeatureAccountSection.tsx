@@ -1,6 +1,6 @@
 import { Address } from '@/app/(shared)/components/common/Address';
 import { Slot } from '@/app/(shared)/components/common/Slot';
-import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
+import { TableCardBody } from '@/app/(shared)/components/TableCardBody';
 import { Account } from '@/app/(core)/providers/accounts';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { PublicKey } from '@solana/web3.js';
@@ -10,10 +10,10 @@ import { useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ExternalLink as ExternalLinkIcon } from 'react-feather';
 
-import { ClusterInfo, useCluster } from '@/app/providers/cluster';
-import { Cluster, clusterName } from '@/app/utils/cluster';
+import { ClusterInfo, useCluster } from '@/app/(core)/providers/cluster';
+import { Cluster, clusterName } from '@/app/(shared)/utils/cluster';
 import { getEpochForSlot } from '@/app/(shared)/utils/epoch-schedule';
-import { FeatureInfoType } from '@/app/utils/feature-gate/types';
+import { FeatureInfoType } from '@/app/(shared)/utils/feature-gate/types';
 import { getFeatureInfo } from '@/app/(shared)/utils/feature-gate/utils';
 
 import { UnknownAccountCard } from './UnknownAccountCard';
@@ -97,7 +97,7 @@ const BaseFeatureCard = ({
         <h3 className="mb-0 flex items-center text-lg font-semibold">{featureInfo?.title ?? 'Feature Activation'}</h3>
       </div>
 
-      <TableCardBody layout="expanded">
+      <TableCardBody>
         <tr>
           <td>Address</td>
           <td>

@@ -3,7 +3,7 @@
  *
  * The main difference is that component accepts MessageCompiledInstruction to allow use accountKeyIndexes to resolve proper address from address-lookup-table
  */
-import { UnknownDetailsCard } from '@/app/(shared)/components/common/inspector/UnknownDetailsCard';
+import { UnknownDetailsCard } from '../UnknownDetailsCard';
 import { ParsedInfo } from '@/app/validators/index';
 import React from 'react';
 import { create } from 'superstruct';
@@ -31,7 +31,7 @@ export function AssociatedTokenDetailsCard(props: React.PropsWithChildren<Detail
         return <RecoverNestedDetailsCard {...props} />;
       }
       default:
-        return <UnknownDetailsCard {...props} />;
+        return <UnknownDetailsCard {...props} programName="Associated Token Program" />;
     }
   } catch (_error) {
     return <UnknownDetailsCard {...props} />;

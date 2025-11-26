@@ -1,7 +1,7 @@
-import { Address } from '@/app/(shared)/components/common/Address';
-import { useScrollAnchor } from '@providers/scroll-anchor';
+import { Address } from '@/app/(shared)/components/Address';
+import { useScrollAnchor } from '@/app/(core)/providers/scroll-anchor';
 import { ParsedInstruction, SignatureResult, TransactionInstruction, VersionedMessage } from '@solana/web3.js';
-import getInstructionCardScrollAnchorId from '@utils/get-instruction-card-scroll-anchor-id';
+import getInstructionCardScrollAnchorId from '@/app/(shared)/utils/get-instruction-card-scroll-anchor-id';
 import React from 'react';
 import { Code } from 'react-feather';
 

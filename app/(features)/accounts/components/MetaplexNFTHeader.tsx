@@ -1,5 +1,5 @@
-import { InfoTooltip } from '@/app/(shared)/components/common/InfoTooltip';
-import { ArtContent } from '@/app/(shared)/components/common/NFTArt';
+import { InfoTooltip } from '@/app/(shared)/components/InfoTooltip';
+import { ArtContent } from '@/app/(shared)/components/NFTArt';
 // TODO: Migrate to @metaplex-foundation/mpl-token-metadata v3
 // import { programs } from '@metaplex/js';
 import { NFTData, useFetchAccountInfo, useMintAccountInfo } from '@/app/(core)/providers/accounts';

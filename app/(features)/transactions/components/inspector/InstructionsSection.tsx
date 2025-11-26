@@ -1,4 +1,4 @@
-import { BaseInstructionCard } from '@/app/(shared)/components/common/BaseInstructionCard';
+import { BaseInstructionCard } from '@/app/(shared)/components/BaseInstructionCard';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import {
@@ -13,12 +13,12 @@ import { getProgramName } from '@/app/(shared)/utils/tx';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { useAddressLookupTables } from '@/app/providers/accounts';
-import { useAnchorProgram } from '@/app/providers/anchor';
-import { FetchStatus } from '@/app/providers/cache';
+import { useAddressLookupTables } from '@/app/(core)/providers/accounts';
+import { useAnchorProgram } from '@/app/(core)/providers/anchor';
+import { FetchStatus } from '@/app/(core)/providers/cache';
 
-import { ErrorCard } from '../common/ErrorCard';
-import { LoadingCard } from '../common/LoadingCard';
+import { ErrorCard } from '@/app/(shared)/components/ErrorCard';
+import { LoadingCard } from '@/app/(shared)/components/LoadingCard';
 import AnchorDetailsCard from '../instruction/AnchorDetailsCard';
 import { ComputeBudgetDetailsCard } from '../instruction/ComputeBudgetDetailsCard';
 import { SystemDetailsCard } from '../instruction/system/SystemDetailsCard';

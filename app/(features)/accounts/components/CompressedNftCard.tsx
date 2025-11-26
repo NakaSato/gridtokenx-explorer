@@ -6,14 +6,14 @@ import { ChevronDown, ExternalLink } from 'react-feather';
 import useAsyncEffect from 'use-async-effect';
 
 import { getProxiedUri } from '@/app/features/metadata';
-import { useCluster } from '@/app/providers/cluster';
+import { useCluster } from '@/app/(core)/providers/cluster';
 import { CompressedNft, useCompressedNft, useMetadataJsonLink } from '@/app/(core)/providers/compressed-nft';
 
-import { Address } from '../common/Address';
-import { InfoTooltip } from '../common/InfoTooltip';
-import { LoadingArtPlaceholder } from '../common/LoadingArtPlaceholder';
-import { ArtContent } from '../common/NFTArt';
-import { TableCardBody } from '../common/TableCardBody';
+import { Address } from '@/app/(shared)/components/Address';
+import { InfoTooltip } from '@/app/(shared)/components/InfoTooltip';
+import { LoadingArtPlaceholder } from '@/app/(shared)/components/LoadingArtPlaceholder';
+import { ArtContent } from '@/app/(shared)/components/NFTArt';
+import { TableCardBody } from '@/app/(shared)/components/TableCardBody';
 import { getCreatorDropdownItems, getIsMutablePill, getVerifiedCollectionPill } from './MetaplexNFTHeader';
 import { UnknownAccountCard } from './UnknownAccountCard';
 

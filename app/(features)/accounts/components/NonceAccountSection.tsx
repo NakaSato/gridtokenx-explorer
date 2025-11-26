@@ -1,8 +1,8 @@
-import { AccountAddressRow, AccountBalanceRow, AccountHeader } from '@/app/(shared)/components/common/Account';
-import { Address } from '@/app/(shared)/components/common/Address';
-import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
+import { AccountAddressRow, AccountBalanceRow, AccountHeader } from '@/app/(shared)/components/Account';
+import { Address } from '@/app/(shared)/components/Address';
+import { TableCardBody } from '@/app/(shared)/components/TableCardBody';
 import { Account, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
-import { Card, CardContent } from '@/app/(shared)/components/shared/ui/card';
+import { Card, CardContent } from '@/app/(shared)/components/ui/card';
 import { NonceAccount } from '@validators/accounts/nonce';
 import React from 'react';
 

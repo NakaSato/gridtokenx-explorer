@@ -1,20 +1,23 @@
 'use client';
 import '@/app/(shared)/types/bigint'; // polyfill toJSON for BigInt
 
-import { AddressLookupTableAccountSection } from '@/app/(shared)/components/account/address-lookup-table/AddressLookupTableAccountSection';
-import { isAddressLookupTableAccount } from '@/app/(shared)/components/account/address-lookup-table/types';
-import { ConfigAccountSection } from '@/app/(shared)/components/account/ConfigAccountSection';
-import { FeatureAccountSection } from '@/app/(shared)/components/account/FeatureAccountSection';
-import { isNFTokenAccount, parseNFTokenCollectionAccount } from '@/app/(shared)/components/account/nftoken/isNFTokenAccount';
-import { NFTOKEN_ADDRESS } from '@/app/(shared)/components/account/nftoken/nftoken';
-import { NFTokenAccountSection } from '@/app/(shared)/components/account/nftoken/NFTokenAccountSection';
-import { NonceAccountSection } from '@/app/(shared)/components/account/NonceAccountSection';
-import { StakeAccountSection } from '@/app/(shared)/components/account/StakeAccountSection';
-import { SysvarAccountSection } from '@/app/(shared)/components/account/SysvarAccountSection';
-import { TokenAccountSection } from '@/app/(shared)/components/account/TokenAccountSection';
-import { UnknownAccountCard } from '@/app/(shared)/components/account/UnknownAccountCard';
-import { UpgradeableLoaderAccountSection } from '@/app/(shared)/components/account/UpgradeableLoaderAccountSection';
-import { VoteAccountSection } from '@/app/(shared)/components/account/VoteAccountSection';
+import { AddressLookupTableAccountSection } from '@/app/(features)/accounts/components/address-lookup-table/AddressLookupTableAccountSection';
+import { isAddressLookupTableAccount } from '@/app/(features)/accounts/components/address-lookup-table/types';
+import { ConfigAccountSection } from '@/app/(features)/accounts/components/ConfigAccountSection';
+import { FeatureAccountSection } from '@/app/(features)/accounts/components/FeatureAccountSection';
+import {
+  isNFTokenAccount,
+  parseNFTokenCollectionAccount,
+} from '@/app/(features)/accounts/components/nftoken/isNFTokenAccount';
+import { NFTOKEN_ADDRESS } from '@/app/(features)/accounts/components/nftoken/nftoken';
+import { NFTokenAccountSection } from '@/app/(features)/accounts/components/nftoken/NFTokenAccountSection';
+import { NonceAccountSection } from '@/app/(features)/accounts/components/NonceAccountSection';
+import { StakeAccountSection } from '@/app/(features)/accounts/components/StakeAccountSection';
+import { SysvarAccountSection } from '@/app/(features)/accounts/components/SysvarAccountSection';
+import { TokenAccountSection } from '@/app/(features)/accounts/components/TokenAccountSection';
+import { UnknownAccountCard } from '@/app/(features)/accounts/components/UnknownAccountCard';
+import { UpgradeableLoaderAccountSection } from '@/app/(features)/accounts/components/UpgradeableLoaderAccountSection';
+import { VoteAccountSection } from '@/app/(features)/accounts/components/VoteAccountSection';
 import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
 import { Header } from '@/app/(shared)/components/Header';
@@ -46,8 +49,8 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { SOLANA_ATTESTATION_SERVICE_PROGRAM_ADDRESS as SAS_PROGRAM_ID } from 'sas-lib';
 import useSWRImmutable from 'swr/immutable';
 
-import { CompressedNftCard } from '@/app/(shared)/components/account/CompressedNftCard';
-import { SolanaAttestationServiceCard } from '@/app/(shared)/components/account/sas/SolanaAttestationCard';
+import { CompressedNftCard } from '@/app/(features)/accounts/components/CompressedNftCard';
+import { SolanaAttestationServiceCard } from '@/app/(features)/accounts/components/sas/SolanaAttestationCard';
 import { useProgramMetadataIdl } from '@/app/entities/program-metadata';
 import { hasTokenMetadata } from '@/app/features/metadata';
 import { useCompressedNft } from '@/app/(core)/providers/compressed-nft';

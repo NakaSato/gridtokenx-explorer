@@ -1,15 +1,17 @@
-import { Address } from '@/app/(shared)/components/common/Address';
-import { InspectorInstructionCard } from '@/app/(shared)/components/common/InspectorInstructionCard';
+import { Address } from '@/app/(shared)/components/Address';
+import { InspectorInstructionCard } from '@/app/(shared)/components/InspectorInstructionCard';
 import { ParsedInstruction, SignatureResult, TransactionInstruction, VersionedMessage } from '@solana/web3.js';
 import React from 'react';
 
 import { AddressWithContext } from '../AddressWithContext';
 
+type JSXElement = React.ReactElement;
+
 export function CreateIdempotentDetailsCard(props: {
   childIndex?: number;
   children?: React.ReactNode;
   index: number;
-  innerCards?: JSX.Element[];
+  innerCards?: React.ReactElement[];
   ix: ParsedInstruction;
   message: VersionedMessage;
   raw: TransactionInstruction;

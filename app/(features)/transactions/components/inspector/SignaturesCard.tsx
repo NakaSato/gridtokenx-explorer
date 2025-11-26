@@ -1,5 +1,5 @@
-import { Address } from '@/app/(shared)/components/common/Address';
-import { Signature } from '@/app/(shared)/components/common/Signature';
+import { Address } from '@/app/(shared)/components/Address';
+import { Signature } from '@/app/(shared)/components/Signature';
 import { PublicKey, VersionedMessage } from '@solana/web3.js';
 import bs58 from 'bs58';
 import React from 'react';

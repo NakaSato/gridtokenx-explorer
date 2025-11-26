@@ -1,13 +1,13 @@
-import { Address } from '@/app/(shared)/components/common/Address';
-import { Epoch } from '@/app/(shared)/components/common/Epoch';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
-import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
+import { Address } from '@/app/(shared)/components/Address';
+import { Epoch } from '@/app/(shared)/components/Epoch';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
+import { TableCardBody } from '@/app/(shared)/components/TableCardBody';
 import { Account, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
 import { StakeActivationData } from '@solana/web3.js';
 import { displayTimestampUtc } from '@/app/(shared)/utils/date';
 import { StakeAccountInfo, StakeAccountType, StakeMeta } from '@validators/accounts/stake';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/app/(shared)/components/shared/ui/card';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/app/(shared)/components/ui/card';
 import React from 'react';
 import { RefreshCw } from 'react-feather';
 

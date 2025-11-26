@@ -1,11 +1,11 @@
-import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
-import { useScrollAnchor } from '@providers/scroll-anchor';
+import { TableCardBody } from '@/app/(shared)/components/TableCardBody';
+import { useScrollAnchor } from '@/app/(core)/providers/scroll-anchor';
 import { TransactionInstruction } from '@solana/web3.js';
 import React from 'react';
 
-import getInstructionCardScrollAnchorId from '@/app/utils/get-instruction-card-scroll-anchor-id';
+import getInstructionCardScrollAnchorId from '@/app/(shared)/utils/get-instruction-card-scroll-anchor-id';
 
-import { BaseRawDetails } from '../common/BaseRawDetails';
+import { BaseRawDetails } from '@/app/(shared)/components/BaseRawDetails';
 import { AddressWithContext, programValidator } from './AddressWithContext';
 
 export function UnknownDetailsCard({

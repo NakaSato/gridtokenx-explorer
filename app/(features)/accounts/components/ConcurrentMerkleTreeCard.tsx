@@ -2,9 +2,9 @@ import { ConcurrentMerkleTreeAccount } from '@solana/spl-account-compression';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 
-import { Address } from '../common/Address';
-import { Slot } from '../common/Slot';
-import { TableCardBody } from '../common/TableCardBody';
+import { Address } from '@/app/(shared)/components/Address';
+import { Slot } from '@/app/(shared)/components/Slot';
+import { TableCardBody } from '@/app/(shared)/components/TableCardBody';
 
 export function ConcurrentMerkleTreeCard({ data }: { data: Buffer }) {
   const cmt = ConcurrentMerkleTreeAccount.fromBuffer(Buffer.from(data));

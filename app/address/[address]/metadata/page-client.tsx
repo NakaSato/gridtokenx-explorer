@@ -2,7 +2,7 @@
 
 import React, { Suspense } from 'react';
 
-import { ParsedAccountRenderer } from '@/app/(shared)/components/account/ParsedAccountRenderer';
+import { ParsedAccountRenderer } from '@/app/(features)/accounts/components/ParsedAccountRenderer';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
 import { MetadataCard } from '@/app/features/metadata';
 

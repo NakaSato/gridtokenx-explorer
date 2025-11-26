@@ -2,13 +2,14 @@
 
 import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
-import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
+import { TableCardBody } from '@/app/(shared)/components/TableCardBody';
 import { useFetchAccountInfo } from '@/app/(core)/providers/accounts';
 import { FetchStatus } from '@/app/(core)/providers/cache';
-import { useFetchRawTransaction, useRawTransactionDetails } from '@providers/transactions/raw';
+import { useFetchRawTransaction, useRawTransactionDetails } from '@/app/(core)/providers/transactions/raw';
 import usePrevious from '@react-hook/previous';
-import { Connection, MessageV0, PACKET_DATA_SIZE, PublicKey, VersionedMessage } from '@solana/web3.js';
+import { Connection, MessageV0, PACKET_DATA_SIZE, VersionedMessage } from '@solana/web3.js';
+import { PublicKey as SolanaPublicKey } from '@solana/web3.js';
 import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import { generated, PROGRAM_ADDRESS as SQUADS_V4_PROGRAM_ADDRESS } from '@sqds/multisig';
 const { VaultTransaction } = generated;
@@ -19,7 +20,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import useSWR from 'swr';
 
-import { useCluster } from '@/app/providers/cluster';
+import { useCluster } from '@/app/(core)/providers/cluster';
 
 import { AccountsCard } from './AccountsCard';
 import { AddressTableLookupsCard } from './AddressTableLookupsCard';
@@ -111,9 +112,13 @@ function decodeUrlParams(
   // Check for Squads transaction parameter
   if (typeof squadsTxParam === 'string') {
     try {
-      // Validate that it's a valid public key
-      addressToPublicKey(toAddress(squadsTxParam));
-      return [{ account: squadsTxParam }, params, refreshUrl];
+      // Validate that it's a valid public key format (basic validation)
+      if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(squadsTxParam)) {
+        return [{ account: squadsTxParam }, params, refreshUrl];
+      } else {
+        params.delete('squadsTx');
+        refreshUrl = true;
+      }
     } catch (err) {
       params.delete('squadsTx');
       refreshUrl = true;
@@ -167,7 +172,10 @@ function SquadsProposalInspectorCard({ account, onClear }: { account: string; on
     const connection = new Connection(url);
     try {
       // First check if the account exists and is owned by the Squads program
-      const accountInfo = await connection.getAccountInfo(addressToPublicKey(toAddress(account)), 'confirmed');
+      const accountInfo = await connection.getAccountInfo(
+        new SolanaPublicKey(addressToPublicKey(toAddress(account)).toString()),
+        'confirmed',
+      );
 
       if (!accountInfo) {
         throw new Error('Account not found');
@@ -180,7 +188,11 @@ function SquadsProposalInspectorCard({ account, onClear }: { account: string; on
         throw new Error(`Account ${account} is not a valid Squads transaction account`);
       }
 
-      return await VaultTransaction.fromAccountAddress(connection, addressToPublicKey(toAddress(account)), 'confirmed');
+      return await VaultTransaction.fromAccountAddress(
+        connection,
+        new SolanaPublicKey(addressToPublicKey(toAddress(account)).toString()),
+        'confirmed',
+      );
     } catch (err) {
       throw err instanceof Error ? err : new Error('Failed to fetch account data');
     }
@@ -257,6 +269,20 @@ export function TransactionInspectorPage({
   signature?: string;
   showTokenBalanceChanges: boolean;
 }) {
+  // Skip all logic during build time to prevent public key validation errors
+  if (typeof window === 'undefined') {
+    return (
+      <div className="container mt-4">
+        <div className="header">
+          <div className="header-body">
+            <h2 className="header-title">Transaction Inspector</h2>
+          </div>
+        </div>
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
   const [inspectorData, setInspectorData] = React.useState<InspectorData>();
   const currentSearchParams = useSearchParams();
   const currentPathname = usePathname();
@@ -314,6 +340,9 @@ export function TransactionInspectorPage({
 
   // Decode the message url param whenever it changes
   React.useEffect(() => {
+    // Skip execution during build time
+    if (typeof window === 'undefined') return;
+
     const [result, nextParams, refreshUrl] = decodeUrlParams(new URLSearchParams(currentSearchParams?.toString()));
     if (refreshUrl) {
       const queryString = nextParams.toString();
