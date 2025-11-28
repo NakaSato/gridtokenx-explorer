@@ -1,4 +1,4 @@
-import { AccountAddressRow, AccountBalanceRow, AccountHeader } from '@/app/(shared)/components/common/Account';
+import { AccountAddressRow, AccountBalanceRow, AccountHeader } from '@/app/(shared)/components/Account';
 import { Epoch } from '@/app/(shared)/components/common/Epoch';
 import { Slot } from '@/app/(shared)/components/common/Slot';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';

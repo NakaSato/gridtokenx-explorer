@@ -1,9 +1,9 @@
-import ScaledUiAmountMultiplierTooltip from '@/app/(shared)/components/account/token-extensions/ScaledUiAmountMultiplierTooltip';
+import ScaledUiAmountMultiplierTooltip from '@/app/(features)/accounts/components/token-extensions/ScaledUiAmountMultiplierTooltip';
 import { Address } from '@/app/(shared)/components/common/Address';
-import { Copyable } from '@/app/(shared)/components/common/Copyable';
+import { Copyable } from '@/app/(shared)/components/Copyable';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/shared/ui/card';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import { Account, NFTData, TokenProgramData, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
 import { TOKEN_2022_PROGRAM_ID, useScaledUiAmountForMint } from '@/app/(core)/providers/accounts/tokens';
 import isMetaplexNFT from '@/app/(core)/providers/accounts/utils/isMetaplexNFT';

@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react';
 
 import { useTokenExtensionNavigation } from '@/app/features/token-extensions/use-token-extension-navigation';
-import { populatePartialParsedTokenExtension } from '@/app/utils/token-extension';
+import { populatePartialParsedTokenExtension } from '@/app/(shared)/utils/token-extension';
 import { TokenExtension } from '@/app/validators/accounts/token-extension';
 
-import { TokenExtensionBadges } from '../../common/TokenExtensionBadges';
+import { TokenExtensionBadges } from '@/app/(shared)/components/TokenExtensionBadges';
 import { ParsedTokenExtension } from '../types';
 
 export function TokenExtensionsStatusRow({ address, extensions }: { address: string; extensions: TokenExtension[] }) {

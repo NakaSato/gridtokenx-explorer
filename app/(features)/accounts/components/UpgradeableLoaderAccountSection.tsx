@@ -1,9 +1,9 @@
 import { UnknownAccountCard } from '@/app/(shared)/components/account/UnknownAccountCard';
 import { Address } from '@/app/(shared)/components/common/Address';
-import { DownloadableIcon } from '@/app/(shared)/components/common/Downloadable';
-import { InfoTooltip } from '@/app/(shared)/components/common/InfoTooltip';
+import { DownloadableIcon } from '@/app/(shared)/components/Downloadable';
+import { InfoTooltip } from '@/app/(shared)/components/InfoTooltip';
 import { Slot } from '@/app/(shared)/components/common/Slot';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
 import { Account, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
 import { useCluster } from '@/app/(core)/providers/cluster';
@@ -16,8 +16,8 @@ import {
   ProgramDataAccountInfo,
   UpgradeableLoaderAccount,
 } from '@validators/accounts/upgradeable-program';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/app/(shared)/components/shared/ui/card';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/app/(shared)/components/ui/card';
 import Link from 'next/link';
 import React from 'react';
 import { ExternalLink, RefreshCw } from 'react-feather';
@@ -25,10 +25,10 @@ import { ExternalLink, RefreshCw } from 'react-feather';
 import { ProgramSecurityTXTBadge } from '@/app/features/security-txt/ui/SecurityTXTBadge';
 import { ProgramSecurityTXTLabel } from '@/app/features/security-txt/ui/SecurityTXTLabel';
 import { useSquadsMultisigLookup } from '@/app/(core)/providers/squadsMultisig';
-import { Cluster } from '@/app/utils/cluster';
-import { useClusterPath } from '@/app/utils/url';
+import { Cluster } from '@/app/(shared)/utils/cluster';
+import { useClusterPath } from '@/app/(shared)/utils/url';
 
-import { VerifiedProgramBadge } from '../common/VerifiedProgramBadge';
+import { VerifiedProgramBadge } from '@/app/(shared)/components/VerifiedProgramBadge';
 
 export function UpgradeableLoaderAccountSection({
   account,

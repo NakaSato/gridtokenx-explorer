@@ -1,6 +1,6 @@
 'use client';
 
-import { AccountHeader } from '@/app/(shared)/components/common/Account';
+import { AccountHeader } from '@/app/(shared)/components/Account';
 import { useFetchAccountInfo } from '@/app/(core)/providers/accounts';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';

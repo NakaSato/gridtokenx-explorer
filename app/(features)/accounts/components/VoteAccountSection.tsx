@@ -1,9 +1,9 @@
-import { AccountAddressRow, AccountBalanceRow, AccountHeader } from '@/app/(shared)/components/common/Account';
+import { AccountAddressRow, AccountBalanceRow, AccountHeader } from '@/app/(shared)/components/Account';
 import { Address } from '@/app/(shared)/components/common/Address';
 import { Slot } from '@/app/(shared)/components/common/Slot';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
 import { Account, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
-import { Card, CardContent } from '@/app/(shared)/components/shared/ui/card';
+import { Card, CardContent } from '@/app/(shared)/components/ui/card';
 import { displayTimestamp } from '@/app/(shared)/utils/date';
 import { VoteAccount } from '@validators/accounts/vote';
 import React from 'react';

@@ -1,11 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
-import Link from 'next/link';
-import React from 'react';
+import Link from 'next/link'
 import { ExternalLink } from 'react-feather';
 
-import { InfoTooltip } from '@/app/(shared)/components/common/InfoTooltip';
+import { InfoTooltip } from '@/app/(shared)/components/InfoTooltip';
 import { useProgramMetadataSecurityTxt } from '@/app/entities/program-metadata';
-import { useCluster } from '@/app/providers/cluster';
+import { useCluster } from '@/app/(core)/providers/cluster';
 
 import { NEODYME_SECURITY_TXT_DOC_LINK, PMP_SECURITY_TXT_DOC_LINK } from '../lib/constants';
 

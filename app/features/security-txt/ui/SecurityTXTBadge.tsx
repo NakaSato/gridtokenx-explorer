@@ -4,7 +4,7 @@ import { ProgramDataAccountInfo } from '@validators/accounts/upgradeable-program
 import Link from 'next/link';
 
 import { useProgramMetadataSecurityTxt } from '@/app/entities/program-metadata';
-import { useCluster } from '@/app/providers/cluster';
+import { useCluster } from '@/app/(core)/providers/cluster';
 
 import { fromProgramData } from '../lib/fromProgramData';
 

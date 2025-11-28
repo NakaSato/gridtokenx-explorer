@@ -2,13 +2,13 @@ import { SystemProgram } from '@solana/web3.js';
 import React from 'react';
 import { Attestation as SasAttestation, Credential as SasCredential, Schema as SasSchema } from 'sas-lib';
 
-import { AccountAddressRow, AccountHeader } from '@/app/(shared)/components/common/Account';
+import { AccountAddressRow, AccountHeader } from '@/app/(shared)/components/Account';
 import { Address } from '@/app/(shared)/components/common/Address';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
-import { Account, useFetchAccountInfo } from '@/app/providers/accounts';
-import { Card, CardContent } from '@/app/(shared)/components/shared/ui/card';
+import { Account, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
+import { Card, CardContent } from '@/app/(shared)/components/ui/card';
 import { decodeAccount } from '@/app/(shared)/utils/attestation-service';
-import { decodeString, mapToPublicKey } from '@/app/utils/kit-wrapper';
+import { decodeString, mapToPublicKey } from '@/app/(shared)/utils/kit-wrapper';
 
 function SolanaCredentialCard({ credential }: { credential: SasCredential }) {
   return (

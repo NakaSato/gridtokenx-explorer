@@ -1,25 +1,25 @@
 import { Address } from '@/app/(shared)/components/common/Address';
 import { Slot } from '@/app/(shared)/components/common/Slot';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
 import { Account, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
 import { AddressLookupTableAccount } from '@solana/web3.js';
 import { AddressLookupTableAccountInfo } from '@validators/accounts/address-lookup-table';
-import { Button } from '@/app/(shared)/components/shared/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/app/(shared)/components/shared/ui/card';
+import { Button } from '@/app/(shared)/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/app/(shared)/components/ui/card';
 import React from 'react';
 import { RefreshCw } from 'react-feather';
 
 export function AddressLookupTableAccountSection(
   params:
     | {
-        account: Account;
-        data: Uint8Array;
-      }
+      account: Account;
+      data: Uint8Array;
+    }
     | {
-        account: Account;
-        lookupTableAccount: AddressLookupTableAccountInfo;
-      },
+      account: Account;
+      lookupTableAccount: AddressLookupTableAccountInfo;
+    },
 ) {
   const account = params.account;
   const lookupTableState = React.useMemo(() => {
