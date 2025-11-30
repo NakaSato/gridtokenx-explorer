@@ -47,7 +47,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      <body className="bg-navy-900">
+      <body className="bg-navy-900" suppressHydrationWarning>
         <Suspense fallback={<div>Loading...</div>}>
           <ScrollAnchorProvider>
             <Suspense fallback={<div>Loading...</div>}>

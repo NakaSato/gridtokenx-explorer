@@ -153,9 +153,20 @@ export function SolanaClusterStatsProvider({ children }: Props) {
           type: PerformanceInfoActionType.SetTransactionCount,
         });
       } catch (error) {
-        if (cluster !== Cluster.Custom) {
+        // Check if it's a 403 error (method not supported by RPC endpoint)
+        const is403Error =
+          error instanceof Error && (error.message.includes('403') || error.message.includes('Forbidden'));
+
+        // Only log non-403 errors to avoid console spam for unsupported methods
+        if (!is403Error && cluster !== Cluster.Custom) {
           console.error(error, { url });
         }
+
+        // For 403 errors, silently skip - the RPC doesn't support this method
+        if (is403Error) {
+          return;
+        }
+
         if (error instanceof Error) {
           dispatchPerformanceInfo({
             data: error.toString(),
@@ -187,9 +198,20 @@ export function SolanaClusterStatsProvider({ children }: Props) {
           type: DashboardInfoActionType.SetEpochInfo,
         });
       } catch (error) {
-        if (cluster !== Cluster.Custom) {
+        // Check if it's a 403 error (method not supported by RPC endpoint)
+        const is403Error =
+          error instanceof Error && (error.message.includes('403') || error.message.includes('Forbidden'));
+
+        // Only log non-403 errors to avoid console spam for unsupported methods
+        if (!is403Error && cluster !== Cluster.Custom) {
           console.error(error, { url });
         }
+
+        // For 403 errors, silently skip - the RPC doesn't support this method
+        if (is403Error) {
+          return;
+        }
+
         if (error instanceof Error) {
           dispatchDashboardInfo({
             data: error.toString(),

@@ -20,6 +20,12 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
+# Add build arguments for Next.js public variables
+ARG NEXT_PUBLIC_SOLANA_RPC_HTTP
+ARG NEXT_PUBLIC_DEFAULT_CLUSTER
+ENV NEXT_PUBLIC_SOLANA_RPC_HTTP=$NEXT_PUBLIC_SOLANA_RPC_HTTP
+ENV NEXT_PUBLIC_DEFAULT_CLUSTER=$NEXT_PUBLIC_DEFAULT_CLUSTER
+
 RUN bun run build
 
 # Production image, copy all the files and run next

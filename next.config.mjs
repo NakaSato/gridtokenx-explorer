@@ -52,77 +52,25 @@ const nextConfig = {
       /bigint.*Failed to load bindings/,
     ];
 
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        os: false,
-        path: false,
-        crypto: false,
-        stream: false,
-        util: false,
-      };
+      if (!isServer) {
+        config.resolve.fallback = {
+          ...config.resolve.fallback,
+          fs: false,
+          os: false,
+          path: false,
+          crypto: false,
+          stream: false,
+          util: false,
+        };
 
-      // Provide buffer polyfill for browser
-      config.plugins.push(
-        new webpack.ProvidePlugin({
-          Buffer: ['buffer', 'Buffer'],
-          process: 'process/browser',
-        }),
-      );
-
-      // For client-side, make all problematic packages external to prevent bundling Node.js modules
-      config.externals = config.externals || [];
-      config.externals.push({
-        // Anchor packages that use Node.js modules
-        '@coral-xyz/anchor': 'commonjs @coral-xyz/anchor',
-        '@coral-xyz/anchor/dist/cjs/nodewallet': 'commonjs @coral-xyz/anchor/dist/cjs/nodewallet',
-        '@project-serum/anchor': 'commonjs @project-serum/anchor',
-        '@project-serum/anchor/dist/esm/provider': 'commonjs @project-serum/anchor/dist/esm/provider',
-        '@project-serum/anchor/dist/esm/workspace': 'commonjs @project-serum/anchor/dist/esm/workspace',
-        '@project-serum/anchor/dist/esm/index': 'commonjs @project-serum/anchor/dist/esm/index',
-        // Serum packages
-        '@project-serum/serum': 'commonjs @project-serum/serum',
-        '@project-serum/serum/lib/market-proxy/index': 'commonjs @project-serum/serum/lib/market-proxy/index',
-        '@project-serum/serum/lib/market-proxy/middleware': 'commonjs @project-serum/serum/lib/market-proxy/middleware',
-        // Metaplex and Bundlr packages
-        '@metaplex-foundation/js': 'commonjs @metaplex-foundation/js',
-        '@bundlr-network/client': 'commonjs @bundlr-network/client',
-        arbundles: 'commonjs arbundles',
-        avsc: 'commonjs avsc',
-        // Solflare UTL SDK that uses Metaplex
-        '@solflare-wallet/utl-sdk': 'commonjs @solflare-wallet/utl-sdk',
-        // Mango client packages
-        '@blockworks-foundation/mango-client': 'commonjs @blockworks-foundation/mango-client',
-        '@blockworks-foundation/mango-client/lib/src/client':
-          'commonjs @blockworks-foundation/mango-client/lib/src/client',
-        '@blockworks-foundation/mango-client/lib/src/index':
-          'commonjs @blockworks-foundation/mango-client/lib/src/index',
-        // Node.js built-in modules (but NOT buffer - we're polyfilling it)
-        fs: 'fs',
-        os: 'os',
-        path: 'path',
-        crypto: 'crypto',
-        util: 'util',
-        stream: 'stream',
-      });
-
-      // Additional webpack config to prevent bundling of these packages
-      config.module = config.module || {};
-      config.module.rules = config.module.rules || [];
-
-      // Add rule to exclude problematic packages from client bundle
-      config.module.rules.push({
-        test: /\.(js|ts|tsx)$/,
-        include: [
-          /node_modules\/@project-serum\/serum/,
-          /node_modules\/@project-serum\/anchor/,
-          /node_modules\/@coral-xyz\/anchor/,
-          /node_modules\/@blockworks-foundation\/mango-client/,
-        ],
-        use: 'null-loader',
-      });
-    }
+        // Provide buffer polyfill for browser
+        config.plugins.push(
+          new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+            process: 'process/browser',
+          }),
+        );
+      }
 
     // Handle external dependencies that might cause issues
     config.externals = config.externals || [];

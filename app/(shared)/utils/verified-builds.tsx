@@ -1,3 +1,5 @@
+'use client';
+
 import { Connection, PublicKey } from '@solana/web3.js';
 import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import useSWRImmutable from 'swr/immutable';

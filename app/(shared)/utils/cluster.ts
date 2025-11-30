@@ -84,4 +84,13 @@ export function serverClusterUrl(cluster: Cluster, customUrl: string): string {
   }
 }
 
-export const DEFAULT_CLUSTER = Cluster.MainnetBeta;
+export const DEFAULT_CLUSTER = (function() {
+  const envCluster = process.env.NEXT_PUBLIC_DEFAULT_CLUSTER;
+  switch (envCluster) {
+    case 'mainnet-beta': return Cluster.MainnetBeta;
+    case 'testnet': return Cluster.Testnet;
+    case 'devnet': return Cluster.Devnet;
+    case 'custom': return Cluster.Custom;
+    default: return Cluster.MainnetBeta;
+  }
+})();
