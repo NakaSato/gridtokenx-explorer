@@ -42,11 +42,33 @@ export function UpcomingFeatures() {
 
   if (filteredFeatures.length === 0) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-muted-foreground text-center">No upcoming features for {clusterName(cluster)}</div>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/30">
+            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-xl font-bold">Upcoming {clusterName(cluster)} Features</h2>
+            <p className="text-muted-foreground text-sm">No upcoming features at this time</p>
+          </div>
+        </div>
+        
+        <Card className="border-2 border-dashed">
+          <CardContent className="flex flex-col items-center justify-center p-12">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-violet-500/10 to-purple-500/10">
+              <svg className="h-8 w-8 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-center text-lg font-semibold">All caught up!</p>
+            <p className="text-muted-foreground text-center text-sm mt-1">
+              No upcoming features for {clusterName(cluster)} at this time
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 

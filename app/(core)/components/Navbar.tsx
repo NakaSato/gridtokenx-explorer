@@ -32,7 +32,7 @@ export function Navbar({ children }: INavbarProps) {
       aria-label="Main navigation"
     >
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-14 items-center justify-between sm:h-16">
           {/* Logo */}
           <div className="flex items-center">
             <Link href={homePath} className="flex-shrink-0 transition-opacity hover:opacity-90" aria-label="Solana Explorer Home">
@@ -42,7 +42,7 @@ export function Navbar({ children }: INavbarProps) {
                 src={Logo}
                 width={214}
                 priority
-                className="h-14 w-auto sm:h-6 md:h-7 lg:h-[24px]"
+                className="h-5 w-auto sm:h-6 md:h-7"
               />
             </Link>
           </div>
@@ -64,7 +64,7 @@ export function Navbar({ children }: INavbarProps) {
           </div>
 
           {/* Mobile Controls - Visible on mobile/tablet, hidden on desktop */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:hidden">
             {/* Cluster Status - Mobile */}
             <div className="flex items-center">
               <ClusterStatusButton />
@@ -99,9 +99,64 @@ export function Navbar({ children }: INavbarProps) {
           aria-hidden={!navOpened}
         >
           <div className="transform border-t border-border bg-background/95 backdrop-blur-sm transition-transform duration-300">
-            <div className="px-3 py-3">
+            <div className="px-2 py-2 sm:px-3 sm:py-3">
               {/* Mobile Search - If children provided */}
-              {children && <div className="mb-4">{children}</div>}
+              {children && <div className="mb-3">{children}</div>}
+              
+              {/* Mobile Navigation Links */}
+              <nav className="space-y-1" role="menu">
+                <Link
+                  href={transactionsPath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'txs'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Transactions
+                </Link>
+                
+                <Link
+                  href={supplyPath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'supply'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Supply
+                </Link>
+                
+                <Link
+                  href={inspectorPath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegments[0] === 'tx' && selectedLayoutSegments[1] === 'inspector'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  TX Inspector
+                </Link>
+                
+                <Link
+                  href={featureGatesPath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'feature-gates'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Feature Gates
+                </Link>
+              </nav>
             </div>
           </div>
         </div>

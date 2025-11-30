@@ -44,7 +44,7 @@ export default function Page() {
     >
       <StatsProvider>
         <SupplyProvider>
-          <div className="container mx-auto px-4 py-4">
+          <div className="container mx-auto px-2 py-3 sm:px-4 sm:py-4">
             <StakingComponent />
 
             <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -121,13 +121,13 @@ function StakingComponent() {
   }
 
   return (
-    <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm sm:text-lg">Circulating Supply</CardTitle>
+        <CardHeader className="pb-2 sm:pb-3">
+          <CardTitle className="text-base sm:text-lg">Circulating Supply</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="text-xl font-bold break-words sm:text-2xl">
+        <CardContent className="space-y-1.5 sm:space-y-2">
+          <div className="text-lg font-bold break-words sm:text-xl md:text-2xl">
             <span className="text-blue-600 dark:text-blue-400">{displayLamports(supply.circulating)}</span>
             <span className="text-muted-foreground"> / {displayLamports(supply.total)}</span>
           </div>
@@ -138,12 +138,12 @@ function StakingComponent() {
       </Card>
 
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm sm:text-lg">Active Stake</CardTitle>
+        <CardHeader className="pb-2 sm:pb-3">
+          <CardTitle className="text-base sm:text-lg">Active Stake</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-1.5 sm:space-y-2">
           {activeStake ? (
-            <div className="text-xl font-bold break-words sm:text-2xl">
+            <div className="text-lg font-bold break-words sm:text-xl md:text-2xl">
               <span className="text-blue-600 dark:text-blue-400">{displayLamports(activeStake)}</span>
               <span className="text-muted-foreground"> / {displayLamports(supply.total)}</span>
             </div>
@@ -202,20 +202,20 @@ function StatsCardBody() {
 
   return (
     <Card className="h-full">
-      <CardHeader className="border-b">
-        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+      <CardHeader className="border-b pb-3 sm:pb-4">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl">
           {/* <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div> */}
           Live Cluster Stats
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6 p-4">
+      <CardContent className="space-y-4 p-3 sm:space-y-6 sm:p-4">
         {/* Primary Stats Grid */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
           <div className="space-y-3">
-            <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
+            <div className="bg-muted/50 flex items-center justify-between rounded-lg p-2.5 sm:p-3">
               <div>
-                <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Current Slot</p>
-                <p className="text-primary font-mono text-lg font-bold">
+                <p className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">Current Slot</p>
+                <p className="text-primary font-mono text-base font-bold sm:text-lg">
                   <Slot slot={absoluteSlot} link />
                 </p>
               </div>
@@ -224,8 +224,8 @@ function StatsCardBody() {
             {blockHeight !== undefined && (
               <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
                 <div>
-                  <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Block Height</p>
-                  <p className="text-primary font-mono text-lg font-bold">
+                  <p className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">Block Height</p>
+                  <p className="text-primary font-mono text-base font-bold sm:text-lg">
                     <Slot slot={blockHeight} />
                   </p>
                 </div>
@@ -236,8 +236,8 @@ function StatsCardBody() {
           <div className="space-y-3">
             <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
               <div>
-                <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Epoch</p>
-                <p className="text-primary font-mono text-lg font-bold">
+                <p className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">Epoch</p>
+                <p className="text-primary font-mono text-base font-bold sm:text-lg">
                   <Epoch epoch={epochInfo.epoch} link />
                 </p>
               </div>
@@ -246,8 +246,8 @@ function StatsCardBody() {
             {blockTime && (
               <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
                 <div>
-                  <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Cluster Time</p>
-                  <div className="text-primary font-mono text-sm">
+                  <p className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase sm:text-xs">Cluster Time</p>
+                  <div className="text-primary font-mono text-xs sm:text-sm">
                     <TimestampToggle unixTimestamp={blockTime} shorter></TimestampToggle>
                   </div>
                 </div>
@@ -259,8 +259,8 @@ function StatsCardBody() {
         {/* Epoch Progress */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium">Epoch Progress</p>
-            <Badge variant="secondary" className="text-xs">
+            <p className="text-xs font-medium sm:text-sm">Epoch Progress</p>
+            <Badge variant="secondary" className="text-[10px] sm:text-xs">
               {epochProgressValue.toFixed(1)}%
             </Badge>
           </div>
@@ -273,15 +273,15 @@ function StatsCardBody() {
 
         {/* Performance Metrics */}
         <div className="space-y-4">
-          <h4 className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">Performance</h4>
+          <h4 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase sm:text-sm">Performance</h4>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-muted-foreground text-sm">Slot Time (1min avg)</p>
-                <div className="flex items-center gap-2">
-                  <span className={`font-mono font-bold ${slotTimeHealth.color}`}>{averageSlotTime}ms</span>
-                  <Badge variant="outline" className={`text-xs ${slotTimeHealth.color.replace('text-', 'border-')}`}>
+                <p className="text-muted-foreground text-xs sm:text-sm">Slot Time (1min avg)</p>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className={`font-mono text-sm font-bold sm:text-base ${slotTimeHealth.color}`}>{averageSlotTime}ms</span>
+                  <Badge variant="outline" className={`text-[10px] sm:text-xs ${slotTimeHealth.color.replace('text-', 'border-')}`}>
                     {slotTimeHealth.badge}
                   </Badge>
                 </div>
@@ -290,8 +290,8 @@ function StatsCardBody() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-muted-foreground text-sm">Slot Time (1hr avg)</p>
-                <span className="text-primary font-mono font-bold">{hourlySlotTime}ms</span>
+                <p className="text-muted-foreground text-xs sm:text-sm">Slot Time (1hr avg)</p>
+                <span className="text-primary font-mono text-sm font-bold sm:text-base">{hourlySlotTime}ms</span>
               </div>
             </div>
           </div>

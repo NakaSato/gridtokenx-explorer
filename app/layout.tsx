@@ -56,17 +56,11 @@ export default function RootLayout({
           <ScrollAnchorProvider>
             <Suspense fallback={<div>Loading...</div>}>
               <ClusterProvider>
-                <div className="pb-16">
+                <div className="pb-12 sm:pb-16">
                   <NavbarWrapper>
                     <SearchBarWrapper />
                   </NavbarWrapper>
                   <MessageBanner />
-                  <div className="container mx-auto my-3 px-4 lg:hidden">
-                    <SearchBarWrapper />
-                  </div>
-                  <div className="container mx-auto my-3 px-4 lg:hidden">
-                    <ClusterStatusButton />
-                  </div>
                   {children}
                 </div>
               </ClusterProvider>
