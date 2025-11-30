@@ -227,17 +227,17 @@ export function BlocksTable() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-foreground">Blocks</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Blocks</h1>
       </div>
 
       {/* Tabs and Pagination */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+              className={`px-3 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-all duration-200 ${
                 activeTab === tab.id
                   ? "bg-secondary text-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
@@ -248,9 +248,9 @@ export function BlocksTable() {
           ))}
         </div>
 
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-muted-foreground">
-            Network utilization (last 50 blocks):{" "}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
+          <span className="text-xs md:text-sm text-muted-foreground">
+            Network utilization:{" "}
             <span className="text-green-400 font-mono">{networkUtilization}%</span>
           </span>
 
@@ -258,7 +258,7 @@ export function BlocksTable() {
             <Button
               variant="outline"
               size="sm"
-              className="text-muted-foreground border-border/50 hover:border-cyan-500/30 bg-transparent"
+              className="text-xs md:text-sm text-muted-foreground border-border/50 hover:border-cyan-500/30 bg-transparent h-8"
               onClick={() => setCurrentPage(1)}
               disabled={currentPage === 1 || isScanning}
             >
@@ -271,10 +271,10 @@ export function BlocksTable() {
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1 || isScanning}
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3 md:w-4 h-3 md:h-4" />
             </Button>
             <div className="w-8 h-8 flex items-center justify-center bg-secondary rounded-md border border-border/50">
-              <span className="text-sm font-medium">{currentPage}</span>
+              <span className="text-xs md:text-sm font-medium">{currentPage}</span>
             </div>
             <Button
               variant="outline"
@@ -283,104 +283,201 @@ export function BlocksTable() {
               onClick={() => setCurrentPage((p) => p + 1)}
               disabled={isScanning}
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3 md:w-4 h-3 md:h-4" />
             </Button>
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-border/50 overflow-hidden bg-card/30 overflow-x-auto">
-        {/* Table Header */}
-        <div className="grid grid-cols-[minmax(120px,1fr)_150px_minmax(350px,2fr)_80px_minmax(200px,2fr)_140px] bg-secondary/30 border-b border-border/50 text-sm text-muted-foreground font-medium w-full">
-          <div className="px-4 py-3 border-r border-border/50">Block</div>
-          <div className="px-4 py-3 border-r border-border/50">Size, bytes</div>
-          <div className="px-4 py-3 border-r border-border/50">Validator</div>
-          <div className="px-4 py-3 border-r border-border/50 text-center">Txn</div>
-          <div className="px-4 py-3 border-r border-border/50">Gas used</div>
-          <div className="px-4 py-3">Reward SOL</div>
+      <div className="rounded-xl border border-border/50 overflow-hidden bg-card/30">
+        {/* Desktop Table View - Hidden on mobile */}
+        <div className="hidden md:block overflow-x-auto">
+          {/* Table Header */}
+          <div className="grid grid-cols-[minmax(100px,1fr)_120px_minmax(250px,2fr)_80px_minmax(180px,2fr)_120px] lg:grid-cols-[minmax(120px,1fr)_150px_minmax(350px,2fr)_80px_minmax(200px,2fr)_140px] bg-secondary/30 border-b border-border/50 text-sm text-muted-foreground font-medium w-full min-w-[800px]">
+            <div className="px-3 lg:px-4 py-3 border-r border-border/50">Block</div>
+            <div className="px-3 lg:px-4 py-3 border-r border-border/50">Size, bytes</div>
+            <div className="px-3 lg:px-4 py-3 border-r border-border/50">Validator</div>
+            <div className="px-3 lg:px-4 py-3 border-r border-border/50 text-center">Txn</div>
+            <div className="px-3 lg:px-4 py-3 border-r border-border/50">Gas used</div>
+            <div className="px-3 lg:px-4 py-3">Reward SOL</div>
+          </div>
+
+          {/* Scanning Status */}
+          {isScanning && (
+            <div className="px-4 py-3 border-b border-border/30 bg-secondary/10">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+                <span className="text-sm text-muted-foreground">scanning new blocks...</span>
+              </div>
+            </div>
+          )}
+
+          {/* Table Rows */}
+          <div className="divide-y divide-border/30 w-full min-w-[800px]">
+            {blocks.map((block, index) => (
+              <div
+                key={block.number}
+                className="grid grid-cols-[minmax(100px,1fr)_120px_minmax(250px,2fr)_80px_minmax(180px,2fr)_120px] lg:grid-cols-[minmax(120px,1fr)_150px_minmax(350px,2fr)_80px_minmax(200px,2fr)_140px] hover:bg-secondary/20 transition-colors duration-200 group border-b border-border/30 last:border-0"
+                style={{
+                  animation: `fade-in 0.3s ease-out forwards`,
+                  animationDelay: `${index * 50}ms`,
+                  opacity: 0,
+                }}
+              >
+                {/* Block Number */}
+                <div className="px-3 lg:px-4 py-4 border-r border-border/30">
+                  <Link href={`/block/${block.number}`} className="text-cyan-400 hover:text-cyan-300 font-mono text-xs lg:text-sm">
+                    {block.number.toLocaleString()}
+                  </Link>
+                  <p className="text-xs text-muted-foreground mt-0.5">{block.time}</p>
+                </div>
+
+                {/* Size */}
+                <div className="px-3 lg:px-4 py-4 border-r border-border/30 text-xs lg:text-sm text-foreground font-mono self-center flex items-center">{block.size.toLocaleString()}</div>
+
+                {/* Validator */}
+                <div className="px-3 lg:px-4 py-4 border-r border-border/30 flex items-center gap-2 self-center overflow-hidden">
+                  <div className={`w-5 lg:w-6 h-5 lg:h-6 rounded-full bg-gradient-to-br ${block.validatorColor} shrink-0`} />
+                  <Link
+                    href={`/address/${block.validator}`}
+                    className="text-cyan-400 hover:text-cyan-300 font-mono text-xs lg:text-sm truncate"
+                    title={block.validator}
+                  >
+                    {block.validator}
+                  </Link>
+                  <button
+                    onClick={() => copyToClipboard(block.validator)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+                  >
+                    {copiedAddress === block.validator ? (
+                      <Check className="w-3 lg:w-3.5 h-3 lg:h-3.5 text-green-400" />
+                    ) : (
+                      <Copy className="w-3 lg:w-3.5 h-3 lg:h-3.5" />
+                    )}
+                  </button>
+                </div>
+
+                {/* Txn Count */}
+                <div className="px-3 lg:px-4 py-4 border-r border-border/30 text-center self-center flex items-center justify-center">
+                  <span className="text-cyan-400 font-mono text-xs lg:text-sm">{block.txn}</span>
+                </div>
+
+                {/* Gas Used */}
+                <div className="px-3 lg:px-4 py-4 border-r border-border/30 self-center">
+                  <p className="text-xs lg:text-sm text-foreground font-mono mb-1">{block.gasUsed.toLocaleString()}</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-1 bg-secondary rounded-full overflow-hidden max-w-16 lg:max-w-20">
+                      <div
+                        className="h-full bg-gradient-to-r from-cyan-500/50 to-cyan-400/50 rounded-full"
+                        style={{ width: `${Math.min(block.gasPercentage * 40, 100)}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground font-mono">{block.gasPercentage}%</span>
+                    <span className="text-xs text-muted-foreground">|</span>
+                    <span className="text-xs text-muted-foreground font-mono">{block.gasChange}%</span>
+                  </div>
+                </div>
+
+                {/* Reward */}
+                <div className="px-3 lg:px-4 py-4 text-xs lg:text-sm text-foreground font-mono self-center flex items-center">{block.reward}</div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Scanning Status */}
-        {isScanning && (
-          <div className="px-4 py-3 border-b border-border/30 bg-secondary/10">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-              <span className="text-sm text-muted-foreground">scanning new blocks...</span>
+        {/* Mobile Card View - Shown only on mobile */}
+        <div className="md:hidden">
+          {/* Scanning Status */}
+          {isScanning && (
+            <div className="px-4 py-3 border-b border-border/30 bg-secondary/10">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+                <span className="text-sm text-muted-foreground">scanning new blocks...</span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Table Rows */}
-        <div className="divide-y divide-border/30 w-full">
-          {blocks.map((block, index) => (
-            <div
-              key={block.number}
-              className="grid grid-cols-[minmax(120px,1fr)_150px_minmax(350px,2fr)_80px_minmax(200px,2fr)_140px] hover:bg-secondary/20 transition-colors duration-200 group border-b border-border/30 last:border-0"
-              style={{
-                animation: `fade-in 0.3s ease-out forwards`,
-                animationDelay: `${index * 50}ms`,
-                opacity: 0,
-              }}
-            >
-              {/* Block Number */}
-              <div className="px-4 py-4 border-r border-border/30">
-                <Link href={`/block/${block.number}`} className="text-cyan-400 hover:text-cyan-300 font-mono text-sm">
-                  {block.number.toLocaleString()}
-                </Link>
-                <p className="text-xs text-muted-foreground mt-0.5">{block.time}</p>
-              </div>
-
-              {/* Size */}
-              <div className="px-4 py-4 border-r border-border/30 text-sm text-foreground font-mono self-center flex items-center">{block.size.toLocaleString()}</div>
-
-              {/* Validator */}
-              <div className="px-4 py-4 border-r border-border/30 flex items-center gap-2 self-center overflow-hidden">
-                <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${block.validatorColor} shrink-0`} />
-                <Link
-                  href={`/address/${block.validator}`}
-                  className="text-cyan-400 hover:text-cyan-300 font-mono text-sm truncate"
-                  title={block.validator}
-                >
-                  {block.validator}
-                </Link>
-                <button
-                  onClick={() => copyToClipboard(block.validator)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
-                >
-                  {copiedAddress === block.validator ? (
-                    <Check className="w-3.5 h-3.5 text-green-400" />
-                  ) : (
-                    <Copy className="w-3.5 h-3.5" />
-                  )}
-                </button>
-              </div>
-
-              {/* Txn Count */}
-              <div className="px-4 py-4 border-r border-border/30 text-center self-center flex items-center justify-center">
-                <span className="text-cyan-400 font-mono text-sm">{block.txn}</span>
-              </div>
-
-              {/* Gas Used */}
-              <div className="px-4 py-4 border-r border-border/30 self-center">
-                <p className="text-sm text-foreground font-mono mb-1">{block.gasUsed.toLocaleString()}</p>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-1 bg-secondary rounded-full overflow-hidden max-w-20">
-                    <div
-                      className="h-full bg-gradient-to-r from-cyan-500/50 to-cyan-400/50 rounded-full"
-                      style={{ width: `${Math.min(block.gasPercentage * 40, 100)}%` }}
-                    />
+          {/* Card Rows */}
+          <div className="divide-y divide-border/30">
+            {blocks.map((block, index) => (
+              <div
+                key={block.number}
+                className="p-4 hover:bg-secondary/20 transition-colors duration-200 space-y-3"
+                style={{
+                  animation: `fade-in 0.3s ease-out forwards`,
+                  animationDelay: `${index * 50}ms`,
+                  opacity: 0,
+                }}
+              >
+                {/* Block Number and Time */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Link href={`/block/${block.number}`} className="text-cyan-400 hover:text-cyan-300 font-mono text-sm font-medium">
+                      Block {block.number.toLocaleString()}
+                    </Link>
+                    <p className="text-xs text-muted-foreground mt-0.5">{block.time}</p>
                   </div>
-                  <span className="text-xs text-muted-foreground font-mono">{block.gasPercentage}%</span>
-                  <span className="text-xs text-muted-foreground">|</span>
-                  <span className="text-xs text-muted-foreground font-mono">{block.gasChange}%</span>
+                  <div className="text-right">
+                    <p className="text-xs text-muted-foreground">Txn</p>
+                    <span className="text-cyan-400 font-mono text-sm font-medium">{block.txn}</span>
+                  </div>
+                </div>
+
+                {/* Validator */}
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${block.validatorColor} shrink-0`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground mb-0.5">Validator</p>
+                    <Link
+                      href={`/address/${block.validator}`}
+                      className="text-cyan-400 hover:text-cyan-300 font-mono text-xs truncate block"
+                      title={block.validator}
+                    >
+                      {block.validator}
+                    </Link>
+                  </div>
+                  <button
+                    onClick={() => copyToClipboard(block.validator)}
+                    className="text-muted-foreground hover:text-foreground shrink-0"
+                  >
+                    {copiedAddress === block.validator ? (
+                      <Check className="w-4 h-4 text-green-400" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Size</p>
+                    <p className="text-sm text-foreground font-mono">{block.size.toLocaleString()} bytes</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Reward</p>
+                    <p className="text-sm text-foreground font-mono">{block.reward}</p>
+                  </div>
+                </div>
+
+                {/* Gas Used */}
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Gas Used</p>
+                  <p className="text-sm text-foreground font-mono mb-2">{block.gasUsed.toLocaleString()}</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-cyan-500/50 to-cyan-400/50 rounded-full"
+                        style={{ width: `${Math.min(block.gasPercentage * 40, 100)}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground font-mono">{block.gasPercentage}%</span>
+                  </div>
                 </div>
               </div>
-
-              {/* Reward */}
-              <div className="px-4 py-4 text-sm text-foreground font-mono self-center flex items-center">{block.reward}</div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
