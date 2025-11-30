@@ -113,13 +113,13 @@ export function ClusterDropdown() {
 
   const getStatusIcon = () => {
     if (isNavigating) {
-      return <Loader size={14} className="animate-spin text-current opacity-70" aria-hidden="true" />;
+      return <Loader size={14} className="text-current opacity-70" aria-hidden="true" />;
     }
     switch (status) {
       case ClusterStatus.Connected:
         return <CheckCircle size={14} className="text-emerald-500" aria-hidden="true" />;
       case ClusterStatus.Connecting:
-        return <Loader size={14} className="animate-spin text-yellow-500" aria-hidden="true" />;
+        return <Loader size={14} className="text-yellow-500" aria-hidden="true" />;
       case ClusterStatus.Failure:
         return <AlertCircle size={14} className="text-destructive" aria-hidden="true" />;
     }
@@ -131,11 +131,11 @@ export function ClusterDropdown() {
     }
     switch (status) {
       case ClusterStatus.Connected:
-        return 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/20';
+        return 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 hover:bg-accent hover:text-accent-foreground';
       case ClusterStatus.Connecting:
-        return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500 hover:bg-yellow-500/20';
+        return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500 hover:bg-accent hover:text-accent-foreground';
       case ClusterStatus.Failure:
-        return 'bg-destructive/10 border-destructive/20 text-destructive hover:bg-destructive/20';
+        return 'bg-destructive/10 border-destructive/20 text-destructive hover:bg-accent hover:text-accent-foreground';
     }
   };
 

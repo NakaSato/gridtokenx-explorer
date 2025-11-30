@@ -35,14 +35,14 @@ export function Navbar({ children }: INavbarProps) {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href={homePath} className="flex-shrink-0 transition-opacity hover:opacity-80" aria-label="Solana Explorer Home">
+            <Link href={homePath} className="flex-shrink-0 transition-opacity hover:opacity-90" aria-label="Solana Explorer Home">
               <Image
                 alt="Solana Explorer"
                 height={22}
                 src={Logo}
                 width={214}
                 priority
-                className="h-5 w-auto sm:h-6 md:h-7 lg:h-[22px]"
+                className="h-14 w-auto sm:h-6 md:h-7 lg:h-[24px]"
               />
             </Link>
           </div>
