@@ -67,7 +67,6 @@
     "bignumber.js": "9.3.1",
     "bn.js": "5.2.2",
     "borsh": "2.0.0",
-    "borsh2": "npm:borsh@2.0.0",
     "bs58": "6.0.0",
     "buffer": "^6.0.3",
     "change-case": "5.4.4",
