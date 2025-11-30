@@ -15,7 +15,7 @@ import {
 import { Address } from '../common/Address';
 import { LoadingCard } from '../common/LoadingCard';
 import { TableCardBody } from '../common/TableCardBody';
-import { Card, CardHeader, CardTitle } from '@/app/(shared)/components/shared/ui/card';
+import { Card, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 
 export function ProgramMultisigCard({ data }: { data: UpgradeableLoaderAccountData }) {
   return (

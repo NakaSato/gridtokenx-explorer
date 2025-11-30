@@ -1,5 +1,6 @@
 'use client';
 
+import { toast } from 'sonner';
 import React, { useState } from 'react';
 
 interface CopyableProps {
@@ -15,9 +16,11 @@ export function Copyable({ text, replaceText = false, children }: CopyableProps)
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
+      toast.success('Copied to clipboard');
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy text: ', err);
+      toast.error('Failed to copy text');
     }
   };
 

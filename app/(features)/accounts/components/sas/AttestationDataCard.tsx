@@ -1,5 +1,5 @@
 import { Account, useAccountInfo, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
-import { Card, CardHeader, CardContent, CardTitle } from '@/app/(shared)/components/shared/ui/card';
+import { Card, CardHeader, CardContent, CardTitle } from '@/app/(shared)/components/ui/card';
 import React from 'react';
 import {
   Attestation as SasAttestation,

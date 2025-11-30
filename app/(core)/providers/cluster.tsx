@@ -129,6 +129,24 @@ export function ClusterProvider({ children }: ClusterProviderProps) {
     }
   }, [enableCustomUrl]); // eslint-disablline react-hooks/exhaustivdeps
 
+  // Restore last selected cluster from localStorage
+  useEffect(() => {
+    // Only run on client and if no cluster param is present (defaulting to mainnet)
+    if (localStorageIsAvailable() && !searchParams?.has('cluster')) {
+      try {
+        const lastCluster = localStorage.getItem('explorer-last-cluster');
+        if (lastCluster && lastCluster !== 'mainnet-beta') {
+          const nextSearchParams = new URLSearchParams(searchParams?.toString() || '');
+          nextSearchParams.set('cluster', lastCluster);
+          const nextQueryString = nextSearchParams.toString();
+          router.replace(`${pathname}${nextQueryString ? `?${nextQueryString}` : ''}`);
+        }
+      } catch (e) {
+        // Ignore localStorage errors
+      }
+    }
+  }, []); // Run once on mount
+
   // Reconnect to cluster when params change
   useEffect(() => {
     updateCluster(dispatch, cluster, customUrl);

@@ -25,7 +25,7 @@ vi.mock('@solana-program/program-metadata', () => ({
   unpackAndFetchData: vi.fn(),
 }));
 
-vi.mock('@/app/shared/unknown-error', () => ({
+vi.mock('@/app/(shared)/utils/unknown-error', () => ({
   normalizeUnknownError: vi.fn((error, message) => {
     const normalizedError = new Error(message);
     normalizedError.cause = error;

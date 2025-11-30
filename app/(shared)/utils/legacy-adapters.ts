@@ -100,30 +100,39 @@ export class LegacyAdapter {
   }
 
   /**
-   * Get Serum Market instance
+   * Get OpenBook V2 Market instance
    *
    * Example:
    * ```typescript
-   * const market = await adapter.getSerumMarket(marketAddress);
+   * const market = await adapter.getOpenBookMarket(marketAddress);
    * const bids = await market.loadBids(connection);
    * ```
    *
-   * Note: This is a client-side only operation due to Serum's dependencies
+   * Note: This is a client-side only operation
    *
    * @param marketAddress Market address
-   * @returns Serum Market instance
+   * @returns OpenBook Market instance
    */
-  async getSerumMarket(marketAddress: Address | string): Promise<any> {
+  async getOpenBookMarket(marketAddress: Address | string): Promise<any> {
     // Check if we're in a browser environment
     if (typeof window === 'undefined') {
-      throw new Error('Serum markets can only be loaded in browser environment');
+      throw new Error('OpenBook markets can only be loaded in browser environment');
     }
 
-    // Note: Import Serum dynamically to avoid SSR issues
-    const { Market, MARKETS } = await import('@project-serum/serum');
+    // Import OpenBook V2 dynamically to avoid SSR issues
+    const { Market } = await import('@openbook-dex/openbook-v2');
     const pubkey = this.toPublicKey(marketAddress);
 
-    return Market.load(this.connection, pubkey, {}, MARKETS[0].programId);
+    return Market.load(this.connection, pubkey);
+  }
+
+  /**
+   * @deprecated Use getOpenBookMarket instead
+   * Legacy method for backward compatibility
+   */
+  async getSerumMarket(marketAddress: Address | string): Promise<any> {
+    console.warn('⚠️ getSerumMarket is deprecated. Use getOpenBookMarket instead.');
+    return this.getOpenBookMarket(marketAddress);
   }
 
   /**

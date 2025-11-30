@@ -12,7 +12,8 @@
   "rsc": false,
   "tsx": true,
   "aliases": {
-    "utils": "@/app/components/shared/utils",
-    "components": "@/app/components/shared"
+    "utils": "@/app/(shared)/components/utils",
+    "components": "@/app/(shared)/components",
+    "ui": "@/app/(shared)/components/ui"
   }
 }

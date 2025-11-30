@@ -26,11 +26,7 @@ type TokenSearchApiResponse = {
   content: TokenSearchApiResponseToken[];
 };
 
-export type SearchElement = {
-  label: string;
-  value: string[];
-  pathname: string;
-};
+import { SearchElement } from './search/types';
 
 export async function searchTokens(search: string, cluster: Cluster): Promise<SearchElement[]> {
   if (process.env.NEXT_PUBLIC_DISABLE_TOKEN_SEARCH || !search) {

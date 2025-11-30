@@ -81,6 +81,7 @@ const nextConfig = {
         '@metaplex-foundation/js': 'commonjs @metaplex-foundation/js',
         '@bundlr-network/client': 'commonjs @bundlr-network/client',
         '@blockworks-foundation/mango-client': 'commonjs @blockworks-foundation/mango-client',
+        '@openbook-dex/openbook-v2': 'commonjs @openbook-dex/openbook-v2',
         avsc: 'commonjs avsc',
       });
     }

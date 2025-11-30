@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { cn } from '@/app/(shared)/components/shared/utils';
+import { cn } from '@/app/(shared)/components/utils';
 import { Cross2Icon } from '@radix-ui/react-icons';
 
 const Dialog = DialogPrimitive.Root;

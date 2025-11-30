@@ -4,8 +4,9 @@ import NavbarWrapper from '@/app/(core)/components/NavbarWrapper';
 import SearchBarWrapper from '@/app/(core)/components/SearchBarWrapper';
 import { ClusterProvider } from '@/app/(core)/providers/cluster';
 import { ScrollAnchorProvider } from '@/app/(core)/providers/scroll-anchor';
+import { Toaster } from '@/app/(shared)/components/ui/sonner';
 import type { Viewport } from 'next';
-import { Rubik } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import { Metadata } from 'next/types';
 import React, { Suspense } from 'react';
 
@@ -26,11 +27,14 @@ export const viewport: Viewport = {
   width: 'device-width',
 };
 
-const rubikFont = Rubik({
-  display: 'swap',
+const geistSans = Geist({
+  variable: '--font-sans',
   subsets: ['latin'],
-  variable: '--explorer-default-font',
-  weight: ['300', '400', '700'],
+});
+
+const geistMono = Geist_Mono({
+  variable: '--font-mono',
+  subsets: ['latin'],
 });
 
 export default function RootLayout({
@@ -41,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${rubikFont.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.png" type="image/png" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -69,6 +73,7 @@ export default function RootLayout({
             </Suspense>
           </ScrollAnchorProvider>
         </Suspense>
+        <Toaster position="bottom-right" richColors />
         {analytics}
       </body>
     </html>

@@ -1,7 +1,7 @@
 import { address, createSolanaRpc } from '@solana/kit';
 import { fetchMetadataFromSeeds, unpackAndFetchData } from '@solana-program/program-metadata';
 
-import { normalizeUnknownError } from '@/app/shared/unknown-error';
+import { normalizeUnknownError } from '@/app/(shared)/utils/unknown-error';
 
 export async function getProgramCanonicalMetadata(programAddress: string, seed: string, url: string) {
   const rpc = createSolanaRpc(url);

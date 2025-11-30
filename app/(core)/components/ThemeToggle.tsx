@@ -1,13 +1,13 @@
 'use client';
 
-import { Button } from '@/app/(shared)/components/shared/ui/button';
+import { Button } from '@/app/(shared)/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/app/(shared)/components/shared/ui/dropdown-menu';
+} from '@/app/(shared)/components/ui/dropdown-menu';
 import { useTheme } from '@providers/theme';
 import React, { useState } from 'react';
 

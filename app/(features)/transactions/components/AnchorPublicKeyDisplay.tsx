@@ -1,5 +1,6 @@
 'use client';
 
+import { toast } from 'sonner';
 import { PublicKey, Keypair } from '@solana/web3.js';
 import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import React from 'react';
@@ -120,7 +121,7 @@ export function AnchorPublicKeyDisplay({
                 className="border-primary text-primary hover:bg-primary rounded-md border px-3 py-1.5 text-sm hover:text-white"
                 onClick={() => {
                   navigator.clipboard.writeText(pubkeyString);
-                  // You could add a toast notification here
+                  toast.success('Public key copied to clipboard');
                 }}
               >
                 📋 Copy Key

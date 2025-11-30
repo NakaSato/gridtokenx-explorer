@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 import { getMetadataEndpointUrl } from '@/app/entities/program-metadata/api/getMetadataEndpointUrl';
 import { errors, getProgramCanonicalMetadata } from '@/app/entities/program-metadata/api/getProgramCanonicalMetadata';
-import { normalizeUnknownError } from '@/app/shared/unknown-error';
+import { normalizeUnknownError } from '@/app/(shared)/utils/unknown-error';
 import Logger from '@/app/(shared)/utils/logger';
 
 const CACHE_DURATION = 30 * 60; // 30 minutes
