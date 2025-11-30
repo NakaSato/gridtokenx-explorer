@@ -1,5 +1,5 @@
 import { Account } from '@/app/(core)/providers/accounts';
-import { deserialize } from 'borsh2';
+import { deserialize } from 'borsh';
 import {
   convertSasSchemaToBorshSchema,
   decodeAttestation,
