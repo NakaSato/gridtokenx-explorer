@@ -1,6 +1,6 @@
 'use client';
 
-import { ResponsiveLine } from '@nivo/line';
+import { ResponsiveBar } from '@nivo/bar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import { useNivoTheme } from '@/app/(shared)/components/useNivoTheme';
 import { ClusterStatsStatus, usePerformanceInfo } from '@/app/(core)/providers/stats/solanaClusterStats';
@@ -40,18 +40,11 @@ export default function LiveTransactionStatsCard() {
     );
   }
 
-  // Prepare data for Nivo Line chart
-  const data = [
-    {
-      id: 'tps',
-      data: perfHistory.short
-        .map((tps, index) => ({
-          x: index,
-          y: tps || 0,
-        }))
-        .reverse(),
-    },
-  ];
+  // Prepare data for Nivo Bar chart
+  const data = perfHistory.short.map((tps, index) => ({
+    id: index,
+    tps: tps || 0,
+  })).reverse();
 
   return (
     <Card>
@@ -81,46 +74,45 @@ export default function LiveTransactionStatsCard() {
         </div>
 
         <div className="h-[200px] w-full">
-          <ResponsiveLine
+          <ResponsiveBar
             data={data}
+            keys={['tps']}
+            indexBy="id"
             margin={{ top: 10, right: 10, bottom: 40, left: 50 }}
-            xScale={{ type: 'point' }}
-            yScale={{
-              type: 'linear',
-              min: 'auto',
-              max: 'auto',
-              stacked: true,
-              reverse: false,
-            }}
-            yFormat=" >-.2f"
-            curve="monotoneX"
+            padding={0.3}
+            valueScale={{ type: 'linear' }}
+            indexScale={{ type: 'band', round: true }}
+            colors={['hsl(var(--primary))']}
+            borderRadius={4}
+            theme={nivoTheme}
             axisTop={null}
             axisRight={null}
             axisBottom={{
-              tickSize: 5,
-              tickPadding: 5,
+              tickSize: 0,
+              tickPadding: 12,
               tickRotation: 0,
               legend: 'Time (30m)',
-              legendOffset: 36,
               legendPosition: 'middle',
-              format: () => '', // Hide labels for cleaner look
+              legendOffset: 32,
+              format: () => '', // Hide specific labels for cleaner look
             }}
             axisLeft={{
-              tickSize: 5,
-              tickPadding: 5,
+              tickSize: 0,
+              tickPadding: 12,
               tickRotation: 0,
               legend: 'TPS',
-              legendOffset: -40,
               legendPosition: 'middle',
+              legendOffset: -40,
             }}
-            enableGridX={false}
-            enablePoints={false}
-            useMesh={true}
-            enableArea={true}
-            colors={{ scheme: 'category10' }}
-            theme={nivoTheme}
+            enableLabel={false}
             role="application"
-            ariaLabel="Live Transaction Stats Line Chart"
+            ariaLabel="Live Transaction Stats Bar Chart"
+            barAriaLabel={e => `${e.id}: ${e.formattedValue} in TPS: ${e.indexValue}`}
+            tooltip={({ value }) => (
+              <div className="bg-popover text-popover-foreground rounded-md border px-3 py-2 shadow-sm">
+                <div className="text-sm font-semibold">TPS: {value}</div>
+              </div>
+            )}
           />
         </div>
       </CardContent>

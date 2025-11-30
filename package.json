@@ -154,5 +154,8 @@
     "tailwindcss": "^4.1.16",
     "vite-plugin-node-polyfills": "0.24.0",
     "vitest": "4.0.5"
+  },
+  "overrides": {
+    "buffer": "^6.0.3"
   }
 }
