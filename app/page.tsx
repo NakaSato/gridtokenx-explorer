@@ -44,7 +44,7 @@ export default function Page() {
     >
       <StatsProvider>
         <SupplyProvider>
-          <div className="container mx-auto px-2 py-3 sm:px-4 sm:py-4">
+          <div className="container mx-auto px-4 py-3 sm:py-4">
             <StakingComponent />
 
             <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
