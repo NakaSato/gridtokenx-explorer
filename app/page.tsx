@@ -9,7 +9,7 @@ import { Epoch } from '@/app/(shared)/components';
 import { ErrorCard, LoadingCard } from '@/app/(shared)/components';
 import { Slot } from '@/app/(shared)/components';
 import { TimestampToggle } from '@/app/(shared)/components';
-import LiveTransactionStatsCard from '@/app/(features)/analytics/components/LiveTransactionStatsCard';
+
 import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import { Progress } from '@/app/(shared)/components/ui/progress';
@@ -50,9 +50,6 @@ export default function Page() {
             <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div className="w-full">
                 <StatsCardBody />
-              </div>
-              <div className="w-full">
-                <LiveTransactionStatsCard />
               </div>
             </div>
 

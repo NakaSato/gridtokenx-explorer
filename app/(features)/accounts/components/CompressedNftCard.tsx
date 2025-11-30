@@ -1,9 +1,8 @@
 import { Account } from '@/app/(core)/providers/accounts';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { PublicKey } from '@solana/web3.js';
-import { createRef, Suspense } from 'react';
-import { ChevronDown, ExternalLink } from 'react-feather';
-import useAsyncEffect from 'use-async-effect';
+import { Suspense } from 'react';
+import { ChevronDown, ExternalLink } from 'lucide-react';
 
 import { getProxiedUri } from '@/app/features/metadata';
 import { useCluster } from '@/app/(core)/providers/cluster';
@@ -16,6 +15,11 @@ import { ArtContent } from '@/app/(shared)/components/NFTArt';
 import { TableCardBody } from '@/app/(shared)/components/TableCardBody';
 import { getCreatorDropdownItems, getIsMutablePill, getVerifiedCollectionPill } from './MetaplexNFTHeader';
 import { UnknownAccountCard } from './UnknownAccountCard';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/app/(shared)/components/ui/dropdown-menu';
 
 export function CompressedNftCard({ account }: { account: Account }) {
   const { url } = useCluster();
@@ -99,26 +103,6 @@ export function CompressedNFTHeader({ compressedNft }: { compressedNft: Compress
   // Empty strings are possible, so the check is necessary.
   const proxiedURI = compressedNft.content.json_uri ? getProxiedUri(compressedNft.content.json_uri) : null;
   const metadataJson = useMetadataJsonLink(proxiedURI);
-  const dropdownRef = createRef<HTMLButtonElement>();
-
-  useAsyncEffect(
-    async isMounted => {
-      if (!dropdownRef.current) {
-        return;
-      }
-      const Dropdown = (await import('bootstrap/js/dist/dropdown')).default;
-      if (!isMounted || !dropdownRef.current) {
-        return;
-      }
-      return new Dropdown(dropdownRef.current);
-    },
-    dropdown => {
-      if (dropdown) {
-        dropdown.dispose();
-      }
-    },
-    [dropdownRef],
-  );
 
   return (
     <div className="flex flex-row">
@@ -139,17 +123,19 @@ export function CompressedNFTHeader({ compressedNft }: { compressedNft: Compress
         <div className="mt-2 mb-2">{getCompressedNftPill()}</div>
         <div className="mt-2 mb-3">{getIsMutablePill(compressedNft.mutable)}</div>
         <div className="inline-flex">
-          <button
-            className="creators-dropdown-button-width rounded-md bg-gray-800 px-3 py-1.5 text-sm text-white hover:bg-gray-700"
-            type="button"
-            aria-haspopup="true"
-            aria-expanded="false"
-            data-bs-toggle="dropdown"
-            ref={dropdownRef}
-          >
-            Creators <ChevronDown size={15} className="align-text-top" />
-          </button>
-          <div className="absolute right-0 mt-2">{getCreatorDropdownItems(compressedNft.creators)}</div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="creators-dropdown-button-width rounded-md bg-gray-800 px-3 py-1.5 text-sm text-white hover:bg-gray-700 flex items-center justify-between"
+                type="button"
+              >
+                Creators <ChevronDown size={15} className="ml-2" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-auto p-0" align="end">
+              {getCreatorDropdownItems(compressedNft.creators)}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { fetch } from 'cross-fetch';
+// import { fetch } from 'cross-fetch';
 import useSWRImmutable from 'swr/immutable';
 
 import { Cluster } from '@/app/utils/cluster';

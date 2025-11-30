@@ -8,9 +8,13 @@ import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { PublicKey } from '@solana/web3.js';
 import { useClusterPath } from '@/app/(shared)/utils/url';
 import Link from 'next/link';
-import React, { createRef } from 'react';
-import { AlertOctagon, Check, ChevronDown } from 'react-feather';
-import useAsyncEffect from 'use-async-effect';
+import React from 'react';
+import { AlertOctagon, Check, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/app/(shared)/components/ui/dropdown-menu';
 
 export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; address: string }) {
   const collection = nftData.metadata.collection;
@@ -27,25 +31,7 @@ export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; addr
   const metadata = nftData.metadata;
   const data = nftData.json;
   const isVerifiedCollection = collection != null && collection?.verified && collectionMintInfo !== undefined;
-  const dropdownRef = createRef<HTMLButtonElement>();
-  useAsyncEffect(
-    async isMounted => {
-      if (!dropdownRef.current) {
-        return;
-      }
-      const Dropdown = (await import('bootstrap/js/dist/dropdown')).default;
-      if (!isMounted || !dropdownRef.current) {
-        return;
-      }
-      return new Dropdown(dropdownRef.current);
-    },
-    dropdown => {
-      if (dropdown) {
-        dropdown.dispose();
-      }
-    },
-    [dropdownRef],
-  );
+
   return (
     <div className="-mx-2 flex flex-wrap">
       <div className="ml-2 flex flex-none items-center">
@@ -66,19 +52,19 @@ export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; addr
         <div className="mt-2 mb-2">{getSaleTypePill(metadata.primarySaleHappened)}</div>
         <div className="mt-2 mb-3">{getIsMutablePill(metadata.isMutable)}</div>
         <div className="inline-flex">
-          <button
-            className="min-w-[120px] rounded-md bg-gray-800 px-3 py-1.5 text-sm text-white hover:bg-gray-700"
-            type="button"
-            aria-haspopup="true"
-            aria-expanded="false"
-            data-bs-toggle="dropdown"
-            ref={dropdownRef}
-          >
-            Creators <ChevronDown size={15} className="align-text-top" />
-          </button>
-          <div className="absolute z-10 mt-12 rounded-md border shadow-lg">
-            {getCreatorDropdownItems(metadata.data.creators)}
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="min-w-[120px] rounded-md bg-gray-800 px-3 py-1.5 text-sm text-white hover:bg-gray-700 flex items-center justify-between"
+                type="button"
+              >
+                Creators <ChevronDown size={15} className="ml-2" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-auto p-0" align="start">
+              {getCreatorDropdownItems(metadata.data.creators)}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
@@ -131,7 +117,7 @@ export function getCreatorDropdownItems(creators: Creator[] | null) {
       listOfCreators.push(<CreatorEntry key={creator.address} {...creator} />);
     });
 
-    return listOfCreators;
+    return <div className="flex flex-col">{listOfCreators}</div>;
   }
 
   return (

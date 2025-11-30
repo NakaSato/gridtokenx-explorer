@@ -34,6 +34,7 @@ export async function fetchFeatureGateInformation(featureInfo?: FeatureInfoType)
       try {
         const resp = await fetch(link, { method: 'GET' });
 
+
         if (!resp.ok) return 'No data';
 
         return resp.text();

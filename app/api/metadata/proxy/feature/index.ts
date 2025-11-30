@@ -1,5 +1,3 @@
-import { default as fetch, Headers, Response as NodeFetchResponse } from 'node-fetch';
-
 import Logger from '@/app/(shared)/utils/logger';
 
 import {
@@ -35,14 +33,14 @@ async function requestResource(
   headers: Headers,
   timeout: number,
   size: number,
-): Promise<[Error, void] | [void, NodeFetchResponse]> {
-  let response: NodeFetchResponse | undefined;
+): Promise<[Error, void] | [void, Response]> {
+  let response: Response | undefined;
   let error;
   try {
     response = await fetch(uri, {
       headers,
       signal: AbortSignal.timeout(timeout),
-      size,
+      // size, // Native fetch does not support size option
     });
 
     return [undefined, response];
