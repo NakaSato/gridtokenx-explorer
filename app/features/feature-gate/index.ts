@@ -1,5 +1,3 @@
-import fetch from 'cross-fetch';
-
 import { Cluster } from '@/app/(shared)/utils/cluster';
 import { FeatureInfoType } from '@/app/(shared)/utils/feature-gate/types';
 import Logger from '@/app/(shared)/utils/logger';

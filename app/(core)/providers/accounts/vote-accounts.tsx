@@ -38,8 +38,16 @@ export function useVoteAccounts() {
   const [voteAccounts, setVoteAccounts] = React.useState<VoteAccounts>();
   const { cluster, url } = useCluster();
 
-  return {
-    fetchVoteAccounts: () => fetchVoteAccounts(cluster, url, setVoteAccounts),
-    voteAccounts,
-  };
+  const fetchVoteAccountsCallback = React.useCallback(
+    () => fetchVoteAccounts(cluster, url, setVoteAccounts),
+    [cluster, url]
+  );
+
+  return React.useMemo(
+    () => ({
+      fetchVoteAccounts: fetchVoteAccountsCallback,
+      voteAccounts,
+    }),
+    [fetchVoteAccountsCallback, voteAccounts]
+  );
 }

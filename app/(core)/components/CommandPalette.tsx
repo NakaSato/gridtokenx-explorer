@@ -10,6 +10,7 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const transactionsPath = useClusterPath({ pathname: '/txs' });
+  const blocksPath = useClusterPath({ pathname: '/blocks' });
   const supplyPath = useClusterPath({ pathname: '/supply' });
   const inspectorPath = useClusterPath({ pathname: '/tx/inspector' });
   const featureGatesPath = useClusterPath({ pathname: '/feature-gates' });
@@ -59,6 +60,9 @@ export function CommandPalette() {
             </CommandItem>
             <CommandItem onSelect={() => handleNavigate(transactionsPath)}>
               <span>Transactions</span>
+            </CommandItem>
+            <CommandItem onSelect={() => handleNavigate(blocksPath)}>
+              <span>Blocks</span>
             </CommandItem>
             <CommandItem onSelect={() => handleNavigate(anchorPublicKeysPath)}>
               <span>Anchor Public Keys</span>

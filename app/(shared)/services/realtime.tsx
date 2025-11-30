@@ -1,270 +1,190 @@
-// Real-time data service for WebSocket connections and live updates
+// Real-time data service for WebSocket connections using @solana/web3.js
+import { Connection, PublicKey } from '@solana/web3.js';
 import { useState, useEffect } from 'react';
 
-interface SubscriptionCallback<T> {
-  (data: T): void;
-}
-interface SubscriptionOptions {
-  reconnect?: boolean;
-  reconnectInterval?: number;
-  maxReconnectAttempts?: number;
-}
+// Use the environment variable for the RPC URL, falling back to mainnet-beta
+const HTTP_ENDPOINT =
+  process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP ||
+  'https://api.mainnet-beta.solana.com';
 
-class RealtimeService {
-  private ws: WebSocket | null = null;
-  private subscriptions = new Map<string, Set<SubscriptionCallback<any>>>();
-  private reconnectAttempts = 0;
-  private reconnectTimer: NodeJS.Timeout | null = null;
-  private isConnecting = false;
-  private lastMessageId = 0;
+const WS_ENDPOINT =
+  process.env.NEXT_PUBLIC_SOLANA_RPC_WS ||
+  (HTTP_ENDPOINT.startsWith('http') ? HTTP_ENDPOINT.replace('http', 'ws') : undefined);
 
-  constructor(private wsUrl: string) {}
+export class BlockchainRealtimeService {
+  private connection: Connection;
+  private isConnected: boolean = false;
 
-  // Connect to WebSocket
-  connect(options: SubscriptionOptions = {}): Promise<void> {
-    if (this.isConnecting || (this.ws && this.ws.readyState === WebSocket.OPEN)) {
-      return Promise.resolve();
-    }
-
-    this.isConnecting = true;
-
-    return new Promise((resolve, reject) => {
-      try {
-        this.ws = new WebSocket(this.wsUrl);
-
-        this.ws.onopen = () => {
-          console.log('WebSocket connected');
-          this.isConnecting = false;
-          this.reconnectAttempts = 0;
-
-          // Resubscribe to all existing subscriptions
-          this.resubscribeAll();
-          resolve();
-        };
-
-        this.ws.onmessage = event => {
-          this.handleMessage(event);
-        };
-
-        this.ws.onclose = event => {
-          console.log('WebSocket disconnected:', event.code, event.reason);
-          this.isConnecting = false;
-
-          if (options.reconnect && this.reconnectAttempts < (options.maxReconnectAttempts || 5)) {
-            this.scheduleReconnect(options.reconnectInterval || 3000);
-          }
-        };
-
-        this.ws.onerror = error => {
-          console.error('WebSocket error:', error);
-          this.isConnecting = false;
-          reject(error);
-        };
-      } catch (error) {
-        this.isConnecting = false;
-        reject(error);
-      }
+  constructor() {
+    // Initialize connection with the configured endpoint
+    // We use 'confirmed' commitment for a good balance of speed and safety
+    this.connection = new Connection(HTTP_ENDPOINT, {
+      wsEndpoint: WS_ENDPOINT,
+      commitment: 'confirmed',
     });
   }
 
-  // Disconnect WebSocket
-  disconnect(): void {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
-
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
-    }
-
-    this.subscriptions.clear();
+  // Connect is mostly a no-op for @solana/web3.js as it handles connections lazily/internally
+  // but we keep it to maintain the interface and allow for explicit initialization if needed
+  connect() {
+    if (this.isConnected) return;
+    console.log('BlockchainRealtimeService: Connecting to', HTTP_ENDPOINT);
+    this.isConnected = true;
   }
 
-  // Subscribe to specific data type
-  subscribe<T>(channel: string, callback: SubscriptionCallback<T>): () => void {
-    if (!this.subscriptions.has(channel)) {
-      this.subscriptions.set(channel, new Set());
-    }
-
-    this.subscriptions.get(channel)!.add(callback);
-
-    // Send subscription message if connected
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.sendSubscriptionMessage(channel);
-    }
-
-    // Return unsubscribe function
-    return () => {
-      const callbacks = this.subscriptions.get(channel);
-      if (callbacks) {
-        callbacks.delete(callback);
-        if (callbacks.size === 0) {
-          this.subscriptions.delete(channel);
-          this.sendUnsubscribeMessage(channel);
-        }
-      }
-    };
-  }
-
-  // Send message to WebSocket
-  private send(data: any): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(
-        JSON.stringify({
-          ...data,
-          id: ++this.lastMessageId,
-          timestamp: Date.now(),
-        }),
-      );
-    }
-  }
-
-  // Handle incoming messages
-  private handleMessage(event: MessageEvent): void {
-    try {
-      const message = JSON.parse(event.data);
-
-      if (message.channel && message.data) {
-        const callbacks = this.subscriptions.get(message.channel);
-        if (callbacks) {
-          callbacks.forEach(callback => callback(message.data));
-        }
-      }
-    } catch (error) {
-      console.error('Error parsing WebSocket message:', error);
-    }
-  }
-
-  // Send subscription message
-  private sendSubscriptionMessage(channel: string): void {
-    this.send({
-      action: 'subscribe',
-      channel,
-    });
-  }
-
-  // Send unsubscribe message
-  private sendUnsubscribeMessage(channel: string): void {
-    this.send({
-      action: 'unsubscribe',
-      channel,
-    });
-  }
-
-  // Resubscribe to all channels after reconnection
-  private resubscribeAll(): void {
-    this.subscriptions.forEach((_, channel) => {
-      this.sendSubscriptionMessage(channel);
-    });
-  }
-
-  // Schedule reconnection attempt
-  private scheduleReconnect(interval: number): void {
-    this.reconnectTimer = setTimeout(async () => {
-      this.reconnectAttempts++;
-      console.log(`Attempting to reconnect (${this.reconnectAttempts}/5)...`);
-
-      try {
-        await this.connect({
-          reconnect: true,
-          reconnectInterval: interval,
-        });
-      } catch (error) {
-        console.error('Reconnection failed:', error);
-      }
-    }, interval);
-  }
-
-  // Get connection status
-  get isConnected(): boolean {
-    return this.ws?.readyState === WebSocket.OPEN;
-  }
-
-  // Get connection state
-  get connectionState(): string {
-    if (!this.ws) return 'disconnected';
-    switch (this.ws.readyState) {
-      case WebSocket.CONNECTING:
-        return 'connecting';
-      case WebSocket.OPEN:
-        return 'connected';
-      case WebSocket.CLOSING:
-        return 'closing';
-      case WebSocket.CLOSED:
-        return 'disconnected';
-      default:
-        return 'unknown';
-    }
-  }
-}
-
-// Real-time data hooks for React components
-export function createRealtimeHook<T>(channel: string, realtimeService: RealtimeService) {
-  return (initialData: T | null = null) => {
-    const [data, setData] = useState<T | null>(initialData);
-    const [isConnected, setIsConnected] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-      const unsubscribe = realtimeService.subscribe<T>(channel, (newData: T) => {
-        setData(newData);
-        setError(null);
-      });
-
-      // Update connection status
-      const statusInterval = setInterval(() => {
-        setIsConnected(realtimeService.isConnected);
-      }, 1000);
-
-      return () => {
-        unsubscribe();
-        clearInterval(statusInterval);
-      };
-    }, [channel]);
-
-    return { data, isConnected, error };
-  };
-}
-
-// Blockchain-specific real-time service
-export class BlockchainRealtimeService extends RealtimeService {
-  constructor(wsUrl: string = 'wss://api.mainnet-beta.solana.com') {
-    super(wsUrl);
+  disconnect() {
+    this.isConnected = false;
+    // @solana/web3.js doesn't have a strict "disconnect" method for the Connection object
+    // that clears all listeners globally, but individual subscriptions return unsubscribe functions.
   }
 
   // Subscribe to account updates
-  subscribeToAccountUpdates(pubkey: string, callback: SubscriptionCallback<any>) {
-    return this.subscribe(`account:${pubkey}`, callback);
+  subscribeToAccountUpdates(pubkey: string, callback: (data: any) => void) {
+    if (!this.isConnected) this.connect();
+
+    try {
+      const publicKey = new PublicKey(pubkey);
+      const subscriptionId = this.connection.onAccountChange(publicKey, (accountInfo, context) => {
+        callback({
+          account: accountInfo,
+          slot: context.slot,
+        });
+      });
+
+      return () => {
+        this.connection.removeAccountChangeListener(subscriptionId);
+      };
+    } catch (error) {
+      console.error('Error subscribing to account updates:', error);
+      return () => {};
+    }
   }
 
-  // Subscribe to block updates
-  subscribeToBlockUpdates(callback: SubscriptionCallback<any>) {
-    return this.subscribe('block', callback);
+  // Subscribe to logs (transactions)
+  subscribeToTransactionUpdates(callback: (data: any) => void) {
+    if (!this.isConnected) this.connect();
+
+    try {
+      // Subscribe to all logs ("all") or specific mentions
+      const subscriptionId = this.connection.onLogs('all', (logs, context) => {
+        callback({
+          logs,
+          slot: context.slot,
+          signature: logs.signature,
+        });
+      });
+
+      return () => {
+        this.connection.removeOnLogsListener(subscriptionId);
+      };
+    } catch (error) {
+      console.error('Error subscribing to transaction updates:', error);
+      return () => {};
+    }
   }
 
-  // Subscribe to transaction updates
-  subscribeToTransactionUpdates(callback: SubscriptionCallback<any>) {
-    return this.subscribe('transaction', callback);
+  // Subscribe to slot updates (new blocks)
+  subscribeToSlotUpdates(callback: (data: any) => void) {
+    if (!this.isConnected) this.connect();
+
+    try {
+      const subscriptionId = this.connection.onSlotChange(slotInfo => {
+        callback(slotInfo);
+      });
+
+      return () => {
+        this.connection.removeSlotChangeListener(subscriptionId);
+      };
+    } catch (error) {
+      console.error('Error subscribing to slot updates:', error);
+      return () => {};
+    }
   }
 
-  // Subscribe to slot updates
-  subscribeToSlotUpdates(callback: SubscriptionCallback<any>) {
-    return this.subscribe('slot', callback);
-  }
+  // Subscribe to program account changes
+  subscribeToProgramActivity(programId: string, callback: (data: any) => void) {
+    if (!this.isConnected) this.connect();
 
-  // Subscribe to program activity
-  subscribeToProgramActivity(programId: string, callback: SubscriptionCallback<any>) {
-    return this.subscribe(`program:${programId}`, callback);
+    try {
+      const programKey = new PublicKey(programId);
+      const subscriptionId = this.connection.onProgramAccountChange(
+        programKey,
+        (keyedAccountInfo, context) => {
+          callback({
+            accountId: keyedAccountInfo.accountId.toString(),
+            accountInfo: keyedAccountInfo.accountInfo,
+            slot: context.slot,
+          });
+        }
+      );
+
+      return () => {
+        this.connection.removeProgramAccountChangeListener(subscriptionId);
+      };
+    } catch (error) {
+      console.error('Error subscribing to program activity:', error);
+      return () => {};
+    }
   }
 }
 
 // Create singleton instance
 export const blockchainRealtimeService = new BlockchainRealtimeService();
 
-// Export hooks for easy usage
-export const useRealtimeAccount = createRealtimeHook('account', blockchainRealtimeService);
-export const useRealtimeBlocks = createRealtimeHook('block', blockchainRealtimeService);
-export const useRealtimeTransactions = createRealtimeHook('transaction', blockchainRealtimeService);
-export const useRealtimeSlots = createRealtimeHook('slot', blockchainRealtimeService);
+// React Hooks for easier usage
+
+export function useRealtimeAccount(pubkey: string | null) {
+  const [data, setData] = useState<any>(null);
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    if (!pubkey) return;
+
+    setIsConnected(true);
+    const unsubscribe = blockchainRealtimeService.subscribeToAccountUpdates(pubkey, setData);
+
+    return () => {
+      unsubscribe();
+      setIsConnected(false);
+    };
+  }, [pubkey]);
+
+  return { data, isConnected };
+}
+
+export function useRealtimeTransactions() {
+  const [data, setData] = useState<any>(null);
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    setIsConnected(true);
+    const unsubscribe = blockchainRealtimeService.subscribeToTransactionUpdates(setData);
+
+    return () => {
+      unsubscribe();
+      setIsConnected(false);
+    };
+  }, []);
+
+  return { data, isConnected };
+}
+
+export function useRealtimeSlots() {
+  const [data, setData] = useState<any>(null);
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    setIsConnected(true);
+    const unsubscribe = blockchainRealtimeService.subscribeToSlotUpdates(setData);
+
+    return () => {
+      unsubscribe();
+      setIsConnected(false);
+    };
+  }, []);
+
+  return { data, isConnected };
+}
+
+// Alias for blocks (using slots as proxy for now, or could use onRootChange)
+export const useRealtimeBlocks = useRealtimeSlots;

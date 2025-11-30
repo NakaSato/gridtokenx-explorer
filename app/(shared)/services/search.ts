@@ -1,4 +1,10 @@
 // Advanced search and filtering service for blockchain data
+import { Connection, PublicKey } from '@solana/web3.js';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+
+// Use the environment variable for the RPC URL, falling back to mainnet-beta
+const RPC_ENDPOINT =
+  process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP || 'https://api.mainnet-beta.solana.com';
 
 export interface SearchFilters {
   query?: string;
@@ -40,17 +46,29 @@ export interface SearchOptions {
   maxResults?: number;
 }
 
+import { CacheManager, CacheStats } from './cache';
+
+// ... imports ...
+
 class SearchService {
-  private cache = new Map<string, SearchResult[]>();
-  private cacheExpiry = new Map<string, number>();
-  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  private connection: Connection;
+  private cache: CacheManager;
+
+  constructor() {
+    this.connection = new Connection(RPC_ENDPOINT, 'confirmed');
+    this.cache = new CacheManager({
+      ttl: 5 * 60 * 1000, // 5 minutes
+      maxSize: 100,
+      strategy: 'lru',
+    });
+  }
 
   // Main search method
   async search<T>(filters: SearchFilters, options: SearchOptions = {}): Promise<SearchResult<T>[]> {
     const cacheKey = this.generateCacheKey(filters, options);
 
     // Check cache first
-    const cached = this.getCachedResults(cacheKey);
+    const cached = this.cache.get<SearchResult<T>[]>(cacheKey);
     if (cached) {
       return cached;
     }
@@ -59,11 +77,12 @@ class SearchService {
     const results = await this.performSearch<T>(filters, options);
 
     // Cache results
-    this.cacheResults(cacheKey, results);
+    this.cache.set(cacheKey, results);
 
     return results;
   }
 
+  // ... (searchAccounts, searchTransactions, searchBlocks, searchPrograms methods remain the same, they call this.search) ...
   // Search accounts
   async searchAccounts(query: string, options: SearchOptions = {}): Promise<SearchResult[]> {
     const filters: SearchFilters = {
@@ -148,211 +167,116 @@ class SearchService {
     });
   }
 
-  // Fuzzy search implementation
-  private fuzzyMatch(text: string, query: string): boolean {
-    if (!query) return true;
-
-    const queryChars = query.toLowerCase().split('');
-    const textChars = text.toLowerCase().split('');
-
-    let queryIndex = 0;
-
-    for (const char of textChars) {
-      if (char === queryChars[queryIndex]) {
-        queryIndex++;
-        if (queryIndex === queryChars.length) return true;
-      }
-    }
-
-    return false;
-  }
-
-  // Highlight matching text
-  private highlightText(text: string, query: string): string {
-    if (!query) return text;
-
-    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-    return text.replace(regex, '<mark>$1</mark>');
-  }
-
   // Generate cache key
   private generateCacheKey(filters: SearchFilters, options: SearchOptions): string {
     return JSON.stringify({ filters, options });
   }
 
-  // Get cached results
-  private getCachedResults(key: string): SearchResult[] | null {
-    const expiry = this.cacheExpiry.get(key);
-    if (expiry && Date.now() > expiry) {
-      this.cache.delete(key);
-      this.cacheExpiry.delete(key);
-      return null;
-    }
-
-    return this.cache.get(key) || null;
-  }
-
-  // Cache results
-  private cacheResults(key: string, results: SearchResult[]): void {
-    this.cache.set(key, results);
-    this.cacheExpiry.set(key, Date.now() + this.CACHE_TTL);
-  }
-
-  // Perform actual search (mock implementation)
+  // Perform actual search using Solana RPC
   private async performSearch<T>(filters: SearchFilters, options: SearchOptions): Promise<SearchResult<T>[]> {
-    // In a real implementation, this would query the blockchain API
-    // For now, we'll return mock results
+    const { query, type = 'all', limit = 50 } = filters;
+    if (!query) return [];
 
-    const { query, type = 'all', limit = 50, sortBy = 'relevance', sortOrder = 'desc' } = filters;
+    const results: SearchResult<T>[] = [];
+    const trimmedQuery = query.trim();
 
-    let results: SearchResult<T>[] = [];
+    // 1. Check if it's a Block (number)
+    if ((type === 'all' || type === 'block') && /^\d+$/.test(trimmedQuery)) {
+      try {
+        const slot = parseInt(trimmedQuery, 10);
+        // We fetch the block time to verify it exists, getBlock can be heavy so maybe just getBlockTime first?
+        // Or just try getBlock with minimal transaction details
+        const block = await this.connection.getBlock(slot, {
+          maxSupportedTransactionVersion: 0,
+          transactionDetails: 'none', // We just want to verify existence and get basic info
+          rewards: false,
+        });
 
-    // Mock search results based on type
-    if (type === 'all' || type === 'account') {
-      results.push(...this.getMockAccountResults(query, options));
+        if (block) {
+          results.push({
+            id: slot.toString(),
+            type: 'block',
+            title: `Block #${slot}`,
+            description: `Block at slot ${slot} with ${block.blockhash}`,
+            data: { slot, block } as any,
+            relevance: 1.0,
+            timestamp: block.blockTime ? new Date(block.blockTime * 1000) : undefined,
+          });
+        }
+      } catch (e) {
+        // Block might not exist or be too old/future
+        console.debug('Block search failed', e);
+      }
     }
 
-    if (type === 'all' || type === 'transaction') {
-      results.push(...this.getMockTransactionResults(query, options));
+    // 2. Check if it's a valid PublicKey (Account or Program)
+    let pubkey: PublicKey | null = null;
+    try {
+      pubkey = new PublicKey(trimmedQuery);
+    } catch (e) {
+      // Not a public key
     }
 
-    if (type === 'all' || type === 'block') {
-      results.push(...this.getMockBlockResults(query, options));
+    if (pubkey && (type === 'all' || type === 'account' || type === 'program')) {
+      try {
+        const accountInfo = await this.connection.getAccountInfo(pubkey);
+        if (accountInfo) {
+          const isProgram = accountInfo.executable;
+          
+          if ((type === 'all') || (type === 'program' && isProgram) || (type === 'account' && !isProgram)) {
+             results.push({
+              id: trimmedQuery,
+              type: isProgram ? 'program' : 'account',
+              title: isProgram ? 'Program' : 'Account',
+              description: `${isProgram ? 'Program' : 'Account'} Address: ${trimmedQuery}`,
+              data: { address: trimmedQuery, accountInfo } as any,
+              relevance: 1.0,
+            });
+          }
+        }
+      } catch (e) {
+        console.debug('Account search failed', e);
+      }
     }
 
-    if (type === 'all' || type === 'program') {
-      results.push(...this.getMockProgramResults(query, options));
+    // 3. Check if it's a Transaction Signature
+    // Signatures are base58 encoded and usually around 88 chars, but can vary.
+    // We'll just try to fetch it if it looks vaguely like a signature (base58 chars)
+    const isBase58 = /^[1-9A-HJ-NP-Za-km-z]+$/.test(trimmedQuery);
+    if (isBase58 && trimmedQuery.length > 60 && trimmedQuery.length < 100 && (type === 'all' || type === 'transaction')) {
+        try {
+            // getSignatureStatus is faster than getTransaction to check existence
+            const { value } = await this.connection.getSignatureStatus(trimmedQuery);
+            
+            if (value) {
+                 // If it exists, we can optionally fetch more details, but for search results, existence + status is often enough
+                 // However, to show a "title" or "description" we might want the transaction, but that's heavy.
+                 // Let's just return the signature result.
+                 results.push({
+                    id: trimmedQuery,
+                    type: 'transaction',
+                    title: 'Transaction',
+                    description: `Signature: ${trimmedQuery.slice(0, 8)}...${trimmedQuery.slice(-8)}`,
+                    data: { signature: trimmedQuery, status: value } as any,
+                    relevance: 1.0,
+                 });
+            }
+        } catch (e) {
+            console.debug('Transaction search failed', e);
+        }
     }
 
-    // Apply additional filters
-    if (filters.dateRange) {
-      results = await this.filterByDateRange(
-        results,
-        'timestamp' as any,
-        filters.dateRange.start,
-        filters.dateRange.end,
-      );
-    }
-
-    // Sort results
-    results = await this.sortResults(results, sortBy as any, sortOrder);
-
-    // Limit results
-    return results.slice(0, limit);
-  }
-
-  // Mock account results
-  private getMockAccountResults(query: string, options: SearchOptions): SearchResult[] {
-    const accounts = [
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-      '11111111111111111111111111111111111111',
-      'SysvarRent111111111111111111111111111111111111',
-      'SysvarC1ock11111111111111111111111111111111111',
-    ].filter(
-      address => !query || this.fuzzyMatch(address, query) || address.toLowerCase().includes(query.toLowerCase()),
-    );
-
-    return accounts.map(address => ({
-      id: address,
-      type: 'account' as const,
-      title: address.slice(0, 16) + '...' + address.slice(-16),
-      description: `Account: ${address}`,
-      data: { address } as any,
-      relevance: this.calculateRelevance(address, query),
-      highlight: options.includeHighlights
-        ? [
-            {
-              field: 'address',
-              value: address,
-            },
-          ]
-        : undefined,
-    }));
-  }
-
-  // Mock transaction results
-  private getMockTransactionResults(query: string, options: SearchOptions): SearchResult[] {
-    return [
-      {
-        id: 'tx123456789',
-        type: 'transaction' as const,
-        title: 'Transfer Transaction',
-        description: 'SOL transfer between accounts',
-        data: {
-          signature: '123456789abcdef',
-          amount: 1.5,
-          from: 'Account111...',
-          to: 'Account222...',
-        } as any,
-        relevance: query ? 0.8 : 0.5,
-        timestamp: new Date(),
-      },
-    ];
-  }
-
-  // Mock block results
-  private getMockBlockResults(query: string, options: SearchOptions): SearchResult[] {
-    return [
-      {
-        id: 'block123456',
-        type: 'block' as const,
-        title: 'Block #123456',
-        description: 'Block with 25 transactions',
-        data: {
-          slot: 123456,
-          blockhash: 'block123...',
-          transactionCount: 25,
-        } as any,
-        relevance: query ? 0.7 : 0.5,
-        timestamp: new Date(),
-      },
-    ];
-  }
-
-  // Mock program results
-  private getMockProgramResults(query: string, options: SearchOptions): SearchResult[] {
-    return [
-      {
-        id: 'program-token',
-        type: 'program' as const,
-        title: 'Token Program',
-        description: 'SPL Token Program for managing tokens',
-        data: {
-          programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-          name: 'Token Program',
-        } as any,
-        relevance: query ? 0.9 : 0.6,
-        timestamp: new Date(),
-      },
-    ];
-  }
-
-  // Calculate relevance score
-  private calculateRelevance(text: string, query: string): number {
-    if (!query) return 0.5;
-
-    const lowerText = text.toLowerCase();
-    const lowerQuery = query.toLowerCase();
-
-    if (lowerText === lowerQuery) return 1.0;
-    if (lowerText.includes(lowerQuery)) return 0.8;
-    if (this.fuzzyMatch(lowerText, lowerQuery)) return 0.6;
-
-    return 0.3;
+    return results;
   }
 
   // Clear cache
   clearCache(): void {
     this.cache.clear();
-    this.cacheExpiry.clear();
   }
 
   // Get cache stats
-  getCacheStats(): { size: number; hitRate: number } {
-    return {
-      size: this.cache.size,
-      hitRate: 0.85, // Mock hit rate
-    };
+  getCacheStats(): CacheStats {
+    return this.cache.getStats();
   }
 }
 
@@ -382,7 +306,7 @@ export function useSearch<T = any>(filters: SearchFilters, options: SearchOption
     [filters, options],
   );
 
-  const debouncedSearch = useMemo(() => debounce(performSearch, 300), [performSearch]);
+  const debouncedSearch = useMemo(() => debounce(performSearch, 500), [performSearch]);
 
   useEffect(() => {
     debouncedSearch();
@@ -406,6 +330,3 @@ function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (..
     timeout = setTimeout(() => func(...args), wait);
   };
 }
-
-// Import React hooks
-import { useState, useCallback, useMemo, useEffect } from 'react';

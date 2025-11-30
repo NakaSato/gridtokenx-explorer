@@ -1,4 +1,7 @@
 // Export service for blockchain data in multiple formats
+'use client';
+
+import React, { useState, useCallback } from 'react';
 
 export interface ExportOptions {
   format: 'csv' | 'json' | 'xlsx' | 'pdf';
@@ -315,11 +318,11 @@ export class ExportService {
 
 // React hooks for export functionality
 export function useExport() {
-  const [isExporting, setIsExporting] = React.useState(false);
-  const [exportProgress, setExportProgress] = React.useState(0);
-  const [error, setError] = React.useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
-  const exportData = React.useCallback(async (data: any[], options: ExportOptions) => {
+  const exportData = useCallback(async (data: any[], options: ExportOptions) => {
     setIsExporting(true);
     setExportProgress(0);
     setError(null);

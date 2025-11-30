@@ -14,6 +14,8 @@ import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import { Progress } from '@/app/(shared)/components/ui/progress';
 import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
+import AnalyticsDashboard from '@/app/(shared)/components/analytics/AnalyticsDashboard';
+import { LiveTransactionStats } from '@/app/(features)/analytics/components';
 import StatsNotReady from '@/app/(features)/analytics/components/StatsNotReady';
 import { useVoteAccounts } from '@/app/(core)/providers/accounts/vote-accounts';
 import { useCluster } from '@/app/(core)/providers/cluster';
@@ -51,6 +53,13 @@ export default function Page() {
               <div className="w-full">
                 <StatsCardBody />
               </div>
+              <div className="w-full">
+                <LiveTransactionStats />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <AnalyticsDashboard />
             </div>
 
             <UpcomingFeatures />

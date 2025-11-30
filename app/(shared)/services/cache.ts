@@ -1,4 +1,7 @@
 // Advanced caching service for blockchain data
+'use client';
+
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 
 export interface CacheOptions {
   ttl?: number; // Time to live in milliseconds
@@ -27,7 +30,7 @@ export interface CacheStats {
   evictions: number;
 }
 
-class CacheManager {
+export class CacheManager {
   private cache = new Map<string, CacheEntry<any>>();
   private accessOrder: string[] = []; // For LRU
   private stats: CacheStats = {
@@ -100,7 +103,7 @@ class CacheManager {
 
     // Compress if enabled and data is large enough
     if (this.options.compression && size > 1024) {
-      processedData = this.compress(data);
+      processedData = this.compress(data) as any;
       compressed = true;
       size = this.calculateSize(processedData);
     }
@@ -286,6 +289,7 @@ class CacheManager {
 
   // Save to localStorage
   private saveToStorage(): void {
+    if (typeof window === 'undefined' || !window.localStorage) return;
     try {
       const data = Array.from(this.cache.entries());
       localStorage.setItem('blockchain-cache', JSON.stringify(data));
@@ -296,6 +300,7 @@ class CacheManager {
 
   // Load from localStorage
   private loadFromStorage(): void {
+    if (typeof window === 'undefined' || !window.localStorage) return;
     try {
       const data = localStorage.getItem('blockchain-cache');
       if (data) {
@@ -310,6 +315,7 @@ class CacheManager {
 
   // Clear localStorage
   private clearStorage(): void {
+    if (typeof window === 'undefined' || !window.localStorage) return;
     try {
       localStorage.removeItem('blockchain-cache');
     } catch (error) {
@@ -350,14 +356,20 @@ export const analyticsCache = new CacheManager({
 
 // React hooks for cache management
 export function useCache<T>(key: string, fetcher: () => Promise<T>, options: CacheOptions = {}) {
-  const [data, setData] = React.useState<T | null>(null);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [stats, setStats] = React.useState<CacheStats | null>(null);
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<CacheStats | null>(null);
 
-  const cacheRef = React.useRef(new CacheManager(options));
+  const cacheRef = useRef(new CacheManager(options));
+  const fetcherRef = useRef(fetcher);
 
-  const fetchData = React.useCallback(
+  // Update fetcher ref when it changes
+  useEffect(() => {
+    fetcherRef.current = fetcher;
+  }, [fetcher]);
+
+  const fetchData = useCallback(
     async (forceRefresh = false) => {
       // Try to get from cache first
       if (!forceRefresh) {
@@ -374,7 +386,7 @@ export function useCache<T>(key: string, fetcher: () => Promise<T>, options: Cac
       setError(null);
 
       try {
-        const freshData = await fetcher();
+        const freshData = await fetcherRef.current();
         cacheRef.current.set(key, freshData);
         setData(freshData);
         setStats(cacheRef.current.getStats());
@@ -384,11 +396,11 @@ export function useCache<T>(key: string, fetcher: () => Promise<T>, options: Cac
         setLoading(false);
       }
     },
-    [key, fetcher],
+    [key],
   );
 
   // Initial fetch
-  React.useEffect(() => {
+  useEffect(() => {
     fetchData();
   }, [fetchData]);
 
