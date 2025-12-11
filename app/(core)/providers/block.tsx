@@ -135,7 +135,46 @@ export async function fetchBlock(dispatch: Dispatch, url: string, cluster: Clust
       status = FetchStatus.Fetched;
     } else {
       // Convert kit response to VersionedBlockResponseLike format
-      const block = blockResponse as unknown as VersionedBlockResponseLike;
+      const blockRaw = blockResponse as any;
+      const block: VersionedBlockResponseLike = {
+        ...blockRaw,
+        parentSlot: typeof blockRaw.parentSlot === 'bigint' ? Number(blockRaw.parentSlot) : blockRaw.parentSlot,
+        blockTime: blockRaw.blockTime !== null && typeof blockRaw.blockTime === 'bigint' ? Number(blockRaw.blockTime) : blockRaw.blockTime,
+        blockHeight: blockRaw.blockHeight !== null && typeof blockRaw.blockHeight === 'bigint' ? Number(blockRaw.blockHeight) : blockRaw.blockHeight,
+      };
+      
+      // Add getAccountKeys compatibility method to each transaction message
+      block.transactions.forEach(tx => {
+        const message = tx.transaction.message as any;
+        if (!message.getAccountKeys) {
+          message.getAccountKeys = (args?: { accountKeysFromLookups?: any }) => {
+            const staticKeys = message.staticAccountKeys || [];
+            const loadedKeys = args?.accountKeysFromLookups || { writable: [], readonly: [] };
+            
+            return {
+              staticAccountKeys: staticKeys,
+              get: (index: number) => {
+                if (index < staticKeys.length) {
+                  return staticKeys[index];
+                }
+                const lookupIndex = index - staticKeys.length;
+                const writableLength = loadedKeys.writable?.length || 0;
+                if (lookupIndex < writableLength) {
+                  return loadedKeys.writable[lookupIndex];
+                }
+                return loadedKeys.readonly?.[lookupIndex - writableLength];
+              },
+              keySegments: () => {
+                const segments = [staticKeys];
+                if (loadedKeys.writable?.length) segments.push(loadedKeys.writable);
+                if (loadedKeys.readonly?.length) segments.push(loadedKeys.readonly);
+                return segments;
+              },
+            };
+          };
+        }
+      });
+      
       const childSlots = await rpc.getBlocks(BigInt(slot + 1), BigInt(slot + 100), { commitment: 'confirmed' }).send();
       const childSlotArray = Array.from(childSlots);
       const childSlot = childSlotArray.length > 0 ? bigintToNumber(childSlotArray[0]) : undefined;

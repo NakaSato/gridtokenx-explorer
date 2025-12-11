@@ -22,6 +22,7 @@ interface Block {
 
 const PAGE_SIZE = 10
 const REFRESH_INTERVAL = 10000 // 10 seconds
+const THROTTLE_MS = 3000 // 3 seconds minimum between real-time fetches
 
 export function BlocksTable() {
   const { cluster, url } = useCluster()
@@ -33,6 +34,7 @@ export function BlocksTable() {
   const [networkUtilization] = useState(1.51) // Placeholder for now
   const [latestSlot, setLatestSlot] = useState<number | null>(null)
   const connectionRef = useRef<Connection | null>(null)
+  const lastFetchTimeRef = useRef<number>(0)
 
   // Initialize connection
   useEffect(() => {
@@ -45,8 +47,8 @@ export function BlocksTable() {
     const slots = Array.from({ length: count }, (_, i) => startSlot - i)
     const blocksData: Block[] = []
 
-    // Batch requests to avoid rate limits
-    const BATCH_SIZE = 5
+    // Batch requests to avoid rate limits - reduced to 2 for better rate limit compliance
+    const BATCH_SIZE = 2
     for (let i = 0; i < slots.length; i += BATCH_SIZE) {
       const batchSlots = slots.slice(i, i + BATCH_SIZE)
       try {
@@ -54,7 +56,7 @@ export function BlocksTable() {
           batchSlots.map(async (slot) => {
             try {
               // Add delay between individual requests in a batch to be gentle
-              await new Promise(resolve => setTimeout(resolve, 50 * (slot % 5)))
+              await new Promise(resolve => setTimeout(resolve, 200))
               return await connectionRef.current!.getBlock(slot, {
                 maxSupportedTransactionVersion: 0,
                 rewards: true,
@@ -95,7 +97,8 @@ export function BlocksTable() {
             // Calculate "gas" metrics (compute units)
             // This is an approximation as Solana uses Compute Units, not Gas
             const computeUnitsConsumed = block.transactions.reduce((acc, tx) => {
-               return acc + (tx.meta?.computeUnitsConsumed || 0)
+              const units = tx.meta?.computeUnitsConsumed
+              return acc + (units ? Number(units) : 0)
             }, 0)
             
             // Max compute units per block is 48M
@@ -117,8 +120,8 @@ export function BlocksTable() {
           }
         }
         
-        // Add delay between batches
-        await new Promise(resolve => setTimeout(resolve, 500))
+        // Add delay between batches - increased to 2s for better rate limit compliance
+        await new Promise(resolve => setTimeout(resolve, 2000))
 
       } catch (error) {
         console.error("Error fetching batch:", error)
@@ -169,8 +172,15 @@ export function BlocksTable() {
           const newSlot = slotInfo.slot
           const currentLatestSlot = latestSlotRef.current
           
+          // Throttle updates to prevent rate limiting
+          const now = Date.now()
+          if (now - lastFetchTimeRef.current < THROTTLE_MS) {
+            return // Skip this update to avoid rate limits
+          }
+          
           // Only fetch if we have a latest slot and the new slot is newer
           if (currentLatestSlot && newSlot > currentLatestSlot) {
+            lastFetchTimeRef.current = now
             setLatestSlot(newSlot)
             
             // Fetch only the new block(s)

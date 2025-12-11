@@ -24,20 +24,6 @@ export type TransactionWithInvocations = {
   payer: PublicKey;
 };
 
-// ... (imports need PublicKey)
-
-      return {
-        computeUnits,
-        costUnits,
-        index,
-        invocations,
-        logTruncated,
-        meta: tx.meta,
-        reservedComputeUnits,
-        signature,
-        payer,
-      };
-
 export type SortMode = 'index' | 'compute' | 'txnCost' | 'fee' | 'reservedCUs';
 
 export const ALL_TRANSACTIONS = 'all';

@@ -52,8 +52,8 @@ function BlockLayoutInner({ children, params }: Props) {
     let totalCostUnits = 0;
     for (const tx of block.transactions) {
       const requestedCUs = estimateRequestedComputeUnits(tx, epoch, cluster);
-      const cus = tx.meta?.computeUnitsConsumed ?? 0;
-      const costUnits = tx.meta?.costUnits ?? 0;
+      const cus = tx.meta?.computeUnitsConsumed ? Number(tx.meta.computeUnitsConsumed) : 0;
+      const costUnits = tx.meta?.costUnits ? Number(tx.meta.costUnits) : 0;
       totalRequestedCUs += requestedCUs;
       totalCUs += cus;
       totalCostUnits += costUnits;
@@ -95,13 +95,23 @@ function BlockLayoutInner({ children, params }: Props) {
                 <tr>
                   <td>Timestamp (Local)</td>
                   <td className="lg:text-right">
-                    <span className="font-mono">{displayTimestamp(block.blockTime * 1000, true)}</span>
+                    <span className="font-mono">
+                      {displayTimestamp(
+                        (typeof block.blockTime === 'bigint' ? Number(block.blockTime) : block.blockTime) * 1000,
+                        true
+                      )}
+                    </span>
                   </td>
                 </tr>
                 <tr>
                   <td>Timestamp (UTC)</td>
                   <td className="lg:text-right">
-                    <span className="font-mono">{displayTimestampUtc(block.blockTime * 1000, true)}</span>
+                    <span className="font-mono">
+                      {displayTimestampUtc(
+                        (typeof block.blockTime === 'bigint' ? Number(block.blockTime) : block.blockTime) * 1000,
+                        true
+                      )}
+                    </span>
                   </td>
                 </tr>
               </>

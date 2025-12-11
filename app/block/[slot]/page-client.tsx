@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { BlockHistoryCard } from '@/app/(shared)/components/block/BlockHistoryCard';
+import { BlockHistoryCard } from '@/app/(features)/blocks/components/BlockHistoryCard';
 import { useBlock, useFetchBlock } from '@/app/(core)/providers/block';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { ClusterStatus } from '@/app/(shared)/utils/cluster';
@@ -43,7 +43,12 @@ export default function BlockTransactionsTabClient({ params: { slot } }: Props) 
         </div>
       }
     >
-      {confirmedBlock?.data?.block ? <BlockHistoryCard block={confirmedBlock.data.block} epoch={epoch} /> : null}
+      {confirmedBlock?.data?.block ? (
+        <BlockHistoryCard
+          block={confirmedBlock.data.block as any}
+          epoch={epoch}
+        />
+      ) : null}
     </Suspense>
   );
 }
