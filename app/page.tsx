@@ -32,6 +32,7 @@ import { abbreviatedNumber, lamportsToSol, slotsToHumanString } from '@/app/(sha
 import { percentage } from '@/app/(shared)/utils/math';
 
 import { UpcomingFeatures } from '@/app/(shared)/utils/feature-gate/UpcomingFeatures';
+import { AnchorLocalnetDashboard } from '@/app/(features)/anchor-localnet';
 
 export default function Page() {
   return (
@@ -57,6 +58,9 @@ export default function Page() {
                 <LiveTransactionStats />
               </div>
             </div>
+
+            {/* Anchor Localnet Dashboard - only visible on localnet */}
+            <AnchorLocalnetDashboard />
 
             <div className="mb-4">
               <AnalyticsDashboard />
