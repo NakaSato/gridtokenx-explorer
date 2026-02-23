@@ -36,6 +36,9 @@ import {
 import { Connection, PublicKey } from '@solana/web3.js';
 import { PROGRAMS, ENUM_MAPS } from '../config';
 import type { ProgramKey } from '../config';
+import { tradingApi, type SettlementStats, type P2PCostResponse } from '../services/trading-api';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/app/(shared)/components/ui/card';
+import { toast } from 'sonner';
 
 interface TradingExplorerProps {
   rpcUrl: string;
@@ -91,9 +94,12 @@ export function TradingExplorer({ rpcUrl, getConnection, fetchProgramAccounts }:
   const [market, setMarket] = useState<MarketData | null>(null);
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [trades, setTrades] = useState<TradeData[]>([]);
+  const [settlementStats, setSettlementStats] = useState<SettlementStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeView, setActiveView] = useState<'market' | 'orders' | 'trades'>('market');
+  const [activeView, setActiveView] = useState<'market' | 'orders' | 'trades' | 'settlement'>('market');
   const [showPlaceOrder, setShowPlaceOrder] = useState(false);
+  const [adminToken, setAdminToken] = useState('');
+  const [isMatching, setIsMatching] = useState(false);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -176,12 +182,39 @@ export function TradingExplorer({ rpcUrl, getConnection, fetchProgramAccounts }:
       setMarket(marketData);
       setOrders(orderList.sort((a, b) => b.createdAt - a.createdAt));
       setTrades(tradeList.sort((a, b) => b.executedAt - a.executedAt));
+
+      // Fetch Settlement Stats from API Gateway
+      try {
+        const stats = await tradingApi.getSettlementStats();
+        setSettlementStats(stats);
+      } catch (err) {
+        console.warn('Failed to fetch settlement stats:', err);
+      }
     } catch (err) {
       console.warn('TradingExplorer fetch error:', err);
     } finally {
       setIsLoading(false);
     }
   }, [getConnection]);
+
+  const handleMatchOrders = async () => {
+    if (!adminToken) {
+      toast.error('Please enter an Admin Bearer Token');
+      return;
+    }
+
+    setIsMatching(true);
+    try {
+      const result = await tradingApi.triggerMatchingEngine(adminToken);
+      toast.success(result.message);
+      // Wait a bit and refresh
+      setTimeout(fetchData, 2000);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to trigger matching engine');
+    } finally {
+      setIsMatching(false);
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -300,6 +333,13 @@ export function TradingExplorer({ rpcUrl, getConnection, fetchProgramAccounts }:
         >
           <ArrowUpDown className="h-3 w-3" /> Trades ({trades.length})
         </Button>
+        <Button
+          variant={activeView === 'settlement' ? 'default' : 'outline'}
+          size="sm" className="h-7 gap-1 text-xs"
+          onClick={() => setActiveView('settlement')}
+        >
+          <Database className="h-3 w-3" /> Settlements
+        </Button>
       </div>
 
       {/* Orders List */}
@@ -364,14 +404,90 @@ export function TradingExplorer({ rpcUrl, getConnection, fetchProgramAccounts }:
         </ScrollArea>
       )}
 
-      {/* Instructions Reference */}
-      {activeView === 'market' && market && (
-        <div className="rounded-lg border p-3">
-          <h4 className="mb-2 text-xs font-semibold text-muted-foreground">Available Instructions</h4>
-          <div className="flex flex-wrap gap-1">
-            {PROGRAMS.trading.instructions.map((ix) => (
-              <Badge key={ix} variant="outline" className="font-mono text-[9px]">{ix}</Badge>
-            ))}
+      {/* Settlement View */}
+      {activeView === 'settlement' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Card>
+              <CardHeader className="p-3 pb-0">
+                <CardTitle className="text-[10px] uppercase text-muted-foreground">Pending</CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-1">
+                <p className="font-mono text-xl font-bold">{settlementStats?.pending_count ?? 0}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="p-3 pb-0">
+                <CardTitle className="text-[10px] uppercase text-muted-foreground">Completed</CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-1 text-green-600">
+                <p className="font-mono text-xl font-bold">{settlementStats?.completed_count ?? 0}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="p-3 pb-0">
+                <CardTitle className="text-[10px] uppercase text-muted-foreground">Failed</CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-1 text-red-600">
+                <p className="font-mono text-xl font-bold">{settlementStats?.failed_count ?? 0}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="p-3 pb-0">
+                <CardTitle className="text-[10px] uppercase text-muted-foreground">Value (THB)</CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-1">
+                <p className="font-mono text-xl font-bold">{settlementStats?.total_settled_value.toFixed(2) ?? '0.00'}</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="rounded-lg border p-4 bg-muted/20">
+            <h4 className="mb-3 text-xs font-semibold flex items-center gap-2">
+              <Database className="h-3 w-3" /> Admin: Order Matching
+            </h4>
+            <div className="flex flex-col gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="adminToken" className="text-[10px]">Admin Bearer Token</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="adminToken"
+                    type="password"
+                    placeholder="eyJhbGciOiJIUzI1..."
+                    className="h-8 text-xs font-mono"
+                    value={adminToken}
+                    onChange={(e) => setAdminToken(e.target.value)}
+                  />
+                  <Button
+                    size="sm"
+                    className="h-8 px-4"
+                    disabled={isMatching || !adminToken}
+                    onClick={handleMatchOrders}
+                  >
+                    {isMatching ? <RefreshCw className="h-3 w-3 animate-spin" /> : 'Trigger match'}
+                  </Button>
+                </div>
+                <p className="text-[9px] text-muted-foreground"> Trigger the matching engine to pair buy and sell orders. </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cost Estimator & Instructions Reference */}
+      {activeView === 'market' && (
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* P2P Cost Estimator */}
+          <P2PCostEstimator />
+
+          {/* Instructions reference */}
+          <div className="rounded-lg border p-3">
+            <h4 className="mb-2 text-xs font-semibold text-muted-foreground">Available Instructions</h4>
+            <div className="flex flex-wrap gap-1">
+              {PROGRAMS.trading.instructions.map((ix) => (
+                <Badge key={ix} variant="outline" className="font-mono text-[9px]">{ix}</Badge>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -507,5 +623,83 @@ function PlaceOrderDialog({ open, onOpenChange, rpcUrl, onSuccess }: PlaceOrderD
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function P2PCostEstimator() {
+  const [params, setParams] = useState({
+    buyerZoneId: 1,
+    sellerZoneId: 1,
+    energyAmount: 10,
+    agreedPrice: 0.5,
+  });
+  const [result, setResult] = useState<P2PCostResponse | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  const calculate = async () => {
+    setIsCalculating(true);
+    try {
+      const res = await tradingApi.calculateP2PCost(params);
+      setResult(res);
+    } catch (err) {
+      toast.error('Failed to calculate P2P cost');
+    } finally {
+      setIsCalculating(false);
+    }
+  };
+
+  return (
+    <div className="rounded-lg border p-4 bg-yellow-50/30">
+      <h4 className="mb-3 text-xs font-semibold flex items-center gap-2">
+        <Database className="h-3 w-3 text-yellow-600" /> P2P Cost Estimator
+      </h4>
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <Label className="text-[10px]">Energy (kWh)</Label>
+            <Input
+              type="number"
+              className="h-7 text-xs"
+              value={params.energyAmount}
+              onChange={(e) => setParams({ ...params, energyAmount: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-[10px]">Price (THB/kWh)</Label>
+            <Input
+              type="number"
+              step="0.1"
+              className="h-7 text-xs"
+              value={params.agreedPrice}
+              onChange={(e) => setParams({ ...params, agreedPrice: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+        </div>
+        <Button size="sm" className="h-7 w-full text-xs" variant="outline" onClick={calculate} disabled={isCalculating}>
+          {isCalculating ? 'Calculating...' : 'Estimate Total Cost'}
+        </Button>
+
+        {result && (
+          <div className="mt-2 space-y-1 rounded border bg-background p-2 text-[10px]">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Energy Cost:</span>
+              <span className="font-mono">{parseFloat(result.energy_cost).toFixed(2)} THB</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Transmission Fee:</span>
+              <span className="font-mono">{parseFloat(result.transmission_fee).toFixed(2)} THB</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Platform Fee:</span>
+              <span className="font-mono">{parseFloat(result.platform_fee).toFixed(2)} THB</span>
+            </div>
+            <div className="mt-1 flex justify-between border-t pt-1 font-bold">
+              <span>Total Cost:</span>
+              <span className="font-mono text-yellow-600">{parseFloat(result.total_cost).toFixed(2)} THB</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
