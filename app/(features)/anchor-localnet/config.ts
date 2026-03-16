@@ -2,11 +2,13 @@
  * GridTokenX Anchor Program Configuration
  * Contains all program addresses, PDA seeds, and account schemas
  * for localnet tracking and exploration.
+ * 
+ * Program IDs are loaded from environment variables.
  */
 
 export const PROGRAMS = {
   trading: {
-    id: '3LXbBJ7sWYYrveHvLoLtwuVYbYd27HPcbpF1DQ8rK1Bo',
+    id: process.env.NEXT_PUBLIC_TRADING_PROGRAM_ID || '3LXbBJ7sWYYrveHvLoLtwuVYbYd27HPcbpF1DQ8rK1Bo',
     name: 'Trading',
     description: 'P2P energy trading marketplace with CDA and batch execution',
     seeds: {
@@ -41,7 +43,7 @@ export const PROGRAMS = {
     ],
   },
   energy_token: {
-    id: 'GzEcWzkb73zcgvgoNRxEiuuT7CEAbzbHcAgjNV25pbLV',
+    id: process.env.NEXT_PUBLIC_TOKEN_PROGRAM_ID || 'GzEcWzkb73zcgvgoNRxEiuuT7CEAbzbHcAgjNV25pbLV',
     name: 'Energy Token',
     description: 'GRX token minting, metadata, and transfers via Metaplex',
     seeds: {},
@@ -53,7 +55,7 @@ export const PROGRAMS = {
     events: [],
   },
   governance: {
-    id: 'DuLg6buhqs78SRj1qDp5vSyGrSfG9FF4nPKm8Tn8hSJL',
+    id: process.env.NEXT_PUBLIC_GOVERNANCE_PROGRAM_ID || 'DksRNiZsEZ3zN8n8ZWfukFqi3z74e5865oZ8wFk38p4X',
     name: 'Governance',
     description: 'ERC certificates, PoA governance, and authority management',
     seeds: {
@@ -72,7 +74,7 @@ export const PROGRAMS = {
     events: [],
   },
   oracle: {
-    id: 'BRctXUydec2wrP4k2NpqZZT2sVnMfGqpv9bmWn5mTWh9',
+    id: process.env.NEXT_PUBLIC_ORACLE_PROGRAM_ID || 'BRctXUydec2wrP4k2NpqZZT2sVnMfGqpv9bmWn5mTWh9',
     name: 'Oracle',
     description: 'Meter readings, energy data validation, and anomaly detection',
     seeds: {
@@ -90,7 +92,7 @@ export const PROGRAMS = {
     ],
   },
   registry: {
-    id: 'EmiSgo85FVUYWXPtScCMQZBpq9ecZ4jhveg7E7T7F75z',
+    id: process.env.NEXT_PUBLIC_REGISTRY_PROGRAM_ID || 'EmiSgo85FVUYWXPtScCMQZBpq9ecZ4jhveg7E7T7F75z',
     name: 'Registry',
     description: 'Participant registration, meter management, and zone assignments',
     seeds: {
@@ -110,7 +112,7 @@ export const PROGRAMS = {
     ],
   },
   blockbench: {
-    id: 'B7Detx5TMRQNzVCgdd9Rp5YnN9cAtC7KeMBrzdZZsd4E',
+    id: process.env.NEXT_PUBLIC_BLOCKBENCH_PROGRAM_ID || 'B7Detx5TMRQNzVCgdd9Rp5YnN9cAtC7KeMBrzdZZsd4E',
     name: 'Blockbench',
     description: 'TPC-C performance benchmarking for Solana',
     seeds: {},
