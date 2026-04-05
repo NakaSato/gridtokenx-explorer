@@ -71,8 +71,9 @@ gridtokenx-explorer/
 
 ### Prerequisites
 - **Bun** (recommended) or npm/yarn
-- **Node.js** 18+ 
+- **Node.js** 18+
 - **Solana RPC endpoint** (local or remote)
+- **OrbStack** (required Docker runtime for GridTokenX development)
 
 ### Installation
 

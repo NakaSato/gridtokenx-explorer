@@ -6,25 +6,22 @@ export type SignatureProps = {
   signature: string;
 };
 
-// Core utility functions
-export function abbreviatedNumber(value: number): string {
-  if (value === 0) return '0';
+// Core utility functions (consolidated in math.ts)
+export {
+  percentage,
+  LAMPORTS_PER_SOL,
+  lamportsToSol,
+  lamportsToSolString,
+  abbreviatedLamportsToSol,
+  abbreviatedNumber,
+  camelToTitleCase,
+  snakeToTitleCase,
+  numberWithSeparator,
+  slotsToHumanString,
+  normalizeTokenAmount,
+} from './math';
 
-  const absValue = Math.abs(value);
-  const sign = value < 0 ? '-' : '';
-
-  if (absValue >= 1e9) {
-    return `${sign}${(absValue / 1e9).toFixed(2)}B`;
-  } else if (absValue >= 1e6) {
-    return `${sign}${(absValue / 1e6).toFixed(2)}M`;
-  } else if (absValue >= 1e3) {
-    return `${sign}${(absValue / 1e3).toFixed(2)}K`;
-  } else {
-    return `${sign}${absValue.toFixed(2)}`;
-  }
-}
-
-// Core utilities (these will be populated as we organize utils)
+// Core utilities barrel exports
 export * from './anchor';
 export * from './ans-domains';
 export * from './attestation-service';

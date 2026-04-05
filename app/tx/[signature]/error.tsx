@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
+import { Button } from '@/app/(shared)/components/ui/button';
+import Link from 'next/link';
 
 export default function Error({
   error,
@@ -17,22 +19,14 @@ export default function Error({
     <div className="container mx-auto px-4 py-8">
       <div className="mx-auto max-w-2xl text-center">
         <h2 className="mb-4 text-2xl font-bold">Failed to Load Transaction</h2>
-        <p className="mb-8 text-gray-400">
+        <p className="mb-8 text-muted-foreground">
           {error.message || 'An error occurred while loading this transaction.'}
         </p>
         <div className="flex justify-center gap-4">
-          <button
-            onClick={reset}
-            className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 transition-colors"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="rounded-lg border border-gray-600 px-6 py-3 font-semibold text-white hover:bg-gray-800 transition-colors"
-          >
-            Go home
-          </a>
+          <Button onClick={reset}>Try again</Button>
+          <Button variant="outline" asChild>
+            <Link href="/">Go home</Link>
+          </Button>
         </div>
       </div>
     </div>
