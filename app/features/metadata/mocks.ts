@@ -49,7 +49,7 @@ export function getMockAccountWithTokenMetadata(): Account {
     },
     executable: false,
     lamports: 2064720952,
-    owner: new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'),
+    owner: new PublicKey('TokenzQdBNbLqP5VEhdkThp9Dz9L33itf29V7D3fR65'),
     pubkey: new PublicKey('2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo'),
     space: 866,
   };
@@ -76,7 +76,7 @@ export function getMockAccountWithTokenMetadataAndMetaplexMetadata(): Account {
     },
     executable: false,
     lamports: 2064720952,
-    owner: new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'),
+    owner: new PublicKey('TokenzQdBNbLqP5VEhdkThp9Dz9L33itf29V7D3fR65'),
     pubkey: new PublicKey('2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo'),
     space: 866,
   };

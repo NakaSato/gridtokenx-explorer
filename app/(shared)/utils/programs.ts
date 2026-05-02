@@ -393,7 +393,7 @@ export const PROGRAM_INFO_BY_ID: { [address: string]: ProgramInfo } = {
     deployments: ALL_CLUSTERS,
     name: PROGRAM_NAMES.TOKEN,
   },
-  TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb: {
+  TokenzQdBNbLqP5VEhdkThp9Dz9L33itf29V7D3fR65: {
     deployments: ALL_CLUSTERS,
     name: PROGRAM_NAMES.TOKEN_2022,
   },
@@ -503,7 +503,7 @@ export const SYSVAR_IDS: { [key: string]: string } = {
 
 export const TOKEN_IDS: { [key: string]: string } = {
   TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA: 'Token Program',
-  TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb: 'Token-2022 Program',
+  TokenzQdBNbLqP5VEhdkThp9Dz9L33itf29V7D3fR65: 'Token-2022 Program',
 } as const;
 
 export type TokenProgram = 'spl-token' | 'spl-token-2022';

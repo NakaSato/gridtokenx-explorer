@@ -66,7 +66,7 @@ export function getAllConfiguredPrograms(): Array<{
 export const SOLANA_PROGRAM_IDS = {
   system: '11111111111111111111111111111111',
   token: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-  token2022: 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
+  token2022: 'TokenzQdBNbLqP5VEhdkThp9Dz9L33itf29V7D3fR65',
   associatedToken: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
   metaplex: 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s',
   bpfLoader: 'BPFLoaderUpgradeab1e11111111111111111111111',

@@ -282,7 +282,7 @@ function getProgramName(programId: string): string {
   const knownPrograms: Record<string, string> = {
     '11111111111111111111111111111111': 'System Program',
     TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA: 'Token Program',
-    TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb: 'Token-2022',
+    TokenzQdBNbLqP5VEhdkThp9Dz9L33itf29V7D3fR65: 'Token-2022',
     ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL: 'Associated Token',
     ComputeBudget111111111111111111111111111111: 'Compute Budget',
     Vote111111111111111111111111111111111111111: 'Vote Program',
