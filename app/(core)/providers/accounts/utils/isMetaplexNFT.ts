@@ -1,4 +1,4 @@
-import { MintAccountInfo } from '@/app/validators/accounts/token';
+import { MintAccountInfo } from '@/app/(solana)/validators/accounts/token';
 
 import { isTokenProgramData, ParsedData, TokenProgramData } from '..';
 
