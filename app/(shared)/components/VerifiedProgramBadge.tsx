@@ -5,7 +5,7 @@ import { useCluster } from '@/app/(core)/providers/cluster';
 import { Cluster } from '@/app/(shared)/utils/cluster';
 import { useClusterPath } from '@/app/(shared)/utils/url';
 import { useIsProgramVerified } from '@/app/(shared)/utils/verified-builds';
-import { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeable-program';
+import { ProgramDataAccountInfo } from '@/app/(solana)/validators/accounts/upgradeable-program';
 
 export function VerifiedProgramBadge({
   programData,
