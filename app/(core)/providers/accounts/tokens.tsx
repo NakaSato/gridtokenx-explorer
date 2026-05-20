@@ -7,12 +7,12 @@ import { useCluster } from '@/app/(core)/providers/cluster';
 import { PublicKey } from '@solana/web3.js';
 import { Cluster } from '@/app/(shared)/utils/cluster';
 import { createRpc, toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
-import { TokenAccountInfo } from '@/app/validators/accounts/token';
+import { TokenAccountInfo } from '@/app/(solana)/validators/accounts/token';
 import React from 'react';
 import { create } from 'superstruct';
 
 import { getCurrentTokenScaledUiAmountMultiplier, getTokenInfos } from '@/app/(shared)/utils/token-info';
-import { MintAccountInfo } from '@/app/validators/accounts/token';
+import { MintAccountInfo } from '@/app/(solana)/validators/accounts/token';
 
 export type TokenInfoWithPubkey = {
   info: TokenAccountInfo;
