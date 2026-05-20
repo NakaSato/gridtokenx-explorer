@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { Cluster } from '@/app/(shared)/utils/cluster';
-import { TokenExtension } from '@/app/validators/accounts/token-extension';
+import { TokenExtension } from '@/app/(solana)/validators/accounts/token-extension';
 
 // Rexport types from the API route
 export type FullTokenInfo = {
