@@ -8,7 +8,7 @@ import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import { Suspense, useState } from 'react';
 import { RefreshCw } from 'react-feather';
 
-import { getProxiedUri } from '@/app/features/metadata/utils';
+import { getProxiedUri } from '@/app/(features)/metadata/utils';
 
 import { UnknownAccountCard } from '../UnknownAccountCard';
 import { parseNFTokenCollectionAccount, parseNFTokenNFTAccount } from './isNFTokenAccount';
