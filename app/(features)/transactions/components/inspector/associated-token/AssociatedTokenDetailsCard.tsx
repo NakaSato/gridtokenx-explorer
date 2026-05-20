@@ -4,7 +4,7 @@
  * The main difference is that component accepts MessageCompiledInstruction to allow use accountKeyIndexes to resolve proper address from address-lookup-table
  */
 import { UnknownDetailsCard } from '../UnknownDetailsCard';
-import { ParsedInfo } from '@/app/validators/index';
+import { ParsedInfo } from '@/app/(solana)/validators/index';
 import React from 'react';
 import { create } from 'superstruct';
 
