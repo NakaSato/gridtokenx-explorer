@@ -1655,7 +1655,7 @@
 
     "available-typed-arrays": ["available-typed-arrays@1.0.7", "", { "dependencies": { "possible-typed-array-names": "^1.0.0" } }, "sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ=="],
 
-    "avsc": ["avsc@github:Irys-xyz/avsc#a730cc8", {}, "Irys-xyz-avsc-a730cc8"],
+    "avsc": ["avsc@github:Irys-xyz/avsc#a730cc8", {}, "Irys-xyz-avsc-a730cc8", "sha512-TSYmk+CZVA1cjV290hmPRbObT5J3JEWrUkKdnmeplRYTk1jAXA/rTEhHGk2B1MoGtUZG9m5shdDX8w0Akdfq4A=="],
 
     "axe-core": ["axe-core@4.11.1", "", {}, "sha512-BASOg+YwO2C+346x3LZOeoovTIoTrRqEsqMa6fmfAV0P+U9mFr9NsyOEpiYvFjbc64NMrSswhV50WdXzdb/Z5A=="],
 
@@ -3621,7 +3621,7 @@
 
     "@blockworks-foundation/mango-client/@solana/spl-token": ["@solana/spl-token@0.1.8", "", { "dependencies": { "@babel/runtime": "^7.10.5", "@solana/web3.js": "^1.21.0", "bn.js": "^5.1.0", "buffer": "6.0.3", "buffer-layout": "^1.2.0", "dotenv": "10.0.0" } }, "sha512-LZmYCKcPQDtJgecvWOgT/cnoIQPWjdH+QVyzPcFvyDUiT0DiRjZaam4aqNUyvchLFhzgunv3d9xOoyE34ofdoQ=="],
 
-    "@blockworks-foundation/mango-client/borsh": ["borsh@github:defactojob/borsh-js#33a0d24", { "dependencies": { "@types/bn.js": "^4.11.5", "bn.js": "^5.0.0", "bs58": "^4.0.0", "text-encoding-utf-8": "^1.0.2" } }, "defactojob-borsh-js-33a0d24"],
+    "@blockworks-foundation/mango-client/borsh": ["borsh@github:defactojob/borsh-js#33a0d24", { "dependencies": { "@types/bn.js": "^4.11.5", "bn.js": "^5.0.0", "bs58": "^4.0.0", "text-encoding-utf-8": "^1.0.2" } }, "defactojob-borsh-js-33a0d24", "sha512-s+Ajy8RR/8AONbowbr0ZNhqQoDF20KaQ1/DrAhjokd9VGtXF0C1uyrhi29QujblXONrVPw2efR4CE1PmRCQmZQ=="],
 
     "@bonfida/sns-records/borsh": ["borsh@1.0.0", "", {}, "sha512-fSVWzzemnyfF89EPwlUNsrS5swF5CrtiN4e+h0/lLf4dz2he4L3ndM20PS9wj7ICSkXJe/TQUHdaPTq15b1mNQ=="],
 
