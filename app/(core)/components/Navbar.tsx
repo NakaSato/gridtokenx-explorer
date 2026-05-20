@@ -1,6 +1,6 @@
 'use client';
 
-import Logo from '@/app/img/logos-solana/dark-explorer-logo.svg';
+import Logo from '@/app/(shared)/img/logos-solana/dark-explorer-logo.svg';
 import { useDisclosure } from '@mantine/hooks';
 import { useClusterPath } from '@/app/(shared)/utils/url';
 import Image from 'next/image';
@@ -21,7 +21,12 @@ export function Navbar({ children }: INavbarProps) {
   const featureGatesPath = useClusterPath({ pathname: '/feature-gates' });
   const supplyPath = useClusterPath({ pathname: '/supply' });
   const inspectorPath = useClusterPath({ pathname: '/tx/inspector' });
-  const transactionsPath = useClusterPath({ pathname: '/txs' });
+  const transactionsPath = useClusterPath({ pathname: '/tx' });
+  const tradingPath = useClusterPath({ pathname: '/trading' });
+  const energyTokenPath = useClusterPath({ pathname: '/energy-token' });
+  const governancePath = useClusterPath({ pathname: '/governance' });
+  const oraclePath = useClusterPath({ pathname: '/oracle' });
+  const registryPath = useClusterPath({ pathname: '/registry' });
   const anchorPublicKeysPath = useClusterPath({ pathname: '/anchor-public-keys' });
   const selectedLayoutSegment = useSelectedLayoutSegment();
   const selectedLayoutSegments = useSelectedLayoutSegments();
@@ -52,7 +57,71 @@ export function Navbar({ children }: INavbarProps) {
            
             {/* Navigation Links */}
             <ul className="flex items-center space-x-1" role="menubar">
-              {/* Navigation links removed as per request */}
+              <li>
+                <Link
+                  href={tradingPath}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'trading'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  role="menuitem"
+                >
+                  Trading
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={energyTokenPath}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'energy-token'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  role="menuitem"
+                >
+                  Energy Token
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={governancePath}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'governance'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  role="menuitem"
+                >
+                  Governance
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={oraclePath}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'oracle'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  role="menuitem"
+                >
+                  Oracle
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={registryPath}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'registry'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  role="menuitem"
+                >
+                  Registry
+                </Link>
+              </li>
             </ul>
             
             <div className="flex flex-1 items-center justify-end gap-4">
@@ -105,6 +174,66 @@ export function Navbar({ children }: INavbarProps) {
               
               {/* Mobile Navigation Links */}
               <nav className="space-y-1" role="menu">
+                <Link
+                  href={tradingPath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'trading'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Trading
+                </Link>
+                <Link
+                  href={energyTokenPath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'energy-token'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Energy Token
+                </Link>
+                <Link
+                  href={governancePath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'governance'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Governance
+                </Link>
+                <Link
+                  href={oraclePath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'oracle'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Oracle
+                </Link>
+                <Link
+                  href={registryPath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'registry'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Registry
+                </Link>
                 <Link
                   href={transactionsPath}
                   className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
