@@ -5,7 +5,7 @@ import { Address } from '@/app/(shared)/components/AddressWrapper';
 import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
-import { isFeatureActivated } from '@/app/features/feature-gate';
+import { isFeatureActivated } from '@/app/(features)/feature-gate';
 import { useCluster } from '@/app/(core)/providers/cluster';
 
 import { Cluster, clusterName } from '../cluster';
