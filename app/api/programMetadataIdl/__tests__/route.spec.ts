@@ -5,8 +5,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Cluster } from '@/app/utils/cluster';
 import Logger from '@/app/(shared)/utils/logger';
 
-vi.mock('@/app/entities/program-metadata/api/getProgramCanonicalMetadata', async () => {
-  const originalImpl = await vi.importActual('@/app/entities/program-metadata/api/getProgramCanonicalMetadata');
+vi.mock('@/app/(shared)/entities/program-metadata/api/getProgramCanonicalMetadata', async () => {
+  const originalImpl = await vi.importActual('@/app/(shared)/entities/program-metadata/api/getProgramCanonicalMetadata');
 
   return {
     ...originalImpl,
@@ -72,7 +72,7 @@ describe('GET api/programMetadataIdl', () => {
   it('should handle exact SolanaErrors differently', async () => {
     const { GET } = await importRoute();
     const spy = vi.spyOn(
-      await import('@/app/entities/program-metadata/api/getProgramCanonicalMetadata'),
+      await import('@/app/(shared)/entities/program-metadata/api/getProgramCanonicalMetadata'),
       'getProgramCanonicalMetadata',
     );
     spy.mockImplementationOnce(() => {
@@ -88,7 +88,7 @@ describe('GET api/programMetadataIdl', () => {
   it('should handle other SolanaErrors, log them internally, but respond with unified message', async () => {
     const { GET } = await importRoute();
     const spy = vi.spyOn(
-      await import('@/app/entities/program-metadata/api/getProgramCanonicalMetadata'),
+      await import('@/app/(shared)/entities/program-metadata/api/getProgramCanonicalMetadata'),
       'getProgramCanonicalMetadata',
     );
     const expectedError = new SolanaError(32300001, { addresses: [PublicKey.default.toString()] });
@@ -106,7 +106,7 @@ describe('GET api/programMetadataIdl', () => {
   it('should handle error with cause by using Logger to track the cause', async () => {
     const { GET } = await importRoute();
     const spy = vi.spyOn(
-      await import('@/app/entities/program-metadata/api/getProgramCanonicalMetadata'),
+      await import('@/app/(shared)/entities/program-metadata/api/getProgramCanonicalMetadata'),
       'getProgramCanonicalMetadata',
     );
     const expectedError = new Error('Error with cause');
@@ -125,7 +125,7 @@ describe('GET api/programMetadataIdl', () => {
   it('should handle errors from getProgramCanonicalMetadata call', async () => {
     const { GET } = await importRoute();
     const spy = vi.spyOn(
-      await import('@/app/entities/program-metadata/api/getProgramCanonicalMetadata'),
+      await import('@/app/(shared)/entities/program-metadata/api/getProgramCanonicalMetadata'),
       'getProgramCanonicalMetadata',
     );
     const expectedError = new Error('Request failed!');
