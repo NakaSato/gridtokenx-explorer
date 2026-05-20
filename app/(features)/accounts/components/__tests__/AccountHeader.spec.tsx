@@ -5,8 +5,8 @@ import React from 'react';
 import { vi } from 'vitest';
 
 import { AccountHeader } from '@/app/(shared)/components/account/AccountHeader';
-import { useSecurityTxt } from '@/app/features/security-txt';
-import { createNeodymeSecurityTxt, createPmpSecurityTxt } from '@/app/features/security-txt/ui/__tests__/helpers';
+import { useSecurityTxt } from '@/app/(features)/security-txt';
+import { createNeodymeSecurityTxt, createPmpSecurityTxt } from '@/app/(features)/security-txt/ui/__tests__/helpers';
 import type { Account, UpgradeableLoaderAccountData } from '@/app/providers/accounts';
 
 vi.mock('@/app/providers/cluster', () => ({
@@ -16,8 +16,8 @@ vi.mock('@/app/providers/cluster', () => ({
   })),
 }));
 
-vi.mock('@/app/features/security-txt', async () => ({
-  ...(await vi.importActual('@/app/features/security-txt')),
+vi.mock('@/app/(features)/security-txt', async () => ({
+  ...(await vi.importActual('@/app/(features)/security-txt')),
   useSecurityTxt: vi.fn(),
 }));
 
