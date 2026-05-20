@@ -3,7 +3,7 @@ import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
 import { Account, isTokenProgramData } from '@/app/(core)/providers/accounts';
 import React from 'react';
 
-import { getProxiedUri } from '@/app/features/metadata/utils';
+import { getProxiedUri } from '@/app/(features)/metadata/utils';
 import { useCluster } from '@/app/providers/cluster';
 import { useCompressedNft } from '@/app/(core)/providers/compressed-nft';
 
