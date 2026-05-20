@@ -1,8 +1,8 @@
 import { isSolanaError, SOLANA_ERROR__ACCOUNTS__ACCOUNT_NOT_FOUND, SolanaErrorCode } from '@solana/kit';
 import { NextResponse } from 'next/server';
 
-import { getMetadataEndpointUrl } from '@/app/entities/program-metadata/api/getMetadataEndpointUrl';
-import { errors, getProgramCanonicalMetadata } from '@/app/entities/program-metadata/api/getProgramCanonicalMetadata';
+import { getMetadataEndpointUrl } from '@/app/(shared)/entities/program-metadata/api/getMetadataEndpointUrl';
+import { errors, getProgramCanonicalMetadata } from '@/app/(shared)/entities/program-metadata/api/getProgramCanonicalMetadata';
 import { normalizeUnknownError } from '@/app/(shared)/utils/unknown-error';
 import Logger from '@/app/(shared)/utils/logger';
 
