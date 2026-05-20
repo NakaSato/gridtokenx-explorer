@@ -21,23 +21,23 @@ import { createRpc, publicKeyToAddress, addressToPublicKey } from '@/app/(shared
 import { Cluster } from '@/app/(shared)/utils/cluster';
 import { pubkeyToString } from '@/app/(shared)/utils/index';
 import { assertIsTokenProgram, TokenProgram } from '@/app/(shared)/utils/programs';
-import { ParsedAddressLookupTableAccount } from '@/app/validators/accounts/address-lookup-table';
-import { ConfigAccount } from '@/app/validators/accounts/config';
-import { NonceAccount } from '@/app/validators/accounts/nonce';
-import { StakeAccount } from '@/app/validators/accounts/stake';
-import { SysvarAccount } from '@/app/validators/accounts/sysvar';
-import { MintAccountInfo, TokenAccount, TokenAccountInfo } from '@/app/validators/accounts/token';
+import { ParsedAddressLookupTableAccount } from '@/app/(solana)/validators/accounts/address-lookup-table';
+import { ConfigAccount } from '@/app/(solana)/validators/accounts/config';
+import { NonceAccount } from '@/app/(solana)/validators/accounts/nonce';
+import { StakeAccount } from '@/app/(solana)/validators/accounts/stake';
+import { SysvarAccount } from '@/app/(solana)/validators/accounts/sysvar';
+import { MintAccountInfo, TokenAccount, TokenAccountInfo } from '@/app/(solana)/validators/accounts/token';
 import {
   ProgramDataAccount,
   ProgramDataAccountInfo,
   UpgradeableLoaderAccount,
-} from '@/app/validators/accounts/upgradeable-program';
-import { VoteAccount } from '@/app/validators/accounts/vote';
-import { ParsedInfo } from '@/app/validators/index';
+} from '@/app/(solana)/validators/accounts/upgradeable-program';
+import { VoteAccount } from '@/app/(solana)/validators/accounts/vote';
+import { ParsedInfo } from '@/app/(solana)/validators/index';
 import React from 'react';
 import { create } from 'superstruct';
 
-import { getProxiedUri } from '@/app/features/metadata/utils';
+import { getProxiedUri } from '@/app/(features)/metadata/utils';
 
 import { HistoryProvider } from './history';
 import { RewardsProvider } from './rewards';
