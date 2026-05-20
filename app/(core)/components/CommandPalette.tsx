@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react';
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const transactionsPath = useClusterPath({ pathname: '/txs' });
+  const transactionsPath = useClusterPath({ pathname: '/tx' });
   const blocksPath = useClusterPath({ pathname: '/blocks' });
   const supplyPath = useClusterPath({ pathname: '/supply' });
   const inspectorPath = useClusterPath({ pathname: '/tx/inspector' });
