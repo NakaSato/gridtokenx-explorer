@@ -1,7 +1,7 @@
 import { Address } from '@/app/(shared)/components/common/Address';
 import { BPF_LOADER_PROGRAM_ID, ParsedInstruction, ParsedTransaction, SignatureResult } from '@solana/web3.js';
 import { wrap } from '@/app/(shared)/utils/index';
-import { ParsedInfo } from '@/app/validators/index';
+import { ParsedInfo } from '@/app/(solana)/validators/index';
 import React from 'react';
 import { create } from 'superstruct';
 
