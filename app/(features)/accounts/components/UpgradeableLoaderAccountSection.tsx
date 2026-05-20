@@ -22,8 +22,8 @@ import Link from 'next/link';
 import React from 'react';
 import { ExternalLink, RefreshCw } from 'react-feather';
 
-import { ProgramSecurityTXTBadge } from '@/app/features/security-txt/ui/SecurityTXTBadge';
-import { ProgramSecurityTXTLabel } from '@/app/features/security-txt/ui/SecurityTXTLabel';
+import { ProgramSecurityTXTBadge } from '@/app/(features)/security-txt/ui/SecurityTXTBadge';
+import { ProgramSecurityTXTLabel } from '@/app/(features)/security-txt/ui/SecurityTXTLabel';
 import { useSquadsMultisigLookup } from '@/app/(core)/providers/squadsMultisig';
 import { Cluster } from '@/app/(shared)/utils/cluster';
 import { useClusterPath } from '@/app/(shared)/utils/url';
