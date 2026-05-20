@@ -9,8 +9,8 @@ import { Badge } from '@/app/(shared)/components/ui/badge';
 import {
   getAnchorId,
   useTokenExtensionNavigation,
-} from '@/app/features/token-extensions/use-token-extension-navigation';
-import { TokenExtension } from '@/app/validators/accounts/token-extension';
+} from '@/app/(features)/token-extensions/use-token-extension-navigation';
+import { TokenExtension } from '@/app/(solana)/validators/accounts/token-extension';
 
 import { TokenExtensionBadge } from '../common/TokenExtensionBadge';
 import { TokenExtensionRow } from './TokenAccountSection';
