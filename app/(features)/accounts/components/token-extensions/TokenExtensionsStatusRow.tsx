@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
 
-import { useTokenExtensionNavigation } from '@/app/features/token-extensions/use-token-extension-navigation';
+import { useTokenExtensionNavigation } from '@/app/(features)/token-extensions/use-token-extension-navigation';
 import { populatePartialParsedTokenExtension } from '@/app/(shared)/utils/token-extension';
-import { TokenExtension } from '@/app/validators/accounts/token-extension';
+import { TokenExtension } from '@/app/(solana)/validators/accounts/token-extension';
 
 import { TokenExtensionBadges } from '@/app/(shared)/components/TokenExtensionBadges';
 import { ParsedTokenExtension } from '../types';
