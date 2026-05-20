@@ -19,8 +19,8 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import React, { useCallback, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
 
-import { getProxiedUri } from '@/app/features/metadata/utils';
-import TokenLogoPlaceholder from '@/app/img/logos-solana/low-contrast-solana-logo.svg';
+import { getProxiedUri } from '@/app/(features)/metadata/utils';
+import TokenLogoPlaceholder from '@/app/(shared)/img/logos-solana/low-contrast-solana-logo.svg';
 import { normalizeTokenAmount } from '@/app/(shared)/utils/index';
 
 type Display = 'summary' | 'detail' | null;
