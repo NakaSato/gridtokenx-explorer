@@ -25,7 +25,7 @@ import { Cluster } from '@/app/(shared)/utils/cluster';
 import { useAnchorLocalnet } from '../hooks/useAnchorLocalnet';
 import { PROGRAMS } from '../config';
 import { ProgramOverview } from './ProgramOverview'
-import { TradingExplorer } from './TradingExplorer'
+import { TradingTerminal } from './TradingTerminal'
 import { GovernanceExplorer } from './GovernanceExplorer';
 import { OracleExplorer } from './OracleExplorer';
 import { RegistryExplorer } from './RegistryExplorer';
@@ -34,6 +34,8 @@ import { TransactionBuilder } from './TransactionBuilder';
 import { PDACalculator } from './PDACalculator';
 import { TokenBalancesPanel } from './TokenBalancesPanel';
 import { PDALookup } from './PDALookup';
+import { GlobalNetworkOverview } from './GlobalNetworkOverview';
+import { Network } from 'lucide-react';
 
 export function AnchorLocalnetDashboard() {
   const { cluster, url } = useCluster();
@@ -123,6 +125,9 @@ export function AnchorLocalnetDashboard() {
             <TabsTrigger value="overview" className="gap-1.5 text-xs px-3 whitespace-nowrap">
               <BarChart3 className="h-3.5 w-3.5" /> Overview
             </TabsTrigger>
+            <TabsTrigger value="network" className="gap-1.5 text-xs px-3 whitespace-nowrap">
+              <Network className="h-3.5 w-3.5" /> Network
+            </TabsTrigger>
             <TabsTrigger value="trading" className="gap-1.5 text-xs px-3 whitespace-nowrap">
               <Zap className="h-3.5 w-3.5" /> Trading
             </TabsTrigger>
@@ -163,11 +168,17 @@ export function AnchorLocalnetDashboard() {
             />
           </TabsContent>
 
+          <TabsContent value="network">
+            <GlobalNetworkOverview 
+              rpcUrl={url} 
+              getConnection={getConnection} 
+            />
+          </TabsContent>
+
           <TabsContent value="trading">
-            <TradingExplorer
+            <TradingTerminal
               rpcUrl={url}
               getConnection={getConnection}
-              fetchProgramAccounts={fetchProgramAccounts}
             />
           </TabsContent>
 
