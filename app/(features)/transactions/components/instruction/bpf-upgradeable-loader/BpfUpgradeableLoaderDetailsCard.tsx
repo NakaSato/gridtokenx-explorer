@@ -1,7 +1,7 @@
 import { Address } from '@/app/(shared)/components/common/Address';
 import { ParsedInstruction, ParsedTransaction, PublicKey, SignatureResult } from '@solana/web3.js';
 import { camelToTitleCase } from '@/app/(shared)/utils/index';
-import { ParsedInfo } from '@/app/validators/index';
+import { ParsedInfo } from '@/app/(solana)/validators/index';
 import React from 'react';
 import { create, Struct } from 'superstruct';
 
