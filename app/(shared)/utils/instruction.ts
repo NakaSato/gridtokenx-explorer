@@ -24,7 +24,7 @@ import {
   intoTransactionInstruction,
   TransactionInstruction as CustomTransactionInstruction,
 } from '@/app/(shared)/utils/tx';
-import { ParsedInfo } from '@/app/validators/index';
+import { ParsedInfo } from '@/app/(solana)/validators/index';
 import { create } from 'superstruct';
 
 export type InstructionType = {
