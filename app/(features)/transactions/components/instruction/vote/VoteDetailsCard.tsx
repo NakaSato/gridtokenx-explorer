@@ -4,7 +4,7 @@ import { useCluster } from '@/app/(core)/providers/cluster';
 import { PublicKey } from '@solana/web3.js';
 import { displayTimestamp } from '@/app/(shared)/utils/date';
 import { camelToTitleCase } from '@/app/(shared)/utils/index';
-import { ParsedInfo } from '@/app/validators/index';
+import { ParsedInfo } from '@/app/(solana)/validators/index';
 import React from 'react';
 import { create, Struct } from 'superstruct';
 
