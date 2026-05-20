@@ -1,6 +1,6 @@
 import { array, enums, Infer, number, string, type, union } from 'superstruct';
 
-import { PublicKeyFromString } from '@/app/validators/pubkey';
+import { PublicKeyFromString } from '@/app/(solana)/validators/pubkey';
 
 export type CreateLookupTableInfo = Infer<typeof CreateLookupTableInfo>;
 export const CreateLookupTableInfo = type({
