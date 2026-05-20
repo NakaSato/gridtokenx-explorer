@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { ProgramMetadataProgramName } from '@/app/entities/program-metadata';
+import { ProgramMetadataProgramName } from '@/app/(shared)/entities/program-metadata';
 
 import { AnchorProgramName } from './anchor';
 import { Cluster } from './cluster';
