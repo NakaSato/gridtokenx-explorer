@@ -15,7 +15,7 @@ import { displayTimestamp } from '@/app/(shared)/utils/date';
 import { normalizeTokenAmount } from '@/app/(shared)/utils/index';
 import { getCurrentTokenScaledUiAmountMultiplier } from '@/app/(shared)/utils/token-info';
 import { addressLabel } from '@/app/(shared)/utils/tx';
-import { MintAccountInfo, MultisigAccountInfo, TokenAccount, TokenAccountInfo } from '@/app/validators/accounts/token';
+import { MintAccountInfo, MultisigAccountInfo, TokenAccount, TokenAccountInfo } from '@/app/(solana)/validators/accounts/token';
 import {
   ConfidentialTransferAccount,
   ConfidentialTransferFeeAmount,
@@ -41,7 +41,7 @@ import {
   TransferFeeConfig,
   TransferHook,
   TransferHookAccount,
-} from '@/app/validators/accounts/token-extension';
+} from '@/app/(solana)/validators/accounts/token-extension';
 import { BigNumber } from 'bignumber.js';
 import { capitalCase } from 'change-case';
 import { useEffect, useMemo, useState } from 'react';
