@@ -2,7 +2,7 @@ import { Address } from '@/app/(shared)/components/common/Address';
 import { useFetchAccountInfo, useMintAccountInfo, useTokenAccountInfo } from '@/app/(core)/providers/accounts';
 import { ParsedInstruction, ParsedTransaction, PublicKey, SignatureResult } from '@solana/web3.js';
 import { normalizeTokenAmount } from '@/app/(shared)/utils/index';
-import { ParsedInfo } from '@/app/validators/index';
+import { ParsedInfo } from '@/app/(solana)/validators/index';
 import React from 'react';
 import { create } from 'superstruct';
 import useSWR from 'swr';
