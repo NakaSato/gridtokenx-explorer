@@ -5,9 +5,9 @@ import React from 'react';
 
 import { type UpgradeableLoaderAccountData } from '@/app/(core)/providers/accounts';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/app/(shared)/components/ui/tooltip';
-import { getProxiedUri } from '@/app/features/metadata/utils';
-import { isPmpSecurityTXT, useSecurityTxt } from '@/app/features/security-txt';
-import ProgramLogoPlaceholder from '@/app/img/logos-solana/low-contrast-solana-logo.svg';
+import { getProxiedUri } from '@/app/(features)/metadata/utils';
+import { isPmpSecurityTXT, useSecurityTxt } from '@/app/(features)/security-txt';
+import ProgramLogoPlaceholder from '@/app/(shared)/img/logos-solana/low-contrast-solana-logo.svg';
 
 import { Badge } from '../ui/badge';
 
