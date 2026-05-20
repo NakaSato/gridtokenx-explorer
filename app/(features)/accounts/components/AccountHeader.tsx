@@ -11,16 +11,16 @@ import {
 } from '@/app/(core)/providers/accounts';
 import isMetaplexNFT from '@/app/(core)/providers/accounts/utils/isMetaplexNFT';
 import { useMetadataJsonLink } from '@providers/compressed-nft';
-import { MintAccountInfo } from '@/app/validators/accounts/token';
-import { MetadataPointer, TokenMetadata } from '@/app/validators/accounts/token-extension';
+import { MintAccountInfo } from '@/app/(solana)/validators/accounts/token';
+import { MetadataPointer, TokenMetadata } from '@/app/(solana)/validators/accounts/token-extension';
 import Image from 'next/image';
 import React, { Suspense, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { create } from 'superstruct';
 
 import { ProgramHeader } from '@/app/(shared)/components/shared/account/ProgramHeader';
-import { getProxiedUri } from '@/app/features/metadata/utils';
-import TokenLogoPlaceholder from '@/app/img/logos-solana/low-contrast-solana-logo.svg';
+import { getProxiedUri } from '@/app/(features)/metadata/utils';
+import TokenLogoPlaceholder from '@/app/(shared)/img/logos-solana/low-contrast-solana-logo.svg';
 import { type FullTokenInfo, isRedactedTokenAddress } from '@/app/(shared)/utils/token-info';
 
 export function AccountHeader({
