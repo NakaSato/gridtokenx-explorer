@@ -21,15 +21,17 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@components/*": ["./app/components/*"],
-      "@img/*": ["./app/img/*"],
-      "@providers/*": ["./app/providers/*"],
-      "@utils/*": ["./app/utils/*"],
-      "@validators/*": ["./app/validators/*"],
+      "@components/*": ["./app/(shared)/components/*"],
+      "@img/*": ["./app/(shared)/img/*"],
+      "@providers/*": ["./app/(core)/providers/*"],
+      "@utils/*": ["./app/(shared)/utils/*"],
+      "@validators/*": ["./app/(solana)/validators/*"],
       "@/app/(shared)/*": ["./app/(shared)/*"],
       "@/app/(core)/*": ["./app/(core)/*"],
       "@/app/(features)/*": ["./app/(features)/*"],
-      "@/app/(config)/*": ["./app/(config)/*"]
+      "@/app/(config)/*": ["./app/(config)/*"],
+      "@/app/(programs)/*": ["./app/(programs)/*"],
+      "@/app/(solana)/*": ["./app/(solana)/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
