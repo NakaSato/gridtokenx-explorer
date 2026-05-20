@@ -4,7 +4,7 @@ import { PublicKey } from '@solana/web3.js';
 import { Suspense } from 'react';
 import { ChevronDown, ExternalLink } from 'lucide-react';
 
-import { getProxiedUri } from '@/app/features/metadata';
+import { getProxiedUri } from '@/app/(features)/metadata';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { CompressedNft, useCompressedNft, useMetadataJsonLink } from '@/app/(core)/providers/compressed-nft';
 
