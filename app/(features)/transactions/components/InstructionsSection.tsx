@@ -41,7 +41,7 @@ import { intoTransactionInstruction } from '@/app/(shared)/utils/tx';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { useProgramMetadataIdl } from '@/app/entities/program-metadata';
+import { useProgramMetadataIdl } from '@/app/(shared)/entities/program-metadata';
 
 import AnchorDetailsCard from '@/app/(features)/transactions/components/instruction/AnchorDetailsCard';
 import { Ed25519DetailsCard } from '@/app/(features)/transactions/components/instruction/ed25519/Ed25519DetailsCard';
