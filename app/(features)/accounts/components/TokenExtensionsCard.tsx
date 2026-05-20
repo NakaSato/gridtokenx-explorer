@@ -11,7 +11,7 @@ import useSWR from 'swr';
 
 import { populatePartialParsedTokenExtension } from '@/app/utils/token-extension';
 import { getTokenInfo, getTokenInfoSwrKey } from '@/app/(shared)/utils/token-info';
-import { TokenExtension } from '@/app/validators/accounts/token-extension';
+import { TokenExtension } from '@/app/(solana)/validators/accounts/token-extension';
 
 import { LoadingCard } from '../common/LoadingCard';
 import { TokenExtensionsSection } from './TokenExtensionsSection';
