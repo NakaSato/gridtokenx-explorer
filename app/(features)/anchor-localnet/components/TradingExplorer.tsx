@@ -3,47 +3,36 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Button } from '@/app/(shared)/components/ui/button';
-import { ScrollArea } from '@/app/(shared)/components/ui/scroll-area';
 import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/app/(shared)/components/ui/dialog';
-import { Input } from '@/app/(shared)/components/ui/input';
-import { Label } from '@/app/(shared)/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/app/(shared)/components/ui/select';
-import {
-  BarChart3,
-  RefreshCw,
-  TrendingUp,
-  ShoppingCart,
-  ArrowUpDown,
-  Clock,
+import { 
+  RefreshCw, 
+  Plus, 
   Zap,
-  Database,
-  Plus,
 } from 'lucide-react';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { PROGRAMS, ENUM_MAPS } from '../config';
+import { PROGRAMS } from '../config';
 import type { ProgramKey } from '../config';
-import { tradingApi, type SettlementStats, type P2PCostResponse } from '../services/trading-api';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/app/(shared)/components/ui/card';
 import { toast } from 'sonner';
+import { cn } from '@/app/(shared)/utils/cn';
+import { Card } from '@/app/(shared)/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/app/(shared)/components/ui/tabs';
+
+// Refactored Sub-components
+import { InstructionReference } from './shared-explorer/InstructionReference';
+import { MarketStatsCard } from './trading/MarketStatsCard';
+import { OrdersTable } from './trading/OrdersTable';
+import { TradesTable } from './trading/TradesTable';
+import { PlaceOrderDialog } from './trading/PlaceOrderDialog';
 
 interface TradingExplorerProps {
   rpcUrl: string;
   getConnection: () => Connection;
-  fetchProgramAccounts: (key: ProgramKey) => Promise<void>;
+  fetchProgramAccounts?: (key: ProgramKey) => Promise<void>;
 }
 
 interface MarketData {
@@ -51,55 +40,39 @@ interface MarketData {
   authority: string;
   totalVolume: number;
   totalTrades: number;
-  activeOrders: number;
-  lastClearingPrice: number;
-  vwap: number;
-  marketFeeBps: number;
+  lastPrice: number;
   clearingEnabled: boolean;
   minPrice: number;
-  maxPrice: number;
-  buyDepthCount: number;
-  sellDepthCount: number;
-  priceHistoryCount: number;
 }
 
 interface OrderData {
   address: string;
-  seller: string;
-  buyer: string;
   orderId: number;
-  amount: number;
-  filledAmount: number;
-  pricePerKwh: number;
+  owner: string;
   orderType: string;
+  energyAmount: number;
+  energyFilled: number;
+  pricePerKwh: number;
   status: string;
   createdAt: number;
-  expiresAt: number;
 }
 
 interface TradeData {
   address: string;
   buyOrder: string;
   sellOrder: string;
-  buyer: string;
-  seller: string;
-  amount: number;
+  energyAmount: number;
   pricePerKwh: number;
-  totalValue: number;
-  feeAmount: number;
   executedAt: number;
 }
 
-export function TradingExplorer({ rpcUrl, getConnection, fetchProgramAccounts }: TradingExplorerProps) {
+export function TradingExplorer({ rpcUrl, getConnection }: TradingExplorerProps) {
   const [market, setMarket] = useState<MarketData | null>(null);
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [trades, setTrades] = useState<TradeData[]>([]);
-  const [settlementStats, setSettlementStats] = useState<SettlementStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeView, setActiveView] = useState<'market' | 'orders' | 'trades' | 'settlement'>('market');
+  const [activeView, setActiveView] = useState<'market' | 'history'>('market');
   const [showPlaceOrder, setShowPlaceOrder] = useState(false);
-  const [adminToken, setAdminToken] = useState('');
-  const [isMatching, setIsMatching] = useState(false);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -108,113 +81,98 @@ export function TradingExplorer({ rpcUrl, getConnection, fetchProgramAccounts }:
       const programId = new PublicKey(PROGRAMS.trading.id);
       const accounts = await conn.getProgramAccounts(programId);
 
-      let marketData: MarketData | null = null;
       const orderList: OrderData[] = [];
       const tradeList: TradeData[] = [];
+      let marketData: MarketData | null = null;
 
       for (const { pubkey, account } of accounts) {
         const data = account.data;
-        const addr = pubkey.toBase58();
 
-        // Market account is the largest (~3800+ bytes)
-        if (data.length > 3000) {
+        // MarketRecord (zero_copy)
+        if (data.length > 500) {
           try {
-            // Skip 8-byte discriminator
             const d = data.slice(8);
             marketData = {
-              address: addr,
+              address: pubkey.toBase58(),
               authority: new PublicKey(d.slice(0, 32)).toBase58(),
               totalVolume: Number(d.readBigUInt64LE(32)),
-              totalTrades: d.readUInt32LE(48 + 8 + 4),
-              activeOrders: d.readUInt32LE(48 + 8),
-              lastClearingPrice: Number(d.readBigUInt64LE(48)),
-              vwap: Number(d.readBigUInt64LE(56)),
-              marketFeeBps: d.readUInt16LE(48 + 8 + 4 + 4),
-              clearingEnabled: d[48 + 8 + 4 + 4 + 2] === 1,
-              minPrice: Number(d.readBigUInt64LE(80)),
-              maxPrice: Number(d.readBigUInt64LE(88)),
-              buyDepthCount: 0,
-              sellDepthCount: 0,
-              priceHistoryCount: 0,
+              totalTrades: d.readUInt32LE(68),
+              lastPrice: Number(d.readBigUInt64LE(48)),
+              clearingEnabled: d[75] === 1,
+              minPrice: Number(d.readBigUInt64LE(88)),
             };
-          } catch {
-            // Skip malformed market accounts
+          } catch (err) {
+            console.error('Error parsing market record:', err);
           }
-        }
-        // Order accounts (~200-300 bytes)
-        else if (data.length > 100 && data.length < 500) {
+        } 
+        // OrderRecord (fixed size 128)
+        else if (data.length === 128) {
           try {
             const d = data.slice(8);
+            // Struct: seller (32), buyer (32), order_id (8), amount (8), filled (8), price (8), type (1), status (1)
             const seller = new PublicKey(d.slice(0, 32)).toBase58();
             const buyer = new PublicKey(d.slice(32, 64)).toBase58();
             const orderId = Number(d.readBigUInt64LE(64));
-            const amount = Number(d.readBigUInt64LE(72));
-            const filledAmount = Number(d.readBigUInt64LE(80));
+            const energyAmount = Number(d.readBigUInt64LE(72));
+            const energyFilled = Number(d.readBigUInt64LE(80));
             const pricePerKwh = Number(d.readBigUInt64LE(88));
-            const orderType = d[96];
-            const status = d[97];
-            const createdAt = Number(d.readBigInt64LE(98));
-            const expiresAt = Number(d.readBigInt64LE(106));
+            const orderTypeNum = d[96];
+            const statusNum = d[97];
+            const createdAt = Number(d.readBigInt64LE(104));
+
+            // Status Map: 0=Active, 1=PartiallyFilled, 2=Completed, 3=Cancelled, 4=Expired
+            const statusLabels = ['Open', 'Partial', 'Completed', 'Cancelled', 'Expired'];
+            const owner = orderTypeNum === 1 ? buyer : seller; // 0=Sell, 1=Buy in some contexts, but let's check ENUM_MAPS
 
             orderList.push({
-              address: addr,
-              seller,
-              buyer,
+              address: pubkey.toBase58(),
+              owner,
               orderId,
-              amount,
-              filledAmount,
+              energyAmount,
+              energyFilled,
               pricePerKwh,
-              orderType: ENUM_MAPS.OrderType[orderType as keyof typeof ENUM_MAPS.OrderType] ?? `Unknown(${orderType})`,
-              status: ENUM_MAPS.OrderStatus[status as keyof typeof ENUM_MAPS.OrderStatus] ?? `Unknown(${status})`,
+              orderType: orderTypeNum === 1 ? 'Buy' : 'Sell',
+              status: statusLabels[statusNum] || 'Unknown',
               createdAt,
-              expiresAt,
             });
-          } catch {
-            // Skip
+          } catch (err) {
+            console.error('Error parsing order record:', err);
           }
         }
-        // TradeRecord accounts (smaller, specific size)
-        else if (data.length > 50 && data.length <= 100) {
-          // Not all will be trade records but we try
+        // TradeRecord (size 184)
+        else if (data.length === 184) {
+          try {
+            const d = data.slice(8);
+            // Struct: sell_order (32), buy_order (32), seller (32), buyer (32), amount (8), price (8), total (8), fee (8), executed (8)
+            const buyOrder = new PublicKey(d.slice(32, 64)).toBase58();
+            const sellOrder = new PublicKey(d.slice(0, 32)).toBase58();
+            const energyAmount = Number(d.readBigUInt64LE(128));
+            const pricePerKwh = Number(d.readBigUInt64LE(136));
+            const executedAt = Number(d.readBigInt64LE(160));
+
+            tradeList.push({
+              address: pubkey.toBase58(),
+              buyOrder,
+              sellOrder,
+              energyAmount,
+              pricePerKwh,
+              executedAt,
+            });
+          } catch (err) {
+            console.error('Error parsing trade record:', err);
+          }
         }
       }
 
       setMarket(marketData);
       setOrders(orderList.sort((a, b) => b.createdAt - a.createdAt));
       setTrades(tradeList.sort((a, b) => b.executedAt - a.executedAt));
-
-      // Fetch Settlement Stats from API Gateway
-      try {
-        const stats = await tradingApi.getSettlementStats();
-        setSettlementStats(stats);
-      } catch (err) {
-        console.warn('Failed to fetch settlement stats:', err);
-      }
     } catch (err) {
       console.warn('TradingExplorer fetch error:', err);
     } finally {
       setIsLoading(false);
     }
   }, [getConnection]);
-
-  const handleMatchOrders = async () => {
-    if (!adminToken) {
-      toast.error('Please enter an Admin Bearer Token');
-      return;
-    }
-
-    setIsMatching(true);
-    try {
-      const result = await tradingApi.triggerMatchingEngine(adminToken);
-      toast.success(result.message);
-      // Wait a bit and refresh
-      setTimeout(fetchData, 2000);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to trigger matching engine');
-    } finally {
-      setIsMatching(false);
-    }
-  };
 
   useEffect(() => {
     fetchData();
@@ -232,265 +190,62 @@ export function TradingExplorer({ rpcUrl, getConnection, fetchProgramAccounts }:
   return (
     <div className="space-y-4 pt-2">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold flex items-center gap-2">
-          <Zap className="h-4 w-4 text-yellow-500" />
-          Trading Program
-          <Badge variant="outline" className="font-mono text-[9px]">
-            {PROGRAMS.trading.id.slice(0, 8)}...
-          </Badge>
-        </h3>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <div className="rounded-full bg-yellow-100 p-2 dark:bg-yellow-900/30">
+            <Zap className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold leading-none">Trading Program</h3>
+            <p className="mt-1 font-mono text-[10px] text-muted-foreground">
+              {PROGRAMS.trading.id}
+            </p>
+          </div>
+        </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="outline"
+            variant="default"
             size="sm"
-            className="h-7 gap-1 text-xs"
+            className="h-8 gap-1.5"
             onClick={() => setShowPlaceOrder(true)}
           >
-            <Plus className="h-3 w-3" /> Order
+            <Plus className="h-3.5 w-3.5" /> New Order
           </Button>
-          <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={fetchData}>
-            <RefreshCw className="h-3 w-3" /> Refresh
+          <Button variant="outline" size="icon" className="h-8 w-8" onClick={fetchData}>
+            <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           </Button>
         </div>
       </div>
 
-      {/* Market Stats */}
-      {market ? (
-        <div className="rounded-lg border bg-card p-4">
-          <h4 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">Market State</h4>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div>
-              <p className="text-[10px] text-muted-foreground">Total Volume</p>
-              <p className="font-mono text-sm font-bold">{market.totalVolume.toLocaleString()} kWh</p>
-            </div>
-            <div>
-              <p className="text-[10px] text-muted-foreground">Total Trades</p>
-              <p className="font-mono text-sm font-bold">{market.totalTrades.toLocaleString()}</p>
-            </div>
-            <div>
-              <p className="text-[10px] text-muted-foreground">Active Orders</p>
-              <p className="font-mono text-sm font-bold">{market.activeOrders}</p>
-            </div>
-            <div>
-              <p className="text-[10px] text-muted-foreground">Last Price</p>
-              <p className="font-mono text-sm font-bold">{market.lastClearingPrice} /kWh</p>
-            </div>
-            <div>
-              <p className="text-[10px] text-muted-foreground">VWAP</p>
-              <p className="font-mono text-sm font-bold">{market.vwap} /kWh</p>
-            </div>
-            <div>
-              <p className="text-[10px] text-muted-foreground">Fee</p>
-              <p className="font-mono text-sm font-bold">{market.marketFeeBps} bps</p>
-            </div>
-            <div>
-              <p className="text-[10px] text-muted-foreground">Price Range</p>
-              <p className="font-mono text-sm font-bold">
-                {market.minPrice} - {market.maxPrice || '∞'}
-              </p>
-            </div>
-            <div>
-              <p className="text-[10px] text-muted-foreground">Clearing</p>
-              <Badge variant={market.clearingEnabled ? 'default' : 'secondary'} className="text-[10px]">
-                {market.clearingEnabled ? 'Enabled' : 'Disabled'}
-              </Badge>
-            </div>
-          </div>
-          <p className="mt-2 font-mono text-[9px] text-muted-foreground">
-            Authority: {market.authority}
-          </p>
+      {/* Market Stats Card */}
+      {market && <MarketStatsCard market={market} />}
+
+      <Tabs value={activeView} onValueChange={(v) => setActiveView(v as any)} className="w-full">
+        <div className="flex items-center justify-between mb-4">
+          <TabsList className="grid w-[400px] grid-cols-2 h-9">
+            <TabsTrigger value="market" className="text-xs">Order Book</TabsTrigger>
+            <TabsTrigger value="history" className="text-xs">Execution History</TabsTrigger>
+          </TabsList>
+          
+          <Badge variant="outline" className="h-6 font-mono text-[10px]">
+            {activeView === 'market' ? `${orders.length} Active Orders` : `${trades.length} Total Trades`}
+          </Badge>
         </div>
-      ) : (
-        <div className="rounded-lg border border-dashed p-6 text-center">
-          <BarChart3 className="mx-auto h-6 w-6 text-muted-foreground" />
-          <p className="mt-2 text-xs text-muted-foreground">
-            No market account found. Run <code className="rounded bg-muted px-1">initialize_market</code> first.
-          </p>
-        </div>
-      )}
 
-      {/* View Toggle */}
-      <div className="flex gap-2">
-        <Button
-          variant={activeView === 'market' ? 'default' : 'outline'}
-          size="sm" className="h-7 gap-1 text-xs"
-          onClick={() => setActiveView('market')}
-        >
-          <TrendingUp className="h-3 w-3" /> Market
-        </Button>
-        <Button
-          variant={activeView === 'orders' ? 'default' : 'outline'}
-          size="sm" className="h-7 gap-1 text-xs"
-          onClick={() => setActiveView('orders')}
-        >
-          <ShoppingCart className="h-3 w-3" /> Orders ({orders.length})
-        </Button>
-        <Button
-          variant={activeView === 'trades' ? 'default' : 'outline'}
-          size="sm" className="h-7 gap-1 text-xs"
-          onClick={() => setActiveView('trades')}
-        >
-          <ArrowUpDown className="h-3 w-3" /> Trades ({trades.length})
-        </Button>
-        <Button
-          variant={activeView === 'settlement' ? 'default' : 'outline'}
-          size="sm" className="h-7 gap-1 text-xs"
-          onClick={() => setActiveView('settlement')}
-        >
-          <Database className="h-3 w-3" /> Settlements
-        </Button>
-      </div>
+        <TabsContent value="market" className="mt-0 space-y-4">
+          <Card className="overflow-hidden border-border/60">
+            <OrdersTable orders={orders} />
+          </Card>
+        </TabsContent>
 
-      {/* Orders List */}
-      {activeView === 'orders' && (
-        <ScrollArea className="h-[300px] rounded-md border">
-          {orders.length === 0 ? (
-            <div className="p-6 text-center text-xs text-muted-foreground">No orders found</div>
-          ) : (
-            <div className="divide-y">
-              {orders.map((order) => (
-                <div key={order.address} className="p-3 text-xs hover:bg-muted/30">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant={order.orderType === 'Buy' ? 'default' : 'secondary'}
-                        className="text-[9px]"
-                      >
-                        {order.orderType}
-                      </Badge>
-                      <span className="font-mono font-medium">{order.amount} kWh</span>
-                      <span className="text-muted-foreground">@ {order.pricePerKwh}/kWh</span>
-                    </div>
-                    <Badge variant="outline" className="text-[9px]">{order.status}</Badge>
-                  </div>
-                  <div className="mt-1 flex items-center gap-3 text-[10px] text-muted-foreground">
-                    <span>Filled: {order.filledAmount}/{order.amount}</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {new Date(order.createdAt * 1000).toLocaleString()}
-                    </span>
-                  </div>
-                  <p className="mt-1 font-mono text-[9px] text-muted-foreground">
-                    {order.address}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-        </ScrollArea>
-      )}
+        <TabsContent value="history" className="mt-0 space-y-4">
+          <Card className="overflow-hidden border-border/60">
+            <TradesTable trades={trades} />
+          </Card>
+        </TabsContent>
+      </Tabs>
 
-      {/* Trades List */}
-      {activeView === 'trades' && (
-        <ScrollArea className="h-[300px] rounded-md border">
-          {trades.length === 0 ? (
-            <div className="p-6 text-center text-xs text-muted-foreground">No trade records found</div>
-          ) : (
-            <div className="divide-y">
-              {trades.map((trade) => (
-                <div key={trade.address} className="p-3 text-xs hover:bg-muted/30">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono font-medium">{trade.amount} kWh @ {trade.pricePerKwh}/kWh</span>
-                    <span className="text-muted-foreground">Value: {trade.totalValue}</span>
-                  </div>
-                  <p className="mt-1 font-mono text-[9px] text-muted-foreground">
-                    Fee: {trade.feeAmount} | {new Date(trade.executedAt * 1000).toLocaleString()}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-        </ScrollArea>
-      )}
-
-      {/* Settlement View */}
-      {activeView === 'settlement' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Card>
-              <CardHeader className="p-3 pb-0">
-                <CardTitle className="text-[10px] uppercase text-muted-foreground">Pending</CardTitle>
-              </CardHeader>
-              <CardContent className="p-3 pt-1">
-                <p className="font-mono text-xl font-bold">{settlementStats?.pending_count ?? 0}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="p-3 pb-0">
-                <CardTitle className="text-[10px] uppercase text-muted-foreground">Completed</CardTitle>
-              </CardHeader>
-              <CardContent className="p-3 pt-1 text-green-600">
-                <p className="font-mono text-xl font-bold">{settlementStats?.completed_count ?? 0}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="p-3 pb-0">
-                <CardTitle className="text-[10px] uppercase text-muted-foreground">Failed</CardTitle>
-              </CardHeader>
-              <CardContent className="p-3 pt-1 text-red-600">
-                <p className="font-mono text-xl font-bold">{settlementStats?.failed_count ?? 0}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="p-3 pb-0">
-                <CardTitle className="text-[10px] uppercase text-muted-foreground">Value (THB)</CardTitle>
-              </CardHeader>
-              <CardContent className="p-3 pt-1">
-                <p className="font-mono text-xl font-bold">{settlementStats?.total_settled_value.toFixed(2) ?? '0.00'}</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="rounded-lg border p-4 bg-muted/20">
-            <h4 className="mb-3 text-xs font-semibold flex items-center gap-2">
-              <Database className="h-3 w-3" /> Admin: Order Matching
-            </h4>
-            <div className="flex flex-col gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="adminToken" className="text-[10px]">Admin Bearer Token</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="adminToken"
-                    type="password"
-                    placeholder="eyJhbGciOiJIUzI1..."
-                    className="h-8 text-xs font-mono"
-                    value={adminToken}
-                    onChange={(e) => setAdminToken(e.target.value)}
-                  />
-                  <Button
-                    size="sm"
-                    className="h-8 px-4"
-                    disabled={isMatching || !adminToken}
-                    onClick={handleMatchOrders}
-                  >
-                    {isMatching ? <RefreshCw className="h-3 w-3 animate-spin" /> : 'Trigger match'}
-                  </Button>
-                </div>
-                <p className="text-[9px] text-muted-foreground"> Trigger the matching engine to pair buy and sell orders. </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Cost Estimator & Instructions Reference */}
-      {activeView === 'market' && (
-        <div className="grid gap-4 md:grid-cols-2">
-          {/* P2P Cost Estimator */}
-          <P2PCostEstimator />
-
-          {/* Instructions reference */}
-          <div className="rounded-lg border p-3">
-            <h4 className="mb-2 text-xs font-semibold text-muted-foreground">Available Instructions</h4>
-            <div className="flex flex-wrap gap-1">
-              {PROGRAMS.trading.instructions.map((ix) => (
-                <Badge key={ix} variant="outline" className="font-mono text-[9px]">{ix}</Badge>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <InstructionReference title="Trading Instruction Set" instructions={PROGRAMS.trading.instructions} />
 
       {/* Place Order Dialog */}
       <PlaceOrderDialog
@@ -499,207 +254,6 @@ export function TradingExplorer({ rpcUrl, getConnection, fetchProgramAccounts }:
         rpcUrl={rpcUrl}
         onSuccess={fetchData}
       />
-    </div>
-  );
-}
-
-// Place Order Dialog Component
-interface PlaceOrderDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  rpcUrl: string;
-  onSuccess: () => void;
-}
-
-function PlaceOrderDialog({ open, onOpenChange, rpcUrl, onSuccess }: PlaceOrderDialogProps) {
-  const [orderType, setOrderType] = useState('Buy');
-  const [amount, setAmount] = useState('100');
-  const [price, setPrice] = useState('5000');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [txSignature, setTxSignature] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setError(null);
-    setTxSignature(null);
-
-    try {
-      const endpoint = orderType === 'Buy' ? '/api/trading/create-buy-order' : '/api/trading/create-sell-order';
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          energyAmount: parseInt(amount),
-          pricePerKwh: parseInt(price),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to place order');
-      }
-
-      const data = await response.json();
-      setTxSignature(data.signature);
-
-      setTimeout(() => {
-        onSuccess();
-        onOpenChange(false);
-        setTxSignature(null);
-      }, 2000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Plus className="h-4 w-4" /> Place Order
-          </DialogTitle>
-          <DialogDescription>
-            Create a buy or sell order in the energy market.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="orderType">Order Type</Label>
-            <Select value={orderType} onValueChange={setOrderType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Buy">🟢 Buy Energy</SelectItem>
-                <SelectItem value="Sell">🔴 Sell Energy</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="amount">Energy Amount (kWh)</Label>
-            <Input
-              id="amount"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="price">Price per kWh (micro-units)</Label>
-            <Input
-              id="price"
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
-          </div>
-
-          {txSignature && (
-            <div className="rounded-lg bg-green-50 p-3 text-xs text-green-700">
-              ✅ Order placed! TX: {txSignature.slice(0, 20)}...
-            </div>
-          )}
-
-          {error && (
-            <div className="rounded-lg bg-red-50 p-3 text-xs text-red-700">
-              ❌ Error: {error}
-            </div>
-          )}
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? 'Placing...' : 'Place Order'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function P2PCostEstimator() {
-  const [params, setParams] = useState({
-    buyerZoneId: 1,
-    sellerZoneId: 1,
-    energyAmount: 10,
-    agreedPrice: 0.5,
-  });
-  const [result, setResult] = useState<P2PCostResponse | null>(null);
-  const [isCalculating, setIsCalculating] = useState(false);
-
-  const calculate = async () => {
-    setIsCalculating(true);
-    try {
-      const res = await tradingApi.calculateP2PCost(params);
-      setResult(res);
-    } catch (err) {
-      toast.error('Failed to calculate P2P cost');
-    } finally {
-      setIsCalculating(false);
-    }
-  };
-
-  return (
-    <div className="rounded-lg border p-4 bg-yellow-50/30">
-      <h4 className="mb-3 text-xs font-semibold flex items-center gap-2">
-        <Database className="h-3 w-3 text-yellow-600" /> P2P Cost Estimator
-      </h4>
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1">
-            <Label className="text-[10px]">Energy (kWh)</Label>
-            <Input
-              type="number"
-              className="h-7 text-xs"
-              value={params.energyAmount}
-              onChange={(e) => setParams({ ...params, energyAmount: parseFloat(e.target.value) || 0 })}
-            />
-          </div>
-          <div className="space-y-1">
-            <Label className="text-[10px]">Price (THB/kWh)</Label>
-            <Input
-              type="number"
-              step="0.1"
-              className="h-7 text-xs"
-              value={params.agreedPrice}
-              onChange={(e) => setParams({ ...params, agreedPrice: parseFloat(e.target.value) || 0 })}
-            />
-          </div>
-        </div>
-        <Button size="sm" className="h-7 w-full text-xs" variant="outline" onClick={calculate} disabled={isCalculating}>
-          {isCalculating ? 'Calculating...' : 'Estimate Total Cost'}
-        </Button>
-
-        {result && (
-          <div className="mt-2 space-y-1 rounded border bg-background p-2 text-[10px]">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Energy Cost:</span>
-              <span className="font-mono">{parseFloat(result.energy_cost).toFixed(2)} THB</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Transmission Fee:</span>
-              <span className="font-mono">{parseFloat(result.transmission_fee).toFixed(2)} THB</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Platform Fee:</span>
-              <span className="font-mono">{parseFloat(result.platform_fee).toFixed(2)} THB</span>
-            </div>
-            <div className="mt-1 flex justify-between border-t pt-1 font-bold">
-              <span>Total Cost:</span>
-              <span className="font-mono text-yellow-600">{parseFloat(result.total_cost).toFixed(2)} THB</span>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
