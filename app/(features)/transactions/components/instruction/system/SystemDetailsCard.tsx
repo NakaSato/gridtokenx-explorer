@@ -1,5 +1,5 @@
 import { ParsedInstruction, ParsedTransaction, SignatureResult } from '@solana/web3.js';
-import { ParsedInfo } from '@/app/validators/index';
+import { ParsedInfo } from '@/app/(solana)/validators/index';
 import React from 'react';
 import { create } from 'superstruct';
 
