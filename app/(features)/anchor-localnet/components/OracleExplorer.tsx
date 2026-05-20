@@ -4,73 +4,49 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
-import { Progress } from '@/app/(shared)/components/ui/progress';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/app/(shared)/components/ui/dialog';
-import { Input } from '@/app/(shared)/components/ui/input';
-import { Label } from '@/app/(shared)/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/app/(shared)/components/ui/select';
-import {
-  Radio,
-  RefreshCw,
   Activity,
-  AlertTriangle,
-  CheckCircle2,
-  Shield,
-  Gauge,
+  RefreshCw,
   Plus,
 } from 'lucide-react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { PROGRAMS } from '../config';
+import { cn } from '@/app/(shared)/utils/cn';
+import { Card } from '@/app/(shared)/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/ui/table';
+
+// Refactored Sub-components
+import { OracleStatsCard } from './oracle/OracleStatsCard';
+import { InstructionReference } from './shared-explorer/InstructionReference';
 
 interface OracleExplorerProps {
   rpcUrl: string;
   getConnection: () => Connection;
 }
 
-interface OracleStateData {
+interface OracleData {
   address: string;
   authority: string;
-  apiGateway: string;
+  totalAggregatedEnergy: number;
+  lastReadingTime: number;
+  updateInterval: number;
+  isActive: boolean;
+  securityLevel: number;
+}
+
+interface MeterStateData {
+  address: string;
+  meterId: string;
+  produced: number;
+  consumed: number;
   totalReadings: number;
-  lastReadingTimestamp: number;
-  lastClearing: number;
-  active: boolean;
-  createdAt: number;
-  minEnergyValue: number;
-  maxEnergyValue: number;
-  anomalyDetectionEnabled: boolean;
-  maxReadingDeviationPercent: number;
-  totalValidReadings: number;
-  totalRejectedReadings: number;
-  lastQualityScore: number;
-  qualityScoreUpdatedAt: number;
-  lastEnergyProduced: number;
-  lastEnergyConsumed: number;
-  totalGlobalEnergyProduced: number;
-  totalGlobalEnergyConsumed: number;
-  minReadingInterval: number;
-  backupOraclesCount: number;
-  consensusThreshold: number;
-  requireConsensus: boolean;
+  lastReading: number;
 }
 
 export function OracleExplorer({ rpcUrl, getConnection }: OracleExplorerProps) {
-  const [oracle, setOracle] = useState<OracleStateData | null>(null);
+  const [oracle, setOracle] = useState<OracleData | null>(null);
+  const [meters, setMeters] = useState<MeterStateData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showSubmitReading, setShowSubmitReading] = useState(false);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -79,76 +55,45 @@ export function OracleExplorer({ rpcUrl, getConnection }: OracleExplorerProps) {
       const programId = new PublicKey(PROGRAMS.oracle.id);
       const accounts = await conn.getProgramAccounts(programId);
 
+      const meterList: MeterStateData[] = [];
+      let oracleData: OracleData | null = null;
+
       for (const { pubkey, account } of accounts) {
         const data = account.data;
-        // OracleData is a zero_copy account, large (~500+ bytes)
+        const d = data.slice(8);
+
+        // OracleData (size > 400)
         if (data.length > 400) {
           try {
-            const d = data.slice(8); // skip discriminator
-            const authority = new PublicKey(d.slice(0, 32)).toBase58();
-            const apiGateway = new PublicKey(d.slice(32, 64)).toBase58();
-            // Skip backup_oracles (320 bytes) -> offset 384
-            const off = 384;
-            const totalReadings = Number(d.readBigUInt64LE(off));
-            const lastReadingTimestamp = Number(d.readBigInt64LE(off + 8));
-            const lastClearing = Number(d.readBigInt64LE(off + 16));
-            const createdAt = Number(d.readBigInt64LE(off + 24));
-            const minEnergyValue = Number(d.readBigUInt64LE(off + 32));
-            const maxEnergyValue = Number(d.readBigUInt64LE(off + 40));
-            const totalValidReadings = Number(d.readBigUInt64LE(off + 48));
-            const totalRejectedReadings = Number(d.readBigUInt64LE(off + 56));
-            const qualityScoreUpdatedAt = Number(d.readBigInt64LE(off + 64));
-            const lastConsensusTimestamp = Number(d.readBigInt64LE(off + 72));
-            const lastEnergyProduced = Number(d.readBigUInt64LE(off + 80));
-            const lastEnergyConsumed = Number(d.readBigUInt64LE(off + 88));
-            const totalGlobalEnergyProduced = Number(d.readBigUInt64LE(off + 96));
-            const totalGlobalEnergyConsumed = Number(d.readBigUInt64LE(off + 104));
-            const minReadingInterval = d.readUInt16LE(off + 112);
-            // Skip 6 bytes padding
-            // off + 120: last_cleared_epoch (8 bytes)
-            const off2 = off + 128;
-            const averageReadingInterval = d.readUInt32LE(off2);
-            const maxReadingDeviationPercent = d.readUInt16LE(off2 + 4);
-            const maxProductionConsumptionRatio = d.readUInt16LE(off2 + 6);
-            const active = d[off2 + 8] === 1;
-            const anomalyDetectionEnabled = d[off2 + 9] === 1;
-            const requireConsensus = d[off2 + 10] === 1;
-            const lastQualityScore = d[off2 + 11];
-            const backupOraclesCount = d[off2 + 12];
-            const consensusThreshold = d[off2 + 13];
-
-            setOracle({
+            oracleData = {
               address: pubkey.toBase58(),
-              authority,
-              apiGateway,
-              totalReadings,
-              lastReadingTimestamp,
-              lastClearing,
-              active,
-              createdAt,
-              minEnergyValue,
-              maxEnergyValue,
-              anomalyDetectionEnabled,
-              maxReadingDeviationPercent,
-              totalValidReadings,
-              totalRejectedReadings,
-              lastQualityScore,
-              qualityScoreUpdatedAt,
-              lastEnergyProduced,
-              lastEnergyConsumed,
-              totalGlobalEnergyProduced,
-              totalGlobalEnergyConsumed,
-              minReadingInterval,
-              backupOraclesCount,
-              consensusThreshold,
-              requireConsensus,
-            });
-            break;
-          } catch {
-            // Skip malformed
+              authority: new PublicKey(d.slice(0, 32)).toBase58(),
+              totalAggregatedEnergy: Number(d.readBigUInt64LE(352 + 56 + 8)), // total_global_energy_produced
+              lastReadingTime: Number(d.readBigInt64LE(352 + 8)), // last_reading_timestamp
+              updateInterval: d.readUInt16LE(352 + 56 + 8 + 8 + 8), // min_reading_interval
+              isActive: d[352 + 56 + 8 + 8 + 8 + 2 + 6 + 8 + 4 + 2 + 2] === 1, // active
+              securityLevel: d[352 + 56 + 8 + 8 + 8 + 2 + 6 + 8 + 4 + 2 + 2 + 3], // last_quality_score
+            };
+          } catch (err) {
+            console.error('Error parsing oracle state:', err);
           }
         }
+        // MeterState (size 102)
+        else if (data.length === 102) {
+          const idLen = d[32];
+          meterList.push({
+            address: pubkey.toBase58(),
+            meterId: d.slice(0, 32).toString('utf8').slice(0, idLen),
+            produced: Number(d.readBigUInt64LE(34 + 4 + 8 + 8)), // total_energy_produced
+            consumed: Number(d.readBigUInt64LE(34 + 4 + 8 + 8 + 8)), // total_energy_consumed
+            totalReadings: Number(d.readBigUInt64LE(34 + 4 + 8 + 8 + 8 + 8 + 8)), // total_readings
+            lastReading: Number(d.readBigInt64LE(34 + 4 + 8 + 8 + 8 + 8)), // last_reading_timestamp
+          });
+        }
       }
+
+      setOracle(oracleData);
+      setMeters(meterList.sort((a, b) => b.lastReading - a.lastReading));
     } catch (err) {
       console.warn('OracleExplorer fetch error:', err);
     } finally {
@@ -169,305 +114,81 @@ export function OracleExplorer({ rpcUrl, getConnection }: OracleExplorerProps) {
     );
   }
 
-  const validRate = oracle && oracle.totalReadings > 0
-    ? ((oracle.totalValidReadings / oracle.totalReadings) * 100)
-    : 0;
-
   return (
-    <div className="space-y-4 pt-2">
-      <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-sm font-semibold">
-          <Radio className="h-4 w-4 text-blue-500" />
-          Oracle Program
-          <Badge variant="outline" className="font-mono text-[9px]">
-            {PROGRAMS.oracle.id.slice(0, 8)}...
-          </Badge>
-        </h3>
+    <div className="space-y-6 pt-2">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <div className="rounded-full bg-orange-100 p-2 dark:bg-orange-900/30">
+            <Activity className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold leading-none">Oracle Program</h3>
+            <p className="mt-1 font-mono text-[10px] text-muted-foreground">
+              {PROGRAMS.oracle.id}
+            </p>
+          </div>
+        </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="outline"
+            variant="default"
             size="sm"
-            className="h-7 gap-1 text-xs"
-            onClick={() => setShowSubmitReading(true)}
+            className="h-8 gap-1.5"
+            onClick={() => {}}
           >
-            <Plus className="h-3 w-3" /> Reading
+            <Plus className="h-3.5 w-3.5" /> Submit Reading
           </Button>
-          <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={fetchData}>
-            <RefreshCw className="h-3 w-3" /> Refresh
+          <Button variant="outline" size="icon" className="h-8 w-8" onClick={fetchData}>
+            <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           </Button>
         </div>
       </div>
 
-      {oracle ? (
-        <>
-          {/* Status Row */}
-          <div className="flex items-center gap-2">
-            <Badge variant={oracle.active ? 'default' : 'destructive'} className="gap-1">
-              {oracle.active ? (
-                <><CheckCircle2 className="h-3 w-3" /> Active</>
-              ) : (
-                <><AlertTriangle className="h-3 w-3" /> Inactive</>
-              )}
-            </Badge>
-            <Badge variant={oracle.anomalyDetectionEnabled ? 'default' : 'secondary'} className="gap-1 text-[10px]">
-              <Shield className="h-3 w-3" /> Anomaly Detection {oracle.anomalyDetectionEnabled ? 'ON' : 'OFF'}
-            </Badge>
-            {oracle.requireConsensus && (
-              <Badge variant="outline" className="text-[10px]">
-                Consensus Required ({oracle.consensusThreshold})
-              </Badge>
-            )}
-          </div>
+      {/* Oracle Stats Card */}
+      {oracle && <OracleStatsCard oracle={oracle} />}
 
-          {/* Main Stats */}
-          <div className="rounded-lg border bg-card p-4">
-            <h4 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">Meter Reading Statistics</h4>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div>
-                <p className="text-[10px] text-muted-foreground">Total Readings</p>
-                <p className="font-mono text-sm font-bold">{oracle.totalReadings.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Valid</p>
-                <p className="font-mono text-sm font-bold text-green-500">{oracle.totalValidReadings.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Rejected</p>
-                <p className="font-mono text-sm font-bold text-red-500">{oracle.totalRejectedReadings.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Quality Score</p>
-                <p className="font-mono text-sm font-bold">{oracle.lastQualityScore}/100</p>
-              </div>
-            </div>
-
-            {/* Validation Rate Progress */}
-            <div className="mt-3 space-y-1">
-              <div className="flex items-center justify-between text-[10px]">
-                <span className="text-muted-foreground">Validation Rate</span>
-                <span className="font-mono font-medium">{validRate.toFixed(1)}%</span>
-              </div>
-              <Progress value={validRate} className="h-1.5" />
-            </div>
-          </div>
-
-          {/* Energy Data */}
-          <div className="rounded-lg border bg-card p-4">
-            <h4 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">Energy Data</h4>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div>
-                <p className="text-[10px] text-muted-foreground">Total Produced</p>
-                <p className="font-mono text-sm font-bold">{oracle.totalGlobalEnergyProduced.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Total Consumed</p>
-                <p className="font-mono text-sm font-bold">{oracle.totalGlobalEnergyConsumed.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Last Produced</p>
-                <p className="font-mono text-sm font-bold">{oracle.lastEnergyProduced.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Last Consumed</p>
-                <p className="font-mono text-sm font-bold">{oracle.lastEnergyConsumed.toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Config Details */}
-          <div className="rounded-lg border bg-card p-4">
-            <h4 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">Oracle Configuration</h4>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <div>
-                <p className="text-[10px] text-muted-foreground">Min Reading Interval</p>
-                <p className="font-mono text-xs">{oracle.minReadingInterval}s</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Max Deviation</p>
-                <p className="font-mono text-xs">{oracle.maxReadingDeviationPercent}%</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Energy Range</p>
-                <p className="font-mono text-xs">{oracle.minEnergyValue} - {oracle.maxEnergyValue}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Backup Oracles</p>
-                <p className="font-mono text-xs">{oracle.backupOraclesCount}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Last Reading</p>
-                <p className="font-mono text-xs">
-                  {oracle.lastReadingTimestamp > 0
-                    ? new Date(oracle.lastReadingTimestamp * 1000).toLocaleString()
-                    : 'Never'}
-                </p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">Last Clearing</p>
-                <p className="font-mono text-xs">
-                  {oracle.lastClearing > 0
-                    ? new Date(oracle.lastClearing * 1000).toLocaleString()
-                    : 'Never'}
-                </p>
-              </div>
-            </div>
-            <div className="mt-2 space-y-1">
-              <p className="font-mono text-[9px] text-muted-foreground">Authority: {oracle.authority}</p>
-              <p className="font-mono text-[9px] text-muted-foreground">API Gateway: {oracle.apiGateway}</p>
-            </div>
-          </div>
-
-          {/* Instructions */}
-          <div className="rounded-lg border p-3">
-            <h4 className="mb-2 text-xs font-semibold text-muted-foreground">Available Instructions</h4>
-            <div className="flex flex-wrap gap-1">
-              {PROGRAMS.oracle.instructions.map((ix) => (
-                <Badge key={ix} variant="outline" className="font-mono text-[9px]">{ix}</Badge>
+      {/* Meter States Table */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Active Meter Telemetry</h4>
+          <Badge variant="outline" className="h-5 text-[9px] font-mono">{meters.length} Online</Badge>
+        </div>
+        <div className="rounded-xl border border-white/5 bg-navy-900/40 overflow-hidden">
+          <Table>
+            <TableHeader className="bg-navy-900/60">
+              <TableRow className="border-white/5 hover:bg-transparent">
+                <TableHead className="text-[10px] uppercase font-bold text-slate-500">Meter ID</TableHead>
+                <TableHead className="text-right text-[10px] uppercase font-bold text-slate-500">Total Produced</TableHead>
+                <TableHead className="text-right text-[10px] uppercase font-bold text-slate-500">Readings</TableHead>
+                <TableHead className="text-right text-[10px] uppercase font-bold text-slate-500">Last Telemetry</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {meters.map((m) => (
+                <TableRow key={m.address} className="border-white/5 hover:bg-white/5 transition-colors">
+                  <TableCell className="font-mono text-xs font-bold text-orange-400">{m.meterId}</TableCell>
+                  <TableCell className="text-right text-xs font-bold text-white">{m.produced.toLocaleString()} kWh</TableCell>
+                  <TableCell className="text-right text-xs text-slate-400 font-mono">{m.totalReadings}</TableCell>
+                  <TableCell className="text-right">
+                    <span className="text-[10px] text-slate-500 font-medium">
+                      {m.lastReading > 0 ? new Date(m.lastReading * 1000).toLocaleTimeString() : 'Never'}
+                    </span>
+                  </TableCell>
+                </TableRow>
               ))}
-            </div>
-          </div>
-
-          {/* Submit Reading Dialog */}
-          <SubmitReadingDialog
-            open={showSubmitReading}
-            onOpenChange={setShowSubmitReading}
-            rpcUrl={rpcUrl}
-            onSuccess={fetchData}
-          />
-        </>
-      ) : (
-        <div className="rounded-lg border border-dashed p-6 text-center">
-          <Radio className="mx-auto h-6 w-6 text-muted-foreground" />
-          <p className="mt-2 text-xs text-muted-foreground">
-            No oracle data found. Run <code className="rounded bg-muted px-1">initialize</code> first.
-          </p>
+              {meters.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center text-slate-500 text-xs">
+                    No active meter telemetry found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
-      )}
+      </div>
+
+      <InstructionReference title="Oracle Instruction Set" instructions={PROGRAMS.oracle.instructions} />
     </div>
-  );
-}
-
-// Submit Reading Dialog Component
-interface SubmitReadingDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  rpcUrl: string;
-  onSuccess: () => void;
-}
-
-function SubmitReadingDialog({ open, onOpenChange, rpcUrl, onSuccess }: SubmitReadingDialogProps) {
-  const [meterId, setMeterId] = useState('');
-  const [energyProduced, setEnergyProduced] = useState('5000');
-  const [energyConsumed, setEnergyConsumed] = useState('2300');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [txSignature, setTxSignature] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setError(null);
-    setTxSignature(null);
-
-    try {
-      const response = await fetch('/api/oracle/submit-reading', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          meterId: meterId || `METER-${Date.now()}`,
-          energyProduced: parseInt(energyProduced),
-          energyConsumed: parseInt(energyConsumed),
-          timestamp: Math.floor(Date.now() / 1000),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit reading');
-      }
-
-      const data = await response.json();
-      setTxSignature(data.signature);
-
-      setTimeout(() => {
-        onSuccess();
-        onOpenChange(false);
-        setTxSignature(null);
-        setMeterId('');
-        setEnergyProduced('5000');
-        setEnergyConsumed('2300');
-      }, 2000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Plus className="h-4 w-4" /> Submit Meter Reading
-          </DialogTitle>
-          <DialogDescription>
-            Submit energy reading from smart meter.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="meterId">Meter ID</Label>
-            <Input
-              id="meterId"
-              placeholder="Enter meter ID"
-              value={meterId}
-              onChange={(e) => setMeterId(e.target.value)}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="energyProduced">Energy Produced (Wh)</Label>
-              <Input
-                id="energyProduced"
-                type="number"
-                value={energyProduced}
-                onChange={(e) => setEnergyProduced(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="energyConsumed">Energy Consumed (Wh)</Label>
-              <Input
-                id="energyConsumed"
-                type="number"
-                value={energyConsumed}
-                onChange={(e) => setEnergyConsumed(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {txSignature && (
-            <div className="rounded-lg bg-green-50 p-3 text-xs text-green-700">
-              ✅ Reading submitted! TX: {txSignature.slice(0, 20)}...
-            </div>
-          )}
-
-          {error && (
-            <div className="rounded-lg bg-red-50 p-3 text-xs text-red-700">
-              ❌ Error: {error}
-            </div>
-          )}
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting || !meterId}>
-            {isSubmitting ? 'Submitting...' : 'Submit Reading'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
