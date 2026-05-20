@@ -1,5 +1,5 @@
 import { StatusType } from '@/app/(shared)/components/shared/StatusBadge';
-import { TokenExtension } from '@/app/validators/accounts/token-extension';
+import { TokenExtension } from '@/app/(solana)/validators/accounts/token-extension';
 
 export type ParsedTokenExtension = Pick<TokenExtension, 'extension'> & {
   name: string;
