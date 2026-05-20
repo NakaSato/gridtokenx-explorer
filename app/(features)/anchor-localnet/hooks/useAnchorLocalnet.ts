@@ -59,7 +59,7 @@ export function useAnchorLocalnet(rpcUrl: string, enabled: boolean) {
 
   // Get or create connection
   const getConnection = useCallback(() => {
-    if (!connectionRef.current) {
+    if (!connectionRef.current && rpcUrl && (rpcUrl.startsWith('http:') || rpcUrl.startsWith('https:'))) {
       connectionRef.current = new Connection(rpcUrl, 'confirmed');
     }
     return connectionRef.current;
@@ -87,22 +87,27 @@ export function useAnchorLocalnet(rpcUrl: string, enabled: boolean) {
         ? Math.round(perfSamples[0].numTransactions / perfSamples[0].samplePeriodSecs)
         : 0;
 
-      // Check each program deployment status
+      // Batch fetch program account infos
+      const programPubkeys = Object.values(PROGRAMS).map(p => new PublicKey(p.id));
+      const programAccountInfos = await conn.getMultipleAccountsInfo(programPubkeys);
+
       const programStatuses: ProgramStatus[] = await Promise.all(
-        Object.entries(PROGRAMS).map(async ([key, prog]) => {
+        Object.entries(PROGRAMS).map(async ([key, prog], index) => {
           try {
-            const pubkey = new PublicKey(prog.id);
-            const accountInfo = await conn.getAccountInfo(pubkey);
+            const accountInfo = programAccountInfos[index];
+            const pubkey = programPubkeys[index];
             
             // Count program-owned accounts
             let accountCount = 0;
-            try {
-              const accounts = await conn.getProgramAccounts(pubkey, {
-                dataSlice: { offset: 0, length: 0 },
-              });
-              accountCount = accounts.length;
-            } catch {
-              // Program might not have accounts yet
+            if (accountInfo) {
+              try {
+                const accounts = await conn.getProgramAccounts(pubkey, {
+                  dataSlice: { offset: 0, length: 0 },
+                });
+                accountCount = accounts.length;
+              } catch {
+                // Program might not have accounts yet
+              }
             }
 
             return {
