@@ -6,7 +6,7 @@ import useSWRImmutable from 'swr/immutable';
 
 import { useAnchorProgram } from '@/app/(core)/providers/anchor';
 import { useCluster } from '@/app/(core)/providers/cluster';
-import { ProgramDataAccountInfo } from '@/app/validators/accounts/upgradeable-program';
+import { ProgramDataAccountInfo } from '@/app/(solana)/validators/accounts/upgradeable-program';
 import { Cluster } from './cluster';
 
 // SSR-safe module initialization
