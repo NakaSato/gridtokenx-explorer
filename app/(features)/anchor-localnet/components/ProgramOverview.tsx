@@ -11,12 +11,12 @@ import {
   ArrowRight,
   Coins,
 } from 'lucide-react';
+import Link from 'next/link';
 import type { ProgramStatus } from '../hooks/useAnchorLocalnet';
 import { PROGRAMS } from '../config';
 
 interface ProgramOverviewProps {
   programs: ProgramStatus[];
-  onSelectProgram: (name: string) => void;
 }
 
 const PROGRAM_ICONS: Record<string, string> = {
@@ -28,7 +28,24 @@ const PROGRAM_ICONS: Record<string, string> = {
   'Blockbench': '🔬',
 };
 
-export function ProgramOverview({ programs, onSelectProgram }: ProgramOverviewProps) {
+const ROUTE_MAP: Record<string, string> = {
+  'Trading': '/trading',
+  'Energy Token': '/trading',
+  'Governance': '/governance',
+  'Oracle': '/oracle',
+  'Registry': '/registry',
+};
+
+const PROGRAM_COLORS: Record<string, string> = {
+  'Trading': 'from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 border-blue-500/20',
+  'Energy Token': 'from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 border-emerald-500/20',
+  'Governance': 'from-orange-500/10 to-amber-500/10 hover:from-orange-500/20 hover:to-amber-500/20 border-orange-500/20',
+  'Oracle': 'from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/20 hover:to-blue-500/20 border-cyan-500/20',
+  'Registry': 'from-slate-500/10 to-zinc-500/10 hover:from-slate-500/20 hover:to-zinc-500/20 border-slate-500/20',
+  'Blockbench': 'from-gray-500/10 to-neutral-500/10 hover:from-gray-500/20 hover:to-neutral-500/20 border-gray-500/20',
+};
+
+export function ProgramOverview({ programs }: ProgramOverviewProps) {
   if (programs.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-8 text-center">
@@ -45,14 +62,16 @@ export function ProgramOverview({ programs, onSelectProgram }: ProgramOverviewPr
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {programs.map((prog) => {
           const config = Object.values(PROGRAMS).find(p => p.id === prog.programId);
+          const colorClass = PROGRAM_COLORS[prog.name] || 'from-muted to-muted/50 hover:from-muted/80 hover:to-muted border-border';
+          const targetUrl = ROUTE_MAP[prog.name] ?? '/';
           return (
-            <div
+            <Link
               key={prog.programId}
-              className="group relative rounded-lg border bg-card p-4 transition-colors hover:bg-muted/50"
+              href={targetUrl}
+              className={`block group relative overflow-hidden rounded-xl border bg-gradient-to-br p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${colorClass}`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">{PROGRAM_ICONS[prog.name] ?? '📦'}</span>
                   <div>
                     <h4 className="text-sm font-semibold">{prog.name}</h4>
                     <p className="font-mono text-[10px] text-muted-foreground">
@@ -89,16 +108,6 @@ export function ProgramOverview({ programs, onSelectProgram }: ProgramOverviewPr
                     {(prog.lamports / 1e9).toFixed(3)} SOL
                   </span>
                 </div>
-                {prog.deployed && prog.name !== 'Blockbench' && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 gap-1 px-2 text-[10px] opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => onSelectProgram(prog.name)}
-                  >
-                    Explore <ArrowRight className="h-3 w-3" />
-                  </Button>
-                )}
               </div>
 
               {config && (
@@ -115,7 +124,7 @@ export function ProgramOverview({ programs, onSelectProgram }: ProgramOverviewPr
                   )}
                 </div>
               )}
-            </div>
+            </Link>
           );
         })}
       </div>
