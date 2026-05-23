@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(bun run build 2>&1 | head -60)",
-      "Bash(bun run build 2>&1 | head -80)"
-    ]
-  }
-}
