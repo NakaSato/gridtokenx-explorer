@@ -20,8 +20,12 @@ export function Navbar({ children }: INavbarProps) {
   const homePath = useClusterPath({ pathname: '/' });
   const featureGatesPath = useClusterPath({ pathname: '/feature-gates' });
   const supplyPath = useClusterPath({ pathname: '/supply' });
-  const inspectorPath = useClusterPath({ pathname: '/tx/inspector' });
+
   const transactionsPath = useClusterPath({ pathname: '/txs' });
+  const tradingPath = useClusterPath({ pathname: '/trading' });
+  const governancePath = useClusterPath({ pathname: '/governance' });
+  const oraclePath = useClusterPath({ pathname: '/oracle' });
+  const registryPath = useClusterPath({ pathname: '/registry' });
   const anchorPublicKeysPath = useClusterPath({ pathname: '/anchor-public-keys' });
   const selectedLayoutSegment = useSelectedLayoutSegment();
   const selectedLayoutSegments = useSelectedLayoutSegments();
@@ -52,6 +56,50 @@ export function Navbar({ children }: INavbarProps) {
            
             {/* Navigation Links */}
             <ul className="flex items-center space-x-1" role="menubar">
+              <Link
+                href={tradingPath}
+                className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  selectedLayoutSegment === 'trading'
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                }`}
+                role="menuitem"
+              >
+                Trading
+              </Link>
+              <Link
+                href={governancePath}
+                className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  selectedLayoutSegment === 'governance'
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                }`}
+                role="menuitem"
+              >
+                Governance
+              </Link>
+              <Link
+                href={oraclePath}
+                className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  selectedLayoutSegment === 'oracle'
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                }`}
+                role="menuitem"
+              >
+                Oracle
+              </Link>
+              <Link
+                href={registryPath}
+                className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  selectedLayoutSegment === 'registry'
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                }`}
+                role="menuitem"
+              >
+                Registry
+              </Link>
               {/* Navigation links removed as per request */}
             </ul>
             
@@ -117,6 +165,58 @@ export function Navbar({ children }: INavbarProps) {
                 >
                   Transactions
                 </Link>
+
+                <Link
+                  href={tradingPath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'trading'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Trading
+                </Link>
+
+                <Link
+                  href={governancePath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'governance'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Governance
+                </Link>
+
+                <Link
+                  href={oraclePath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'oracle'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Oracle
+                </Link>
+
+                <Link
+                  href={registryPath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'registry'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Registry
+                </Link>
                 
                 <Link
                   href={supplyPath}
@@ -131,18 +231,7 @@ export function Navbar({ children }: INavbarProps) {
                   Supply
                 </Link>
                 
-                <Link
-                  href={inspectorPath}
-                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                    selectedLayoutSegments[0] === 'tx' && selectedLayoutSegments[1] === 'inspector'
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
-                  }`}
-                  onClick={navHandlers.close}
-                  role="menuitem"
-                >
-                  TX Inspector
-                </Link>
+
                 
                 <Link
                   href={featureGatesPath}
