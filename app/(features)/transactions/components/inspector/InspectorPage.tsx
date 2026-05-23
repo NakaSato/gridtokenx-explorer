@@ -392,11 +392,11 @@ function PermalinkView({
   const fetchTransaction = useFetchRawTransaction();
   const refreshTransaction = () => fetchTransaction(signature);
   const transaction = details?.data?.raw;
-  const inspectorPath = useClusterPath({ pathname: '/tx/inspector' });
+  const homePath = useClusterPath({ pathname: '/' });
   const router = useRouter();
   const reset = React.useCallback(() => {
-    router.push(inspectorPath);
-  }, [inspectorPath, router]);
+    router.push(homePath);
+  }, [homePath, router]);
 
   // Fetch details on load
   React.useEffect(() => {
