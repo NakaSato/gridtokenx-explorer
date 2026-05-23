@@ -77,7 +77,7 @@ export type SerumInstructionType =
 export const MANGO_PROGRAM_ID = new PublicKey('3wE1DTnvoXEjo3hSD1HFNYiBQBjMZf6ymZEbD1Q9dB8');
 
 // Legacy Serum V3 Program ID (DEFUNCT - Security Risk)
-export const LEGACY_SERUM_PROGRAM_ID = new PublicKey('9xQeW6G6KB1mUAWJ12hSoTUccP9cWhRBFvvZtr3F');
+export const LEGACY_SERUM_PROGRAM_ID = new PublicKey('9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin');
 
 export async function decodeSerumInstruction(instruction: any): Promise<any> {
   try {
