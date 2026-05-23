@@ -12,11 +12,9 @@ import {
   CheckCircle2,
   Database,
   Gavel,
-  Key,
   Radio,
   RefreshCw,
   ScrollText,
-  Wrench,
   XCircle,
   Zap,
 } from 'lucide-react';
@@ -25,15 +23,6 @@ import { Cluster } from '@/app/(shared)/utils/cluster';
 import { useAnchorLocalnet } from '../hooks/useAnchorLocalnet';
 import { PROGRAMS } from '../config';
 import { ProgramOverview } from './ProgramOverview'
-import { TradingExplorer } from './TradingExplorer'
-import { GovernanceExplorer } from './GovernanceExplorer';
-import { OracleExplorer } from './OracleExplorer';
-import { RegistryExplorer } from './RegistryExplorer';
-import { TransactionLog } from './TransactionLog';
-import { TransactionBuilder } from './TransactionBuilder';
-import { PDACalculator } from './PDACalculator';
-import { TokenBalancesPanel } from './TokenBalancesPanel';
-import { PDALookup } from './PDALookup';
 
 export function AnchorLocalnetDashboard() {
   const { cluster, url } = useCluster();
@@ -72,7 +61,7 @@ export function AnchorLocalnetDashboard() {
   const deployedCount = overview?.programs.filter(p => p.deployed).length ?? 0;
 
   return (
-    <Card className="mb-4 w-full border-border/50">
+    <Card className="mb-4 w-full border-border/50 bg-background text-foreground shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -117,93 +106,8 @@ export function AnchorLocalnetDashboard() {
           </div>
         )}
 
-        {/* Main Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="flex w-full h-10 gap-1 overflow-x-auto scrollbar-hide">
-            <TabsTrigger value="overview" className="gap-1.5 text-xs px-3 whitespace-nowrap">
-              <BarChart3 className="h-3.5 w-3.5" /> Overview
-            </TabsTrigger>
-            <TabsTrigger value="trading" className="gap-1.5 text-xs px-3 whitespace-nowrap">
-              <Zap className="h-3.5 w-3.5" /> Trading
-            </TabsTrigger>
-            <TabsTrigger value="governance" className="gap-1.5 text-xs px-3 whitespace-nowrap">
-              <Gavel className="h-3.5 w-3.5" /> Governance
-            </TabsTrigger>
-            <TabsTrigger value="oracle" className="gap-1.5 text-xs px-3 whitespace-nowrap">
-              <Radio className="h-3.5 w-3.5" /> Oracle
-            </TabsTrigger>
-            <TabsTrigger value="registry" className="gap-1.5 text-xs px-3 whitespace-nowrap">
-              <Database className="h-3.5 w-3.5" /> Registry
-            </TabsTrigger>
-            <TabsTrigger value="txs" className="gap-1.5 text-xs px-3 whitespace-nowrap">
-              <ScrollText className="h-3.5 w-3.5" /> Transactions
-            </TabsTrigger>
-            <TabsTrigger value="pda" className="gap-1.5 text-xs px-3 whitespace-nowrap">
-              <Key className="h-3.5 w-3.5" /> PDA
-            </TabsTrigger>
-            <TabsTrigger value="tools" className="gap-1.5 text-xs px-3 whitespace-nowrap">
-              <Wrench className="h-3.5 w-3.5" /> Tools
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview">
-            <ProgramOverview
-              programs={overview?.programs ?? []}
-              onSelectProgram={(name) => {
-                const tabMap: Record<string, string> = {
-                  'Trading': 'trading',
-                  'Energy Token': 'trading',
-                  'Governance': 'governance',
-                  'Oracle': 'oracle',
-                  'Registry': 'registry',
-                  'Blockbench': 'overview',
-                };
-                setActiveTab(tabMap[name] ?? 'overview');
-              }}
-            />
-          </TabsContent>
-
-          <TabsContent value="trading">
-            <TradingExplorer
-              rpcUrl={url}
-              getConnection={getConnection}
-              fetchProgramAccounts={fetchProgramAccounts}
-            />
-          </TabsContent>
-
-          <TabsContent value="governance">
-            <GovernanceExplorer rpcUrl={url} getConnection={getConnection} />
-          </TabsContent>
-
-          <TabsContent value="oracle">
-            <OracleExplorer rpcUrl={url} getConnection={getConnection} />
-          </TabsContent>
-
-          <TabsContent value="registry">
-            <RegistryExplorer rpcUrl={url} getConnection={getConnection} />
-          </TabsContent>
-
-          <TabsContent value="txs">
-            <TransactionLog
-              transactions={recentTxs}
-              fetchLogs={fetchTransactionLogs}
-            />
-          </TabsContent>
-
-          <TabsContent value="pda">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <PDALookup findPDA={findPDA} />
-              <PDACalculator rpcUrl={url} />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="tools">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <TransactionBuilder rpcUrl={url} getConnection={getConnection} />
-              <TokenBalancesPanel rpcUrl={url} getConnection={getConnection} />
-            </div>
-          </TabsContent>
-        </Tabs>
+        {/* Program Overview */}
+        <ProgramOverview programs={overview?.programs ?? []} />
       </CardContent>
     </Card>
   );
