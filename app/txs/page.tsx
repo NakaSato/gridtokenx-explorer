@@ -8,13 +8,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/compone
 import { Alert, AlertDescription } from '@/app/(shared)/components/ui/alert';
 import { TransactionDetailsCard } from '@/app/(features)/transactions/components/TransactionDetailsCard';
 import { ConfirmedSignatureInfo, Connection, ParsedTransactionWithMeta, PublicKey } from '@solana/web3.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/(shared)/components/ui/select';
+import { GRIDTOKENX_PROGRAM_IDS } from '@/app/(shared)/utils/program-ids';
 
 const REFRESH_INTERVAL = 5000; // 5 seconds
 const MAX_TRANSACTIONS = 25;
 
 export default function TransactionsPage() {
   const { url } = useCluster();
-  const connection = React.useMemo(() => new Connection(url), [url]);
+  const connection = React.useMemo(() => {
+    if (!url || (!url.startsWith('http:') && !url.startsWith('https:'))) return null;
+    try {
+      return new Connection(url);
+    } catch (e) {
+      console.warn('Failed to initialize connection:', e);
+      return null;
+    }
+  }, [url]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [lastSlot, setLastSlot] = useState<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
@@ -22,6 +32,7 @@ export default function TransactionsPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
+  const [selectedProgramFilter, setSelectedProgramFilter] = useState<string>('system');
 
   // Fetch latest transactions
   const fetchTransactions = useCallback(async () => {
@@ -35,9 +46,15 @@ export default function TransactionsPage() {
       setLastSlot(slot);
 
       // Get recent signatures
-      const address = connection.rpcEndpoint.includes('mainnet')
-        ? 'Vote111111111111111111111111111111111111111' // Vote program on mainnet
-        : '11111111111111111111111111111111'; // System program fallback
+      const address = selectedProgramFilter === 'system'
+        ? (connection.rpcEndpoint.includes('mainnet')
+            ? 'Vote111111111111111111111111111111111111111' // Vote program on mainnet
+            : '11111111111111111111111111111111') // System program fallback
+        : (GRIDTOKENX_PROGRAM_IDS as Record<string, string>)[selectedProgramFilter];
+
+      if (!address) {
+        throw new Error('Invalid program address selected');
+      }
 
       const signatures = await connection.getSignaturesForAddress(
         new PublicKey(address),
@@ -61,7 +78,7 @@ export default function TransactionsPage() {
       setError(err instanceof Error ? err.message : 'Failed to fetch transactions');
       setIsLoading(false);
     }
-  }, [connection, isPaused]);
+  }, [connection, isPaused, selectedProgramFilter]);
 
   // Fetch transaction details
   const handleInspect = useCallback(
@@ -113,8 +130,10 @@ export default function TransactionsPage() {
     setIsPaused(prev => !prev);
   }, []);
 
-  // Initial fetch
+  // Initial fetch and filter change
   useEffect(() => {
+    setIsLoading(true);
+    setTransactions([]);
     fetchTransactions();
   }, [fetchTransactions]);
 
@@ -132,11 +151,28 @@ export default function TransactionsPage() {
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
       {/* Page Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Live Transactions</h1>
-        <p className="text-muted-foreground">
-          Real-time view of the latest transactions on the Solana blockchain
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Live Transactions</h1>
+          <p className="text-muted-foreground">
+            Real-time view of the latest transactions on the Solana blockchain
+          </p>
+        </div>
+        <div className="w-full md:w-64">
+          <Select value={selectedProgramFilter} onValueChange={setSelectedProgramFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a program" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="system">System / Default Program</SelectItem>
+              {Object.entries(GRIDTOKENX_PROGRAM_IDS).map(([key, id]) => (
+                <SelectItem key={key} value={key}>
+                  {key.charAt(0).toUpperCase() + key.slice(1)} Program
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Error Alert */}
