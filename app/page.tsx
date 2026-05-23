@@ -75,10 +75,15 @@ export default function Page() {
 }
 
 function StakingComponent() {
+  const [mounted, setMounted] = React.useState(false);
   const { status } = useCluster();
   const supply = useSupply();
   const fetchSupply = useFetchSupply();
   const { fetchVoteAccounts, voteAccounts } = useVoteAccounts();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   function fetchData() {
     fetchSupply();
@@ -105,6 +110,12 @@ function StakingComponent() {
       );
     }
   }, [voteAccounts, delinquentStake]);
+
+  // Hydration guard: during server side rendering and initial client render,
+  // we must return the exact same component structure to avoid useId mismatch on downstream components.
+  if (!mounted) {
+    return <LoadingCard message="Loading supply data" />;
+  }
 
   if (supply === Status.Disconnected) {
     // we'll return here to prevent flicker
