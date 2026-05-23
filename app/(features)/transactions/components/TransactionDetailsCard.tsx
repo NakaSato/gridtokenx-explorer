@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AnchorEventDecoder } from '@/app/(features)/transactions/components/AnchorEventDecoder';
 import { PublicKey } from '@solana/web3.js';
 import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
+import { GRIDTOKENX_PROGRAM_IDS } from '@/app/(shared)/utils/program-ids';
 import React from 'react';
 import { EnhancedTransaction } from './RealtimeTransactionTable';
 
@@ -288,5 +289,17 @@ function getProgramName(programId: string): string {
     Vote111111111111111111111111111111111111111: 'Vote Program',
     Stake11111111111111111111111111111111111111: 'Stake Program',
   };
-  return knownPrograms[programId] || 'Custom Program';
+
+  if (knownPrograms[programId]) {
+    return knownPrograms[programId];
+  }
+
+  // Check GridTokenX programs
+  for (const [key, id] of Object.entries(GRIDTOKENX_PROGRAM_IDS)) {
+    if (id === programId) {
+      return `${key.charAt(0).toUpperCase() + key.slice(1)} Program`;
+    }
+  }
+
+  return 'Custom Program';
 }

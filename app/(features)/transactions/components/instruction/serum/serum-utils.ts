@@ -7,7 +7,7 @@
 export const OPENBOOK_V2_PROGRAM_ID = 'opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb';
 
 // Legacy Serum V3 Program ID (DEFUNCT - for historical reference only)
-export const LEGACY_SERUM_PROGRAM_ID = '9xQeWvG6KB1mUAWJ12hSoTUccP9cWhRBFvvZtr3F';
+export const LEGACY_SERUM_PROGRAM_ID = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
 
 // Dynamic import wrapper to prevent SSR evaluation
 let openbookModule: any = null;

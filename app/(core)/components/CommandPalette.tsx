@@ -12,7 +12,7 @@ export function CommandPalette() {
   const transactionsPath = useClusterPath({ pathname: '/tx' });
   const blocksPath = useClusterPath({ pathname: '/blocks' });
   const supplyPath = useClusterPath({ pathname: '/supply' });
-  const inspectorPath = useClusterPath({ pathname: '/tx/inspector' });
+
   const featureGatesPath = useClusterPath({ pathname: '/feature-gates' });
   const anchorPublicKeysPath = useClusterPath({ pathname: '/anchor-public-keys' });
 
@@ -73,9 +73,7 @@ export function CommandPalette() {
             <CommandItem onSelect={() => handleNavigate(supplyPath)}>
               <span>Supply</span>
             </CommandItem>
-            <CommandItem onSelect={() => handleNavigate(inspectorPath)}>
-              <span>Transaction Inspector</span>
-            </CommandItem>
+
           </CommandGroup>
 
           <CommandGroup heading="Quick Actions">

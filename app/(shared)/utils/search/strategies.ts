@@ -230,31 +230,7 @@ export function buildLocalOptions(rawSearch: string, cluster: Cluster, currentEp
       });
     }
   } catch (err) {
-    // If bs58 decoding fails, check if it's a valid base64 string
-    if (isValidBase64(search)) {
-      const decodedTx = decodeTransactionFromBase64(search);
-      if (decodedTx) {
-        const pathname = '/tx/inspector';
-        const searchParams = new URLSearchParams();
 
-        searchParams.set('message', encodeURIComponent(decodedTx.message));
-
-        if (decodedTx.signatures) {
-          searchParams.set('signatures', encodeURIComponent(JSON.stringify(decodedTx.signatures)));
-        }
-
-        options.push({
-          label: 'Transaction Inspector',
-          options: [
-            {
-              label: 'Inspect Decoded Transaction',
-              pathname: `${pathname}?${searchParams.toString()}`,
-              value: [search],
-            },
-          ],
-        });
-      }
-    }
   }
 
   return options;

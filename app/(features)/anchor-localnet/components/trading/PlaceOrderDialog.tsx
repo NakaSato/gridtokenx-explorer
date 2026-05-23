@@ -9,7 +9,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/app/(shared)/components/ui/dialog';
-import { Button } from '@/app/(shared)/components/ui/button';
 import { Input } from '@/app/(shared)/components/ui/input';
 import { Label } from '@/app/(shared)/components/ui/label';
 import {
@@ -19,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/(shared)/components/ui/select';
+import { Button } from '@/app/(shared)/components/ui/button';
 import { Plus } from 'lucide-react';
 
 interface PlaceOrderDialogProps {
@@ -73,70 +73,71 @@ export function PlaceOrderDialog({ open, onOpenChange, rpcUrl, onSuccess }: Plac
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md border-primary/20 bg-background/95 backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Plus className="h-4 w-4" /> Place Order
+          <DialogTitle className="flex items-center gap-2 text-primary">
+            <Plus className="h-5 w-5" /> Place Order
           </DialogTitle>
-          <DialogDescription>
-            Create a buy or sell order in the energy market.
+          <DialogDescription className="text-muted-foreground">
+            Create a new buy or sell order in the energy market.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-5 py-4">
           <div className="space-y-2">
-            <Label htmlFor="orderType">Order Type</Label>
+            <Label htmlFor="orderType" className="text-xs uppercase tracking-wider text-muted-foreground">Order Type</Label>
             <Select value={orderType} onValueChange={setOrderType}>
-              <SelectTrigger id="orderType">
-                <SelectValue placeholder="Select type" />
+              <SelectTrigger className="border-primary/20 bg-background/50">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Buy">Buy Order</SelectItem>
-                <SelectItem value="Sell">Sell Order</SelectItem>
+                <SelectItem value="Buy">🟢 Buy Energy</SelectItem>
+                <SelectItem value="Sell">🔴 Sell Energy</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="amount">Energy (kWh)</Label>
-              <Input
-                id="amount"
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="price">Price (THB/kWh)</Label>
-              <Input
-                id="price"
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="amount" className="text-xs uppercase tracking-wider text-muted-foreground">Energy Amount (kWh)</Label>
+            <Input
+              id="amount"
+              type="number"
+              className="font-mono border-primary/20 bg-background/50"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="price" className="text-xs uppercase tracking-wider text-muted-foreground">Price per kWh (micro-units)</Label>
+            <Input
+              id="price"
+              type="number"
+              className="font-mono border-primary/20 bg-background/50"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
           </div>
 
           {txSignature && (
-            <div className="rounded-lg bg-green-50 p-3 text-xs text-green-700">
-              ✅ Order placed! TX: {txSignature.slice(0, 20)}...
+            <div className="rounded-lg bg-green-500/10 p-3 border border-green-500/20 text-xs text-green-600">
+              <span className="font-semibold">✅ Order placed!</span> TX: <span className="font-mono">{txSignature.slice(0, 20)}...</span>
             </div>
           )}
 
           {error && (
-            <div className="rounded-lg bg-red-50 p-3 text-xs text-red-700">
-              ❌ Error: {error}
+            <div className="rounded-lg bg-red-500/10 p-3 border border-red-500/20 text-xs text-red-600">
+              <span className="font-semibold">❌ Error:</span> {error}
             </div>
           )}
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? 'Placing...' : 'Place Order'}
+          <Button onClick={handleSubmit} disabled={isSubmitting} className="shadow-md hover:shadow-lg transition-all">
+            {isSubmitting ? 'Placing...' : 'Submit Order'}
           </Button>
         </DialogFooter>
       </DialogContent>

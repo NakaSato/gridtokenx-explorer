@@ -12,11 +12,9 @@ import {
   CheckCircle2,
   Database,
   Gavel,
-  Key,
   Radio,
   RefreshCw,
   ScrollText,
-  Wrench,
   XCircle,
   Zap,
 } from 'lucide-react';
@@ -35,7 +33,7 @@ import { PDACalculator } from './PDACalculator';
 import { TokenBalancesPanel } from './TokenBalancesPanel';
 import { PDALookup } from './PDALookup';
 import { GlobalNetworkOverview } from './GlobalNetworkOverview';
-import { Network } from 'lucide-react';
+import { Network, Key, Wrench } from 'lucide-react';
 
 export function AnchorLocalnetDashboard() {
   const { cluster, url } = useCluster();
@@ -74,7 +72,7 @@ export function AnchorLocalnetDashboard() {
   const deployedCount = overview?.programs.filter(p => p.deployed).length ?? 0;
 
   return (
-    <Card className="mb-4 w-full border-border/50">
+    <Card className="mb-4 w-full border-border/50 bg-background text-foreground shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2 text-lg">
