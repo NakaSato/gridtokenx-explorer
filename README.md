@@ -10,7 +10,7 @@ The Solana Explorer is a web application that allows users to explore the Solana
 
 We welcome contributions to the Solana Explorer! Before submitting a pull request, please:
 
-1. Read the [CONTRIBUTING.md](CONTRIBUTING.md) guide for detailed information on our contribution process
+1. Read the project guidelines in [README.md](README.md) for detailed information on our contribution process
 2. Ensure your code includes appropriate tests, especially for protocol integrations
 3. Make sure your PR passes all CI checks before requesting a review
 4. Include screenshots for any UI changes, particularly for protocol screens
