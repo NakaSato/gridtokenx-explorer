@@ -44,7 +44,7 @@ import {
 } from '@/app/(solana)/validators/accounts/token-extension';
 import { BigNumber } from 'bignumber.js';
 import { capitalCase } from 'change-case';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { ExternalLink, RefreshCw } from 'react-feather';
 import { create } from 'superstruct';
 import useSWR from 'swr';
@@ -375,7 +375,8 @@ function TokenAccountCard({ account, info }: { account: Account; info: TokenAcco
   const swrKey = useMemo(() => getTokenInfoSwrKey(info.mint.toString(), cluster, url), [cluster, info.mint, url]);
 
   const { data: tokenInfo } = useSWR(swrKey, fetchTokenInfo);
-  const [symbol, setSymbol] = useState<string | undefined>(undefined);
+  // Derived during render — no effect needed, avoids a stale-symbol flash.
+  const symbol = info.isNative ? 'SOL' : tokenInfo?.symbol;
   const accountExtensions = info.extensions?.slice();
   accountExtensions?.sort(cmpExtension);
 
@@ -387,14 +388,6 @@ function TokenAccountCard({ account, info }: { account: Account; info: TokenAcco
   ) : (
     <>{info.tokenAmount.uiAmountString}</>
   );
-
-  useEffect(() => {
-    if (info.isNative) {
-      setSymbol('SOL');
-    } else {
-      setSymbol(tokenInfo?.symbol);
-    }
-  }, [tokenInfo, info]);
 
   return (
     <Card>

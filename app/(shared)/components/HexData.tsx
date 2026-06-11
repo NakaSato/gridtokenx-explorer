@@ -3,6 +3,14 @@ import React, { ReactNode } from 'react';
 
 import { Copyable } from '@/app/(shared)/components/Copyable';
 
+function HexDataContent({ hexString, divs }: { hexString: string; divs: ReactNode[] }) {
+  return (
+    <Copyable text={hexString}>
+      <pre className="d-inlinblock mb-0 text-start">{divs}</pre>
+    </Copyable>
+  );
+}
+
 export function HexData({ raw }: { raw: Buffer }) {
   if (!raw || raw.length === 0) {
     return <span>No data</span>;
@@ -35,21 +43,13 @@ export function HexData({ raw }: { raw: Buffer }) {
     }
   }
 
-  function Content() {
-    return (
-      <Copyable text={hexString}>
-        <pre className="d-inlinblock mb-0 text-start">{divs}</pre>
-      </Copyable>
-    );
-  }
-
   return (
     <>
       <div className="hidden items-center justify-end lg:flex">
-        <Content />
+        <HexDataContent hexString={hexString} divs={divs} />
       </div>
       <div className="flex items-center lg:hidden">
-        <Content />
+        <HexDataContent hexString={hexString} divs={divs} />
       </div>
     </>
   );

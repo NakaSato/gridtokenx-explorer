@@ -269,20 +269,6 @@ export function TransactionInspectorPage({
   signature?: string;
   showTokenBalanceChanges: boolean;
 }) {
-  // Skip all logic during build time to prevent public key validation errors
-  if (typeof window === 'undefined') {
-    return (
-      <div className="container mt-4">
-        <div className="header">
-          <div className="header-body">
-            <h2 className="header-title">Transaction Inspector</h2>
-          </div>
-        </div>
-        <div>Loading...</div>
-      </div>
-    );
-  }
-
   const [inspectorData, setInspectorData] = React.useState<InspectorData>();
   const currentSearchParams = useSearchParams();
   const currentPathname = usePathname();
@@ -357,6 +343,21 @@ export function TransactionInspectorPage({
       setInspectorData(result);
     }
   }, [currentPathname, currentSearchParams, router]);
+
+  // Skip rendering inspector logic during build/SSR to prevent public key validation errors.
+  // Placed after all hooks so hook order stays stable across renders.
+  if (typeof window === 'undefined') {
+    return (
+      <div className="container mt-4">
+        <div className="header">
+          <div className="header-body">
+            <h2 className="header-title">Transaction Inspector</h2>
+          </div>
+        </div>
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-4">

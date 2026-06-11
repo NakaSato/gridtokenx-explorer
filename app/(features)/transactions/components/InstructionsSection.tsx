@@ -191,27 +191,27 @@ function InstructionCard({
       case 'spl-token':
         return (
           <ErrorBoundary fallback={<UnknownDetailsCard {...props} />} key={key}>
-            <TokenDetailsCard {...props} key={key} />
+            <TokenDetailsCard {...props} />
           </ErrorBoundary>
         );
       case 'bpf-loader':
-        return <BpfLoaderDetailsCard {...props} key={key} />;
+        return <BpfLoaderDetailsCard key={key} {...props} />;
       case 'bpf-upgradeable-loader':
-        return <BpfUpgradeableLoaderDetailsCard {...props} key={key} />;
+        return <BpfUpgradeableLoaderDetailsCard key={key} {...props} />;
       case 'system':
-        return <SystemDetailsCard {...props} key={key} />;
+        return <SystemDetailsCard key={key} {...props} />;
       case 'stake':
-        return <StakeDetailsCard {...props} key={key} />;
+        return <StakeDetailsCard key={key} {...props} />;
       case 'spl-memo':
-        return <MemoDetailsCard {...props} key={key} />;
+        return <MemoDetailsCard key={key} {...props} />;
       case 'spl-associated-token-account':
-        return <AssociatedTokenDetailsCard {...props} key={key} />;
+        return <AssociatedTokenDetailsCard key={key} {...props} />;
       case 'vote':
-        return <VoteDetailsCard {...props} key={key} />;
+        return <VoteDetailsCard key={key} {...props} />;
       case 'address-lookup-table':
-        return <AddressLookupTableDetailsCard {...props} key={key} />;
+        return <AddressLookupTableDetailsCard key={key} {...props} />;
       default:
-        return <UnknownDetailsCard {...props} key={key} />;
+        return <UnknownDetailsCard key={key} {...props} />;
     }
   }
 

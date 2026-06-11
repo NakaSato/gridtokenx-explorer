@@ -6,6 +6,14 @@ import React from 'react';
 import { InstructionCard } from '../InstructionCard';
 import { UpdateProductParams } from './program';
 
+function Content({ attrsJSON }: { attrsJSON: string }) {
+  return (
+    <Copyable text={attrsJSON}>
+      <pre className="d-inlinblock mb-0 text-start">{attrsJSON}</pre>
+    </Copyable>
+  );
+}
+
 export default function UpdateProductDetailsCard({
   ix,
   index,
@@ -22,14 +30,6 @@ export default function UpdateProductDetailsCard({
   childIndex?: number;
 }) {
   const attrsJSON = JSON.stringify(Object.fromEntries(info.attributes), null, 2);
-
-  function Content() {
-    return (
-      <Copyable text={attrsJSON}>
-        <pre className="d-inlinblock mb-0 text-start">{attrsJSON}</pre>
-      </Copyable>
-    );
-  }
 
   return (
     <InstructionCard
@@ -67,10 +67,10 @@ export default function UpdateProductDetailsCard({
         </td>
         <td className="lg:text-right">
           <div className="hidden items-center justify-end lg:flex">
-            <Content />
+            <Content attrsJSON={attrsJSON} />
           </div>
           <div className="flex items-center lg:hidden">
-            <Content />
+            <Content attrsJSON={attrsJSON} />
           </div>
         </td>
       </tr>
