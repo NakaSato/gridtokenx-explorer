@@ -111,6 +111,37 @@ export const PROGRAMS = {
       'MeterReadingUpdated', 'MeterDeactivated',
     ],
   },
+  treasury: {
+    id: process.env.NEXT_PUBLIC_TREASURY_PROGRAM_ID || 'FfxSQYKUmx9NGdCC9TDPmZSYjWYE1h4ruu3JatzHN5Tn',
+    name: 'Treasury',
+    description: 'THBG stablecoin reserve, GRX staking/rewards, and batch settlement commitments',
+    seeds: {
+      treasury: [Buffer.from('treasury')],
+      thbg_mint: [Buffer.from('thbg_mint')],
+      stake: (owner: string) => [Buffer.from('stake'), Buffer.from(owner)],
+      settle_shard: (shardId: number) => [Buffer.from('settle_shard'), Buffer.from([shardId])],
+      settlement: (zoneId: number, batchId: number) => [
+        Buffer.from('settlement'),
+        Buffer.from(new Uint8Array(new Uint32Array([zoneId]).buffer)),
+        Buffer.from(new Uint8Array(new BigUint64Array([BigInt(batchId)]).buffer)),
+      ],
+    },
+    accounts: ['Treasury', 'StakePosition', 'SettlementShard', 'SettlementRecord'],
+    instructions: [
+      'initialize', 'set_params', 'update_attestation',
+      'record_settlement', 'record_settlement_batch',
+      'initialize_settlement_shard', 'record_settlement_sharded',
+      'aggregate_settlement_shards', 'record_settlement_batch_sharded',
+      'swap_grx_for_thbg', 'redeem_thbg_for_grx',
+      'stake_grx', 'unstake_grx', 'claim_rewards', 'fund_rewards', 'slash_stake',
+    ],
+    events: [
+      'ReserveAttested', 'SwappedGrxForThbg', 'RedeemedThbgForGrx',
+      'Staked', 'Unstaked', 'RewardsClaimed', 'RewardsFunded',
+      'SettlementRecorded', 'SettlementShardRecorded', 'SettlementBatchRecorded',
+      'StakeSlashed',
+    ],
+  },
   blockbench: {
     id: process.env.NEXT_PUBLIC_BLOCKBENCH_PROGRAM_ID || 'B7Detx5TMRQNzVCgdd9Rp5YnN9cAtC7KeMBrzdZZsd4E',
     name: 'Blockbench',

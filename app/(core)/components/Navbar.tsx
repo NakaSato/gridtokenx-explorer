@@ -27,6 +27,7 @@ export function Navbar({ children }: INavbarProps) {
   const governancePath = useClusterPath({ pathname: '/governance' });
   const oraclePath = useClusterPath({ pathname: '/oracle' });
   const registryPath = useClusterPath({ pathname: '/registry' });
+  const treasuryPath = useClusterPath({ pathname: '/treasury' });
   const anchorPublicKeysPath = useClusterPath({ pathname: '/anchor-public-keys' });
   const selectedLayoutSegment = useSelectedLayoutSegment();
   const selectedLayoutSegments = useSelectedLayoutSegments();
@@ -120,6 +121,19 @@ export function Navbar({ children }: INavbarProps) {
                   role="menuitem"
                 >
                   Registry
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={treasuryPath}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'treasury'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  role="menuitem"
+                >
+                  Treasury
                 </Link>
               </li>
             </ul>
@@ -233,6 +247,18 @@ export function Navbar({ children }: INavbarProps) {
                   role="menuitem"
                 >
                   Registry
+                </Link>
+                <Link
+                  href={treasuryPath}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selectedLayoutSegment === 'treasury'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onClick={navHandlers.close}
+                  role="menuitem"
+                >
+                  Treasury
                 </Link>
                 <Link
                   href={transactionsPath}

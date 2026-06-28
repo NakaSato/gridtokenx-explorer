@@ -1,5 +1,5 @@
 import { Epoch } from '@/app/(shared)/components/common/Epoch';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { StakeHistoryEntry, StakeHistoryInfo, SysvarAccount } from '@validators/accounts/sysvar';
 import React from 'react';
 

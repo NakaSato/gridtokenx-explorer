@@ -1,5 +1,5 @@
 import { Address as AddressComponent } from '@/app/(shared)/components/common/Address';
-import { SolBalance } from '@/app/(shared)/components/common/SolBalance';
+import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { VersionedBlockResponse } from '@solana/web3.js';
 import React from 'react';
