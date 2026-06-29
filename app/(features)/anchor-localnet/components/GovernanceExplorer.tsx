@@ -65,8 +65,8 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
       for (const { pubkey, account } of accounts) {
         const data = account.data;
 
-        // GovernanceConfig / PoAConfig (Borsh) — total 337 bytes
-        if (data.length === 337) {
+        // GovernanceConfig / PoAConfig (Borsh) — total 413 bytes
+        if (data.length === 413) {
           try {
             const d = data.slice(8);
             const nameLen = d[96];
