@@ -65,52 +65,44 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
       for (const { pubkey, account } of accounts) {
         const data = account.data;
 
-        // PoAConfigRecord (zero_copy, large)
-        if (data.length > 300) {
+        // GovernanceConfig / PoAConfig (Borsh) — total 337 bytes
+        if (data.length === 337) {
           try {
             const d = data.slice(8);
-            const authority = new PublicKey(d.slice(0, 32)).toBase58();
-            // Parse authority_name (32 bytes)
-            const nameBytes = d.slice(32, 64);
-            const authorityName = new TextDecoder().decode(nameBytes).replace(/\0/g, '');
-            
+            const nameLen = d[96];
             poaConfig = {
               address: pubkey.toBase58(),
-              authority,
-              authorityName,
-              maintenanceMode: d[64] === 1,
-              ercValidationEnabled: d[65] === 1,
-              minEnergyAmount: Number(d.readBigUInt64LE(72)),
-              maxErcAmount: Number(d.readBigUInt64LE(80)),
+              authority: new PublicKey(d.slice(0, 32)).toBase58(),
+              authorityName: new TextDecoder().decode(d.slice(32, 32 + Math.min(nameLen, 64))).replace(/\0/g, ''),
+              maintenanceMode: d[227] === 1,
+              ercValidationEnabled: d[228] === 1,
+              minEnergyAmount: Number(d.readBigUInt64LE(229)),
+              maxErcAmount: Number(d.readBigUInt64LE(237)),
             };
           } catch (err) {
             console.error('Error parsing PoA config:', err);
           }
         }
-        // ErcCertificateRecord
-        else if (data.length >= 100 && data.length < 200) {
+        // ErcCertificate (Borsh) — total 645 bytes
+        else if (data.length === 645) {
           try {
             const d = data.slice(8);
-            const certificateId = new TextDecoder().decode(d.slice(0, 32)).replace(/\0/g, '');
-            const owner = new PublicKey(d.slice(32, 64)).toBase58();
-            const energyAmount = Number(d.readBigUInt64LE(64));
-            const sourceNum = d[72];
-            const statusNum = d[73];
-            const validatedForTrading = d[74] === 1;
-            const createdAt = Number(d.readBigInt64LE(80));
-
-            const sources = ['Solar', 'Wind', 'Hydro', 'Biomass', 'Other'];
-            const statuses = ['Pending', 'Valid', 'Revoked', 'Expired'];
+            const idLen = d[64];
+            const sourceLen = d[201];
+            const statusNum = d[477];
+            // ErcStatus: Valid=0, Expired=1, Revoked=2, Pending=3
+            const statuses = ['Valid', 'Expired', 'Revoked', 'Pending'];
 
             certList.push({
               address: pubkey.toBase58(),
-              certificateId,
-              owner,
-              energyAmount,
-              renewableSource: sources[sourceNum] || 'Other',
+              certificateId: new TextDecoder().decode(d.slice(0, Math.min(idLen, 64))).replace(/\0/g, ''),
+              owner: new PublicKey(d.slice(97, 129)).toBase58(),
+              energyAmount: Number(d.readBigUInt64LE(129)),
+              renewableSource:
+                new TextDecoder().decode(d.slice(137, 137 + Math.min(sourceLen, 64))).replace(/\0/g, '') || 'Unknown',
               status: statuses[statusNum] || 'Unknown',
-              validatedForTrading,
-              createdAt,
+              validatedForTrading: d[478] === 1,
+              createdAt: Number(d.readBigInt64LE(460)), // issued_at
             });
           } catch (err) {
             console.error('Error parsing ERC certificate:', err);

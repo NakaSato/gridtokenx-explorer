@@ -7,7 +7,6 @@ import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
 import {
   Database,
   RefreshCw,
-  Plus,
 } from 'lucide-react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { PROGRAMS, ENUM_MAPS } from '../config';
@@ -77,23 +76,23 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
       for (const { pubkey, account } of accounts) {
         const data = account.data;
 
-        // RegistryRecord (zero_copy, large)
-        if (data.length > 500) {
+        // Registry (zero_copy) — total 136 bytes
+        if (data.length === 136) {
           try {
             const d = data.slice(8);
             registryData = {
               address: pubkey.toBase58(),
               authority: new PublicKey(d.slice(0, 32)).toBase58(),
-              userCount: Number(d.readBigUInt64LE(32)),
-              meterCount: Number(d.readBigUInt64LE(40)),
-              activeMeterCount: Number(d.readBigUInt64LE(48)),
+              userCount: Number(d.readBigUInt64LE(72)),
+              meterCount: Number(d.readBigUInt64LE(80)),
+              activeMeterCount: Number(d.readBigUInt64LE(88)),
             };
           } catch (err) {
             console.error('Error parsing registry record:', err);
           }
         }
-        // UserRecord
-        else if (data.length >= 64 && data.length < 128) {
+        // UserAccount (zero_copy) — total 112 bytes
+        else if (data.length === 112) {
           try {
             const d = data.slice(8);
             const wallet = new PublicKey(d.slice(0, 32)).toBase58();
@@ -113,8 +112,8 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
             console.error('Error parsing user record:', err);
           }
         }
-        // MeterRecord
-        else if (data.length >= 128 && data.length < 300) {
+        // MeterAccount (zero_copy) — total 128 bytes
+        else if (data.length === 128) {
           try {
             const d = data.slice(8);
             const meterId = new TextDecoder().decode(d.slice(0, 32)).replace(/\0/g, '');
@@ -177,14 +176,6 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="default"
-            size="sm"
-            className="h-8 gap-1.5"
-            onClick={() => {}}
-          >
-            <Plus className="h-3.5 w-3.5" /> Register {activeView === 'users' ? 'User' : 'Meter'}
-          </Button>
           <Button variant="outline" size="icon" className="h-8 w-8" onClick={fetchData}>
             <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           </Button>

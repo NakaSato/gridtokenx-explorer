@@ -16,7 +16,7 @@ interface ProgramPageLayoutProps {
   badgeText?: string;
   badgeColor?: string;
   secondaryLabel?: string;
-  secondaryValue?: string;
+  secondaryValue?: React.ReactNode;
   secondaryIcon?: LucideIcon;
   secondaryColor?: string;
   children: (props: { rpcUrl: string; getConnection: () => Connection }) => React.ReactNode;

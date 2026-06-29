@@ -7,7 +7,6 @@ import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
 import {
   Activity,
   RefreshCw,
-  Plus,
 } from 'lucide-react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { PROGRAMS } from '../config';
@@ -62,23 +61,23 @@ export function OracleExplorer({ rpcUrl, getConnection }: OracleExplorerProps) {
         const data = account.data;
         const d = data.slice(8);
 
-        // OracleData (size > 400)
-        if (data.length > 400) {
+        // OracleData (zero_copy) — total 176 bytes
+        if (data.length === 176) {
           try {
             oracleData = {
               address: pubkey.toBase58(),
               authority: new PublicKey(d.slice(0, 32)).toBase58(),
-              totalAggregatedEnergy: Number(d.readBigUInt64LE(352 + 56 + 8)), // total_global_energy_produced
-              lastReadingTime: Number(d.readBigInt64LE(352 + 8)), // last_reading_timestamp
-              updateInterval: d.readUInt16LE(352 + 56 + 8 + 8 + 8), // min_reading_interval
-              isActive: d[352 + 56 + 8 + 8 + 8 + 2 + 6 + 8 + 4 + 2 + 2] === 1, // active
-              securityLevel: d[352 + 56 + 8 + 8 + 8 + 2 + 6 + 8 + 4 + 2 + 2 + 3], // last_quality_score
+              totalAggregatedEnergy: Number(d.readBigUInt64LE(136)), // total_global_energy_produced
+              lastReadingTime: Number(d.readBigInt64LE(72)), // last_reading_timestamp
+              updateInterval: d.readUInt16LE(160), // min_reading_interval
+              isActive: d[164] === 1, // active
+              securityLevel: d[166], // last_quality_score
             };
           } catch (err) {
             console.error('Error parsing oracle state:', err);
           }
         }
-        // MeterState (size 102)
+        // MeterState (Borsh) — total 102 bytes
         else if (data.length === 102) {
           const idLen = d[32];
           meterList.push({
@@ -130,14 +129,6 @@ export function OracleExplorer({ rpcUrl, getConnection }: OracleExplorerProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="default"
-            size="sm"
-            className="h-8 gap-1.5"
-            onClick={() => {}}
-          >
-            <Plus className="h-3.5 w-3.5" /> Submit Reading
-          </Button>
           <Button variant="outline" size="icon" className="h-8 w-8" onClick={fetchData}>
             <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           </Button>

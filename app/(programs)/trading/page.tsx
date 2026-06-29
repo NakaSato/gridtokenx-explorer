@@ -4,6 +4,7 @@ import React from 'react';
 import { ProgramPageLayout } from '@/app/(shared)/components/layout/ProgramPageLayout';
 import { TradingTerminal } from '@/app/(features)/anchor-localnet/components/TradingTerminal';
 import { TradingExplorer } from '@/app/(features)/anchor-localnet/components/TradingExplorer';
+import { TradingParticipantsStat } from '@/app/(features)/anchor-localnet/components/TradingParticipantsStat';
 import { Zap, LayoutGrid, BarChart2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/(shared)/components/ui/tabs';
 import { Card, CardContent } from '@/app/(shared)/components/ui/card';
@@ -11,14 +12,12 @@ import { Card, CardContent } from '@/app/(shared)/components/ui/card';
 export default function TradingPage() {
   return (
     <ProgramPageLayout
-      title="Trading"
-      description="The neural center of GridTokenX. Real-time Continuous Double Auction (CDA) matching engine and settlement protocol."
       icon={Zap}
       iconColor="yellow"
       badgeText="Solana Program"
       badgeColor="yellow"
-      secondaryLabel="Active Participants"
-      secondaryValue="128 Registered Nodes"
+      secondaryLabel="Live Market Activity"
+      secondaryValue={<TradingParticipantsStat />}
       secondaryIcon={Zap}
       secondaryColor="primary"
     >

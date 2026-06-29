@@ -3,9 +3,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import { Badge } from '@/app/(shared)/components/ui/badge';
-import { Button } from '@/app/(shared)/components/ui/button';
-import { Input } from '@/app/(shared)/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/(shared)/components/ui/tabs';
 import {
   Zap,
   TrendingUp,
@@ -46,18 +43,16 @@ interface Market {
   address: string;
   totalVolume: number;
   lastPrice: number;
+  vwap: number;
+  activeOrders: number;
   totalTrades: number;
+  feeBps: number;
   priceHistory: PricePoint[];
 }
 
-interface Order {
-  address: string;
-  orderId: number;
-  amount: number;
-  filled: number;
+interface Level {
   price: number;
-  type: 'Buy' | 'Sell';
-  status: number;
+  amount: number;
 }
 
 interface Trade {
@@ -67,10 +62,34 @@ interface Trade {
   time: number;
 }
 
+// On-chain account sizes (incl. 8-byte Anchor discriminator) — see trading
+// program state structs. Market holds the global stats + price-history ring;
+// the live order book lives in each ZoneMarket's buy/sell depth arrays.
+const SIZE = { market: 2760, zoneMarket: 576, order: 128, trade: 176 };
+const PRICE_LEVEL = 24; // PriceLevel: price u64, total_amount u64, order_count u16, pad
+const DEPTH_LEN = 10;
+const BUY_DEPTH_OFF = 88; // zone payload offset of buy_side_depth (abs 96 − 8 disc)
+const SELL_DEPTH_OFF = 328; // sell_side_depth (abs 336 − 8 disc)
+
+const u64 = (d: Buffer, o: number) => Number(d.readBigUInt64LE(o));
+const i64 = (d: Buffer, o: number) => Number(d.readBigInt64LE(o));
+
+function readDepth(d: Buffer, base: number, into: Map<number, number>) {
+  for (let i = 0; i < DEPTH_LEN; i++) {
+    const o = base + i * PRICE_LEVEL;
+    if (o + 16 > d.length) break;
+    const price = u64(d, o);
+    const amount = u64(d, o + 8);
+    if (price > 0 && amount > 0) into.set(price, (into.get(price) ?? 0) + amount);
+  }
+}
+
 export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps) {
   const [market, setMarket] = useState<Market | null>(null);
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [bids, setBids] = useState<Level[]>([]);
+  const [asks, setAsks] = useState<Level[]>([]);
   const [trades, setTrades] = useState<Trade[]>([]);
+  const [zoneCount, setZoneCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -81,57 +100,64 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
       const programId = new PublicKey(PROGRAMS.trading.id);
       const accounts = await conn.getProgramAccounts(programId);
 
-      const orderList: Order[] = [];
-      const tradeList: Trade[] = [];
       let marketData: Market | null = null;
+      const tradeList: Trade[] = [];
+      const bidMap = new Map<number, number>();
+      const askMap = new Map<number, number>();
+      let zones = 0;
 
       for (const { pubkey, account } of accounts) {
         const data = account.data;
-        const d = data.slice(8);
+        const d = data.subarray(8) as Buffer;
 
-        if (data.length > 500) {
+        if (data.length === SIZE.market) {
           marketData = {
             address: pubkey.toBase58(),
-            totalVolume: Number(d.readBigUInt64LE(32)),
-            lastPrice: Number(d.readBigUInt64LE(48)),
+            totalVolume: u64(d, 32),
+            lastPrice: u64(d, 48), // last_clearing_price
+            vwap: u64(d, 56),
+            activeOrders: d.readUInt32LE(64),
             totalTrades: d.readUInt32LE(68),
+            feeBps: d.readUInt16LE(72),
             priceHistory: Array.from({ length: 24 })
               .map((_, i) => {
-                // Price history starts at offset 2160 in the raw data (after sharding metrics)
-                const start = 2160 + i * 24;
+                const start = 2160 + i * PRICE_LEVEL; // price_history ring, payload offset
                 if (start + 24 > d.length) return null;
-                return {
-                  price: Number(d.readBigUInt64LE(start)),
-                  volume: Number(d.readBigUInt64LE(start + 8)),
-                  time: Number(d.readBigInt64LE(start + 16)),
-                };
+                return { price: u64(d, start), volume: u64(d, start + 8), time: i64(d, start + 16) };
               })
-              .filter((ph): ph is PricePoint => !!ph && ph.time > 0),
+              .filter((ph): ph is PricePoint => !!ph && ph.time > 0)
+              .sort((a, b) => a.time - b.time),
           };
-        } else if (data.length === 128) {
-          orderList.push({
-            address: pubkey.toBase58(),
-            orderId: Number(d.readBigUInt64LE(64)),
-            amount: Number(d.readBigUInt64LE(72)),
-            filled: Number(d.readBigUInt64LE(80)),
-            price: Number(d.readBigUInt64LE(88)),
-            type: d[96] === 1 ? 'Buy' : 'Sell',
-            status: d[97],
-          });
-        } else if (data.length === 184) {
-          // TradeRecord
+        } else if (data.length === SIZE.zoneMarket) {
+          // Live order book — aggregate every zone's depth ladder.
+          zones++;
+          readDepth(d, BUY_DEPTH_OFF, bidMap);
+          readDepth(d, SELL_DEPTH_OFF, askMap);
+        } else if (data.length === SIZE.order) {
+          // Standalone Order accounts (when the CDA rests them individually).
+          const status = d[97];
+          if (status > 1) continue; // only Active / PartiallyFilled stay on the book
+          const remaining = u64(d, 72) - u64(d, 80); // amount − filled
+          if (remaining <= 0) continue;
+          const price = u64(d, 88);
+          const map = d[96] === 1 ? bidMap : askMap; // OrderType: 1 = Buy, 0 = Sell
+          if (price > 0) map.set(price, (map.get(price) ?? 0) + remaining);
+        } else if (data.length === SIZE.trade) {
           tradeList.push({
             address: pubkey.toBase58(),
-            amount: Number(d.readBigUInt64LE(128)),
-            price: Number(d.readBigUInt64LE(136)),
-            time: Number(d.readBigInt64LE(160)),
+            amount: u64(d, 128),
+            price: u64(d, 136),
+            time: i64(d, 160),
           });
         }
       }
 
+      const toLevels = (m: Map<number, number>) => Array.from(m, ([price, amount]) => ({ price, amount }));
       setMarket(marketData);
-      setOrders(orderList);
+      setBids(toLevels(bidMap).sort((a, b) => b.price - a.price));
+      setAsks(toLevels(askMap).sort((a, b) => a.price - b.price));
       setTrades(tradeList.sort((a, b) => b.time - a.time));
+      setZoneCount(zones);
       setError(null);
       setLastUpdated(Date.now());
     } catch (err) {
@@ -149,15 +175,6 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
     return () => clearInterval(interval);
   }, [fetchTradingData]);
 
-  const bids = useMemo(
-    () => orders.filter((o) => o.type === 'Buy' && o.status <= 1).sort((a, b) => b.price - a.price),
-    [orders],
-  );
-  const asks = useMemo(
-    () => orders.filter((o) => o.type === 'Sell' && o.status <= 1).sort((a, b) => a.price - b.price),
-    [orders],
-  );
-
   // Real depth scaling — relative to the largest resting order in the book.
   const maxBookAmount = useMemo(
     () => Math.max(1, ...bids.map((o) => o.amount), ...asks.map((o) => o.amount)),
@@ -166,24 +183,39 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
 
   const spread = asks[0] && bids[0] ? asks[0].price - bids[0].price : null;
 
-  // Real price-change % derived from on-chain price history (first → last point).
-  const priceChangePct = useMemo(() => {
+  // Real price series: prefer the market's on-chain price-history ring; if the
+  // market hasn't recorded one yet, fall back to executed trades (also real,
+  // straight from TradeRecord accounts), oldest → newest.
+  const series = useMemo<PricePoint[]>(() => {
     const h = market?.priceHistory ?? [];
-    if (h.length < 2) return null;
-    const first = h[0].price;
-    const last = h[h.length - 1].price;
+    if (h.length > 0) return h;
+    return [...trades]
+      .filter((t) => t.time > 0 && t.price > 0)
+      .sort((a, b) => a.time - b.time)
+      .map((t) => ({ price: t.price, volume: t.amount, time: t.time }));
+  }, [market, trades]);
+
+  // Display values, each backed by whichever real source is populated.
+  const lastPrice = market?.lastPrice || series[series.length - 1]?.price || 0;
+  const totalVolume = market?.totalVolume || trades.reduce((s, t) => s + t.amount, 0);
+  const totalTrades = market?.totalTrades || trades.length;
+
+  const priceChangePct = useMemo(() => {
+    if (series.length < 2) return null;
+    const first = series[0].price;
+    const last = series[series.length - 1].price;
     if (!first) return null;
     return ((last - first) / first) * 100;
-  }, [market]);
+  }, [series]);
 
   const chartData = useMemo(
     () =>
-      (market?.priceHistory ?? []).map((p) => ({
+      series.map((p) => ({
         label: new Date(p.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         price: p.price,
         volume: p.volume,
       })),
-    [market],
+    [series],
   );
 
   const isConnected = !error;
@@ -196,7 +228,7 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
   }, [rpcUrl]);
 
   // First-load skeleton — only before we have any data at all.
-  if (isLoading && !market && orders.length === 0 && !error) {
+  if (isLoading && !market && bids.length === 0 && asks.length === 0 && !error) {
     return (
       <div className="flex h-[800px] flex-col items-center justify-center gap-3 bg-background/50 text-muted-foreground">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -222,7 +254,10 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
         </div>
         <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
           <span>
-            <span className="font-bold text-foreground">{orders.length}</span> orders
+            <span className="font-bold text-foreground">{market?.activeOrders ?? 0}</span> active orders
+          </span>
+          <span>
+            <span className="font-bold text-foreground">{zoneCount}</span> zones
           </span>
           <span>
             <span className="font-bold text-foreground">{trades.length}</span> trades
@@ -311,7 +346,7 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
                 <div className="text-right">
                   <p className="text-[9px] font-bold uppercase text-muted-foreground">Last Price</p>
                   <p className="font-mono text-sm font-black leading-none text-yellow-600">
-                    {market?.lastPrice?.toLocaleString() ?? '0'} <span className="text-[10px]">THB</span>
+                    {lastPrice.toLocaleString()} <span className="text-[10px]">THB</span>
                   </p>
                 </div>
                 {priceChangePct !== null && (
@@ -438,11 +473,14 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
 
         {/* Right: Order Entry (3 cols) */}
         <OrderEntry
-          market={market}
+          vwap={market?.vwap || 0}
+          feeBps={market?.feeBps ?? 0}
+          totalVolume={totalVolume}
+          totalTrades={totalTrades}
           bestBid={bids[0]?.price ?? null}
           bestAsk={asks[0]?.price ?? null}
           spread={spread}
-          activeOrders={bids.length + asks.length}
+          activeOrders={market?.activeOrders ?? bids.length + asks.length}
         />
       </div>
     </div>
@@ -450,91 +488,36 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
 }
 
 function OrderEntry({
-  market,
+  vwap,
+  feeBps,
+  totalVolume,
+  totalTrades,
   bestBid,
   bestAsk,
   spread,
   activeOrders,
 }: {
-  market: Market | null;
+  vwap: number;
+  feeBps: number;
+  totalVolume: number;
+  totalTrades: number;
   bestBid: number | null;
   bestAsk: number | null;
   spread: number | null;
   activeOrders: number;
 }) {
-  const [price, setPrice] = useState('');
-  const [amount, setAmount] = useState('');
-
-  const estTotal = useMemo(() => {
-    const p = parseFloat(price);
-    const a = parseFloat(amount);
-    if (!isFinite(p) || !isFinite(a)) return 0;
-    return p * a;
-  }, [price, amount]);
-
   return (
     <Card className="col-span-12 border-border/60 bg-card/40 backdrop-blur-md lg:col-span-3">
       <CardHeader className="border-b px-4 py-3">
-        <CardTitle className="text-xs font-bold uppercase tracking-widest">Execute Trade</CardTitle>
+        <CardTitle className="text-xs font-bold uppercase tracking-widest">Market Overview</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6 p-4">
-        <Tabs defaultValue="buy" className="w-full">
-          <TabsList className="grid h-8 w-full grid-cols-2">
-            <TabsTrigger
-              value="buy"
-              className="text-[10px] font-bold uppercase data-[state=active]:bg-green-500 data-[state=active]:text-white"
-            >
-              Buy
-            </TabsTrigger>
-            <TabsTrigger
-              value="sell"
-              className="text-[10px] font-bold uppercase data-[state=active]:bg-red-500 data-[state=active]:text-white"
-            >
-              Sell
-            </TabsTrigger>
-          </TabsList>
-
-          {(['buy', 'sell'] as const).map((side) => (
-            <TabsContent key={side} value={side} className="space-y-4 pt-4">
-              <OrderInput
-                label="Price (THB)"
-                placeholder={(side === 'buy' ? bestAsk : bestBid)?.toString() ?? '0.00'}
-                value={price}
-                onChange={setPrice}
-              />
-              <OrderInput label="Amount (kWh)" placeholder="0" value={amount} onChange={setAmount} />
-              <div className="pt-2">
-                <div className="mb-1 flex justify-between text-[10px] font-bold uppercase text-muted-foreground">
-                  <span>{side === 'buy' ? 'Estimated Total' : 'Estimated Revenue'}</span>
-                  <span className="font-mono text-foreground">{estTotal.toLocaleString()} THB</span>
-                </div>
-                <Button
-                  disabled
-                  title="Read-only explorer — place orders from the Trading app"
-                  className={cn(
-                    'h-10 w-full font-bold text-white shadow-lg',
-                    side === 'buy'
-                      ? 'bg-green-500 shadow-green-500/20 hover:bg-green-600'
-                      : 'bg-red-500 shadow-red-500/20 hover:bg-red-600',
-                  )}
-                >
-                  {side === 'buy' ? 'Submit Buy Order' : 'Submit Sell Order'}
-                </Button>
-                <p className="mt-1.5 text-center text-[9px] text-muted-foreground">
-                  Read-only explorer — submit from the Trading app
-                </p>
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
-
-        <div className="space-y-3 border-t border-border/40 pt-4">
-          <h4 className="text-[9px] font-bold uppercase tracking-tighter text-muted-foreground">
-            Market Overview
-          </h4>
-          <MiniStat label="Total Volume" value={`${market?.totalVolume?.toLocaleString() ?? 0} kWh`} />
-          <MiniStat label="Total Trades" value={(market?.totalTrades ?? 0).toLocaleString()} />
+      <CardContent className="p-4">
+        <div className="space-y-3">
+          <MiniStat label="Total Volume" value={`${totalVolume.toLocaleString()} kWh`} />
+          <MiniStat label="Total Trades" value={totalTrades.toLocaleString()} />
           <MiniStat label="Active Orders" value={activeOrders.toLocaleString()} />
+          <MiniStat label="VWAP" value={vwap ? `${vwap.toLocaleString()} THB` : '—'} />
+          <MiniStat label="Market Fee" value={`${(feeBps / 100).toFixed(2)} %`} />
           <MiniStat
             label="Best Bid"
             value={bestBid !== null ? `${bestBid.toLocaleString()} THB` : '—'}
@@ -588,31 +571,6 @@ function OrderBookRow({
         <span className="text-right font-medium">{amount.toLocaleString()}</span>
         <span className="text-right text-muted-foreground">{(price * amount).toLocaleString()}</span>
       </div>
-    </div>
-  );
-}
-
-function OrderInput({
-  label,
-  placeholder,
-  value,
-  onChange,
-}: {
-  label: string;
-  placeholder: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <label className="text-[10px] font-bold uppercase text-muted-foreground">{label}</label>
-      <Input
-        className="h-9 border-border/60 bg-background/50 font-mono text-sm focus-visible:ring-primary/20"
-        placeholder={placeholder}
-        type="number"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
     </div>
   );
 }

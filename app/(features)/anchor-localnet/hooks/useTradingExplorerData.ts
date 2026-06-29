@@ -69,60 +69,68 @@ export function useTradingExplorerData(getConnection: () => Connection) {
         const data = account.data;
         const addr = pubkey.toBase58();
 
-        if (data.length > 2500) {
+        // Account sizes incl. 8-byte discriminator: Market 2760, Order 128, TradeRecord 176.
+        if (data.length === 2760) {
           try {
             const d = data.slice(8);
             marketData = {
               address: addr,
               authority: new PublicKey(d.slice(0, 32)).toBase58(),
               totalVolume: Number(d.readBigUInt64LE(32)),
-              totalTrades: d.readUInt32LE(48 + 8 + 4),
-              activeOrders: d.readUInt32LE(48 + 8),
               lastClearingPrice: Number(d.readBigUInt64LE(48)),
               vwap: Number(d.readBigUInt64LE(56)),
-              marketFeeBps: d.readUInt16LE(48 + 8 + 4 + 4),
-              clearingEnabled: d[48 + 8 + 4 + 4 + 2] === 1,
+              activeOrders: d.readUInt32LE(64),
+              totalTrades: d.readUInt32LE(68),
+              marketFeeBps: d.readUInt16LE(72),
+              clearingEnabled: d[75] === 1,
               minPrice: Number(d.readBigUInt64LE(80)),
               maxPrice: Number(d.readBigUInt64LE(88)),
               buyDepthCount: 0,
               sellDepthCount: 0,
-              priceHistoryCount: 0,
+              priceHistoryCount: d[2158],
             };
           } catch {
             // Skip malformed market accounts
           }
-        } else if (data.length > 100 && data.length < 500) {
+        } else if (data.length === 128) {
           try {
             const d = data.slice(8);
-            const seller = new PublicKey(d.slice(0, 32)).toBase58();
-            const buyer = new PublicKey(d.slice(32, 64)).toBase58();
-            const orderId = Number(d.readBigUInt64LE(64));
-            const amount = Number(d.readBigUInt64LE(72));
-            const filledAmount = Number(d.readBigUInt64LE(80));
-            const pricePerKwh = Number(d.readBigUInt64LE(88));
             const orderType = d[96];
             const status = d[97];
-            const createdAt = Number(d.readBigInt64LE(98));
-            const expiresAt = Number(d.readBigInt64LE(106));
-
             orderList.push({
               address: addr,
-              seller,
-              buyer,
-              orderId,
-              amount,
-              filledAmount,
-              pricePerKwh,
+              seller: new PublicKey(d.slice(0, 32)).toBase58(),
+              buyer: new PublicKey(d.slice(32, 64)).toBase58(),
+              orderId: Number(d.readBigUInt64LE(64)),
+              amount: Number(d.readBigUInt64LE(72)),
+              filledAmount: Number(d.readBigUInt64LE(80)),
+              pricePerKwh: Number(d.readBigUInt64LE(88)),
               orderType: ENUM_MAPS.OrderType[orderType as keyof typeof ENUM_MAPS.OrderType] ?? `Unknown(${orderType})`,
               status: ENUM_MAPS.OrderStatus[status as keyof typeof ENUM_MAPS.OrderStatus] ?? `Unknown(${status})`,
-              createdAt,
-              expiresAt,
+              createdAt: Number(d.readBigInt64LE(112)),
+              expiresAt: Number(d.readBigInt64LE(120)),
             });
           } catch {
             // Skip
           }
-        } else if (data.length > 50 && data.length <= 100) {
-          // Future trade records parsing
+        } else if (data.length === 176) {
+          try {
+            const d = data.slice(8);
+            tradeList.push({
+              address: addr,
+              sellOrder: new PublicKey(d.slice(0, 32)).toBase58(),
+              buyOrder: new PublicKey(d.slice(32, 64)).toBase58(),
+              seller: new PublicKey(d.slice(64, 96)).toBase58(),
+              buyer: new PublicKey(d.slice(96, 128)).toBase58(),
+              amount: Number(d.readBigUInt64LE(128)),
+              pricePerKwh: Number(d.readBigUInt64LE(136)),
+              totalValue: Number(d.readBigUInt64LE(144)),
+              feeAmount: Number(d.readBigUInt64LE(152)),
+              executedAt: Number(d.readBigInt64LE(160)),
+            });
+          } catch {
+            // Skip
+          }
         }
       }
 
