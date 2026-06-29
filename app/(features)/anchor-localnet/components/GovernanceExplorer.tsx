@@ -83,8 +83,8 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
             console.error('Error parsing PoA config:', err);
           }
         }
-        // ErcCertificate (Borsh) — total 645 bytes
-        else if (data.length === 645) {
+        // ErcCertificate (Borsh) — total 644 bytes (8 disc + ErcCertificate::LEN 636)
+        else if (data.length === 644) {
           try {
             const d = data.slice(8);
             const idLen = d[64];
