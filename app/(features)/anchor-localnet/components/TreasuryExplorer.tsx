@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
-import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/(shared)/components/ui/tabs';
@@ -202,59 +201,60 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
 
   if (isLoading && !treasury && !error) {
     return (
-      <div className="space-y-3 pt-2">
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-48 w-full" />
+      <div className="space-y-2 bg-black p-2 font-mono">
+        <Skeleton className="h-10 w-full rounded-none bg-[#111]" />
+        <Skeleton className="h-32 w-full rounded-none bg-[#111]" />
+        <Skeleton className="h-48 w-full rounded-none bg-[#111]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 pt-2">
+    <div className="space-y-2 bg-black p-2 font-mono text-[#e0e0e0]">
       {/* Connection status bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 bg-card/40 px-4 py-2 backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-2 border border-[#2a2a2a] bg-[#111] px-4 py-2">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             {isConnected ? (
-              <Wifi className="h-3.5 w-3.5 text-green-500" />
+              <span className="flex items-center bg-[#14F195]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#14F195]">
+                <Wifi className="mr-1 h-2.5 w-2.5" /> Live
+              </span>
             ) : (
-              <WifiOff className="h-3.5 w-3.5 text-red-500" />
+              <span className="flex items-center bg-[#ff3333]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#ff5555]">
+                <WifiOff className="mr-1 h-2.5 w-2.5" /> Disconnected
+              </span>
             )}
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              {isConnected ? 'Live' : 'Disconnected'}
-            </span>
           </div>
-          <span className="font-mono text-[11px] text-muted-foreground">{rpcHost}</span>
-          <span className="font-mono text-[10px] text-muted-foreground">{PROGRAMS.treasury.id}</span>
+          <span className="text-[11px] text-[#888]">{rpcHost}</span>
+          <code className="bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] tracking-wider text-[#14F195]">{PROGRAMS.treasury.id}</code>
         </div>
-        <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-3 text-[10px] text-[#666]">
           {lastUpdated && <span>Updated {new Date(lastUpdated).toLocaleTimeString()}</span>}
-          <Button variant="outline" size="icon" className="h-7 w-7" onClick={fetchData}>
-            <RefreshCw className={cn('h-3.5 w-3.5', isLoading && 'animate-spin')} />
+          <Button variant="outline" size="icon" className="h-7 w-7 rounded-none border-[#2a2a2a] bg-[#0a0a0a] hover:bg-[#9945FF]/10" onClick={fetchData}>
+            <RefreshCw className={cn('h-3.5 w-3.5 text-[#9945FF]', isLoading && 'animate-spin')} />
           </Button>
         </div>
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs text-red-400">
+        <div className="flex items-center gap-2 border border-[#ff3333]/40 bg-[#ff3333]/10 px-4 py-2 text-[10px] uppercase tracking-wide text-[#ff5555]">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <span>
             RPC error: {error}. Ensure a validator is running at{' '}
-            <span className="font-mono">{rpcHost}</span> with the Treasury program deployed. Retrying…
+            <span className="text-[#ff8c00]">{rpcHost}</span> with the Treasury program deployed. Retrying…
           </span>
         </div>
       )}
 
       {!treasury && !error ? (
-        <Card className="border-border/60 bg-card/40">
+        <Card className="rounded-none border-[#2a2a2a] bg-black">
           <EmptyState label="Treasury not initialized on this cluster" icon={Landmark} />
         </Card>
       ) : (
         treasury && (
           <>
             {/* Reserve / stablecoin overview */}
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
               <StatCard
                 icon={Coins}
                 label="Attested Reserve"
@@ -267,55 +267,54 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                 label="THBG Supply"
                 value={fmtToken(treasury.thbgSupply)}
                 unit="THBG"
-                accent="blue"
+                accent="purple"
               />
               <StatCard
                 icon={Users}
                 label="Total Staked"
                 value={fmtToken(treasury.totalStaked)}
                 unit="GRX"
-                accent="indigo"
+                accent="green"
               />
               <StatCard
                 icon={Layers}
                 label="Reward Pool"
                 value={fmtToken(treasury.rewardPool)}
                 unit="GRX"
-                accent="yellow"
+                accent="green"
               />
             </div>
 
             {/* Config card */}
-            <Card className="border-border/60 bg-card/40 backdrop-blur-md">
-              <CardHeader className="flex flex-row items-center justify-between border-b px-4 py-3">
-                <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
-                  <Landmark className="h-3.5 w-3.5 text-primary" /> Treasury Config
+            <Card className="rounded-none border-[#2a2a2a] bg-black">
+              <CardHeader className="flex flex-row items-center justify-between border-b border-[#2a2a2a] bg-[#111] px-4 py-2">
+                <CardTitle className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">
+                  <Landmark className="h-3.5 w-3.5" /> Treasury Config
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   {attestationFresh !== null &&
                     (attestationFresh ? (
-                      <Badge variant="outline" className="gap-1 border-green-200 bg-green-50 text-[9px] text-green-600">
+                      <span className="flex items-center gap-1 bg-[#14F195]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#14F195]">
                         <ShieldCheck className="h-3 w-3" /> Attestation Fresh
-                      </Badge>
+                      </span>
                     ) : (
-                      <Badge variant="outline" className="gap-1 border-amber-200 bg-amber-50 text-[9px] text-amber-600">
+                      <span className="flex items-center gap-1 bg-[#ff8c00]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#ff8c00]">
                         <ShieldAlert className="h-3 w-3" /> Attestation Stale
-                      </Badge>
+                      </span>
                     ))}
-                  <Badge
-                    variant="outline"
+                  <span
                     className={cn(
-                      'text-[9px]',
+                      'px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider',
                       treasury.paused
-                        ? 'border-red-200 bg-red-50 text-red-600'
-                        : 'border-green-200 bg-green-50 text-green-600',
+                        ? 'bg-[#ff3333]/15 text-[#ff5555]'
+                        : 'bg-[#14F195]/15 text-[#14F195]',
                     )}
                   >
                     {treasury.paused ? 'Paused' : 'Active'}
-                  </Badge>
+                  </span>
                 </div>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 gap-x-8 gap-y-2 p-4 sm:grid-cols-2">
+              <CardContent className="grid grid-cols-1 gap-x-8 gap-y-1 p-4 sm:grid-cols-2">
                 <Row label="Swap Fee" value={`${(treasury.swapFeeBps / 100).toFixed(2)} %`} />
                 <Row label="GRX per THBG Rate" value={treasury.grxPerThbgRate.toLocaleString()} />
                 <Row label="Total Settled" value={`${fmtToken(treasury.totalSettledThbg)} THBG`} />
@@ -344,27 +343,27 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
 
             {/* Tables */}
             <Tabs defaultValue="stakes" className="w-full">
-              <TabsList className="grid h-9 w-full grid-cols-3 sm:w-[480px]">
-                <TabsTrigger value="stakes" className="text-xs">
+              <TabsList className="grid h-9 w-full grid-cols-3 rounded-none border border-[#2a2a2a] bg-[#0a0a0a] p-0 sm:w-[480px]">
+                <TabsTrigger value="stakes" className="rounded-none text-[10px] font-bold uppercase tracking-wider text-[#666] data-[state=active]:bg-[#9945FF] data-[state=active]:text-white">
                   Stake Positions ({stakes.length})
                 </TabsTrigger>
-                <TabsTrigger value="settlements" className="text-xs">
+                <TabsTrigger value="settlements" className="rounded-none text-[10px] font-bold uppercase tracking-wider text-[#666] data-[state=active]:bg-[#9945FF] data-[state=active]:text-white">
                   Settlements ({settlements.length})
                 </TabsTrigger>
-                <TabsTrigger value="shards" className="text-xs">
+                <TabsTrigger value="shards" className="rounded-none text-[10px] font-bold uppercase tracking-wider text-[#666] data-[state=active]:bg-[#9945FF] data-[state=active]:text-white">
                   Shards ({shards.length})
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="stakes" className="mt-4">
-                <Card className="overflow-hidden border-border/60">
+              <TabsContent value="stakes" className="mt-2">
+                <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
                   {stakes.length === 0 ? (
                     <EmptyState label="No stake positions" />
                   ) : (
                     <DataTable
                       head={['Owner', 'Staked (GRX)', 'Pending Rewards (GRX)']}
                       rows={stakes.map((s) => [
-                        <span key="o" className="font-mono text-[10px]">{shorten(s.owner)}</span>,
+                        <span key="o" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]">{shorten(s.owner)}</span>,
                         fmtToken(s.amount),
                         fmtToken(s.pending),
                       ])}
@@ -373,8 +372,8 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                 </Card>
               </TabsContent>
 
-              <TabsContent value="settlements" className="mt-4">
-                <Card className="overflow-hidden border-border/60">
+              <TabsContent value="settlements" className="mt-2">
+                <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
                   {settlements.length === 0 ? (
                     <EmptyState label="No settlement records" />
                   ) : (
@@ -386,15 +385,15 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                         fmtToken(s.totalValue),
                         `${fmtToken(s.vatAmount)} (${(s.vatRateBps / 100).toFixed(1)}%)`,
                         new Date(s.committedTs * 1000).toLocaleString(),
-                        <span key="m" className="font-mono text-[10px]">{s.merkleRoot.slice(0, 12)}…</span>,
+                        <span key="m" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]">{s.merkleRoot.slice(0, 12)}…</span>,
                       ])}
                     />
                   )}
                 </Card>
               </TabsContent>
 
-              <TabsContent value="shards" className="mt-4">
-                <Card className="overflow-hidden border-border/60">
+              <TabsContent value="shards" className="mt-2">
+                <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
                   {shards.length === 0 ? (
                     <EmptyState label="No settlement shards initialized" />
                   ) : (
@@ -428,10 +427,8 @@ function shorten(addr: string): string {
 }
 
 const ACCENTS: Record<string, string> = {
-  green: 'text-green-500',
-  blue: 'text-blue-500',
-  indigo: 'text-indigo-500',
-  yellow: 'text-yellow-500',
+  green: '#14F195',
+  purple: '#9945FF',
 };
 
 function StatCard({
@@ -447,15 +444,16 @@ function StatCard({
   unit: string;
   accent: string;
 }) {
+  const color = ACCENTS[accent] ?? '#9945FF';
   return (
-    <Card className="border-border/60 bg-card/40 backdrop-blur-md">
+    <Card className="rounded-none border-[#2a2a2a] bg-black transition-colors hover:border-[#9945FF]/40">
       <CardContent className="p-4">
-        <div className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          <Icon className={cn('h-3.5 w-3.5', ACCENTS[accent])} />
+        <div className="mb-1 flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider text-[#666]">
+          <Icon className="h-3.5 w-3.5" style={{ color }} />
           {label}
         </div>
-        <p className="font-mono text-lg font-black leading-none">
-          {value} <span className="text-xs font-bold text-muted-foreground">{unit}</span>
+        <p className="font-mono text-2xl font-black leading-none tracking-tighter" style={{ color }}>
+          {value} <span className="text-xs font-bold text-[#666]">{unit}</span>
         </p>
       </CardContent>
     </Card>
@@ -474,9 +472,12 @@ function Row({
   truncate?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-border/20 py-1.5 text-xs last:border-0">
-      <span className="shrink-0 text-muted-foreground">{label}</span>
-      <span className={cn('text-right', mono && 'font-mono text-[11px]', truncate && 'truncate')} title={value}>
+    <div className="flex items-center justify-between gap-4 border-b border-[#1a1a1a] py-1.5 text-xs last:border-0">
+      <span className="shrink-0 text-[10px] uppercase tracking-wider text-[#666]">{label}</span>
+      <span
+        className={cn('text-right text-[#e0e0e0]', mono && 'font-mono text-[11px] text-[#14F195]', truncate && 'truncate')}
+        title={value}
+      >
         {value}
       </span>
     </div>
@@ -487,7 +488,7 @@ function DataTable({ head, rows }: { head: string[]; rows: React.ReactNode[][] }
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left">
-        <thead className="bg-muted/20 text-[9px] uppercase text-muted-foreground">
+        <thead className="bg-[#0a0a0a] text-[9px] font-bold uppercase tracking-wider text-[#666]">
           <tr>
             {head.map((h, i) => (
               <th key={h} className={cn('px-4 py-2 font-bold', i > 0 && 'text-right')}>
@@ -498,9 +499,9 @@ function DataTable({ head, rows }: { head: string[]; rows: React.ReactNode[][] }
         </thead>
         <tbody className="text-[11px]">
           {rows.map((cells, r) => (
-            <tr key={r} className="border-b border-border/20 transition-colors hover:bg-muted/10">
+            <tr key={r} className="border-b border-[#1a1a1a] transition-colors hover:bg-[#9945FF]/5">
               {cells.map((c, i) => (
-                <td key={i} className={cn('px-4 py-2 font-mono', i > 0 && 'text-right font-bold')}>
+                <td key={i} className={cn('px-4 py-2 font-mono text-[#e0e0e0]', i > 0 && 'text-right font-bold')}>
                   {c}
                 </td>
               ))}
@@ -514,9 +515,9 @@ function DataTable({ head, rows }: { head: string[]; rows: React.ReactNode[][] }
 
 function EmptyState({ label, icon: Icon = Inbox }: { label: string; icon?: React.ElementType }) {
   return (
-    <div className="flex min-h-[120px] flex-col items-center justify-center gap-2 p-6 text-center text-muted-foreground">
+    <div className="flex min-h-[120px] flex-col items-center justify-center gap-2 p-6 text-center text-[#555]">
       <Icon className="h-6 w-6 opacity-40" />
-      <p className="text-[11px] font-medium">{label}</p>
+      <p className="text-[10px] font-medium uppercase tracking-wide">{label}</p>
     </div>
   );
 }

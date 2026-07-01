@@ -28,21 +28,24 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      // Route-group-aware aliases. Most specific first — vite matches in order.
+      // The app/ tree is organised into (core), (shared), (solana) route groups,
+      // so the old flat ./app/components etc. paths no longer exist.
+      '@/app/providers': path.resolve(__dirname, './app/(core)/providers'),
+      '@/app/components': path.resolve(__dirname, './app/(shared)/components'),
+      '@/app/utils': path.resolve(__dirname, './app/(shared)/utils'),
+      '@/app/img': path.resolve(__dirname, './app/(shared)/img'),
+      '@/app/validators': path.resolve(__dirname, './app/(solana)/validators'),
+      '@/app': path.resolve(__dirname, './app'),
       '@/': path.resolve(__dirname, './'),
 
-      '@/app': path.resolve(__dirname, './app'),
-      '@/components': path.resolve(__dirname, './app/components'),
-      '@/providers': path.resolve(__dirname, './app/providers'),
-      '@/utils': path.resolve(__dirname, './app/utils'),
-      '@/validators': path.resolve(__dirname, './app/validators'),
-
-      // @ aliases
+      // Short @ aliases
       '@app': path.resolve(__dirname, './app'),
-      '@img': path.resolve(__dirname, './app/img'),
-      '@components': path.resolve(__dirname, './app/components'),
-      '@providers': path.resolve(__dirname, './app/providers'),
-      '@utils': path.resolve(__dirname, './app/utils'),
-      '@validators': path.resolve(__dirname, './app/validators'),
+      '@img': path.resolve(__dirname, './app/(shared)/img'),
+      '@components': path.resolve(__dirname, './app/(shared)/components'),
+      '@providers': path.resolve(__dirname, './app/(core)/providers'),
+      '@utils': path.resolve(__dirname, './app/(shared)/utils'),
+      '@validators': path.resolve(__dirname, './app/(solana)/validators'),
     },
     conditions: ['browser', 'default'],
   },

@@ -2,9 +2,8 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/app/(shared)/components/ui/card';
-import { Badge } from '@/app/(shared)/components/ui/badge';
 import { StatItem } from '../shared-explorer/Stats';
-import { ShieldCheck, AlertTriangle } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import { cn } from '@/app/(shared)/utils/cn';
 
 interface PoAConfigData {
@@ -23,30 +22,33 @@ interface PoAConfigCardProps {
 
 export function PoAConfigCard({ config }: PoAConfigCardProps) {
   return (
-    <Card className="border-border/60 bg-card/50 shadow-sm overflow-hidden">
-      <div className="bg-muted/30 px-4 py-2 border-b flex items-center justify-between">
-        <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Proof-of-Authority Configuration</h4>
+    <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black font-mono">
+      <div className="flex items-center justify-between border-b border-[#2a2a2a] bg-[#111] px-4 py-2">
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">Proof-of-Authority Configuration</h4>
         <div className="flex gap-2">
-          <Badge variant={config.maintenanceMode ? 'destructive' : 'default'} className="h-5 text-[9px] px-2">
+          <span className={cn(
+            "px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider",
+            config.maintenanceMode ? "bg-[#ff3333]/15 text-[#ff5555]" : "bg-[#14F195]/15 text-[#14F195]"
+          )}>
             {config.maintenanceMode ? 'Maintenance Mode' : 'Operational'}
-          </Badge>
+          </span>
         </div>
       </div>
       <CardContent className="p-4">
         <div className="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3 md:grid-cols-4">
-          <StatItem label="Authority Name" value={config.authorityName} />
-          <StatItem label="Min Energy" value={`${config.minEnergyAmount} kWh`} />
-          <StatItem label="Max ERC" value={`${config.maxErcAmount} kWh`} />
+          <StatItem label="Authority Name" value={config.authorityName} color="text-[#e0e0e0]" />
+          <StatItem label="Min Energy" value={`${config.minEnergyAmount} kWh`} color="text-[#e0e0e0]" />
+          <StatItem label="Max ERC" value={`${config.maxErcAmount} kWh`} color="text-[#e0e0e0]" />
           <div>
-            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-tight">ERC Validation</p>
-            <div className="flex items-center gap-1.5 mt-1">
-              <ShieldCheck className={cn("h-3.5 w-3.5", config.ercValidationEnabled ? "text-green-500" : "text-muted-foreground")} />
-              <span className="text-xs font-bold">{config.ercValidationEnabled ? 'Enabled' : 'Disabled'}</span>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#666]">ERC Validation</p>
+            <div className="mt-1 flex items-center gap-1.5">
+              <ShieldCheck className={cn("h-3.5 w-3.5", config.ercValidationEnabled ? "text-[#14F195]" : "text-[#555]")} />
+              <span className={cn("text-xs font-bold", config.ercValidationEnabled ? "text-[#14F195]" : "text-[#888]")}>{config.ercValidationEnabled ? 'Enabled' : 'Disabled'}</span>
             </div>
           </div>
           <div className="col-span-2">
-            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-tight">Authority Wallet</p>
-            <p className="font-mono text-[11px] truncate mt-0.5">{config.authority}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#666]">Authority Wallet</p>
+            <p className="mt-0.5 truncate font-mono text-[11px] text-[#888]">{config.authority}</p>
           </div>
         </div>
       </CardContent>

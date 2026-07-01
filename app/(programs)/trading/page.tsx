@@ -4,7 +4,6 @@ import React from 'react';
 import { ProgramPageLayout } from '@/app/(shared)/components/layout/ProgramPageLayout';
 import { TradingTerminal } from '@/app/(features)/anchor-localnet/components/TradingTerminal';
 import { TradingExplorer } from '@/app/(features)/anchor-localnet/components/TradingExplorer';
-import { TradingParticipantsStat } from '@/app/(features)/anchor-localnet/components/TradingParticipantsStat';
 import { Zap, LayoutGrid, BarChart2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/(shared)/components/ui/tabs';
 import { Card, CardContent } from '@/app/(shared)/components/ui/card';
@@ -14,29 +13,24 @@ export default function TradingPage() {
     <ProgramPageLayout
       icon={Zap}
       iconColor="yellow"
-      badgeText="Solana Program"
-      badgeColor="yellow"
-      secondaryLabel="Live Market Activity"
-      secondaryValue={<TradingParticipantsStat />}
-      secondaryIcon={Zap}
-      secondaryColor="primary"
+      contentClassName="overflow-hidden p-0"
     >
       {({ rpcUrl, getConnection }) => (
-        <Tabs defaultValue="terminal" className="w-full space-y-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/5 pb-2">
-            <TabsList className="bg-navy-800/50 p-1.5 h-12 border border-white/5 shadow-inner">
-              <TabsTrigger 
-                value="terminal" 
-                className="gap-2.5 h-9 px-6 text-sm font-bold data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 transition-all rounded-md"
+        <Tabs defaultValue="terminal" className="w-full space-y-2 font-mono">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-[#2a2a2a] pb-0">
+            <TabsList className="h-auto gap-0 rounded-none border border-[#2a2a2a] bg-[#111] p-0">
+              <TabsTrigger
+                value="terminal"
+                className="gap-2 rounded-none border-r border-[#2a2a2a] px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-[#888] transition-colors data-[state=active]:bg-[#9945FF] data-[state=active]:text-black data-[state=active]:shadow-none"
               >
-                <LayoutGrid className="h-4 w-4" />
+                <LayoutGrid className="h-3.5 w-3.5" />
                 Terminal
               </TabsTrigger>
-              <TabsTrigger 
-                value="explorer" 
-                className="gap-2.5 h-9 px-6 text-sm font-bold data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 transition-all rounded-md"
+              <TabsTrigger
+                value="explorer"
+                className="gap-2 rounded-none px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-[#888] transition-colors data-[state=active]:bg-[#9945FF] data-[state=active]:text-black data-[state=active]:shadow-none"
               >
-                <BarChart2 className="h-4 w-4" />
+                <BarChart2 className="h-3.5 w-3.5" />
                 Accounts
               </TabsTrigger>
             </TabsList>

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
 import {
@@ -50,12 +49,17 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
   const [config, setConfig] = useState<PoAConfigData | null>(null);
   const [certificates, setCertificates] = useState<CertificateData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showIssueErc, setShowIssueErc] = useState(false);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const conn = getConnection();
+      if (!conn) {
+        throw new Error(`Invalid RPC endpoint: "${rpcUrl}". Check cluster configuration.`);
+      }
       const programId = new PublicKey(PROGRAMS.governance.id);
       const accounts = await conn.getProgramAccounts(programId);
 
@@ -114,10 +118,13 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
       setCertificates(certList.sort((a, b) => b.createdAt - a.createdAt));
     } catch (err) {
       console.warn('GovernanceExplorer fetch error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load governance data from RPC.');
+      setConfig(null);
+      setCertificates([]);
     } finally {
       setIsLoading(false);
     }
-  }, [getConnection]);
+  }, [getConnection, rpcUrl]);
 
   useEffect(() => {
     fetchData();
@@ -125,39 +132,56 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
 
   if (isLoading) {
     return (
-      <div className="space-y-3 pt-2">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-48 w-full" />
+      <div className="space-y-2 bg-black p-2 font-mono">
+        <Skeleton className="h-24 w-full rounded-none bg-[#111]" />
+        <Skeleton className="h-48 w-full rounded-none bg-[#111]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 pt-2">
+    <div className="space-y-2 bg-black p-2 font-mono text-[#e0e0e0]">
+      {/* Error banner */}
+      {error && (
+        <div className="flex items-center justify-between gap-3 border border-[#ff4d4d]/40 bg-[#ff4d4d]/10 p-3">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#ff6b6b]">RPC Error</span>
+            <span className="text-[10px] text-[#e0a0a0]">{error}</span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 rounded-none border-[#ff4d4d]/40 bg-[#0a0a0a] text-[10px] font-bold uppercase tracking-wider text-[#ff6b6b] hover:bg-[#ff4d4d]/10"
+            onClick={fetchData}
+          >
+            <RefreshCw className="h-3.5 w-3.5" /> Retry
+          </Button>
+        </div>
+      )}
+
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-2">
+      <div className="flex flex-col justify-between gap-3 border border-[#2a2a2a] bg-[#111] p-3 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-green-100 p-2 dark:bg-green-900/30">
-            <Gavel className="h-5 w-5 text-green-600 dark:text-green-400" />
+          <div className="flex h-10 w-10 items-center justify-center bg-[#9945FF]/15">
+            <Gavel className="h-5 w-5 text-[#9945FF]" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold leading-none">Governance Program</h3>
-            <p className="mt-1 font-mono text-[10px] text-muted-foreground">
-              {PROGRAMS.governance.id}
-            </p>
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">Governance Program</h3>
+            <code className="mt-1 inline-block bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] tracking-wider text-[#14F195]">
+              {PROGRAMS.governance.id.slice(0, 24)}...
+            </code>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="default"
             size="sm"
-            className="h-8 gap-1.5"
+            className="h-9 gap-1.5 rounded-none bg-[#9945FF] text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#7d37d6]"
             onClick={() => setShowIssueErc(true)}
           >
             <Plus className="h-3.5 w-3.5" /> Issue ERC
           </Button>
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={fetchData}>
-            <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+          <Button variant="outline" size="icon" className="h-9 w-9 rounded-none border-[#2a2a2a] bg-[#0a0a0a] hover:bg-[#9945FF]/10" onClick={fetchData}>
+            <RefreshCw className={cn("h-4 w-4 text-[#9945FF]", isLoading && "animate-spin")} />
           </Button>
         </div>
       </div>
@@ -166,12 +190,12 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
       {config && <PoAConfigCard config={config} />}
 
       {/* Certificates Section */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Renewable Certificates</h4>
-          <Badge variant="outline" className="h-5 text-[9px] font-mono">{certificates.length} Total</Badge>
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">Renewable Certificates</h4>
+          <span className="border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] text-[#888]">{certificates.length} Total</span>
         </div>
-        <Card className="overflow-hidden border-border/60">
+        <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
           <CertificatesTable certificates={certificates} />
         </Card>
       </div>

@@ -3,11 +3,11 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { vi } from 'vitest';
 
-import { Cluster } from '@/app/utils/cluster';
+import { Cluster } from '@/app/(shared)/utils/cluster';
 
 import { VerifiedProgramBadge } from '../VerifiedProgramBadge';
 
-vi.mock('@/app/providers/cluster', () => ({
+vi.mock('@/app/(core)/providers/cluster', () => ({
   useCluster: vi.fn(),
 }));
 vi.mock('@/app/utils/url', () => ({
@@ -15,12 +15,12 @@ vi.mock('@/app/utils/url', () => ({
 }));
 
 // Mock the useIsProgramVerified hook
-vi.mock('@/app/utils/verified-builds', () => ({
+vi.mock('@/app/(shared)/utils/verified-builds', () => ({
   useIsProgramVerified: vi.fn(),
 }));
 
-import { useCluster } from '@/app/providers/cluster';
-import { useIsProgramVerified } from '@/app/utils/verified-builds';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { useIsProgramVerified } from '@/app/(shared)/utils/verified-builds';
 
 const mockProgramData = {
   authority: new PublicKey('11111111111111111111111111111111'),

@@ -1,4 +1,5 @@
 import { SignatureProps } from '@/app/(shared)/utils/index';
+import { TransactionsProvider } from '@/app/(core)/providers/transactions';
 import { Metadata } from 'next/types';
 import React from 'react';
 
@@ -18,5 +19,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TransactionDetailsPage({ params }: Props) {
   const resolvedParams = await params;
-  return <TransactionDetailsPageClient params={resolvedParams} />;
+  return (
+    <TransactionsProvider>
+      <TransactionDetailsPageClient params={resolvedParams} />
+    </TransactionsProvider>
+  );
 }

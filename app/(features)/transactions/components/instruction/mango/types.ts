@@ -74,7 +74,7 @@ export type SerumInstructionType =
   | 'cancelOrderV2'
   | 'settleFundsV2';
 
-export const MANGO_PROGRAM_ID = new PublicKey('3wE1DTnvoXEjo3hSD1HFNYiBQBjMZf6ymZEbD1Q9dB8');
+export const MANGO_PROGRAM_ID = new PublicKey('mv3ekLzLbnVPNxjSKvqBpU3ZeZXPQdEC3bp5MDEBG68');
 
 // Legacy Serum V3 Program ID (DEFUNCT - Security Risk)
 export const LEGACY_SERUM_PROGRAM_ID = new PublicKey('9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin');

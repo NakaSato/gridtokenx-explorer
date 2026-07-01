@@ -10,7 +10,7 @@ import {
 import { fromProgramData } from '../../lib/fromProgramData';
 import { useSecurityTxt } from '../useSecurityTxt';
 
-vi.mock('@/app/providers/cluster', () => ({
+vi.mock('@/app/(core)/providers/cluster', () => ({
   useCluster: vi.fn(() => ({
     cluster: 'mainnet-beta',
     url: 'https://api.mainnet-beta.solana.com',

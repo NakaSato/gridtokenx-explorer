@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
 import {
@@ -153,31 +152,31 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
 
   if (isLoading) {
     return (
-      <div className="space-y-3 pt-2">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-48 w-full" />
+      <div className="space-y-2 bg-black p-2 font-mono">
+        <Skeleton className="h-24 w-full rounded-none bg-[#111]" />
+        <Skeleton className="h-48 w-full rounded-none bg-[#111]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 pt-2">
+    <div className="space-y-2 bg-black p-2 font-mono text-[#e0e0e0]">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-2">
+      <div className="flex flex-col justify-between gap-3 border border-[#2a2a2a] bg-[#111] p-3 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
-            <Database className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <div className="flex h-10 w-10 items-center justify-center bg-[#9945FF]/15">
+            <Database className="h-5 w-5 text-[#9945FF]" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold leading-none">Registry Program</h3>
-            <p className="mt-1 font-mono text-[10px] text-muted-foreground">
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF] leading-none">Registry Program</h3>
+            <p className="mt-1 font-mono text-[9px] tracking-wider text-[#666]">
               {PROGRAMS.registry.id}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={fetchData}>
-            <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+          <Button variant="outline" size="icon" className="h-9 w-9 rounded-none border-[#2a2a2a] bg-[#0a0a0a] hover:bg-[#9945FF]/10" onClick={fetchData}>
+            <RefreshCw className={cn("h-4 w-4 text-[#9945FF]", isLoading && "animate-spin")} />
           </Button>
         </div>
       </div>
@@ -186,25 +185,25 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
       {registry && <RegistryStatsCard registry={registry} />}
 
       <Tabs value={activeView} onValueChange={(v) => setActiveView(v as any)} className="w-full">
-        <div className="flex items-center justify-between mb-4">
-          <TabsList className="grid w-[400px] grid-cols-2 h-9">
-            <TabsTrigger value="users" className="text-xs">User Identities</TabsTrigger>
-            <TabsTrigger value="meters" className="text-xs">Meter Topology</TabsTrigger>
+        <div className="flex items-center justify-between mb-2">
+          <TabsList className="grid w-[400px] grid-cols-2 h-9 rounded-none border border-[#2a2a2a] bg-[#0a0a0a] p-0">
+            <TabsTrigger value="users" className="rounded-none text-[10px] font-bold uppercase tracking-wider data-[state=active]:bg-[#9945FF] data-[state=active]:text-white">User Identities</TabsTrigger>
+            <TabsTrigger value="meters" className="rounded-none text-[10px] font-bold uppercase tracking-wider data-[state=active]:bg-[#9945FF] data-[state=active]:text-white">Meter Topology</TabsTrigger>
           </TabsList>
-          
-          <Badge variant="outline" className="h-6 font-mono text-[10px]">
+
+          <span className="border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-[#888]">
             {activeView === 'users' ? `${users.length} Identities` : `${meters.length} Nodes`}
-          </Badge>
+          </span>
         </div>
 
         <TabsContent value="users" className="mt-0">
-          <Card className="overflow-hidden border-border/60">
+          <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
             <UsersTable users={users} />
           </Card>
         </TabsContent>
 
         <TabsContent value="meters" className="mt-0">
-          <Card className="overflow-hidden border-border/60">
+          <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
             <MetersTable meters={meters} />
           </Card>
         </TabsContent>

@@ -11,6 +11,7 @@ export default function RegistryPage() {
       icon={Database}
       iconColor="blue"
       badgeColor="blue"
+      contentClassName="overflow-hidden p-0"
     >
       {({ rpcUrl, getConnection }) => (
         <RegistryExplorer rpcUrl={rpcUrl} getConnection={getConnection} />

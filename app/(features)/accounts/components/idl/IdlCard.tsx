@@ -8,12 +8,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Eye } from 'react-feather';
 
-import { SolarizedJsonViewer as ReactJson } from '@/app/(shared)/components/common/JsonViewer';
+import { SolarizedJsonViewer as ReactJson } from '@/app/(shared)/components/JsonViewer';
 import { useProgramMetadataIdl } from '@/app/(shared)/entities/program-metadata';
 import { getIdlSpecKeyType } from '@/app/utils/convertLegacyIdl';
 
-import { DownloadableButton } from '../../common/Downloadable';
-import { IDLBadge } from '../../common/IDLBadge';
+import { DownloadableButton } from '@/app/(shared)/components/Downloadable';
+import { IDLBadge } from '@/app/(shared)/components/IDLBadge';
 import { AnchorFormattedIdl, CodamaFormattedIdl } from './formatted-idl/IdlView';
 
 type IdlVariant = 'program-metadata' | 'anchor';

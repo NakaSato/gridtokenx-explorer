@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
 import {
@@ -106,31 +105,31 @@ export function OracleExplorer({ rpcUrl, getConnection }: OracleExplorerProps) {
 
   if (isLoading) {
     return (
-      <div className="space-y-3 pt-2">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-48 w-full" />
+      <div className="space-y-2 bg-black p-2 font-mono">
+        <Skeleton className="h-24 w-full rounded-none bg-[#111]" />
+        <Skeleton className="h-48 w-full rounded-none bg-[#111]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 pt-2">
+    <div className="space-y-2 bg-black p-2 font-mono text-[#e0e0e0]">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-2">
+      <div className="mb-0 flex flex-col justify-between gap-3 border border-[#2a2a2a] bg-[#111] p-3 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-orange-100 p-2 dark:bg-orange-900/30">
-            <Activity className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+          <div className="flex h-10 w-10 items-center justify-center bg-[#9945FF]/15">
+            <Activity className="h-5 w-5 text-[#9945FF]" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold leading-none">Oracle Program</h3>
-            <p className="mt-1 font-mono text-[10px] text-muted-foreground">
-              {PROGRAMS.oracle.id}
-            </p>
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">Oracle Program</h3>
+            <code className="mt-1 inline-block bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] tracking-wider text-[#14F195]">
+              {PROGRAMS.oracle.id.slice(0, 16)}...
+            </code>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={fetchData}>
-            <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+          <Button variant="outline" size="icon" className="h-9 w-9 rounded-none border-[#2a2a2a] bg-[#0a0a0a] hover:bg-[#9945FF]/10" onClick={fetchData}>
+            <RefreshCw className={cn("h-4 w-4 text-[#9945FF]", isLoading && "animate-spin")} />
           </Button>
         </div>
       </div>
@@ -139,29 +138,29 @@ export function OracleExplorer({ rpcUrl, getConnection }: OracleExplorerProps) {
       {oracle && <OracleStatsCard oracle={oracle} />}
 
       {/* Meter States Table */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Active Meter Telemetry</h4>
-          <Badge variant="outline" className="h-5 text-[9px] font-mono">{meters.length} Online</Badge>
+          <h4 className="text-[10px] font-bold uppercase tracking-widest text-[#666]">Active Meter Telemetry</h4>
+          <span className="border border-[#2a2a2a] bg-[#14F195]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#14F195]">{meters.length} Online</span>
         </div>
-        <div className="rounded-xl border border-white/5 bg-navy-900/40 overflow-hidden">
+        <div className="overflow-hidden border border-[#2a2a2a] bg-black">
           <Table>
-            <TableHeader className="bg-navy-900/60">
-              <TableRow className="border-white/5 hover:bg-transparent">
-                <TableHead className="text-[10px] uppercase font-bold text-slate-500">Meter ID</TableHead>
-                <TableHead className="text-right text-[10px] uppercase font-bold text-slate-500">Total Produced</TableHead>
-                <TableHead className="text-right text-[10px] uppercase font-bold text-slate-500">Readings</TableHead>
-                <TableHead className="text-right text-[10px] uppercase font-bold text-slate-500">Last Telemetry</TableHead>
+            <TableHeader className="bg-[#0a0a0a]">
+              <TableRow className="border-[#2a2a2a] hover:bg-transparent">
+                <TableHead className="text-[9px] font-bold uppercase tracking-wider text-[#666]">Meter ID</TableHead>
+                <TableHead className="text-right text-[9px] font-bold uppercase tracking-wider text-[#666]">Total Produced</TableHead>
+                <TableHead className="text-right text-[9px] font-bold uppercase tracking-wider text-[#666]">Readings</TableHead>
+                <TableHead className="text-right text-[9px] font-bold uppercase tracking-wider text-[#666]">Last Telemetry</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {meters.map((m) => (
-                <TableRow key={m.address} className="border-white/5 hover:bg-white/5 transition-colors">
-                  <TableCell className="font-mono text-xs font-bold text-orange-400">{m.meterId}</TableCell>
-                  <TableCell className="text-right text-xs font-bold text-white">{m.produced.toLocaleString()} kWh</TableCell>
-                  <TableCell className="text-right text-xs text-slate-400 font-mono">{m.totalReadings}</TableCell>
+                <TableRow key={m.address} className="border-[#1a1a1a] transition-colors hover:bg-[#9945FF]/5">
+                  <TableCell className="font-mono text-xs font-bold text-[#9945FF]">{m.meterId}</TableCell>
+                  <TableCell className="text-right text-xs font-bold text-[#e0e0e0]">{m.produced.toLocaleString()} kWh</TableCell>
+                  <TableCell className="text-right font-mono text-xs text-[#888]">{m.totalReadings}</TableCell>
                   <TableCell className="text-right">
-                    <span className="text-[10px] text-slate-500 font-medium">
+                    <span className="text-[10px] font-medium text-[#666]">
                       {m.lastReading > 0 ? new Date(m.lastReading * 1000).toLocaleTimeString() : 'Never'}
                     </span>
                   </TableCell>
@@ -169,7 +168,7 @@ export function OracleExplorer({ rpcUrl, getConnection }: OracleExplorerProps) {
               ))}
               {meters.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center text-slate-500 text-xs">
+                  <TableCell colSpan={4} className="h-24 text-center text-xs text-[#555]">
                     No active meter telemetry found.
                   </TableCell>
                 </TableRow>

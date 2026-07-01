@@ -4,12 +4,12 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { vi } from 'vitest';
 
-import { AccountHeader } from '@/app/(shared)/components/account/AccountHeader';
+import { AccountHeader } from '@/app/(features)/accounts/components/AccountHeader';
 import { useSecurityTxt } from '@/app/(features)/security-txt';
 import { createNeodymeSecurityTxt, createPmpSecurityTxt } from '@/app/(features)/security-txt/ui/__tests__/helpers';
 import type { Account, UpgradeableLoaderAccountData } from '@/app/providers/accounts';
 
-vi.mock('@/app/providers/cluster', () => ({
+vi.mock('@/app/(core)/providers/cluster', () => ({
   useCluster: vi.fn(() => ({
     cluster: 'mainnet-beta',
     url: 'https://api.mainnet-beta.solana.com',

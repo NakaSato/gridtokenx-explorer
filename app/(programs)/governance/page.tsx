@@ -8,16 +8,14 @@ import { Shield, Lock } from 'lucide-react';
 export default function GovernancePage() {
   return (
     <ProgramPageLayout
-      title="Governance"
-      description="Proof-of-Authority management, REC certification, and system-wide parameter control for the GridTokenX ecosystem."
       icon={Shield}
       iconColor="green"
-      badgeText="PoA Governance"
       badgeColor="green"
       secondaryLabel="Security Level"
       secondaryValue="Institutional Grade"
       secondaryIcon={Lock}
       secondaryColor="green"
+      contentClassName="overflow-hidden p-0"
     >
       {({ rpcUrl, getConnection }) => (
         <GovernanceExplorer rpcUrl={rpcUrl} getConnection={getConnection} />

@@ -9,9 +9,7 @@ import {
   TableHeader, 
   TableRow 
 } from '@/app/(shared)/components/ui/table';
-import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Gauge, MapPin, Sun, Wind, Battery } from 'lucide-react';
-import { cn } from '@/app/(shared)/utils/cn';
 
 interface MeterData {
   address: string;
@@ -29,59 +27,62 @@ interface MetersTableProps {
 export function MetersTable({ meters }: MetersTableProps) {
   const getMeterIcon = (type: string) => {
     switch (type) {
-      case 'Solar': return <Sun className="h-3.5 w-3.5 text-yellow-500" />;
-      case 'Wind': return <Wind className="h-3.5 w-3.5 text-blue-400" />;
-      case 'Battery': return <Battery className="h-3.5 w-3.5 text-green-500" />;
-      default: return <Gauge className="h-3.5 w-3.5 text-muted-foreground" />;
+      case 'Solar': return <Sun className="h-3.5 w-3.5 text-[#ff8c00]" />;
+      case 'Wind': return <Wind className="h-3.5 w-3.5 text-[#9945FF]" />;
+      case 'Battery': return <Battery className="h-3.5 w-3.5 text-[#14F195]" />;
+      default: return <Gauge className="h-3.5 w-3.5 text-[#666]" />;
     }
   };
 
   return (
-    <Table>
-      <TableHeader className="bg-muted/30">
-        <TableRow>
-          <TableHead className="h-9 text-[10px] uppercase font-bold">Meter ID</TableHead>
-          <TableHead className="h-9 text-[10px] uppercase font-bold">Type</TableHead>
-          <TableHead className="h-9 text-[10px] uppercase font-bold">Status</TableHead>
-          <TableHead className="h-9 text-[10px] uppercase font-bold">Last Reading</TableHead>
-          <TableHead className="h-9 text-[10px] uppercase font-bold text-right">Owner</TableHead>
+    <Table className="font-mono">
+      <TableHeader className="bg-[#0a0a0a]">
+        <TableRow className="border-[#2a2a2a] hover:bg-transparent">
+          <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Meter ID</TableHead>
+          <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Type</TableHead>
+          <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Status</TableHead>
+          <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Last Reading</TableHead>
+          <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666] text-right">Owner</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {meters.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={5} className="h-32 text-center text-muted-foreground text-xs italic">
+          <TableRow className="border-[#1a1a1a]">
+            <TableCell colSpan={5} className="h-32 text-center text-[#555] text-xs italic">
               No meters found in the registry
             </TableCell>
           </TableRow>
         ) : (
           meters.map((meter) => (
-            <TableRow key={meter.address} className="hover:bg-muted/30 transition-colors">
+            <TableRow key={meter.address} className="border-[#1a1a1a] hover:bg-[#9945FF]/5 transition-colors">
               <TableCell className="py-2">
                 <div className="flex items-center gap-2">
-                  <Gauge className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-bold text-xs">{meter.meterId}</span>
+                  <Gauge className="h-3.5 w-3.5 text-[#666]" />
+                  <span className="font-bold text-xs text-[#e0e0e0]">{meter.meterId}</span>
                 </div>
               </TableCell>
               <TableCell className="py-2">
                 <div className="flex items-center gap-1.5">
                   {getMeterIcon(meter.meterType)}
-                  <span className="text-[11px] font-medium">{meter.meterType}</span>
+                  <span className="text-[11px] font-medium text-[#e0e0e0]">{meter.meterType}</span>
                 </div>
               </TableCell>
               <TableCell className="py-2">
-                <Badge variant={meter.isActive ? 'default' : 'secondary'} className={cn(
-                  "text-[9px] h-4.5 px-1.5",
-                  meter.isActive ? "bg-green-100 text-green-800 hover:bg-green-200" : ""
-                )}>
-                  {meter.isActive ? 'ACTIVE' : 'INACTIVE'}
-                </Badge>
+                {meter.isActive ? (
+                  <span className="bg-[#14F195]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#14F195]">
+                    ACTIVE
+                  </span>
+                ) : (
+                  <span className="bg-[#ff3333]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#ff5555]">
+                    INACTIVE
+                  </span>
+                )}
               </TableCell>
-              <TableCell className="py-2 font-mono text-xs font-bold text-blue-600">
-                {meter.lastReading.toLocaleString()} <span className="text-[9px] font-normal text-muted-foreground">kWh</span>
+              <TableCell className="py-2 font-mono text-xs font-bold text-[#14F195]">
+                {meter.lastReading.toLocaleString()} <span className="text-[9px] font-normal text-[#666]">kWh</span>
               </TableCell>
               <TableCell className="py-2 text-right">
-                <span className="font-mono text-[9px] text-muted-foreground" title={meter.owner}>
+                <span className="font-mono text-[9px] bg-[#0a0a0a] px-1.5 py-0.5 text-[#888]" title={meter.owner}>
                   {meter.owner.slice(0, 8)}...
                 </span>
               </TableCell>

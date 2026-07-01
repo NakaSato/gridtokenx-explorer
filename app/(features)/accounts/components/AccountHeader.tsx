@@ -1,7 +1,7 @@
 import { CompressedNftAccountHeader } from '@/app/(shared)/components/account/CompressedNftCard';
-import { MetaplexNFTHeader } from '@/app/(shared)/components/account/MetaplexNFTHeader';
+import { MetaplexNFTHeader } from './MetaplexNFTHeader';
 import { isNFTokenAccount } from '@/app/(shared)/components/account/nftoken/isNFTokenAccount';
-import { NFTokenAccountHeader } from '@/app/(shared)/components/account/nftoken/NFTokenAccountHeader';
+import { NFTokenAccountHeader } from './nftoken/NFTokenAccountHeader';
 import {
   Account,
   isTokenProgramData,
@@ -18,7 +18,7 @@ import React, { Suspense, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { create } from 'superstruct';
 
-import { ProgramHeader } from '@/app/(shared)/components/shared/account/ProgramHeader';
+import { ProgramHeader } from '@/app/(shared)/components/account/ProgramHeader';
 import { getProxiedUri } from '@/app/(features)/metadata/utils';
 import TokenLogoPlaceholder from '@/app/(shared)/img/logos-solana/low-contrast-solana-logo.svg';
 import { type FullTokenInfo, isRedactedTokenAddress } from '@/app/(shared)/utils/token-info';

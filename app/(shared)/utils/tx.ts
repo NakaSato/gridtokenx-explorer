@@ -133,8 +133,20 @@ export function intoTransactionInstruction(
     });
   }
 
+  // `data` is base58 per the web3.js v1 type, but the kit-based RPC parser can
+  // hand back raw bytes (Uint8Array/Buffer) or undefined — guard before decoding.
+  const rawData = instruction.data as unknown;
+  let data: Buffer;
+  if (typeof rawData === 'string') {
+    data = Buffer.from(bs58.decode(rawData));
+  } else if (rawData instanceof Uint8Array || Array.isArray(rawData)) {
+    data = Buffer.from(rawData as Uint8Array);
+  } else {
+    data = Buffer.alloc(0);
+  }
+
   return {
-    data: Buffer.from(bs58.decode(instruction.data)),
+    data,
     keys: keys,
     programId: instruction.programId,
   };

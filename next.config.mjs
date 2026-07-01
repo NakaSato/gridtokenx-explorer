@@ -12,6 +12,8 @@ const SUPPLY_ALIASES = ['accounts', 'accounts/top'];
 const nextConfig = {
   // Enable standalone output for Docker
   output: 'standalone',
+  // Pin workspace root — multiple lockfiles exist (superproject + this submodule)
+  outputFileTracingRoot: __dirname,
   // Skip TypeScript checks temporarily for build
   typescript: {
     ignoreBuildErrors: true,

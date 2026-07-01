@@ -19,6 +19,7 @@ interface ProgramPageLayoutProps {
   secondaryValue?: React.ReactNode;
   secondaryIcon?: LucideIcon;
   secondaryColor?: string;
+  contentClassName?: string;
   children: (props: { rpcUrl: string; getConnection: () => Connection }) => React.ReactNode;
 }
 
@@ -33,6 +34,7 @@ export function ProgramPageLayout({
   secondaryValue,
   secondaryIcon: SecondaryIcon,
   secondaryColor = 'primary',
+  contentClassName = 'rounded-3xl border border-white/5 bg-navy-800/20 backdrop-blur-sm overflow-hidden shadow-2xl p-8',
   children,
 }: ProgramPageLayoutProps) {
   const { cluster, url } = useCluster();
@@ -110,7 +112,7 @@ export function ProgramPageLayout({
 
         {/* Main Content Area */}
         <div className="space-y-8">
-           <div className="rounded-3xl border border-white/5 bg-navy-800/20 backdrop-blur-sm overflow-hidden shadow-2xl p-8">
+           <div className={contentClassName}>
               {children({ rpcUrl: url, getConnection })}
            </div>
         </div>

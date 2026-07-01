@@ -2,7 +2,7 @@ import { SOLANA_ERROR__ACCOUNTS__ACCOUNT_NOT_FOUND, SolanaError } from '@solana/
 import { PublicKey } from '@solana/web3.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { Cluster } from '@/app/utils/cluster';
+import { Cluster } from '@/app/(shared)/utils/cluster';
 import Logger from '@/app/(shared)/utils/logger';
 
 vi.mock('@/app/(shared)/entities/program-metadata/api/getProgramCanonicalMetadata', async () => {

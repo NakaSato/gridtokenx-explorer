@@ -1,32 +1,34 @@
 # syntax=docker/dockerfile:1
-# Use imbios/bun-node as base image
-FROM imbios/bun-node AS base
 
-# Install dependencies only when needed
+# Pinned bun+node base for reproducible builds.
+FROM imbios/bun-node:1.3.14-20.20.2-slim AS base
+
+# ---- Dependencies ----
 FROM base AS deps
 WORKDIR /app
 
-# Install dependencies using bun with cache mount
+# Install dependencies with cache mount, honoring the lockfile.
 COPY package.json bun.lock* ./
 RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bun install
+    bun install --frozen-lockfile
 
-# Rebuild the source code only when needed
+# ---- Builder ----
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Add build arguments for Next.js public variables
+# Next.js public build args.
 ARG NEXT_PUBLIC_SOLANA_RPC_HTTP
 ARG NEXT_PUBLIC_DEFAULT_CLUSTER
 ENV NEXT_PUBLIC_SOLANA_RPC_HTTP=$NEXT_PUBLIC_SOLANA_RPC_HTTP \
     NEXT_PUBLIC_DEFAULT_CLUSTER=$NEXT_PUBLIC_DEFAULT_CLUSTER \
     NEXT_TELEMETRY_DISABLED=1
 
-RUN bun run build
+RUN --mount=type=cache,target=/app/.next/cache \
+    bun run build
 
-# Production image, copy all the files and run next
+# ---- Runner ----
 FROM base AS runner
 WORKDIR /app
 
@@ -35,19 +37,17 @@ ENV NODE_ENV=production \
     PORT=4000 \
     HOSTNAME="0.0.0.0"
 
-RUN <<EOT
-    addgroup --system --gid 1001 nodejs || true
-    adduser --system --uid 1001 nextjs || true
-    mkdir .next
-EOT
+# Reuse the base image's built-in non-root `node` user (uid 1000).
+RUN mkdir -p .next && chown -R node:node /app
 
-COPY --from=builder /app/public ./public
+# Standalone output already includes the minimal node_modules subset.
+COPY --from=builder --chown=node:node /app/public ./public
+COPY --from=builder --chown=node:node /app/.next/standalone ./
+COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 
-# Automatically leverage output traces to reduce image size
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+USER node
 
 EXPOSE 4000
 
-# server.js is created by next build from the standalone output
+# server.js is emitted by `next build` standalone output.
 CMD ["node", "server.js"]

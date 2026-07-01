@@ -8,8 +8,6 @@ import { Radio, Server } from 'lucide-react';
 export default function OraclePage() {
   return (
     <ProgramPageLayout
-      title="Oracle Bridge"
-      description="Real-time telemetry ingestion and cryptographic validation of smart meter data for grid settlement."
       icon={Radio}
       iconColor="orange"
       badgeText="IoT Telemetry"
@@ -18,6 +16,7 @@ export default function OraclePage() {
       secondaryValue="Validator Active"
       secondaryIcon={Server}
       secondaryColor="orange"
+      contentClassName="overflow-hidden p-0"
     >
       {({ rpcUrl, getConnection }) => (
         <OracleExplorer rpcUrl={rpcUrl} getConnection={getConnection} />

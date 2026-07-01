@@ -2,15 +2,12 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
-import { Badge } from '@/app/(shared)/components/ui/badge';
 import {
   Zap,
   TrendingUp,
   TrendingDown,
   History,
   ListFilter,
-  Wifi,
-  WifiOff,
   Loader2,
   AlertTriangle,
   Inbox,
@@ -218,7 +215,6 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
     [series],
   );
 
-  const isConnected = !error;
   const rpcHost = useMemo(() => {
     try {
       return new URL(rpcUrl).host;
@@ -230,62 +226,61 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
   // First-load skeleton — only before we have any data at all.
   if (isLoading && !market && bids.length === 0 && asks.length === 0 && !error) {
     return (
-      <div className="flex h-[800px] flex-col items-center justify-center gap-3 bg-background/50 text-muted-foreground">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm font-medium">Connecting to {rpcHost}…</p>
+      <div className="flex h-[800px] flex-col items-center justify-center gap-3 bg-black font-mono text-[#9945FF]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <p className="text-xs uppercase tracking-widest">Connecting to {rpcHost}…</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      {/* Connection status bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 bg-card/40 px-4 py-2 backdrop-blur-md">
+    <div className="space-y-1 bg-black p-1 font-mono text-[#e0e0e0]">
+      {/* Function bar — Bloomberg-style amber header strip */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border border-[#2a2a2a] bg-[#111] px-3 py-1.5">
         <div className="flex items-center gap-2">
-          {isConnected ? (
-            <Wifi className="h-3.5 w-3.5 text-green-500" />
-          ) : (
-            <WifiOff className="h-3.5 w-3.5 text-red-500" />
-          )}
-          <span className="text-[11px] font-bold uppercase tracking-wider">
-            {isConnected ? 'Live' : 'Disconnected'}
+          <span className="bg-[#9945FF] px-1.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-black">
+            GRX/THB
           </span>
-          <span className="font-mono text-[11px] text-muted-foreground">{rpcHost}</span>
+          <span className="text-[10px] uppercase tracking-widest text-[#9945FF]">Energy Trading Terminal</span>
         </div>
-        <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-4 text-[10px] uppercase tracking-wider text-[#888]">
           <span>
-            <span className="font-bold text-foreground">{market?.activeOrders ?? 0}</span> active orders
+            <span className="font-bold text-[#9945FF]">{market?.activeOrders ?? 0}</span> ORD
           </span>
           <span>
-            <span className="font-bold text-foreground">{zoneCount}</span> zones
+            <span className="font-bold text-[#9945FF]">{zoneCount}</span> ZONES
           </span>
           <span>
-            <span className="font-bold text-foreground">{trades.length}</span> trades
+            <span className="font-bold text-[#9945FF]">{trades.length}</span> TRD
           </span>
-          {lastUpdated && <span>Updated {new Date(lastUpdated).toLocaleTimeString()}</span>}
+          {lastUpdated && (
+            <span className="text-[#14F195]">
+              ● {new Date(lastUpdated).toLocaleTimeString()}
+            </span>
+          )}
         </div>
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs text-red-400">
-          <AlertTriangle className="h-4 w-4 shrink-0" />
+        <div className="flex items-center gap-2 border border-[#ff3333]/40 bg-[#ff3333]/10 px-3 py-1.5 text-[10px] uppercase tracking-wide text-[#ff5555]">
+          <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
           <span>
-            RPC error: {error}. Ensure a validator is running at{' '}
-            <span className="font-mono">{rpcHost}</span>. Retrying every 3s…
+            RPC ERROR: {error}. Validator expected at{' '}
+            <span className="text-[#9945FF]">{rpcHost}</span>. Retrying 3s…
           </span>
         </div>
       )}
 
-      <div className="grid h-[800px] grid-cols-12 gap-4 bg-background/50 p-2">
+      <div className="grid h-[800px] grid-cols-12 gap-1 bg-black">
         {/* Left: Order Book (3 cols) */}
-        <Card className="col-span-12 flex flex-col border-border/60 bg-card/40 backdrop-blur-md lg:col-span-3">
-          <CardHeader className="border-b px-4 py-3">
-            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
-              <ListFilter className="h-3.5 w-3.5 text-primary" /> Order Book
+        <Card className="col-span-12 flex flex-col rounded-none border-[#2a2a2a] bg-black lg:col-span-3">
+          <CardHeader className="border-b border-[#2a2a2a] bg-[#111] px-3 py-1.5">
+            <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#9945FF]">
+              <ListFilter className="h-3 w-3" /> Order Book
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col overflow-hidden p-0">
-            <div className="grid grid-cols-3 border-b bg-muted/20 px-4 py-2 text-[10px] font-bold uppercase text-muted-foreground">
+            <div className="grid grid-cols-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-[#666]">
               <span>Price</span>
               <span className="text-right">Amount</span>
               <span className="text-right">Total</span>
@@ -299,7 +294,7 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
                 <div className="flex flex-1 flex-col-reverse overflow-y-auto">
                   {asks.slice(0, 15).reverse().map((order) => (
                     <OrderBookRow
-                      key={order.address}
+                      key={`ask-${order.price}`}
                       price={order.price}
                       amount={order.amount}
                       type="sell"
@@ -309,9 +304,9 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
                 </div>
 
                 {/* Spread */}
-                <div className="flex items-center justify-between border-y bg-muted/30 px-4 py-1.5">
-                  <span className="text-[10px] font-bold uppercase text-muted-foreground">Spread</span>
-                  <span className="font-mono text-xs font-bold text-primary">
+                <div className="flex items-center justify-between border-y border-[#2a2a2a] bg-[#111] px-3 py-1">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#666]">Spread</span>
+                  <span className="text-[11px] font-bold text-[#9945FF]">
                     {spread !== null ? `${spread.toLocaleString()} THB` : '—'}
                   </span>
                 </div>
@@ -320,7 +315,7 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
                 <div className="flex-1 overflow-y-auto">
                   {bids.slice(0, 15).map((order) => (
                     <OrderBookRow
-                      key={order.address}
+                      key={`bid-${order.price}`}
                       price={order.price}
                       amount={order.amount}
                       type="buy"
@@ -334,29 +329,26 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
         </Card>
 
         {/* Middle: Chart & History (6 cols) */}
-        <div className="col-span-12 flex flex-col gap-4 lg:col-span-6">
+        <div className="col-span-12 flex flex-col gap-1 lg:col-span-6">
           {/* Chart Card */}
-          <Card className="flex flex-1 flex-col overflow-hidden border-border/60 bg-card/40 backdrop-blur-md">
-            <CardHeader className="flex flex-row items-center justify-between border-b px-4 py-3">
-              <div className="flex items-center gap-3">
-                <Zap className="h-4 w-4 text-yellow-500" />
-                <h3 className="text-sm font-bold">GRX/THB Price Action</h3>
+          <Card className="flex flex-1 flex-col overflow-hidden rounded-none border-[#2a2a2a] bg-black">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-[#2a2a2a] bg-[#111] px-3 py-1.5">
+              <div className="flex items-center gap-2">
+                <Zap className="h-3.5 w-3.5 text-[#9945FF]" />
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">GRX/THB Price Action</h3>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <p className="text-[9px] font-bold uppercase text-muted-foreground">Last Price</p>
-                  <p className="font-mono text-sm font-black leading-none text-yellow-600">
-                    {lastPrice.toLocaleString()} <span className="text-[10px]">THB</span>
+                  <p className="text-[8px] font-bold uppercase tracking-wider text-[#666]">Last</p>
+                  <p className="text-sm font-black leading-none text-[#9945FF]">
+                    {lastPrice.toLocaleString()} <span className="text-[9px]">THB</span>
                   </p>
                 </div>
                 {priceChangePct !== null && (
-                  <Badge
-                    variant="outline"
+                  <span
                     className={cn(
-                      'gap-1 text-[9px]',
-                      priceChangePct >= 0
-                        ? 'border-green-200 bg-green-50 text-green-600'
-                        : 'border-red-200 bg-red-50 text-red-600',
+                      'flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-black',
+                      priceChangePct >= 0 ? 'bg-[#14F195]/15 text-[#14F195]' : 'bg-[#ff3333]/15 text-[#ff5555]',
                     )}
                   >
                     {priceChangePct >= 0 ? (
@@ -366,11 +358,11 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
                     )}
                     {priceChangePct >= 0 ? '+' : ''}
                     {priceChangePct.toFixed(2)}%
-                  </Badge>
+                  </span>
                 )}
               </div>
             </CardHeader>
-            <CardContent className="relative flex-1 bg-gradient-to-b from-primary/5 to-transparent p-0">
+            <CardContent className="relative flex-1 bg-black p-0">
               {chartData.length === 0 ? (
                 <EmptyState label="No price history on-chain yet" icon={TrendingUp} />
               ) : (
@@ -378,49 +370,52 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
                   <AreaChart data={chartData} margin={{ top: 16, right: 16, bottom: 8, left: 8 }}>
                     <defs>
                       <linearGradient id="terminalPrice" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#eab308" stopOpacity={0.35} />
-                        <stop offset="95%" stopColor="#eab308" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#9945FF" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#9945FF" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                    <CartesianGrid strokeDasharray="2 4" stroke="#ffffff0d" vertical={false} />
                     <XAxis
                       dataKey="label"
-                      stroke="#888888"
-                      fontSize={10}
+                      stroke="#555"
+                      fontSize={9}
                       tickLine={false}
-                      axisLine={false}
+                      axisLine={{ stroke: '#2a2a2a' }}
                       minTickGap={24}
                     />
                     <YAxis
-                      stroke="#888888"
-                      fontSize={10}
+                      stroke="#555"
+                      fontSize={9}
                       tickLine={false}
                       axisLine={false}
                       width={48}
                       tickFormatter={(v: number) => v.toLocaleString()}
                       domain={['auto', 'auto']}
+                      orientation="right"
                     />
                     <Tooltip
                       contentStyle={{
-                        background: '#0f172a',
-                        border: '1px solid #ffffff20',
-                        borderRadius: 8,
-                        fontSize: 11,
+                        background: '#000',
+                        border: '1px solid #9945FF',
+                        borderRadius: 0,
+                        fontSize: 10,
+                        fontFamily: 'monospace',
                       }}
-                      labelStyle={{ color: '#94a3b8' }}
+                      labelStyle={{ color: '#9945FF' }}
+                      itemStyle={{ color: '#e0e0e0' }}
                       formatter={(value: number, name: string) => [
                         `${value.toLocaleString()} ${name === 'price' ? 'THB' : 'kWh'}`,
                         name === 'price' ? 'Price' : 'Volume',
                       ]}
                     />
                     <Area
-                      type="monotone"
+                      type="stepAfter"
                       dataKey="price"
-                      stroke="#eab308"
-                      strokeWidth={2}
+                      stroke="#9945FF"
+                      strokeWidth={1.5}
                       fillOpacity={1}
                       fill="url(#terminalPrice)"
-                      animationDuration={500}
+                      animationDuration={300}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -429,37 +424,37 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
           </Card>
 
           {/* Trade History */}
-          <Card className="h-1/3 border-border/60 bg-card/40 backdrop-blur-md">
-            <CardHeader className="border-b px-4 py-2">
-              <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
+          <Card className="h-1/3 rounded-none border-[#2a2a2a] bg-black">
+            <CardHeader className="border-b border-[#2a2a2a] bg-[#111] px-3 py-1.5">
+              <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#9945FF]">
                 <History className="h-3 w-3" /> Recent Settlements
               </CardTitle>
             </CardHeader>
-            <CardContent className="h-[calc(100%-35px)] overflow-y-auto p-0">
+            <CardContent className="h-[calc(100%-32px)] overflow-y-auto p-0">
               {trades.length === 0 ? (
                 <EmptyState label="No settlements yet" />
               ) : (
                 <table className="w-full text-left">
-                  <thead className="sticky top-0 bg-muted/20 text-[9px] uppercase text-muted-foreground backdrop-blur-sm">
+                  <thead className="sticky top-0 bg-[#0a0a0a] text-[9px] uppercase tracking-wider text-[#666]">
                     <tr>
-                      <th className="px-4 py-1.5 font-bold">Time</th>
-                      <th className="px-4 py-1.5 font-bold">Price</th>
-                      <th className="px-4 py-1.5 text-right font-bold">Amount</th>
+                      <th className="px-3 py-1 font-bold">Time</th>
+                      <th className="px-3 py-1 font-bold">Price</th>
+                      <th className="px-3 py-1 text-right font-bold">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="text-[10px] font-mono">
+                  <tbody className="text-[10px]">
                     {trades.slice(0, 20).map((trade) => (
                       <tr
                         key={trade.address}
-                        className="border-b border-border/20 transition-colors hover:bg-muted/10"
+                        className="border-b border-[#1a1a1a] transition-colors hover:bg-[#9945FF]/5"
                       >
-                        <td className="px-4 py-1.5 text-muted-foreground">
+                        <td className="px-3 py-0.5 text-[#888]">
                           {new Date(trade.time * 1000).toLocaleTimeString()}
                         </td>
-                        <td className="px-4 py-1.5 font-bold text-yellow-600">
+                        <td className="px-3 py-0.5 font-bold text-[#9945FF]">
                           {trade.price.toLocaleString()} THB
                         </td>
-                        <td className="px-4 py-1.5 text-right font-bold">
+                        <td className="px-3 py-0.5 text-right font-bold text-[#e0e0e0]">
                           {trade.amount.toLocaleString()} kWh
                         </td>
                       </tr>
@@ -507,29 +502,29 @@ function OrderEntry({
   activeOrders: number;
 }) {
   return (
-    <Card className="col-span-12 border-border/60 bg-card/40 backdrop-blur-md lg:col-span-3">
-      <CardHeader className="border-b px-4 py-3">
-        <CardTitle className="text-xs font-bold uppercase tracking-widest">Market Overview</CardTitle>
+    <Card className="col-span-12 rounded-none border-[#2a2a2a] bg-black font-mono lg:col-span-3">
+      <CardHeader className="border-b border-[#2a2a2a] bg-[#111] px-3 py-1.5">
+        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-[#9945FF]">
+          Market Overview
+        </CardTitle>
       </CardHeader>
-      <CardContent className="p-4">
-        <div className="space-y-3">
-          <MiniStat label="Total Volume" value={`${totalVolume.toLocaleString()} kWh`} />
-          <MiniStat label="Total Trades" value={totalTrades.toLocaleString()} />
-          <MiniStat label="Active Orders" value={activeOrders.toLocaleString()} />
-          <MiniStat label="VWAP" value={vwap ? `${vwap.toLocaleString()} THB` : '—'} />
-          <MiniStat label="Market Fee" value={`${(feeBps / 100).toFixed(2)} %`} />
-          <MiniStat
-            label="Best Bid"
-            value={bestBid !== null ? `${bestBid.toLocaleString()} THB` : '—'}
-            color="text-green-500"
-          />
-          <MiniStat
-            label="Best Ask"
-            value={bestAsk !== null ? `${bestAsk.toLocaleString()} THB` : '—'}
-            color="text-red-500"
-          />
-          <MiniStat label="Spread" value={spread !== null ? `${spread.toLocaleString()} THB` : '—'} />
-        </div>
+      <CardContent className="p-0">
+        <MiniStat label="Total Volume" value={`${totalVolume.toLocaleString()} kWh`} />
+        <MiniStat label="Total Trades" value={totalTrades.toLocaleString()} />
+        <MiniStat label="Active Orders" value={activeOrders.toLocaleString()} />
+        <MiniStat label="VWAP" value={vwap ? `${vwap.toLocaleString()} THB` : '—'} />
+        <MiniStat label="Market Fee" value={`${(feeBps / 100).toFixed(2)} %`} />
+        <MiniStat
+          label="Best Bid"
+          value={bestBid !== null ? `${bestBid.toLocaleString()} THB` : '—'}
+          color="text-[#14F195]"
+        />
+        <MiniStat
+          label="Best Ask"
+          value={bestAsk !== null ? `${bestAsk.toLocaleString()} THB` : '—'}
+          color="text-[#ff5555]"
+        />
+        <MiniStat label="Spread" value={spread !== null ? `${spread.toLocaleString()} THB` : '—'} />
       </CardContent>
     </Card>
   );
@@ -537,9 +532,9 @@ function OrderEntry({
 
 function EmptyState({ label, icon: Icon = Inbox }: { label: string; icon?: React.ElementType }) {
   return (
-    <div className="flex h-full min-h-[120px] flex-1 flex-col items-center justify-center gap-2 p-4 text-center text-muted-foreground">
+    <div className="flex h-full min-h-[120px] flex-1 flex-col items-center justify-center gap-2 p-4 text-center font-mono text-[#555]">
       <Icon className="h-6 w-6 opacity-40" />
-      <p className="text-[11px] font-medium">{label}</p>
+      <p className="text-[10px] uppercase tracking-wider">{label}</p>
     </div>
   );
 }
@@ -559,17 +554,17 @@ function OrderBookRow({
   const isBuy = type === 'buy';
 
   return (
-    <div className="group relative cursor-pointer hover:bg-muted/10">
+    <div className="group relative cursor-pointer hover:bg-[#9945FF]/5">
       <div
-        className={cn('absolute inset-y-0 right-0 opacity-10 transition-all', isBuy ? 'bg-green-500' : 'bg-red-500')}
+        className={cn('absolute inset-y-0 right-0 opacity-20 transition-all', isBuy ? 'bg-[#14F195]' : 'bg-[#ff3333]')}
         style={{ width: `${width}%` }}
       />
-      <div className="relative z-10 grid grid-cols-3 px-4 py-1 font-mono text-[10px]">
-        <span className={cn('font-bold', isBuy ? 'text-green-500' : 'text-red-500')}>
+      <div className="relative z-10 grid grid-cols-3 px-3 py-0.5 text-[10px]">
+        <span className={cn('font-bold', isBuy ? 'text-[#14F195]' : 'text-[#ff5555]')}>
           {price.toLocaleString()}
         </span>
-        <span className="text-right font-medium">{amount.toLocaleString()}</span>
-        <span className="text-right text-muted-foreground">{(price * amount).toLocaleString()}</span>
+        <span className="text-right text-[#e0e0e0]">{amount.toLocaleString()}</span>
+        <span className="text-right text-[#888]">{(price * amount).toLocaleString()}</span>
       </div>
     </div>
   );
@@ -577,9 +572,9 @@ function OrderBookRow({
 
 function MiniStat({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-[10px] text-muted-foreground">{label}</span>
-      <span className={cn('font-mono text-[10px] font-bold', color)}>{value}</span>
+    <div className="flex items-center justify-between border-b border-[#1a1a1a] px-3 py-1.5">
+      <span className="text-[10px] uppercase tracking-wider text-[#666]">{label}</span>
+      <span className={cn('text-[10px] font-bold text-[#e0e0e0]', color)}>{value}</span>
     </div>
   );
 }

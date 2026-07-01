@@ -18,6 +18,7 @@ export default function TreasuryPage() {
       secondaryValue="Attested On-Chain"
       secondaryIcon={ShieldCheck}
       secondaryColor="green"
+      contentClassName="overflow-hidden p-0"
     >
       {({ rpcUrl, getConnection }) => (
         <TreasuryExplorer rpcUrl={rpcUrl} getConnection={getConnection} />

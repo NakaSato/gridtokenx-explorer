@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
 import { RefreshCw, Zap, Plus, TrendingUp, ShoppingCart, ArrowUpDown, Database } from 'lucide-react';
@@ -33,122 +32,112 @@ export function TradingExplorer({ rpcUrl, getConnection }: TradingExplorerProps)
 
   if (isLoading) {
     return (
-      <div className="space-y-4 pt-4">
+      <div className="space-y-2 bg-black p-2 font-mono">
         <div className="flex justify-between">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-8 w-48 rounded-none bg-[#1a1a1a]" />
+          <Skeleton className="h-8 w-24 rounded-none bg-[#1a1a1a]" />
         </div>
-        <Skeleton className="h-[200px] w-full rounded-xl" />
-        <Skeleton className="h-[400px] w-full rounded-xl" />
+        <Skeleton className="h-[200px] w-full rounded-none bg-[#1a1a1a]" />
+        <Skeleton className="h-[400px] w-full rounded-none bg-[#1a1a1a]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 pt-4 pb-12">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-gradient-to-r from-primary/10 via-background to-background p-6 border border-primary/10 shadow-sm backdrop-blur-md">
+    <div className="space-y-2 bg-black p-2 font-mono text-[#e0e0e0]">
+      {/* Header — function bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-[#2a2a2a] bg-[#111] px-3 py-2">
         <div>
-          <h3 className="text-xl font-bold flex items-center gap-2 text-foreground">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 text-primary shadow-inner">
-              <Zap className="h-5 w-5" />
-            </div>
+          <h3 className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">
+            <Zap className="h-3.5 w-3.5" />
             Trading Program Dashboard
           </h3>
-          <div className="mt-2 text-xs text-muted-foreground flex items-center gap-2">
-            Program ID: 
-            <Badge variant="outline" className="font-mono text-[10px] tracking-widest bg-background/50">
+          <div className="mt-1.5 flex items-center gap-2 text-[9px] uppercase tracking-wider text-[#666]">
+            Program ID:
+            <span className="bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] tracking-widest text-[#14F195]">
               {PROGRAMS.trading.id}
-            </Badge>
+            </span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Button
             size="sm"
-            className="h-10 px-4 shadow-md hover:shadow-lg transition-all"
+            className="h-8 rounded-none bg-[#9945FF] px-3 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#7d37d6]"
             onClick={() => setShowPlaceOrder(true)}
           >
-            <Plus className="mr-2 h-4 w-4" /> Place Order
+            <Plus className="mr-1.5 h-3.5 w-3.5" /> Place Order
           </Button>
-          <Button variant="outline" size="icon" className="h-10 w-10 border-primary/20 bg-background/50 backdrop-blur-sm" onClick={fetchData}>
-            <RefreshCw className="h-4 w-4 text-primary" />
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 rounded-none border-[#2a2a2a] bg-[#0a0a0a] hover:bg-[#9945FF]/10"
+            onClick={fetchData}
+          >
+            <RefreshCw className="h-3.5 w-3.5 text-[#9945FF]" />
           </Button>
         </div>
       </div>
 
       {/* Main Grid Layout */}
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid gap-2 lg:grid-cols-3">
         {/* Left Column: Market & Cost */}
-        <div className="space-y-8 lg:col-span-1">
+        <div className="space-y-2 lg:col-span-1">
           <MarketStateCard market={market} />
-          
+
           {/* Instructions reference */}
-          <div className="rounded-xl border border-primary/10 bg-muted/10 p-5 backdrop-blur-sm">
-            <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Available Instructions</h4>
-            <div className="flex flex-wrap gap-2">
+          <div className="border border-[#2a2a2a] bg-black p-3">
+            <h4 className="mb-2 text-[9px] font-bold uppercase tracking-widest text-[#9945FF]">Available Instructions</h4>
+            <div className="flex flex-wrap gap-1.5">
               {PROGRAMS.trading.instructions.map((ix) => (
-                <Badge key={ix} variant="secondary" className="font-mono text-[9px] hover:bg-primary/20 transition-colors">
+                <span key={ix} className="border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[9px] text-[#888] transition-colors hover:border-[#9945FF]/50 hover:text-[#14F195]">
                   {ix}
-                </Badge>
+                </span>
               ))}
             </div>
           </div>
         </div>
 
         {/* Right Column: Tabbed Data Views */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="flex flex-wrap gap-2 p-1 bg-muted/30 rounded-xl w-fit backdrop-blur-sm">
-            <Button
-              variant={activeView === 'market' ? 'default' : 'ghost'}
-              size="sm"
-              className={`rounded-lg transition-all ${activeView === 'market' ? 'shadow-sm' : ''}`}
-              onClick={() => setActiveView('market')}
-            >
-              <TrendingUp className="mr-2 h-4 w-4" /> Overview
-            </Button>
-            <Button
-              variant={activeView === 'orders' ? 'default' : 'ghost'}
-              size="sm"
-              className={`rounded-lg transition-all ${activeView === 'orders' ? 'shadow-sm' : ''}`}
-              onClick={() => setActiveView('orders')}
-            >
-              <ShoppingCart className="mr-2 h-4 w-4" /> Orders 
-              <Badge variant="secondary" className="ml-2 bg-background/50 text-[10px]">{orders.length}</Badge>
-            </Button>
-            <Button
-              variant={activeView === 'trades' ? 'default' : 'ghost'}
-              size="sm"
-              className={`rounded-lg transition-all ${activeView === 'trades' ? 'shadow-sm' : ''}`}
-              onClick={() => setActiveView('trades')}
-            >
-              <ArrowUpDown className="mr-2 h-4 w-4" /> Trades
-              <Badge variant="secondary" className="ml-2 bg-background/50 text-[10px]">{trades.length}</Badge>
-            </Button>
-            <Button
-              variant={activeView === 'settlement' ? 'default' : 'ghost'}
-              size="sm"
-              className={`rounded-lg transition-all ${activeView === 'settlement' ? 'shadow-sm' : ''}`}
-              onClick={() => setActiveView('settlement')}
-            >
-              <Database className="mr-2 h-4 w-4" /> Settlements
-            </Button>
+        <div className="space-y-2 lg:col-span-2">
+          <div className="flex w-fit flex-wrap border border-[#2a2a2a] bg-[#111]">
+            {([
+              ['market', 'Overview', TrendingUp, null],
+              ['orders', 'Orders', ShoppingCart, orders.length],
+              ['trades', 'Trades', ArrowUpDown, trades.length],
+              ['settlement', 'Settlements', Database, null],
+            ] as const).map(([view, label, Icon, count]) => (
+              <button
+                key={view}
+                onClick={() => setActiveView(view)}
+                className={`flex items-center gap-1.5 border-r border-[#2a2a2a] px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors last:border-r-0 ${
+                  activeView === view ? 'bg-[#9945FF] text-white' : 'text-[#888] hover:text-[#e0e0e0]'
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" /> {label}
+                {count !== null && (
+                  <span className={`px-1 text-[9px] ${activeView === view ? 'text-white/80' : 'text-[#14F195]'}`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
 
           <div className="min-h-[400px]">
             {activeView === 'market' && (
-              <div className="flex flex-col items-center justify-center h-full rounded-xl border border-dashed p-12 text-center text-muted-foreground bg-background/50 backdrop-blur-sm">
-                <TrendingUp className="mb-4 h-12 w-12 opacity-20 text-primary" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">Market Overview</h3>
-                <p className="text-sm max-w-sm">
+              <div className="flex h-full flex-col items-center justify-center border border-dashed border-[#2a2a2a] bg-black p-12 text-center text-[#555]">
+                <TrendingUp className="mb-4 h-12 w-12 text-[#9945FF] opacity-30" />
+                <h3 className="mb-2 text-sm font-bold uppercase tracking-widest text-[#9945FF]">Market Overview</h3>
+                <p className="max-w-sm text-[11px] uppercase tracking-wide text-[#666]">
                   Select a tab above to view active orders, recent trade history, or settlement operations. The market state is always visible on the left.
                 </p>
               </div>
             )}
-            
+
             {activeView === 'orders' && <OrdersList orders={orders} />}
-            
+
             {activeView === 'trades' && <TradesList trades={trades} />}
-            
+
             {activeView === 'settlement' && (
               <SettlementStats stats={settlementStats} onMatchSuccess={fetchData} />
             )}

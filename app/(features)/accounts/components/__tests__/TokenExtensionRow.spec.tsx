@@ -8,7 +8,7 @@ import { describe, vi } from 'vitest';
 import * as mockExtensions from '@/app/__tests__/mock-parsed-extensions-stubs';
 import { sleep } from '@/app/__tests__/mocks';
 import { AccountsProvider } from '@/app/providers/accounts';
-import { ClusterProvider } from '@/app/providers/cluster';
+import { ClusterProvider } from '@/app/(core)/providers/cluster';
 import { ScrollAnchorProvider } from '@/app/providers/scroll-anchor';
 import { TokenExtension } from '@/app/(solana)/validators/accounts/token-extension';
 

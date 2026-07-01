@@ -71,41 +71,44 @@ export function IssueErcDialog({ open, onOpenChange, rpcUrl, onSuccess }: IssueE
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="rounded-none border-[#2a2a2a] bg-black font-mono sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">
             <Plus className="h-4 w-4" /> Issue ERC Certificate
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-[10px] uppercase tracking-wide text-[#666]">
             Create a new Renewable Energy Certificate.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="owner">Owner (Wallet Address)</Label>
+        <div className="space-y-3 py-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="owner" className="text-[10px] uppercase tracking-wider text-[#666]">Owner (Wallet Address)</Label>
             <Input
               id="owner"
               placeholder="Enter wallet address"
+              className="rounded-none border-[#2a2a2a] bg-black text-[#e0e0e0] focus:border-[#9945FF]"
               value={owner}
               onChange={(e) => setOwner(e.target.value)}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="energyAmount">Energy Amount (kWh)</Label>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="energyAmount" className="text-[10px] uppercase tracking-wider text-[#666]">Energy Amount (kWh)</Label>
               <Input
                 id="energyAmount"
                 type="number"
+                className="rounded-none border-[#2a2a2a] bg-black text-[#e0e0e0] focus:border-[#9945FF]"
                 value={energyAmount}
                 onChange={(e) => setEnergyAmount(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="source">Source</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="source" className="text-[10px] uppercase tracking-wider text-[#666]">Source</Label>
               <Input
                 id="source"
+                className="rounded-none border-[#2a2a2a] bg-black text-[#e0e0e0] focus:border-[#9945FF]"
                 value={renewableSource}
                 onChange={(e) => setRenewableSource(e.target.value)}
               />
@@ -113,23 +116,23 @@ export function IssueErcDialog({ open, onOpenChange, rpcUrl, onSuccess }: IssueE
           </div>
 
           {txSignature && (
-            <div className="rounded-lg bg-green-50 p-3 text-xs text-green-700">
-              ✅ ERC issued! TX: {txSignature.slice(0, 20)}...
+            <div className="border border-[#14F195]/40 bg-[#14F195]/10 p-3 text-[10px] uppercase tracking-wide text-[#14F195]">
+              ERC issued! TX: {txSignature.slice(0, 20)}...
             </div>
           )}
 
           {error && (
-            <div className="rounded-lg bg-red-50 p-3 text-xs text-red-700">
-              ❌ Error: {error}
+            <div className="border border-[#ff3333]/40 bg-[#ff3333]/10 p-3 text-[10px] uppercase tracking-wide text-[#ff5555]">
+              Error: {error}
             </div>
           )}
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+          <Button variant="ghost" className="rounded-none text-[#888] hover:text-[#e0e0e0]" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting || !owner}>
+          <Button className="rounded-none bg-[#9945FF] text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#7d37d6]" onClick={handleSubmit} disabled={isSubmitting || !owner}>
             {isSubmitting ? 'Issuing...' : 'Issue Certificate'}
           </Button>
         </DialogFooter>

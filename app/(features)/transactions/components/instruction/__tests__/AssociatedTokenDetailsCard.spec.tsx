@@ -1,4 +1,4 @@
-import { BaseInstructionCard } from '@/app/(shared)/components/common/BaseInstructionCard';
+import { BaseInstructionCard } from '@/app/(shared)/components/BaseInstructionCard';
 import * as spl from '@solana/spl-token';
 import { AddressLookupTableAccount, clusterApiUrl, Connection, PublicKey, TransactionMessage } from '@solana/web3.js';
 import { render, screen } from '@testing-library/react';
@@ -7,7 +7,7 @@ import { vi } from 'vitest';
 
 import * as stubs from '@/app/__tests__/mock-stubs';
 import * as mock from '@/app/__tests__/mocks';
-import { ClusterProvider } from '@/app/providers/cluster';
+import { ClusterProvider } from '@/app/(core)/providers/cluster';
 import { ScrollAnchorProvider } from '@/app/providers/scroll-anchor';
 
 import { intoParsedInstruction, intoParsedTransaction } from '../../inspector/into-parsed-data';

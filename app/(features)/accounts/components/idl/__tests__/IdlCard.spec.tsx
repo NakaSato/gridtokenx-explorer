@@ -3,8 +3,8 @@ import { useSearchParams } from 'next/navigation';
 import { vi } from 'vitest';
 
 import * as programMetadataIdlModule from '@/app/(shared)/entities/program-metadata';
-import * as anchorModule from '@/app/providers/anchor';
-import { ClusterProvider } from '@/app/providers/cluster';
+import * as anchorModule from '@/app/(core)/providers/anchor';
+import { ClusterProvider } from '@/app/(core)/providers/cluster';
 
 import { IdlCard } from '../IdlCard';
 

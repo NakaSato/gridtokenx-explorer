@@ -4,13 +4,13 @@ import React from 'react';
 import { vi } from 'vitest';
 
 import { useProgramMetadataSecurityTxt } from '@/app/(shared)/entities/program-metadata';
-import { useCluster } from '@/app/providers/cluster';
-import { Cluster } from '@/app/utils/cluster';
+import { useCluster } from '@/app/(core)/providers/cluster';
+import { Cluster } from '@/app/(shared)/utils/cluster';
 
 import { ProgramSecurityTXTBadge } from '../SecurityTXTBadge';
 import { programDataWithoutSecurityTxt, programDataWithSecurityTxt } from './helpers';
 
-vi.mock('@/app/providers/cluster', () => ({
+vi.mock('@/app/(core)/providers/cluster', () => ({
   useCluster: vi.fn(),
 }));
 
