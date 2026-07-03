@@ -269,7 +269,9 @@ export function TransactionInspectorPage({
   signature?: string;
   showTokenBalanceChanges: boolean;
 }) {
-  // Skip all logic during build time to prevent public key validation errors
+  // Skip all logic during build time to prevent public key validation errors.
+  // The guard lives in this wrapper so the inner component's hooks run
+  // unconditionally (rules-of-hooks).
   if (typeof window === 'undefined') {
     return (
       <div className="container mt-4">
@@ -283,6 +285,16 @@ export function TransactionInspectorPage({
     );
   }
 
+  return <TransactionInspectorPageClient signature={signature} showTokenBalanceChanges={showTokenBalanceChanges} />;
+}
+
+function TransactionInspectorPageClient({
+  signature,
+  showTokenBalanceChanges,
+}: {
+  signature?: string;
+  showTokenBalanceChanges: boolean;
+}) {
   const [inspectorData, setInspectorData] = React.useState<InspectorData>();
   const currentSearchParams = useSearchParams();
   const currentPathname = usePathname();

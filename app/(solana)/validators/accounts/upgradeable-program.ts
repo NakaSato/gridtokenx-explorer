@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-redeclare */
+ 
 
 import { ParsedInfo } from '@/app/(solana)/validators/index';
 import { PublicKeyFromString } from '@validators/pubkey';

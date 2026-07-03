@@ -36,11 +36,11 @@ export async function getOpenBookModule() {
 
 // Get Market class for loading DEX markets
 export async function getMarketClass() {
-  const module = await loadOpenBookModule();
-  if (!module) {
+  const openbookModule = await loadOpenBookModule();
+  if (!openbookModule) {
     throw new Error('OpenBook V2 module not available');
   }
-  return module.Market;
+  return openbookModule.Market;
 }
 
 // Security validation functions

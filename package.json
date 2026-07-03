@@ -10,13 +10,14 @@
     "format": "prettier --config .prettierrc.cjs **/*.{ts,tsx,mts,mjs,cjs} *.json --check",
     "format:ci": "format",
     "gen": "dlx shadcn@latest add",
-    "lint": "next lint",
+    "lint": "eslint app",
     "postinstall": "echo 'module.exports = require(\"./src/index.js\");' > node_modules/@solana/spl-account-compression/dist/cjs/index.js",
     "scan": "next dev & react-scan localhost:3000",
     "start": "next start",
     "test": "vitest --project specs run",
     "test:ci": "vitest --project specs run",
-    "test:watch": "vitest --project specs --watch"
+    "test:watch": "vitest --project specs --watch",
+    "lint:fix": "eslint app --fix"
   },
   "dependencies": {
     "@blockworks-foundation/mango-client": "2.3.0",
@@ -134,7 +135,7 @@
     "@vitest/coverage-v8": "4.0.18",
     "autoprefixer": "10.4.24",
     "baseline-browser-mapping": "^2.10.0",
-    "eslint": "10.0.1",
+    "eslint": "^9",
     "eslint-plugin-jsx-a11y": "6.10.2",
     "eslint-plugin-testing-library": "7.16.0",
     "jest-environment-jsdom": "30.2.0",
