@@ -55,10 +55,15 @@ interface MeterData {
   totalGeneration: number;
 }
 
+// Rows rendered per table; full counts still shown in the tab badge.
+const MAX_ROWS = 100;
+
 export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProps) {
   const [registry, setRegistry] = useState<RegistryData | null>(null);
   const [users, setUsers] = useState<UserData[]>([]);
   const [meters, setMeters] = useState<MeterData[]>([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalMeters, setTotalMeters] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [activeView, setActiveView] = useState<'users' | 'meters'>('users');
 
@@ -67,83 +72,90 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
     try {
       const conn = getConnection();
       const programId = new PublicKey(PROGRAMS.registry.id);
-      const accounts = await conn.getProgramAccounts(programId);
+      // Fetch per account type with dataSize filters instead of one unfiltered
+      // getProgramAccounts — a busy registry holds tens of thousands of
+      // UserAccounts, and pulling every account unfiltered downloads megabytes
+      // and freezes the page on skeletons.
+      const [registryAccounts, userAccounts, meterAccounts] = await Promise.all([
+        conn.getProgramAccounts(programId, { filters: [{ dataSize: 136 }] }), // Registry (zero_copy)
+        conn.getProgramAccounts(programId, { filters: [{ dataSize: 112 }] }), // UserAccount (zero_copy)
+        conn.getProgramAccounts(programId, { filters: [{ dataSize: 128 }] }), // MeterAccount (zero_copy)
+      ]);
+
+      let registryData: RegistryData | null = null;
+      if (registryAccounts[0]) {
+        try {
+          const { pubkey, account } = registryAccounts[0];
+          const d = account.data.slice(8);
+          registryData = {
+            address: pubkey.toBase58(),
+            authority: new PublicKey(d.slice(0, 32)).toBase58(),
+            userCount: Number(d.readBigUInt64LE(72)),
+            meterCount: Number(d.readBigUInt64LE(80)),
+            activeMeterCount: Number(d.readBigUInt64LE(88)),
+          };
+        } catch (err) {
+          console.error('Error parsing registry record:', err);
+        }
+      }
 
       const userList: UserData[] = [];
+      for (const { pubkey, account } of userAccounts) {
+        try {
+          const d = account.data.slice(8);
+          const wallet = new PublicKey(d.slice(0, 32)).toBase58();
+          const userTypeNum = d[32];
+          const statusNum = d[56];
+          const isRegistered = statusNum === 0; // UserStatus::Active is 0
+          const meterCount = d.readUInt32LE(72);
+
+          userList.push({
+            address: pubkey.toBase58(),
+            wallet,
+            userType: ENUM_MAPS.UserType[userTypeNum] || 'Prosumer',
+            isRegistered,
+            meterCount,
+          });
+        } catch (err) {
+          console.error('Error parsing user record:', err);
+        }
+      }
+
       const meterList: MeterData[] = [];
-      let registryData: RegistryData | null = null;
+      for (const { pubkey, account } of meterAccounts) {
+        try {
+          const d = account.data.slice(8);
+          const meterId = new TextDecoder().decode(d.slice(0, 32)).replace(/\0/g, '');
+          const owner = new PublicKey(d.slice(32, 64)).toBase58();
+          const meterTypeNum = d[64];
+          const statusNum = d[65];
+          const isActive = statusNum === 0; // MeterStatus::Active is 0
+          // Layout (state.rs MeterAccount): last_reading_at i64 @80 is a unix
+          // timestamp; total_generation u64 @88 is cumulative energy.
+          const lastReadingAt = Number(d.readBigInt64LE(80));
+          const totalGeneration = Number(d.readBigUInt64LE(88));
 
-      for (const { pubkey, account } of accounts) {
-        const data = account.data;
-
-        // Registry (zero_copy) — total 136 bytes
-        if (data.length === 136) {
-          try {
-            const d = data.slice(8);
-            registryData = {
-              address: pubkey.toBase58(),
-              authority: new PublicKey(d.slice(0, 32)).toBase58(),
-              userCount: Number(d.readBigUInt64LE(72)),
-              meterCount: Number(d.readBigUInt64LE(80)),
-              activeMeterCount: Number(d.readBigUInt64LE(88)),
-            };
-          } catch (err) {
-            console.error('Error parsing registry record:', err);
-          }
-        }
-        // UserAccount (zero_copy) — total 112 bytes
-        else if (data.length === 112) {
-          try {
-            const d = data.slice(8);
-            const wallet = new PublicKey(d.slice(0, 32)).toBase58();
-            const userTypeNum = d[32];
-            const statusNum = d[56];
-            const isRegistered = statusNum === 0; // UserStatus::Active is 0
-            const meterCount = d.readUInt32LE(72);
-
-            userList.push({
-              address: pubkey.toBase58(),
-              wallet,
-              userType: ENUM_MAPS.UserType[userTypeNum] || 'Prosumer',
-              isRegistered,
-              meterCount,
-            });
-          } catch (err) {
-            console.error('Error parsing user record:', err);
-          }
-        }
-        // MeterAccount (zero_copy) — total 128 bytes
-        else if (data.length === 128) {
-          try {
-            const d = data.slice(8);
-            const meterId = new TextDecoder().decode(d.slice(0, 32)).replace(/\0/g, '');
-            const owner = new PublicKey(d.slice(32, 64)).toBase58();
-            const meterTypeNum = d[64];
-            const statusNum = d[65];
-            const isActive = statusNum === 0; // MeterStatus::Active is 0
-            // Layout (state.rs MeterAccount): last_reading_at i64 @80 is a unix
-            // timestamp; total_generation u64 @88 is cumulative energy.
-            const lastReadingAt = Number(d.readBigInt64LE(80));
-            const totalGeneration = Number(d.readBigUInt64LE(88));
-
-            meterList.push({
-              address: pubkey.toBase58(),
-              meterId,
-              owner,
-              meterType: ENUM_MAPS.MeterType[meterTypeNum] || 'Solar',
-              isActive,
-              lastReadingAt,
-              totalGeneration,
-            });
-          } catch (err) {
-            console.error('Error parsing meter record:', err);
-          }
+          meterList.push({
+            address: pubkey.toBase58(),
+            meterId,
+            owner,
+            meterType: ENUM_MAPS.MeterType[meterTypeNum] || 'Solar',
+            isActive,
+            lastReadingAt,
+            totalGeneration,
+          });
+        } catch (err) {
+          console.error('Error parsing meter record:', err);
         }
       }
 
       setRegistry(registryData);
-      setUsers(userList);
-      setMeters(meterList);
+      setTotalUsers(userList.length);
+      setTotalMeters(meterList.length);
+      // Cap what reaches the DOM — rendering tens of thousands of table rows
+      // hangs the tab. The badge shows the full on-chain count.
+      setUsers(userList.slice(0, MAX_ROWS));
+      setMeters(meterList.slice(0, MAX_ROWS));
     } catch (err) {
       console.warn('RegistryExplorer fetch error:', err);
     } finally {
@@ -197,7 +209,13 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
           </TabsList>
 
           <span className="border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-[#888]">
-            {activeView === 'users' ? `${users.length} Identities` : `${meters.length} Nodes`}
+            {activeView === 'users'
+              ? totalUsers > users.length
+                ? `${users.length} of ${totalUsers} Identities`
+                : `${totalUsers} Identities`
+              : totalMeters > meters.length
+                ? `${meters.length} of ${totalMeters} Nodes`
+                : `${totalMeters} Nodes`}
           </span>
         </div>
 
