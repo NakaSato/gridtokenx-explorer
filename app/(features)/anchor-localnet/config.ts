@@ -163,7 +163,8 @@ export const ENUM_MAPS = {
   UserStatus: { 0: 'Active', 1: 'Suspended', 2: 'Inactive' },
   MeterType: { 0: 'Solar', 1: 'Wind', 2: 'Battery', 3: 'Grid' },
   MeterStatus: { 0: 'Active', 1: 'Inactive', 2: 'Maintenance' },
-  OrderType: { 0: 'Buy', 1: 'Sell' },
+  // Rust: enum OrderType { Sell, Buy } — Sell is discriminant 0.
+  OrderType: { 0: 'Sell', 1: 'Buy' },
   OrderStatus: { 0: 'Active', 1: 'PartiallyFilled', 2: 'Completed', 3: 'Cancelled', 4: 'Expired' },
   ErcStatus: { 0: 'Valid', 1: 'Expired', 2: 'Revoked', 3: 'Pending' },
 } as const;

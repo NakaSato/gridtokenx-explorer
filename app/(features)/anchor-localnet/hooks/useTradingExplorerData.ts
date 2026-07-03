@@ -1,6 +1,14 @@
 import { useState, useCallback } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { PROGRAMS, ENUM_MAPS } from '../config';
+import { PROGRAMS } from '../config';
+import {
+  decodeMarket,
+  decodeOrder,
+  decodeTradeRecord,
+  MARKET_ACCOUNT_SIZE,
+  ORDER_ACCOUNT_SIZE,
+  TRADE_RECORD_ACCOUNT_SIZE,
+} from '../lib/trading-decoders';
 import { tradingApi, type SettlementStats } from '../services/trading-api';
 
 export interface MarketData {
@@ -69,68 +77,16 @@ export function useTradingExplorerData(getConnection: () => Connection) {
         const data = account.data;
         const addr = pubkey.toBase58();
 
-        // Account sizes incl. 8-byte discriminator: Market 2760, Order 128, TradeRecord 176.
-        if (data.length === 2760) {
-          try {
-            const d = data.slice(8);
-            marketData = {
-              address: addr,
-              authority: new PublicKey(d.slice(0, 32)).toBase58(),
-              totalVolume: Number(d.readBigUInt64LE(32)),
-              lastClearingPrice: Number(d.readBigUInt64LE(48)),
-              vwap: Number(d.readBigUInt64LE(56)),
-              activeOrders: d.readUInt32LE(64),
-              totalTrades: d.readUInt32LE(68),
-              marketFeeBps: d.readUInt16LE(72),
-              clearingEnabled: d[74] === 1,
-              minPrice: Number(d.readBigUInt64LE(80)),
-              maxPrice: Number(d.readBigUInt64LE(88)),
-              buyDepthCount: 0,
-              sellDepthCount: 0,
-              priceHistoryCount: d[2158],
-            };
-          } catch {
-            // Skip malformed market accounts
+        try {
+          if (data.length === MARKET_ACCOUNT_SIZE) {
+            marketData = decodeMarket(data, addr);
+          } else if (data.length === ORDER_ACCOUNT_SIZE) {
+            orderList.push(decodeOrder(data, addr));
+          } else if (data.length === TRADE_RECORD_ACCOUNT_SIZE) {
+            tradeList.push(decodeTradeRecord(data, addr));
           }
-        } else if (data.length === 128) {
-          try {
-            const d = data.slice(8);
-            const orderType = d[96];
-            const status = d[97];
-            orderList.push({
-              address: addr,
-              seller: new PublicKey(d.slice(0, 32)).toBase58(),
-              buyer: new PublicKey(d.slice(32, 64)).toBase58(),
-              orderId: Number(d.readBigUInt64LE(64)),
-              amount: Number(d.readBigUInt64LE(72)),
-              filledAmount: Number(d.readBigUInt64LE(80)),
-              pricePerKwh: Number(d.readBigUInt64LE(88)),
-              orderType: ENUM_MAPS.OrderType[orderType as keyof typeof ENUM_MAPS.OrderType] ?? `Unknown(${orderType})`,
-              status: ENUM_MAPS.OrderStatus[status as keyof typeof ENUM_MAPS.OrderStatus] ?? `Unknown(${status})`,
-              createdAt: Number(d.readBigInt64LE(104)),
-              expiresAt: Number(d.readBigInt64LE(112)),
-            });
-          } catch {
-            // Skip
-          }
-        } else if (data.length === 176) {
-          try {
-            const d = data.slice(8);
-            tradeList.push({
-              address: addr,
-              sellOrder: new PublicKey(d.slice(0, 32)).toBase58(),
-              buyOrder: new PublicKey(d.slice(32, 64)).toBase58(),
-              seller: new PublicKey(d.slice(64, 96)).toBase58(),
-              buyer: new PublicKey(d.slice(96, 128)).toBase58(),
-              amount: Number(d.readBigUInt64LE(128)),
-              pricePerKwh: Number(d.readBigUInt64LE(136)),
-              totalValue: Number(d.readBigUInt64LE(144)),
-              feeAmount: Number(d.readBigUInt64LE(152)),
-              executedAt: Number(d.readBigInt64LE(160)),
-            });
-          } catch {
-            // Skip
-          }
+        } catch {
+          // Skip malformed accounts
         }
       }
 
