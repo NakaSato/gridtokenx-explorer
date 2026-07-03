@@ -1,8 +1,8 @@
 import lowContrastSolanalogo from '@img/logos-solana/low-contrast-solana-logo.svg';
-// TODO: Migrate to @metaplex-foundation/mpl-token-metadata v3
-// import { MetadataJson } from '@metaplex/js';
-export type MetadataJson = any; // Temporary type
 import { PublicKey } from '@solana/web3.js';
+
+import { MetadataJson } from '@/app/(core)/providers/accounts/utils/metaplexMetadata';
+export type { MetadataJson } from '@/app/(core)/providers/accounts/utils/metaplexMetadata';
 import Link from 'next/link';
 
 import { isEnvEnabled } from '@/app/(config)/env';

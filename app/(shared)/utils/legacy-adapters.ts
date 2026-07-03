@@ -169,14 +169,12 @@ export class LegacyAdapter {
    * ```
    *
    * @param mintAddress NFT mint address
-   * @returns Metadata instance
+   * @returns Decoded metadata (legacy shape), or undefined when the mint has no metadata account
    */
-  async getMetaplexNFT(mintAddress: Address | string): Promise<any> {
-    // Note: Import Metaplex dynamically
-    const { Metadata } = await import('@metaplex-foundation/mpl-token-metadata');
-    const pubkey = this.toPublicKey(mintAddress);
-
-    return Metadata.fromAccountAddress(this.connection, pubkey);
+  async getMetaplexNFT(mintAddress: Address | string) {
+    // Note: Import dynamically to keep the serializer out of the main bundle
+    const { fetchNftMetadata } = await import('@/app/(core)/providers/accounts/utils/metaplexMetadata');
+    return fetchNftMetadata(this.connection, this.toPublicKey(mintAddress));
   }
 
   /**

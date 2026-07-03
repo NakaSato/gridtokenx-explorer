@@ -1,9 +1,8 @@
 'use client';
 
-// TODO: Migrate to @metaplex-foundation/mpl-token-metadata v3
-// import { MetadataJson, programs } from '@metaplex/js';
-export type MetadataJson = any; // Temporary type
 import getEditionInfo, { EditionInfo } from '@/app/(core)/providers/accounts/utils/getEditionInfo';
+import { fetchNftMetadata, MetadataJson, NFTMetadata } from '@/app/(core)/providers/accounts/utils/metaplexMetadata';
+export type { MetadataJson } from '@/app/(core)/providers/accounts/utils/metaplexMetadata';
 import * as Cache from '@/app/(core)/providers/cache';
 import { ActionType, FetchStatus } from '@/app/(core)/providers/cache';
 import { useCluster } from '@/app/(core)/providers/cluster';
@@ -19,7 +18,6 @@ import {
 import { Address, getBase58Decoder, Rpc } from '@solana/kit';
 import { createRpc, publicKeyToAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { Cluster } from '@/app/(shared)/utils/cluster';
-import { pubkeyToString } from '@/app/(shared)/utils/index';
 import { assertIsTokenProgram, TokenProgram } from '@/app/(shared)/utils/programs';
 import { ParsedAddressLookupTableAccount } from '@/app/(solana)/validators/accounts/address-lookup-table';
 import { ConfigAccount } from '@/app/(solana)/validators/accounts/config';
@@ -45,8 +43,6 @@ import { TokensProvider } from './tokens';
 import { getStakeActivation } from './utils/stake';
 export { useAccountHistory } from './history';
 
-// const Metadata = programs.metadata.Metadata;
-
 export type StakeProgramData = {
   program: 'stake';
   parsed: StakeAccount;
@@ -64,7 +60,7 @@ export function isUpgradeableLoaderAccountData(data: { program: string }): data 
 }
 
 export type NFTData = {
-  metadata: any; // TODO: Update to new Metaplex SDK type
+  metadata: NFTMetadata;
   json: MetadataJson | undefined;
   editionInfo: EditionInfo;
 };
@@ -435,22 +431,21 @@ async function handleParsedAccountData(
       let nftData;
 
       try {
-        // TODO: Rimplement with new Metaplex SDK
-        // Generate a PDA and check for a Metadata Account
-        // if (parsed.type === 'mint') {
-        //     const metadata = await Metadata.load(connection, await Metadata.getPDA(accountKey));
-        //     if (metadata) {
-        //         // We have a valid Metadata account. Try and pull edition data.
-        //         const editionInfo = await getEditionInfo(metadata, connection);
-        //         const id = pubkeyToString(accountKey);
-        //         const metadataJSON = await getMetaDataJSON(id, metadata.data);
-        //         nftData = {
-        //             editionInfo,
-        //             json: metadataJSON,
-        //             metadata: metadata.data,
-        //         };
-        //     }
-        // }
+        // Derive the metadata PDA and check for a Metadata account
+        if (parsed.type === 'mint') {
+          const metadata = await fetchNftMetadata(connection, accountKey);
+          if (metadata) {
+            // We have a valid Metadata account. Try and pull edition data.
+            const editionInfo = await getEditionInfo(metadata, connection);
+            const id = accountKey.toBase58();
+            const metadataJSON = await getMetaDataJSON(id, metadata);
+            nftData = {
+              editionInfo,
+              json: metadataJSON,
+              metadata,
+            };
+          }
+        }
       } catch (error) {
         // unable to find NFT metadata account
       }
@@ -466,10 +461,7 @@ async function handleParsedAccountData(
 
 const IMAGE_MIME_TYPE_REGEX = /data:image\/(svg\+xml|png|jpeg|gif)/g;
 
-const getMetaDataJSON = async (
-  id: string,
-  metadata: any, // TODO: Update to new Metaplex SDK type
-): Promise<MetadataJson | undefined> => {
+const getMetaDataJSON = async (id: string, metadata: NFTMetadata): Promise<MetadataJson | undefined> => {
   return new Promise(resolve => {
     const uri = metadata.data.uri;
     if (!uri) return resolve(undefined);

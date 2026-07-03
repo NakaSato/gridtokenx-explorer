@@ -1,8 +1,7 @@
 import { InfoTooltip } from '@/app/(shared)/components/InfoTooltip';
 import { ArtContent } from '@/app/(shared)/components/NFTArt';
-// TODO: Migrate to @metaplex-foundation/mpl-token-metadata v3
-// import { programs } from '@metaplex/js';
 import { NFTData, useFetchAccountInfo, useMintAccountInfo } from '@/app/(core)/providers/accounts';
+import { NFTCreator } from '@/app/(core)/providers/accounts/utils/metaplexMetadata';
 import { EditionInfo } from '@/app/(core)/providers/accounts/utils/getEditionInfo';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { PublicKey } from '@solana/web3.js';
@@ -71,7 +70,7 @@ export function MetaplexNFTHeader({ nftData, address }: { nftData: NFTData; addr
   );
 }
 
-type Creator = any; // TODO: Update to new Metaplex SDK type
+type Creator = NFTCreator;
 export function getCreatorDropdownItems(creators: Creator[] | null) {
   const CreatorHeader = () => {
     const creatorTooltip = 'Verified creators signed the metadata associated with this NFT when it was created.';

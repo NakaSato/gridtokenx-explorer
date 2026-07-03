@@ -1,8 +1,9 @@
 'use client';
 
-// import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
+import { Connection, PublicKey } from '@solana/web3.js';
+
+import { fetchNftMetadata, NFTMetadata } from '@/app/(core)/providers/accounts/utils/metaplexMetadata';
 import { useCluster } from '@/app/(core)/providers/cluster';
-import { toAddress } from '@/app/(shared)/utils/rpc';
 import { displayAddress, TokenLabelInfo } from '@/app/(shared)/utils/tx';
 import { useClusterPath } from '@/app/(shared)/utils/url';
 import Link from 'next/link';
@@ -61,6 +62,9 @@ export function Address({
   let addressLabel = raw ? address : display;
 
   const metaplexData = useTokenMetadata(useMetadata, address);
+  if (!raw && metaplexData.data?.data.name) {
+    addressLabel = metaplexData.data.data.name;
+  }
 
   const tokenInfo = useTokenInfo(fetchTokenLabelInfo, address);
   if (tokenInfo) {
@@ -116,29 +120,28 @@ export function Address({
   );
 }
 const useTokenMetadata = (useMetadata: boolean | undefined, pubkey: string) => {
-  // TODO: Rimplement with @metaplex-foundation/mpl-token-metadata v3
-  // const [data, setData] = useState<any>();
-  // const { url } = useCluster();
+  const [data, setData] = useState<NFTMetadata>();
+  const { url } = useCluster();
 
-  // useAsyncEffect(
-  //     async isMounted => {
-  //         if (!useMetadata) return;
-  //         if (pubkey && !data) {
-  //             try {
-  //                 // Update to use new Metaplex SDK
-  //                 if (isMounted()) {
-  //                     setData(undefined);
-  //                 }
-  //             } catch {
-  //                 if (isMounted()) {
-  //                     setData(undefined);
-  //                 }
-  //             }
-  //         }
-  //     },
-  //     [useMetadata, pubkey, data, setData]
-  //     );
-  return { data: undefined };
+  useAsyncEffect(
+    async isMounted => {
+      if (!useMetadata || !pubkey || data) return;
+      try {
+        const connection = new Connection(url);
+        const metadata = await fetchNftMetadata(connection, new PublicKey(pubkey));
+        if (isMounted()) {
+          setData(metadata);
+        }
+      } catch {
+        if (isMounted()) {
+          setData(undefined);
+        }
+      }
+    },
+    [useMetadata, pubkey, url],
+  );
+
+  return { data };
 };
 
 const useTokenInfo = (fetchTokenLabelInfo: boolean | undefined, addressStr: string) => {
