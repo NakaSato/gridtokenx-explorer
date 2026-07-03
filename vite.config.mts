@@ -52,11 +52,6 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
     },
-    poolOptions: {
-      threads: {
-        useAtomics: true,
-      },
-    },
     ...specWorkspace(),
   },
 });
