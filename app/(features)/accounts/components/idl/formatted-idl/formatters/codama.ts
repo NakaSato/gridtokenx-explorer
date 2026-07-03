@@ -1,4 +1,6 @@
+import bs58 from 'bs58';
 import {
+  BytesValueNode,
   EnumTypeNode,
   InstructionAccountNode,
   InstructionNode,
@@ -26,14 +28,39 @@ function parseEnumNodeVariants(type: EnumTypeNode): string[] {
   });
 }
 
+/** Decode a bytes constant and render it human-readably: printable text as a
+ * quoted string (e.g. PDA seed literals like "global"), anything else as hex. */
+function parseBytesValueNode(valueNode: BytesValueNode): string {
+  try {
+    if (valueNode.encoding === 'utf8') return `"${valueNode.data}"`;
+
+    let bytes: Uint8Array;
+    switch (valueNode.encoding) {
+      case 'base16':
+        bytes = Buffer.from(valueNode.data, 'hex');
+        break;
+      case 'base64':
+        bytes = Buffer.from(valueNode.data, 'base64');
+        break;
+      case 'base58':
+        bytes = bs58.decode(valueNode.data);
+        break;
+    }
+
+    const text = Buffer.from(bytes).toString('utf8');
+    if (bytes.length > 0 && /^[\x20-\x7e]*$/.test(text)) return `"${text}"`;
+    return `0x${Buffer.from(bytes).toString('hex')}`;
+  } catch {
+    return `${valueNode.data} (${valueNode.encoding})`;
+  }
+}
+
 function parseValueNodeValue(valueNode: ValueNode): string {
   switch (valueNode.kind) {
     case 'arrayValueNode':
       return `array(${valueNode.items.map(item => parseValueNodeValue(item)).join(', ')})`;
     case 'bytesValueNode':
-      // TODO: decode data?
-      // return `${valueNode.data}: ${valueNode.encoding}`;
-      return valueNode.data;
+      return parseBytesValueNode(valueNode);
     case 'booleanValueNode':
       return `${valueNode.boolean}`;
     case 'constantValueNode':

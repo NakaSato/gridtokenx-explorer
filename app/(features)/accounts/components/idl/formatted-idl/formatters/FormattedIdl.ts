@@ -27,7 +27,9 @@ export type InstructionAccountData = {
   writable?: boolean;
   signer?: boolean;
   optional?: boolean;
-  pda?: boolean; // TODO: may be keep seeds inside?
+  // Flag only — the seeds themselves are rendered in the dedicated PDAs
+  // section (PdaData); duplicating them per instruction account adds noise.
+  pda?: boolean;
 };
 
 export type ErrorData = {

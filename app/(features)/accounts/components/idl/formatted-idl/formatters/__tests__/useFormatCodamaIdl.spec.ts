@@ -453,3 +453,68 @@ describe('useFormatCodamaIdl', () => {
     expect(programIdSeed.docs).toEqual([]);
   });
 });
+
+describe('useFormatCodamaIdl bytes seed decoding', () => {
+  const pdaWithBytesSeeds = (seeds: unknown[]) => ({
+    ...minimalMock,
+    program: {
+      ...minimalMock.program,
+      instructions: [
+        {
+          ...minimalMock.program.instructions[0],
+          accounts: [
+            {
+              defaultValue: {
+                kind: 'pdaValueNode',
+                pda: { kind: 'pdaNode', name: 'vault', seeds },
+              },
+              docs: [],
+              isOptional: false,
+              isSigner: false,
+              isWritable: true,
+              name: 'vault',
+            },
+          ],
+        },
+      ],
+    },
+  });
+
+  const constantBytesSeed = (data: string, encoding: string) => ({
+    kind: 'constantPdaSeedNode',
+    type: { kind: 'bytesTypeNode' },
+    value: { data, encoding, kind: 'bytesValueNode' },
+  });
+
+  it('renders utf8 bytes seeds as quoted strings', () => {
+    const mock = pdaWithBytesSeeds([constantBytesSeed('global', 'utf8')]);
+    const { result } = renderHook(() => useFormatCodamaIdl(mock as any));
+    expect((result.current?.pdas?.[0].seeds[0] as any).name).toBe('"global"');
+  });
+
+  it('decodes printable base16 bytes seeds to text', () => {
+    // 676c6f62616c = "global"
+    const mock = pdaWithBytesSeeds([constantBytesSeed('676c6f62616c', 'base16')]);
+    const { result } = renderHook(() => useFormatCodamaIdl(mock as any));
+    expect((result.current?.pdas?.[0].seeds[0] as any).name).toBe('"global"');
+  });
+
+  it('decodes printable base64 bytes seeds to text', () => {
+    // Z2xvYmFs = "global"
+    const mock = pdaWithBytesSeeds([constantBytesSeed('Z2xvYmFs', 'base64')]);
+    const { result } = renderHook(() => useFormatCodamaIdl(mock as any));
+    expect((result.current?.pdas?.[0].seeds[0] as any).name).toBe('"global"');
+  });
+
+  it('renders non-printable bytes seeds as hex', () => {
+    const mock = pdaWithBytesSeeds([constantBytesSeed('00ff10', 'base16')]);
+    const { result } = renderHook(() => useFormatCodamaIdl(mock as any));
+    expect((result.current?.pdas?.[0].seeds[0] as any).name).toBe('0x00ff10');
+  });
+
+  it('falls back to raw data with encoding on decode failure', () => {
+    const mock = pdaWithBytesSeeds([constantBytesSeed('l0lI', 'base58')]); // 0, l invalid base58
+    const { result } = renderHook(() => useFormatCodamaIdl(mock as any));
+    expect((result.current?.pdas?.[0].seeds[0] as any).name).toBe('l0lI (base58)');
+  });
+});
