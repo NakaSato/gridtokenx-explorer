@@ -82,7 +82,7 @@ export function useTradingExplorerData(getConnection: () => Connection) {
               activeOrders: d.readUInt32LE(64),
               totalTrades: d.readUInt32LE(68),
               marketFeeBps: d.readUInt16LE(72),
-              clearingEnabled: d[75] === 1,
+              clearingEnabled: d[74] === 1,
               minPrice: Number(d.readBigUInt64LE(80)),
               maxPrice: Number(d.readBigUInt64LE(88)),
               buyDepthCount: 0,
@@ -107,8 +107,8 @@ export function useTradingExplorerData(getConnection: () => Connection) {
               pricePerKwh: Number(d.readBigUInt64LE(88)),
               orderType: ENUM_MAPS.OrderType[orderType as keyof typeof ENUM_MAPS.OrderType] ?? `Unknown(${orderType})`,
               status: ENUM_MAPS.OrderStatus[status as keyof typeof ENUM_MAPS.OrderStatus] ?? `Unknown(${status})`,
-              createdAt: Number(d.readBigInt64LE(112)),
-              expiresAt: Number(d.readBigInt64LE(120)),
+              createdAt: Number(d.readBigInt64LE(104)),
+              expiresAt: Number(d.readBigInt64LE(112)),
             });
           } catch {
             // Skip
