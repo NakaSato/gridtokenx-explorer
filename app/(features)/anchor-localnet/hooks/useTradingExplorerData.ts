@@ -5,9 +5,12 @@ import {
   decodeMarket,
   decodeOrder,
   decodeTradeRecord,
+  decodeZoneMarket,
   MARKET_ACCOUNT_SIZE,
   ORDER_ACCOUNT_SIZE,
   TRADE_RECORD_ACCOUNT_SIZE,
+  ZONE_MARKET_ACCOUNT_SIZE,
+  type ZoneMarketData,
 } from '../lib/trading-decoders';
 import { tradingApi, type SettlementStats } from '../services/trading-api';
 
@@ -59,6 +62,7 @@ export function useTradingExplorerData(getConnection: () => Connection) {
   const [market, setMarket] = useState<MarketData | null>(null);
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [trades, setTrades] = useState<TradeData[]>([]);
+  const [zoneMarkets, setZoneMarkets] = useState<ZoneMarketData[]>([]);
   const [settlementStats, setSettlementStats] = useState<SettlementStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -72,6 +76,7 @@ export function useTradingExplorerData(getConnection: () => Connection) {
       let marketData: MarketData | null = null;
       const orderList: OrderData[] = [];
       const tradeList: TradeData[] = [];
+      const zoneList: ZoneMarketData[] = [];
 
       for (const { pubkey, account } of accounts) {
         const data = account.data;
@@ -84,6 +89,8 @@ export function useTradingExplorerData(getConnection: () => Connection) {
             orderList.push(decodeOrder(data, addr));
           } else if (data.length === TRADE_RECORD_ACCOUNT_SIZE) {
             tradeList.push(decodeTradeRecord(data, addr));
+          } else if (data.length === ZONE_MARKET_ACCOUNT_SIZE) {
+            zoneList.push(decodeZoneMarket(data, addr));
           }
         } catch {
           // Skip malformed accounts
@@ -93,6 +100,7 @@ export function useTradingExplorerData(getConnection: () => Connection) {
       setMarket(marketData);
       setOrders(orderList.sort((a, b) => b.createdAt - a.createdAt));
       setTrades(tradeList.sort((a, b) => b.executedAt - a.executedAt));
+      setZoneMarkets(zoneList.sort((a, b) => a.zoneId - b.zoneId));
 
       try {
         const stats = await tradingApi.getSettlementStats();
@@ -111,6 +119,7 @@ export function useTradingExplorerData(getConnection: () => Connection) {
     market,
     orders,
     trades,
+    zoneMarkets,
     settlementStats,
     isLoading,
     fetchData,

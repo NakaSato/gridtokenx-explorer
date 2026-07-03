@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
-import { RefreshCw, Zap, Plus, TrendingUp, ShoppingCart, ArrowUpDown, Database } from 'lucide-react';
+import { RefreshCw, Zap, Plus, TrendingUp, ShoppingCart, ArrowUpDown, Database, Map } from 'lucide-react';
 import { Connection } from '@solana/web3.js';
 
 import { PROGRAMS } from '../config';
@@ -13,6 +13,7 @@ import { useTradingExplorerData } from '../hooks/useTradingExplorerData';
 import { MarketStateCard } from './trading/MarketStateCard';
 import { OrdersList } from './trading/OrdersList';
 import { TradesList } from './trading/TradesList';
+import { ZoneMarketsList } from './trading/ZoneMarketsList';
 import { SettlementStats } from './trading/SettlementStats';
 import { PlaceOrderDialog } from './trading/PlaceOrderDialog';
 
@@ -23,8 +24,9 @@ interface TradingExplorerProps {
 }
 
 export function TradingExplorer({ rpcUrl, getConnection }: TradingExplorerProps) {
-  const { market, orders, trades, settlementStats, isLoading, fetchData } = useTradingExplorerData(getConnection);
-  const [activeView, setActiveView] = useState<'market' | 'orders' | 'trades' | 'settlement'>('market');
+  const { market, orders, trades, zoneMarkets, settlementStats, isLoading, fetchData } =
+    useTradingExplorerData(getConnection);
+  const [activeView, setActiveView] = useState<'market' | 'orders' | 'trades' | 'zones' | 'settlement'>('market');
   const [showPlaceOrder, setShowPlaceOrder] = useState(false);
   useEffect(() => {
     fetchData();
@@ -104,6 +106,7 @@ export function TradingExplorer({ rpcUrl, getConnection }: TradingExplorerProps)
               ['market', 'Overview', TrendingUp, null],
               ['orders', 'Orders', ShoppingCart, orders.length],
               ['trades', 'Trades', ArrowUpDown, trades.length],
+              ['zones', 'Zones', Map, zoneMarkets.length],
               ['settlement', 'Settlements', Database, null],
             ] as const).map(([view, label, Icon, count]) => (
               <button
@@ -137,6 +140,8 @@ export function TradingExplorer({ rpcUrl, getConnection }: TradingExplorerProps)
             {activeView === 'orders' && <OrdersList orders={orders} />}
 
             {activeView === 'trades' && <TradesList trades={trades} />}
+
+            {activeView === 'zones' && <ZoneMarketsList zoneMarkets={zoneMarkets} />}
 
             {activeView === 'settlement' && (
               <SettlementStats stats={settlementStats} onMatchSuccess={fetchData} />

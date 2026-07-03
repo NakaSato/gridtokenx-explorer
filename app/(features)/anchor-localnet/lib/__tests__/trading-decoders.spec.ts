@@ -4,9 +4,11 @@ import {
   decodeMarket,
   decodeOrder,
   decodeTradeRecord,
+  decodeZoneMarket,
   MARKET_ACCOUNT_SIZE,
   ORDER_ACCOUNT_SIZE,
   TRADE_RECORD_ACCOUNT_SIZE,
+  ZONE_MARKET_ACCOUNT_SIZE,
 } from '../trading-decoders';
 
 // Fixtures are built field-by-field at the offsets defined by the #[repr(C)]
@@ -111,6 +113,62 @@ describe('decodeMarket', () => {
     buf[DISCRIMINATOR + 74] = 0; // clearing disabled
     buf[DISCRIMINATOR + 75] = 1; // reserved byte set — decoder must ignore
     expect(decodeMarket(buf, 'marketAddr').clearingEnabled).toBe(false);
+  });
+});
+
+describe('decodeZoneMarket', () => {
+  it('decodes every field at the repr(C) offsets', () => {
+    const buf = Buffer.alloc(ZONE_MARKET_ACCOUNT_SIZE);
+    const d = buf.subarray(DISCRIMINATOR);
+    AUTHORITY.toBuffer().copy(d, 0); // market: Pubkey        @0
+    d.writeUInt32LE(3, 32); // zone_id: u32                   @32
+    d[36] = 4; // num_shards: u8                              @36
+    d.writeBigUInt64LE(12_345n, 40); // total_volume: u64     @40
+    d.writeUInt32LE(6, 48); // active_orders: u32             @48
+    d.writeUInt32LE(11, 52); // total_trades: u32             @52
+    d[56] = 2; // buy_side_depth_count: u8                    @56
+    d[57] = 1; // sell_side_depth_count: u8                   @57
+    d.writeBigUInt64LE(4_400n, 64); // last_clearing_price    @64
+    d.writeBigUInt64LE(10_000n, 72); // capacity: u64         @72
+    d.writeBigUInt64LE(2_500n, 80); // committed_flow: u64    @80
+    // buy_side_depth[0] @88, [1] @112
+    d.writeBigUInt64LE(4_500n, 88);
+    d.writeBigUInt64LE(300n, 96);
+    d.writeUInt16LE(2, 104);
+    d.writeBigUInt64LE(4_450n, 112);
+    d.writeBigUInt64LE(150n, 120);
+    d.writeUInt16LE(1, 128);
+    // sell_side_depth[0] @328
+    d.writeBigUInt64LE(4_600n, 328);
+    d.writeBigUInt64LE(700n, 336);
+    d.writeUInt16LE(3, 344);
+
+    const zone = decodeZoneMarket(buf, 'zoneAddr');
+
+    expect(zone).toEqual({
+      address: 'zoneAddr',
+      market: AUTHORITY.toBase58(),
+      zoneId: 3,
+      numShards: 4,
+      totalVolume: 12345,
+      activeOrders: 6,
+      totalTrades: 11,
+      lastClearingPrice: 4400,
+      capacity: 10000,
+      committedFlow: 2500,
+      buyDepth: [
+        { orderCount: 2, price: 4500, totalAmount: 300 },
+        { orderCount: 1, price: 4450, totalAmount: 150 },
+      ],
+      sellDepth: [{ orderCount: 3, price: 4600, totalAmount: 700 }],
+    });
+  });
+
+  it('clamps depth to the 10-level maximum', () => {
+    const buf = Buffer.alloc(ZONE_MARKET_ACCOUNT_SIZE);
+    buf[DISCRIMINATOR + 56] = 200; // corrupt count — must not read past the array
+    const zone = decodeZoneMarket(buf, 'zoneAddr');
+    expect(zone.buyDepth).toHaveLength(10);
   });
 });
 
