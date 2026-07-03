@@ -51,7 +51,8 @@ interface MeterData {
   owner: string;
   meterType: string;
   isActive: boolean;
-  lastReading: number;
+  lastReadingAt: number;
+  totalGeneration: number;
 }
 
 export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProps) {
@@ -120,7 +121,10 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
             const meterTypeNum = d[64];
             const statusNum = d[65];
             const isActive = statusNum === 0; // MeterStatus::Active is 0
-            const lastReading = Number(d.readBigUInt64LE(80));
+            // Layout (state.rs MeterAccount): last_reading_at i64 @80 is a unix
+            // timestamp; total_generation u64 @88 is cumulative energy.
+            const lastReadingAt = Number(d.readBigInt64LE(80));
+            const totalGeneration = Number(d.readBigUInt64LE(88));
 
             meterList.push({
               address: pubkey.toBase58(),
@@ -128,7 +132,8 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
               owner,
               meterType: ENUM_MAPS.MeterType[meterTypeNum] || 'Solar',
               isActive,
-              lastReading,
+              lastReadingAt,
+              totalGeneration,
             });
           } catch (err) {
             console.error('Error parsing meter record:', err);

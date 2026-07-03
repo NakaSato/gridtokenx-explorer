@@ -17,7 +17,13 @@ interface MeterData {
   owner: string;
   meterType: string;
   isActive: boolean;
-  lastReading: number;
+  lastReadingAt: number;
+  totalGeneration: number;
+}
+
+function formatLastReadingAt(unixSeconds: number): string {
+  if (!unixSeconds) return 'never';
+  return new Date(unixSeconds * 1000).toLocaleString();
 }
 
 interface MetersTableProps {
@@ -41,6 +47,7 @@ export function MetersTable({ meters }: MetersTableProps) {
           <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Meter ID</TableHead>
           <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Type</TableHead>
           <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Status</TableHead>
+          <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Total Gen</TableHead>
           <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Last Reading</TableHead>
           <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666] text-right">Owner</TableHead>
         </TableRow>
@@ -48,7 +55,7 @@ export function MetersTable({ meters }: MetersTableProps) {
       <TableBody>
         {meters.length === 0 ? (
           <TableRow className="border-[#1a1a1a]">
-            <TableCell colSpan={5} className="h-32 text-center text-[#555] text-xs italic">
+            <TableCell colSpan={6} className="h-32 text-center text-[#555] text-xs italic">
               No meters found in the registry
             </TableCell>
           </TableRow>
@@ -79,7 +86,10 @@ export function MetersTable({ meters }: MetersTableProps) {
                 )}
               </TableCell>
               <TableCell className="py-2 font-mono text-xs font-bold text-[#14F195]">
-                {meter.lastReading.toLocaleString()} <span className="text-[9px] font-normal text-[#666]">kWh</span>
+                {meter.totalGeneration.toLocaleString()} <span className="text-[9px] font-normal text-[#666]">kWh</span>
+              </TableCell>
+              <TableCell className="py-2 font-mono text-[10px] text-[#888]">
+                {formatLastReadingAt(meter.lastReadingAt)}
               </TableCell>
               <TableCell className="py-2 text-right">
                 <span className="font-mono text-[9px] bg-[#0a0a0a] px-1.5 py-0.5 text-[#888]" title={meter.owner}>
