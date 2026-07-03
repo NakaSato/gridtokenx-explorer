@@ -1,4 +1,5 @@
 import {
+  AddressLookupTableAccount,
   Message,
   MessageArgs,
   MessageCompiledInstruction,
@@ -8,6 +9,8 @@ import {
   VersionedMessage,
 } from '@solana/web3.js';
 import { vi } from 'vitest';
+
+import addressLookupTableFixtures from './fixtures/address-lookup-tables.json';
 
 // stub a test to not allow passing without tests
 test('stub', () => expect(true).toBeTruthy());
@@ -91,6 +94,33 @@ export function deserializeMessageV0(message: string): VersionedMessage {
   const vm = new MessageV0(messageArgs);
 
   return vm;
+}
+
+/**
+ * Resolve a message's address table lookups from local fixtures instead of
+ * mainnet RPC. The fixture file snapshots the real tables; the table
+ * EDDSpjZHrsFKYTMJDcBqXAjkLcu9EKdvrQR4XnqsXErH was closed on mainnet, so its
+ * entry is synthesized (only the positions the tests assert hold real
+ * addresses).
+ */
+export function getMockAddressLookupTableAccounts(message: VersionedMessage): AddressLookupTableAccount[] {
+  const fixtures = addressLookupTableFixtures as Record<string, string[]>;
+  return (message.addressTableLookups ?? []).map(lookup => {
+    const key = lookup.accountKey.toBase58();
+    const addresses = fixtures[key];
+    if (!addresses) {
+      throw new Error(`No address lookup table fixture for ${key} — add it to fixtures/address-lookup-tables.json`);
+    }
+    return new AddressLookupTableAccount({
+      key: lookup.accountKey,
+      state: {
+        addresses: addresses.map(address => new PublicKey(address)),
+        deactivationSlot: BigInt('0xffffffffffffffff'),
+        lastExtendedSlot: 0,
+        lastExtendedSlotStartIndex: 0,
+      },
+    });
+  });
 }
 
 export function deserializeInstruction(instruction: string): MessageCompiledInstruction {

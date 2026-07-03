@@ -165,6 +165,7 @@ describe('TransactionInspectorPage with Squads Transaction', () => {
 
   test(
     'renders Squads transaction with lookup table without crashing',
+    { timeout: 20000 },
     async () => {
       // Setup SWR mock for successful response
       const mockSWR = await import('swr');
@@ -213,6 +214,5 @@ describe('TransactionInspectorPage with Squads Transaction', () => {
         screen.getByText(/Unknown Program \(8TqqugH88U3fDEWeKHqBSxZKeqoRrXkdpy3ciX5GAruK\) Instruction/i),
       ).not.toBeNull();
     },
-    { timeout: 20000 },
   );
 });

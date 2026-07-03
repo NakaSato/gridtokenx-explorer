@@ -205,10 +205,7 @@ export function estimateRequestedComputeUnits(
           programIdIndex: number;
           data: Uint8Array;
         }>;
-        getAccountKeys: (args?: any) => {
-          staticAccountKeys: Array<{ toBase58(): string }>;
-          get: (index: number) => { toBase58(): string } | undefined;
-        };
+        staticAccountKeys: Array<{ toBase58(): string }>;
       };
     };
   },
@@ -218,16 +215,18 @@ export function estimateRequestedComputeUnits(
   // First, check for explicit compute budget instructions
   let totalReservedUnits = 0;
 
-  // Get account keys from the versioned transaction message
-  const accountKeys = tx.transaction.message.getAccountKeys();
+  // Program IDs always live in the static account keys — the runtime forbids
+  // loading program accounts through address lookup tables. Indexing static
+  // keys directly also avoids MessageV0.getAccountKeys(), which throws when a
+  // transaction references lookup tables that were not resolved.
+  const { compiledInstructions, staticAccountKeys } = tx.transaction.message;
 
-  if (!accountKeys?.staticAccountKeys || !tx.transaction.message.compiledInstructions) {
+  if (!Array.isArray(staticAccountKeys) || !compiledInstructions) {
     return DEFAULT_COMPUTE_UNITS;
   }
 
-  for (const instruction of tx.transaction.message.compiledInstructions) {
-    // Use .get() method which handles both static and lookup table accounts
-    const programId = accountKeys.get(instruction.programIdIndex);
+  for (const instruction of compiledInstructions) {
+    const programId = staticAccountKeys[instruction.programIdIndex];
     if (!programId) continue;
 
     const requestedUnits = extractComputeUnitsFromInstruction({

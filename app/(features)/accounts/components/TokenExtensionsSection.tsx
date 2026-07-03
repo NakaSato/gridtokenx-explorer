@@ -3,7 +3,7 @@ import { Card } from '@/app/(shared)/components/ui/card';
 import { SyntheticEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { Code, ExternalLink } from 'react-feather';
 
-import { SolarizedJsonViewer as ReactJson } from '@/app/(shared)/components/common/JsonViewer';
+import { SolarizedJsonViewer as ReactJson } from '@/app/(shared)/components/JsonViewer';
 import { TableCardBodyHeaded } from '@/app/(shared)/components/common/TableCardBody';
 import { Badge } from '@/app/(shared)/components/ui/badge';
 import {

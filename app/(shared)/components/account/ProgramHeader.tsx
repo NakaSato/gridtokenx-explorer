@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React from 'react';
 
 import { type UpgradeableLoaderAccountData } from '@/app/(core)/providers/accounts';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/app/(shared)/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/(shared)/components/ui/tooltip';
 import { getProxiedUri } from '@/app/(features)/metadata/utils';
 import { isPmpSecurityTXT, useSecurityTxt } from '@/app/(features)/security-txt';
 import ProgramLogoPlaceholder from '@/app/(shared)/img/logos-solana/low-contrast-solana-logo.svg';
@@ -48,16 +48,18 @@ export function ProgramHeader({ address, parsedData }: { address: string; parsed
       const text = 'Note that this is self-reported by the author of the program and might not be accurate';
       return (
         <div className="inlinflex ml-2 items-center">
-          <Tooltip>
-            <TooltipTrigger className="border-0 bg-transparent p-0">
-              <Badge variant="destructive">Unverified</Badge>
-            </TooltipTrigger>
-            {text && (
-              <TooltipContent>
-                <div className="max-w-64 min-w-36">{text}</div>
-              </TooltipContent>
-            )}
-          </Tooltip>
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger className="border-0 bg-transparent p-0">
+                <Badge variant="destructive">Unverified</Badge>
+              </TooltipTrigger>
+              {text && (
+                <TooltipContent>
+                  <div className="max-w-64 min-w-36">{text}</div>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
       );
     }

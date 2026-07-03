@@ -1,6 +1,6 @@
-import { InfoTooltip } from '@/app/(shared)/components/common/InfoTooltip';
-import { LoadingArtPlaceholder } from '@/app/(shared)/components/common/LoadingArtPlaceholder';
-import { NFTImageContent } from '@/app/(shared)/components/common/NFTArt';
+import { InfoTooltip } from '@/app/(shared)/components/InfoTooltip';
+import { LoadingArtPlaceholder } from '@/app/(shared)/components/LoadingArtPlaceholder';
+import { NFTImageContent } from '@/app/(shared)/components/NFTArt';
 import { Account } from '@/app/(core)/providers/accounts';
 import React, { Suspense } from 'react';
 

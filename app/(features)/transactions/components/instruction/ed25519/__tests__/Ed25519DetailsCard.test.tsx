@@ -6,7 +6,7 @@ import { vi } from 'vitest';
 import { Ed25519DetailsCard } from '../Ed25519DetailsCard';
 
 // Mock the dependencies
-vi.mock('../../../common/Address', () => ({
+vi.mock('@/app/(shared)/components/common/Address', () => ({
   Address: ({ pubkey, alignRight, link }: { pubkey: PublicKey; alignRight?: boolean; link?: boolean }) => (
     <div data-testid="address" className={`${alignRight ? 'text-end' : ''} ${link ? 'text-link' : ''}`}>
       {pubkey.toBase58()}
@@ -14,7 +14,7 @@ vi.mock('../../../common/Address', () => ({
   ),
 }));
 
-vi.mock('../../../common/Copyable', () => ({
+vi.mock('@/app/(shared)/components/Copyable', () => ({
   Copyable: ({ text, children }: { text: string; children: React.ReactNode }) => (
     <div data-testid="copyable" data-text={text}>
       {children}

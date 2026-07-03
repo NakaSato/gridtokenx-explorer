@@ -1,5 +1,5 @@
 import * as spl from '@solana/spl-token';
-import { AddressLookupTableAccount, clusterApiUrl, Connection, PublicKey, TransactionMessage } from '@solana/web3.js';
+import { PublicKey, TransactionMessage } from '@solana/web3.js';
 
 import * as stubs from '@/app/__tests__/mock-stubs';
 import * as mock from '@/app/__tests__/mocks';
@@ -10,14 +10,8 @@ describe('intoParsedData', () => {
   test('should return "create" instruction data', async () => {
     const index = 2;
     const message = mock.deserializeMessage(stubs.aTokenCreateMsgWithInnerCards);
-    const connection = new Connection(clusterApiUrl('mainnet-beta'));
-    const lookups = await Promise.all(
-      message.addressTableLookups.map(lookup =>
-        connection.getAddressLookupTable(lookup.accountKey).then(val => val.value),
-      ),
-    );
     const tx = TransactionMessage.decompile(message, {
-      addressLookupTableAccounts: lookups.filter(x => x !== null) as AddressLookupTableAccount[],
+      addressLookupTableAccounts: mock.getMockAddressLookupTableAccounts(message),
     });
     const ix = tx.instructions[index];
     const data = privateIntoParsedData(ix);
@@ -41,14 +35,8 @@ describe('intoParsedData', () => {
   test('should return "createIdempotent" instruction data', async () => {
     const index = 1;
     const message = mock.deserializeMessageV0(stubs.aTokenCreateIdempotentMsg);
-    const connection = new Connection(clusterApiUrl('mainnet-beta'));
-    const lookups = await Promise.all(
-      message.addressTableLookups.map(lookup =>
-        connection.getAddressLookupTable(lookup.accountKey).then(val => val.value),
-      ),
-    );
     const tx = TransactionMessage.decompile(message, {
-      addressLookupTableAccounts: lookups.filter(x => x !== null) as AddressLookupTableAccount[],
+      addressLookupTableAccounts: mock.getMockAddressLookupTableAccounts(message),
     });
     const ix = tx.instructions[index];
     const data = privateIntoParsedData(ix);
@@ -72,14 +60,8 @@ describe('intoParsedData', () => {
   test('should return "recoverNested" instruction data', async () => {
     const index = 0;
     const message = mock.deserializeMessage(stubs.aTokenRecoverNestedMsg);
-    const connection = new Connection(clusterApiUrl('mainnet-beta'));
-    const lookups = await Promise.all(
-      message.addressTableLookups.map(lookup =>
-        connection.getAddressLookupTable(lookup.accountKey).then(val => val.value),
-      ),
-    );
     const tx = TransactionMessage.decompile(message, {
-      addressLookupTableAccounts: lookups.filter(x => x !== null) as AddressLookupTableAccount[],
+      addressLookupTableAccounts: mock.getMockAddressLookupTableAccounts(message),
     });
     const ix = tx.instructions[index];
     const data = privateIntoParsedData(ix);

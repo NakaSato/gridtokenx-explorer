@@ -1,4 +1,4 @@
-import { bytesToHex } from '@noble/hashes/utils';
+import { bytesToHex } from '@noble/hashes/utils.js';
 import { renderHook } from '@testing-library/react';
 import { vi } from 'vitest';
 
@@ -12,7 +12,7 @@ import {
 } from '../FormattedIdl';
 
 // Mock byte to hex utility since we don't need actual conversion in tests
-vi.mock('@noble/hashes/utils', () => ({
+vi.mock('@noble/hashes/utils.js', () => ({
   bytesToHex: (data: Uint8Array) => `0x${Buffer.from(data).toString('hex')}`,
 }));
 

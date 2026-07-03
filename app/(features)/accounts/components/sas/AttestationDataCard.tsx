@@ -8,7 +8,7 @@ import {
   Schema as SasSchema,
 } from 'sas-lib';
 
-import { SolarizedJsonViewer as ReactJson } from '@/app/(shared)/components/common/JsonViewer';
+import { SolarizedJsonViewer as ReactJson } from '@/app/(shared)/components/JsonViewer';
 import {
   decodeAccount,
   decodeWithType,

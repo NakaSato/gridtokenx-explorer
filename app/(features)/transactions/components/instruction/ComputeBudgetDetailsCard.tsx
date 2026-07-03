@@ -17,8 +17,10 @@ import { lamportsToSolString } from '@/app/(shared)/utils/math';
 // Helper function to convert microLamports to lamports string
 function microLamportsToLamportsString(microLamports: number | bigint): string {
   const lamports = Number(microLamports) / 1_000_000;
+  // Micro-lamport prices are usually fractions of a lamport — keep the full
+  // micro-lamport precision (6 decimal places) instead of rounding to 0.
   return lamports.toLocaleString('en-US', {
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 6,
     minimumFractionDigits: 0,
   });
 }

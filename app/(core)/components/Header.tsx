@@ -1,5 +1,5 @@
 import { AccountHeader } from '@/app/(shared)/components/account/AccountHeader';
-import { TokenMarketData } from '@/app/(shared)/components/common/TokenMarketData';
+import { TokenMarketData } from '@/app/(shared)/components/TokenMarketData';
 import { ComponentProps } from 'react';
 
 import { useCoinGecko } from '@/app/utils/coingecko';

@@ -4,9 +4,13 @@ import { vi } from 'vitest';
 
 import { LighthouseDetailsCard } from '../LighthouseDetailsCard';
 
-vi.mock('react-feather', () => ({
-  CornerDownRight: () => <div data-testid="corner-down-right" />,
-}));
+vi.mock(import('react-feather'), async importOriginal => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    CornerDownRight: () => <div data-testid="corner-down-right" />,
+  };
+});
 
 vi.mock('../../InstructionCard', () => ({
   InstructionCard: ({ children, title }: { children: React.ReactNode; title: string }) => (
@@ -23,7 +27,7 @@ vi.mock('../../InstructionCard', () => ({
   ),
 }));
 
-vi.mock('../../../common/Address', () => ({
+vi.mock('@/app/(shared)/components/common/Address', () => ({
   Address: ({ pubkey }: { pubkey: PublicKey }) => <div data-testid="address">{pubkey.toBase58()}</div>,
 }));
 
@@ -35,7 +39,7 @@ vi.mock('../../../common/Copyable', () => ({
   ),
 }));
 
-vi.mock('../../../../utils/anchor', () => ({
+vi.mock('@/app/(shared)/utils/anchor', () => ({
   ExpandableRow: ({
     fieldName,
     fieldType,
@@ -60,7 +64,7 @@ vi.mock('../../../../utils/anchor', () => ({
 }));
 
 vi.mock('change-case', () => ({
-  split: jest.fn(() => 'mocked-split'),
+  split: vi.fn(() => 'mocked-split'),
 }));
 
 describe('LighthouseDetailsCard', () => {

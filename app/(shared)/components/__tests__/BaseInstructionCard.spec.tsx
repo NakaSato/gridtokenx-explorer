@@ -1,5 +1,5 @@
 import { ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { AddressLookupTableAccount, clusterApiUrl, Connection, TransactionMessage } from '@solana/web3.js';
+import { TransactionMessage } from '@solana/web3.js';
 import { render, screen } from '@testing-library/react';
 
 import * as stubs from '@/app/__tests__/mock-stubs';
@@ -13,12 +13,8 @@ describe('BaseInstructionCard', () => {
   test('should render "BaseInstructionCard"', async () => {
     const index = 1;
     const m = mock.deserializeMessageV0(stubs.aTokenCreateIdempotentMsg);
-    const connection = new Connection(clusterApiUrl('mainnet-beta'));
-    const lookups = await Promise.all(
-      m.addressTableLookups.map(lookup => connection.getAddressLookupTable(lookup.accountKey).then(val => val.value)),
-    );
     const ti = TransactionMessage.decompile(m, {
-      addressLookupTableAccounts: lookups.filter(x => x !== null) as AddressLookupTableAccount[],
+      addressLookupTableAccounts: mock.getMockAddressLookupTableAccounts(m),
     }).instructions[index];
 
     expect(ti.programId.equals(ASSOCIATED_TOKEN_PROGRAM_ID)).toBeTruthy();
@@ -38,12 +34,8 @@ describe('BaseInstructionCard', () => {
   test('should render "BaseInstructionCard" with raw data', async () => {
     const index = 1;
     const m = mock.deserializeMessageV0(stubs.aTokenCreateIdempotentMsg);
-    const connection = new Connection(clusterApiUrl('mainnet-beta'));
-    const lookups = await Promise.all(
-      m.addressTableLookups.map(lookup => connection.getAddressLookupTable(lookup.accountKey).then(val => val.value)),
-    );
     const ti = TransactionMessage.decompile(m, {
-      addressLookupTableAccounts: lookups.filter(x => x !== null) as AddressLookupTableAccount[],
+      addressLookupTableAccounts: mock.getMockAddressLookupTableAccounts(m),
     }).instructions[index];
     expect(ti.programId.equals(ASSOCIATED_TOKEN_PROGRAM_ID)).toBeTruthy();
 

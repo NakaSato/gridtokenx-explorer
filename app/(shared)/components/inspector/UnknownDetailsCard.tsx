@@ -1,4 +1,4 @@
-import { InspectorInstructionCard } from '@/app/(shared)/components/common/InspectorInstructionCard';
+import { InspectorInstructionCard } from '@/app/(shared)/components/InspectorInstructionCard';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { ParsedInstruction, SignatureResult, TransactionInstruction, VersionedMessage } from '@solana/web3.js';
 import { getProgramName } from '@/app/(shared)/utils/tx';

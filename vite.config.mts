@@ -9,7 +9,6 @@ const specWorkspace = (name = 'specs') => ({
   server: {
     deps: {
       inline: [
-        '@noble',
         'change-case',
         '@react-hook/previous',
         '@solana/kit',
