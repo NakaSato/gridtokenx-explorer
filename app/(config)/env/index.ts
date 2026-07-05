@@ -1,6 +1,8 @@
 // Environment Configuration
 // Centralized environment variable management
 
+import { runtimeConfig } from '@/app/(shared)/utils/runtime-config';
+
 export interface EnvConfig {
   // Solana RPC Configuration
   solanaRpcHttp?: string;
@@ -26,8 +28,8 @@ export interface EnvConfig {
 // Default configuration
 const defaultConfig: EnvConfig = {
   nextPublicUrl: process.env.NEXT_PUBLIC_URL || 'https://explorer.gridtokenx.com',
-  solanaRpcHttp: process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP,
-  solanaRpcWs: process.env.NEXT_PUBLIC_SOLANA_RPC_WS,
+  solanaRpcHttp: runtimeConfig('SOLANA_RPC_HTTP', process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP),
+  solanaRpcWs: runtimeConfig('SOLANA_RPC_WS', process.env.NEXT_PUBLIC_SOLANA_RPC_WS),
   enableCustomRpc: process.env.NEXT_PUBLIC_ENABLE_CUSTOM_RPC === 'true',
   enableAnalytics: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true',
   enableFeatureGates: process.env.NEXT_PUBLIC_ENABLE_FEATURE_GATES !== 'false',

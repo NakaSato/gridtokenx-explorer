@@ -2,9 +2,13 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { useState, useCallback, useMemo, useEffect } from 'react';
 
-// Use the environment variable for the RPC URL, falling back to mainnet-beta
+import { runtimeConfig } from '@/app/(shared)/utils/runtime-config';
+
+// Runtime-injected RPC URL first (container restart picks up changes),
+// build-time bake as fallback, then mainnet-beta.
 const RPC_ENDPOINT =
-  process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP || 'https://api.mainnet-beta.solana.com';
+  runtimeConfig('SOLANA_RPC_HTTP', process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP) ||
+  'https://api.mainnet-beta.solana.com';
 
 export interface SearchFilters {
   query?: string;

@@ -2,13 +2,16 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { useState, useEffect } from 'react';
 
-// Use the environment variable for the RPC URL, falling back to mainnet-beta
+import { runtimeConfig } from '@/app/(shared)/utils/runtime-config';
+
+// Runtime-injected RPC URL first (container restart picks up changes),
+// build-time bake as fallback, then mainnet-beta.
 const HTTP_ENDPOINT =
-  process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP ||
+  runtimeConfig('SOLANA_RPC_HTTP', process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP) ||
   'https://api.mainnet-beta.solana.com';
 
 const WS_ENDPOINT =
-  process.env.NEXT_PUBLIC_SOLANA_RPC_WS ||
+  runtimeConfig('SOLANA_RPC_WS', process.env.NEXT_PUBLIC_SOLANA_RPC_WS) ||
   (HTTP_ENDPOINT.startsWith('http') ? HTTP_ENDPOINT.replace('http', 'ws') : undefined);
 
 export class BlockchainRealtimeService {

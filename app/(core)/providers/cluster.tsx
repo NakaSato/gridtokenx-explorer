@@ -3,6 +3,7 @@
 import { createSolanaRpc } from '@solana/kit';
 import { Cluster, clusterName, ClusterStatus, clusterUrl, DEFAULT_CLUSTER } from '@/app/(shared)/utils/cluster';
 import { localStorageIsAvailable } from '@/app/(shared)/utils/local-storage';
+import { runtimeConfig } from '@/app/(shared)/utils/runtime-config';
 import { ReadonlyURLSearchParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useReducer, useState } from 'react';
 
@@ -35,8 +36,10 @@ interface State {
   status: ClusterStatus;
 }
 
-// Use local RPC URL from environment or fallback to localhost:8899
-const DEFAULT_CUSTOM_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP || 'http://localhost:8899';
+// Use the runtime-injected RPC URL (container restart picks up changes),
+// falling back to the build-time bake, then localhost:8899.
+const DEFAULT_CUSTOM_URL =
+  runtimeConfig('SOLANA_RPC_HTTP', process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP) || 'http://localhost:8899';
 
 function clusterReducer(state: State, action: Action): State {
   switch (action.status) {

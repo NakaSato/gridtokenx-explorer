@@ -1,3 +1,5 @@
+import { runtimeConfig } from './runtime-config';
+
 export enum ClusterStatus {
   Connected,
   Connecting,
@@ -56,8 +58,9 @@ const modifyUrl = (url: string): string => {
 };
 
 export function clusterUrl(cluster: Cluster, customUrl: string): string {
-  // Support local development from .env.local
-  const localRpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP;
+  // Runtime-injected RPC URL first (container restart picks up changes),
+  // build-time bake as fallback.
+  const localRpcUrl = runtimeConfig('SOLANA_RPC_HTTP', process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP);
 
   switch (cluster) {
     case Cluster.Devnet:
@@ -67,8 +70,8 @@ export function clusterUrl(cluster: Cluster, customUrl: string): string {
     case Cluster.Testnet:
       return process.env.NEXT_PUBLIC_TESTNET_RPC_URL ?? modifyUrl(TESTNET_URL);
     case Cluster.Localnet:
-      // Default Anchor localnet RPC
-      return process.env.NEXT_PUBLIC_LOCALNET_RPC_URL ?? LOCAL_URL;
+      // Runtime RPC URL, then the dedicated localnet override, then default.
+      return localRpcUrl ?? process.env.NEXT_PUBLIC_LOCALNET_RPC_URL ?? LOCAL_URL;
     case Cluster.Custom:
       // Use custom URL, or fall back to local RPC from env, or default local URL
       return customUrl || localRpcUrl || LOCAL_URL;
@@ -96,7 +99,7 @@ export function serverClusterUrl(cluster: Cluster, customUrl: string): string {
 }
 
 export const DEFAULT_CLUSTER = (function () {
-  const envCluster = process.env.NEXT_PUBLIC_DEFAULT_CLUSTER;
+  const envCluster = runtimeConfig('DEFAULT_CLUSTER', process.env.NEXT_PUBLIC_DEFAULT_CLUSTER);
   switch (envCluster) {
     case 'mainnet-beta': return Cluster.MainnetBeta;
     case 'testnet': return Cluster.Testnet;

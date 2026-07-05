@@ -12,7 +12,32 @@ import React, { Suspense } from 'react';
 
 import './globals.css';
 
+// The runtime-config injection below must read the live container env on
+// every request — never a value frozen into a prerendered shell at build.
+export const dynamic = 'force-dynamic';
+
 const defaultUrl = process.env.NEXT_PUBLIC_URL || 'https://explorer.solana.com';
+
+/**
+ * Values served to the browser as `window.__RUNTIME_CONFIG__` (see
+ * app/(shared)/utils/runtime-config.ts). Plain (non-NEXT_PUBLIC) names are
+ * read from the container env at request time; the NEXT_PUBLIC twins remain
+ * as fallback so images built with the old bake still work.
+ */
+function runtimeEnv(): Record<string, string | undefined> {
+  return {
+    SOLANA_RPC_HTTP: process.env.SOLANA_RPC_HTTP ?? process.env.NEXT_PUBLIC_SOLANA_RPC_HTTP,
+    SOLANA_RPC_WS: process.env.SOLANA_RPC_WS ?? process.env.NEXT_PUBLIC_SOLANA_RPC_WS,
+    DEFAULT_CLUSTER: process.env.DEFAULT_CLUSTER ?? process.env.NEXT_PUBLIC_DEFAULT_CLUSTER,
+    TRADING_PROGRAM_ID: process.env.TRADING_PROGRAM_ID ?? process.env.NEXT_PUBLIC_TRADING_PROGRAM_ID,
+    TOKEN_PROGRAM_ID: process.env.TOKEN_PROGRAM_ID ?? process.env.NEXT_PUBLIC_TOKEN_PROGRAM_ID,
+    GOVERNANCE_PROGRAM_ID: process.env.GOVERNANCE_PROGRAM_ID ?? process.env.NEXT_PUBLIC_GOVERNANCE_PROGRAM_ID,
+    ORACLE_PROGRAM_ID: process.env.ORACLE_PROGRAM_ID ?? process.env.NEXT_PUBLIC_ORACLE_PROGRAM_ID,
+    REGISTRY_PROGRAM_ID: process.env.REGISTRY_PROGRAM_ID ?? process.env.NEXT_PUBLIC_REGISTRY_PROGRAM_ID,
+    TREASURY_PROGRAM_ID: process.env.TREASURY_PROGRAM_ID ?? process.env.NEXT_PUBLIC_TREASURY_PROGRAM_ID,
+    BLOCKBENCH_PROGRAM_ID: process.env.BLOCKBENCH_PROGRAM_ID ?? process.env.NEXT_PUBLIC_BLOCKBENCH_PROGRAM_ID,
+  };
+}
 
 export const metadata: Metadata = {
   description: 'Inspect transactions, accounts, blocks, and more on the Solana blockchain',
@@ -50,6 +75,13 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.png" type="image/png" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        {/* Inline (not deferred) so it executes before any client chunk's
+            module scope evaluates. `<` escaped to keep the JSON script-safe. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__RUNTIME_CONFIG__=${JSON.stringify(runtimeEnv()).replace(/</g, '\\u003c')}`,
+          }}
+        />
       </head>
       <body className="bg-navy-900" suppressHydrationWarning>
         <Suspense fallback={<div>Loading...</div>}>

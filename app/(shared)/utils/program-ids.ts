@@ -7,16 +7,19 @@
 
 import { address, type Address } from '@solana/kit';
 
+import { runtimeConfig } from './runtime-config';
+
 /**
- * Get GridTokenX program IDs from environment variables
- * These IDs should be configured in .env.local for local development
+ * Get GridTokenX program IDs — runtime-injected (window.__RUNTIME_CONFIG__)
+ * with the build-time NEXT_PUBLIC_ values as fallback, so key changes only
+ * need a container restart, not an image rebuild.
  */
 export const GRIDTOKENX_PROGRAM_IDS = {
-  registry: process.env.NEXT_PUBLIC_REGISTRY_PROGRAM_ID,
-  oracle: process.env.NEXT_PUBLIC_ORACLE_PROGRAM_ID,
-  governance: process.env.NEXT_PUBLIC_GOVERNANCE_PROGRAM_ID,
-  token: process.env.NEXT_PUBLIC_TOKEN_PROGRAM_ID,
-  trading: process.env.NEXT_PUBLIC_TRADING_PROGRAM_ID,
+  registry: runtimeConfig('REGISTRY_PROGRAM_ID', process.env.NEXT_PUBLIC_REGISTRY_PROGRAM_ID),
+  oracle: runtimeConfig('ORACLE_PROGRAM_ID', process.env.NEXT_PUBLIC_ORACLE_PROGRAM_ID),
+  governance: runtimeConfig('GOVERNANCE_PROGRAM_ID', process.env.NEXT_PUBLIC_GOVERNANCE_PROGRAM_ID),
+  token: runtimeConfig('TOKEN_PROGRAM_ID', process.env.NEXT_PUBLIC_TOKEN_PROGRAM_ID),
+  trading: runtimeConfig('TRADING_PROGRAM_ID', process.env.NEXT_PUBLIC_TRADING_PROGRAM_ID),
 } as const;
 
 /**
