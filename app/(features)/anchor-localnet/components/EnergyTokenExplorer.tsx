@@ -3,19 +3,25 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { PROGRAMS } from '../config';
+import {
+  decodeEnergyTokenInfo,
+  decodeGenerationMintRecord,
+  EnergyTokenInfoData,
+  GenerationMintRecordData,
+  GENERATION_MINT_RECORD_ACCOUNT_SIZE,
+  GRX_DECIMALS,
+  SETTLEMENT_WINDOW_MS,
+  TOKEN_INFO_ACCOUNT_SIZE,
+} from '../lib/energy-token-decoders';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/ui/table';
 import { Button } from '@/app/(shared)/components/ui/button';
-import { Signature } from '@/app/(shared)/components/Signature';
-import { TimestampToggle } from '@/app/(shared)/components/TimestampToggle';
+import { Address } from '@/app/(shared)/components/Address';
 import {
   Coins, Activity, Zap, ShieldCheck, Search, RefreshCw, Clock, Wifi, WifiOff, AlertTriangle,
   ChevronUp, ChevronDown, ChevronsUpDown, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 
-const GRX_DECIMALS = 9;
-const TOKEN_INFO_SIZE = 320; // TokenInfo (zero-copy): 312 payload + 8 disc
-const GEN_RECORD_SIZE = 42; // GenerationMintRecord: 34 payload + 8 disc
 const MAX_ROWS = 100; // cap rendered rows; full counts shown in the stats
 const PAGE_SIZE = 15; // rows per page in the records table
 
@@ -23,24 +29,10 @@ type SortKey = 'meter' | 'amount' | 'window' | 'status';
 type SortDir = 'asc' | 'desc';
 type StatusFilter = 'all' | 'minted' | 'pending';
 
-interface TokenInfoData {
-  address: string;
-  authority: string;
-  registryProgram: string;
-  mint: string;
-  totalSupply: number;
-  recValidatorsCount: number;
-}
-
+type TokenInfoData = EnergyTokenInfoData;
 // GenerationMintRecord — the real on-chain proof of generation: one record per
 // (meter, 15-min settlement window) recording the GRX minted for that window.
-interface GenRecord {
-  address: string;
-  meterId: string;
-  windowMs: number;
-  amount: number;
-  minted: boolean;
-}
+type GenRecord = GenerationMintRecordData;
 
 interface EnergyTokenExplorerProps {
   rpcUrl: string;
@@ -49,10 +41,36 @@ interface EnergyTokenExplorerProps {
 
 const fmtGrx = (raw: number) => raw / 10 ** GRX_DECIMALS;
 
-function decodeMeterId(buf: Buffer): string {
-  // meter_id is 16 bytes; the seeder stores an ASCII id. Fall back to hex.
-  const ascii = buf.toString('ascii').replace(/[\x00\s]+$/g, ''); // trim trailing NUL/space padding
-  return /^[\x20-\x7e]+$/.test(ascii) ? ascii : buf.toString('hex');
+const WINDOW_DATE_FMT = new Intl.DateTimeFormat('en-US', {
+  day: 'numeric',
+  month: 'short',
+  timeZone: 'UTC',
+});
+const WINDOW_TIME_FMT = new Intl.DateTimeFormat('en-US', {
+  hour: '2-digit',
+  hourCycle: 'h23',
+  minute: '2-digit',
+  timeZone: 'UTC',
+});
+
+// Compact two-line window cell: "09:45–10:00" over "Jul 5 · UTC". The full
+// verbose timestamp ("5 Jul 2026 at 09:45:00 UTC") made the Window column the
+// widest in the table for what is always a 15-minute bucket.
+function WindowCell({ windowMs }: { windowMs: number }) {
+  const start = new Date(windowMs);
+  const end = new Date(windowMs + SETTLEMENT_WINDOW_MS);
+  const title = `${WINDOW_DATE_FMT.format(start)} ${WINDOW_TIME_FMT.format(start)}–${WINDOW_TIME_FMT.format(end)} UTC (15-min settlement window)`;
+  return (
+    <div className="whitespace-nowrap" title={title}>
+      <p className="text-xs text-[#888]">
+        {WINDOW_TIME_FMT.format(start)}
+        <span className="text-[#555]">–{WINDOW_TIME_FMT.format(end)}</span>
+      </p>
+      <p className="text-[9px] text-[#555]">
+        {WINDOW_DATE_FMT.format(start)} · UTC
+      </p>
+    </div>
+  );
 }
 
 export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplorerProps) {
@@ -75,35 +93,19 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
       const programId = new PublicKey(PROGRAMS.energy_token.id);
 
       const [infoAccounts, genAccounts] = await Promise.all([
-        conn.getProgramAccounts(programId, { filters: [{ dataSize: TOKEN_INFO_SIZE }] }),
-        conn.getProgramAccounts(programId, { filters: [{ dataSize: GEN_RECORD_SIZE }] }),
+        conn.getProgramAccounts(programId, { filters: [{ dataSize: TOKEN_INFO_ACCOUNT_SIZE }] }),
+        conn.getProgramAccounts(programId, { filters: [{ dataSize: GENERATION_MINT_RECORD_ACCOUNT_SIZE }] }),
       ]);
 
-      let info: TokenInfoData | null = null;
-      if (infoAccounts[0]) {
-        const d = infoAccounts[0].account.data.subarray(8) as Buffer;
-        info = {
-          address: infoAccounts[0].pubkey.toBase58(),
-          authority: new PublicKey(d.subarray(0, 32)).toBase58(),
-          registryProgram: new PublicKey(d.subarray(64, 96)).toBase58(),
-          mint: new PublicKey(d.subarray(96, 128)).toBase58(),
-          totalSupply: Number(d.readBigUInt64LE(128)),
-          recValidatorsCount: d[304],
-        };
-      }
+      const info: TokenInfoData | null = infoAccounts[0]
+        ? decodeEnergyTokenInfo(infoAccounts[0].account.data, infoAccounts[0].pubkey.toBase58())
+        : null;
 
       let mintedSum = 0;
       const recs: GenRecord[] = genAccounts.map(({ pubkey, account }) => {
-        const d = account.data.subarray(8) as Buffer;
-        const amount = Number(d.readBigUInt64LE(24));
-        mintedSum += amount;
-        return {
-          address: pubkey.toBase58(),
-          meterId: decodeMeterId(d.subarray(0, 16) as Buffer),
-          windowMs: Number(d.readBigInt64LE(16)),
-          amount,
-          minted: d[32] === 1,
-        };
+        const rec = decodeGenerationMintRecord(account.data, pubkey.toBase58());
+        mintedSum += rec.amount;
+        return rec;
       });
 
       recs.sort((a, b) => b.windowMs - a.windowMs);
@@ -196,7 +198,7 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
   }
 
   return (
-    <div className="space-y-2 bg-black p-2 font-mono text-[#e0e0e0]">
+    <div className="flex h-full flex-col gap-2 bg-black p-2 font-mono text-[#e0e0e0]">
       {/* Header + connection status */}
       <div className="flex flex-col justify-between gap-3 border border-[#2a2a2a] bg-[#111] p-3 md:flex-row md:items-center">
         <div className="flex items-center gap-3">
@@ -257,7 +259,7 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
           icon={<Coins className="h-5 w-5" />}
           label="Total GRX Supply"
           value={tokenInfo ? `${fmtGrx(tokenInfo.totalSupply).toLocaleString(undefined, { maximumFractionDigits: 2 })}` : '0'}
-          subValue="On-chain Circulating"
+          subValue="Incl. Seed & Direct Mints"
           color="purple"
         />
         <StatCard
@@ -284,12 +286,12 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
       </div>
 
       {/* Records table (full width) */}
-      <div className="space-y-2">
-        <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
-          <CardHeader className="border-b border-[#2a2a2a] bg-[#111] py-2">
+      <div className="flex min-h-0 flex-1 flex-col">
+        <Card className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border-[#2a2a2a] bg-black">
+          <CardHeader className="shrink-0 border-b border-[#2a2a2a] bg-[#111] py-2">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <CardTitle className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">Proof-of-Generation Records</CardTitle>
+                <CardTitle className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">Generation Mint Records</CardTitle>
                 <p className="text-[9px] uppercase tracking-wide text-[#666]">
                   GRX minted per meter per settlement window
                 </p>
@@ -320,8 +322,8 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-0">
-            <div className="max-h-[560px] overflow-auto">
+          <CardContent className="flex min-h-0 flex-1 flex-col p-0">
+            <div className="min-h-0 flex-1 overflow-auto">
               <Table className="[&_td]:px-3 [&_th]:px-3 [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4">
                 <TableHeader className="sticky top-0 z-10 bg-[#0a0a0a]">
                   <TableRow className="border-[#2a2a2a] hover:bg-transparent">
@@ -342,7 +344,6 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
                         <p className="text-sm font-bold text-[#e0e0e0] transition-colors group-hover:text-[#9945FF]">
                           {rec.meterId}
                         </p>
-                        <p className="text-[9px] text-[#555]">PK: {rec.address.slice(0, 12)}...</p>
                       </TableCell>
                       <TableCell className="py-2 text-right">
                         <div className="inline-flex items-center gap-1.5 border border-[#14F195]/20 bg-[#14F195]/10 px-2 py-1">
@@ -354,9 +355,9 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
                         <p className="mt-0.5 text-[9px] text-[#555]">{rec.amount.toLocaleString()} raw</p>
                       </TableCell>
                       <TableCell className="py-2">
-                        <div className="flex items-center gap-2 text-[#888]">
-                          <Clock className="h-3 w-3 text-[#555]" />
-                          <TimestampToggle unixTimestamp={rec.windowMs} shorter />
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-3 w-3 shrink-0 text-[#555]" />
+                          <WindowCell windowMs={rec.windowMs} />
                         </div>
                       </TableCell>
                       <TableCell className="py-2">
@@ -366,10 +367,8 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
                           <span className="bg-[#ff8c00]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase text-[#ff8c00]">Pending</span>
                         )}
                       </TableCell>
-                      <TableCell className="py-2 text-right">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none hover:bg-[#9945FF]/20">
-                          <Signature signature={rec.address} link />
-                        </Button>
+                      <TableCell className="py-2 text-right text-xs">
+                        <Address pubkey={new PublicKey(rec.address)} link alignRight />
                       </TableCell>
                     </TableRow>
                   ))}

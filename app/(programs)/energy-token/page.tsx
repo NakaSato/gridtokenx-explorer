@@ -12,6 +12,7 @@ export default function EnergyTokenPage() {
       iconColor="yellow"
       badgeColor="yellow"
       contentClassName="overflow-hidden p-0"
+      fullHeight
     >
       {({ rpcUrl, getConnection }) => (
         <EnergyTokenExplorer rpcUrl={rpcUrl} getConnection={getConnection} />

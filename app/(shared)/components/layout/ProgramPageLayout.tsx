@@ -20,6 +20,8 @@ interface ProgramPageLayoutProps {
   secondaryIcon?: LucideIcon;
   secondaryColor?: string;
   contentClassName?: string;
+  /** Lock the page to exactly 100vh; content fills the viewport and scrolls internally. */
+  fullHeight?: boolean;
   children: (props: { rpcUrl: string; getConnection: () => Connection }) => React.ReactNode;
 }
 
@@ -35,6 +37,7 @@ export function ProgramPageLayout({
   secondaryIcon: SecondaryIcon,
   secondaryColor = 'primary',
   contentClassName = 'rounded-3xl border border-white/5 bg-navy-800/20 backdrop-blur-sm overflow-hidden shadow-2xl p-8',
+  fullHeight = false,
   children,
 }: ProgramPageLayoutProps) {
   const { cluster, url } = useCluster();
@@ -64,10 +67,18 @@ export function ProgramPageLayout({
   const bgClass = bgGradientMap[iconColor] || bgGradientMap.primary;
 
   return (
-    <div className="min-h-screen bg-navy-900 text-slate-100 selection:bg-primary/30">
+    <div
+      className={`${
+        fullHeight ? 'flex h-screen flex-col overflow-hidden' : 'min-h-screen'
+      } bg-navy-900 text-slate-100 selection:bg-primary/30`}
+    >
 
 
-      <div className="container relative mx-auto px-4 py-8">
+      <div
+        className={`container relative mx-auto px-4 py-8 ${
+          fullHeight ? 'flex min-h-0 flex-1 flex-col' : ''
+        }`}
+      >
         {/* Page Header */}
         {(badgeText || title || description || secondaryLabel) && (
           <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -111,8 +122,8 @@ export function ProgramPageLayout({
         )}
 
         {/* Main Content Area */}
-        <div className="space-y-8">
-           <div className={contentClassName}>
+        <div className={fullHeight ? 'flex min-h-0 flex-1 flex-col' : 'space-y-8'}>
+           <div className={`${contentClassName}${fullHeight ? ' min-h-0 flex-1' : ''}`}>
               {children({ rpcUrl: url, getConnection })}
            </div>
         </div>
