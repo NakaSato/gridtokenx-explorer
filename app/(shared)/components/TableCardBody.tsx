@@ -1,7 +1,17 @@
 import { cva, VariantProps } from 'class-variance-authority';
 import React from 'react';
 
-const tableVariants = cva(['w-full'], {
+const tableVariants = cva(
+  [
+    'w-full',
+    'text-sm',
+    '[&_td]:px-6',
+    '[&_td]:py-3',
+    '[&_th]:px-6',
+    '[&_th]:py-3',
+    '[&_td:first-child]:text-muted-foreground',
+  ],
+  {
   defaultVariants: {
     layout: 'compact',
   },
@@ -19,7 +29,7 @@ export function TableCardBody({ children, ...props }: TableCardBodyProps) {
   return (
     <div className="mb-0 overflow-x-auto">
       <table className={tableVariants(props)}>
-        <tbody className="divide-y divide-gray-200">{children}</tbody>
+        <tbody className="divide-y divide-border">{children}</tbody>
       </table>
     </div>
   );
@@ -34,7 +44,7 @@ export function TableCardBodyHeaded({ children, headerComponent, ...props }: Tab
     <div className="mb-0 overflow-x-auto">
       <table className={tableVariants(props)}>
         {headerComponent ? <thead>{headerComponent}</thead> : null}
-        <tbody className="divide-y divide-gray-200">{children}</tbody>
+        <tbody className="divide-y divide-border">{children}</tbody>
       </table>
     </div>
   );

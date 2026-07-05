@@ -15,12 +15,21 @@ import { NonceAccountSection } from '@/app/(features)/accounts/components/NonceA
 import { StakeAccountSection } from '@/app/(features)/accounts/components/StakeAccountSection';
 import { SysvarAccountSection } from '@/app/(features)/accounts/components/SysvarAccountSection';
 import { TokenAccountSection } from '@/app/(features)/accounts/components/TokenAccountSection';
+import {
+  EnergyTokenAccountSection,
+  isEnergyTokenAccountData,
+} from '@/app/(features)/accounts/components/EnergyTokenAccountSection';
+import {
+  RegistryAccountSection,
+  isRegistryAccountData,
+} from '@/app/(features)/accounts/components/RegistryAccountSection';
+import { PROGRAMS } from '@/app/(features)/anchor-localnet/config';
 import { UnknownAccountCard } from '@/app/(features)/accounts/components/UnknownAccountCard';
 import { UpgradeableLoaderAccountSection } from '@/app/(features)/accounts/components/UpgradeableLoaderAccountSection';
 import { VoteAccountSection } from '@/app/(features)/accounts/components/VoteAccountSection';
 import { ErrorCard } from '@/app/(shared)/components/common/ErrorCard';
 import { LoadingCard } from '@/app/(shared)/components/common/LoadingCard';
-import { Header } from '@/app/(shared)/components/Header';
+import { AccountHeader } from '@/app/(features)/accounts/components/AccountHeader';
 import {
   Account,
   AccountsProvider,
@@ -230,13 +239,15 @@ function AddressLayoutInner({ children, params }: Props) {
   }, [address, status]); // eslint-disablline react-hooks/exhaustivdeps
 
   return (
-    <div className="container mx-auto -mt-12 px-4">
-      <Header
-        address={address}
-        account={info?.data}
-        tokenInfo={fullTokenInfo}
-        isTokenInfoLoading={isFullTokenInfoLoading}
-      />
+    <div className="container mx-auto px-4 py-6">
+      <div className="mb-6">
+        <AccountHeader
+          address={address}
+          account={info?.data}
+          tokenInfo={fullTokenInfo}
+          isTokenInfoLoading={isFullTokenInfoLoading}
+        />
+      </div>
       {!pubkey ? (
         <ErrorCard text={`Address "${address}" is not valid`} />
       ) : (
@@ -345,6 +356,10 @@ function InfoSection({ account, tokenInfo }: { account: Account; tokenInfo?: Ful
     return <FeatureAccountSection account={account} />;
   } else if (account.owner.toBase58() === SAS_PROGRAM_ID) {
     return <SolanaAttestationServiceCard account={account} />;
+  } else if (account.owner.toBase58() === PROGRAMS.energy_token.id && isEnergyTokenAccountData(rawData)) {
+    return <EnergyTokenAccountSection account={account} />;
+  } else if (account.owner.toBase58() === PROGRAMS.registry.id && isRegistryAccountData(rawData)) {
+    return <RegistryAccountSection account={account} />;
   } else {
     const fallback = <UnknownAccountCard account={account} />;
     return (
@@ -397,11 +412,9 @@ export type MoreTabs =
 function MoreSection({ children, tabs }: { children: React.ReactNode; tabs: (React.JSX.Element | null)[] }) {
   return (
     <>
-      <div className="container mx-auto px-4">
-        <div className="header">
-          <div className="header-body pt-0">
-            <ul className="nav nav-tabs nav-overflow header-tabs">{tabs}</ul>
-          </div>
+      <div className="header mt-6 mb-4">
+        <div className="header-body pt-0">
+          <ul className="nav nav-tabs nav-overflow header-tabs">{tabs}</ul>
         </div>
       </div>
       {children}
@@ -537,7 +550,7 @@ function Tab({ address, path, title }: { address: string; path: string; title: s
   const isActive = (selectedLayoutSegment === null && path === '') || selectedLayoutSegment === path;
   return (
     <li className="nav-item">
-      <Link className={`${isActive ? 'active' : ''}nav-link`} href={tabPath} scroll={false}>
+      <Link className={`${isActive ? 'active ' : ''}nav-link`} href={tabPath} scroll={false}>
         {title}
       </Link>
     </li>
@@ -635,7 +648,7 @@ function ProgramIdlLink({ tab, address, pubkey }: { tab: Tab; address: string; p
 
   return (
     <li key={tab.slug} className="nav-item">
-      <Link className={`${isActive ? 'active' : ''}nav-link`} href={anchorProgramPath}>
+      <Link className={`${isActive ? 'active ' : ''}nav-link`} href={anchorProgramPath}>
         {tab.title}
       </Link>
     </li>
@@ -654,7 +667,7 @@ function AccountDataLink({ address, tab, programId }: { address: string; tab: Ta
 
   return (
     <li key={tab.slug} className="nav-item">
-      <Link className={`${isActive ? 'active' : ''}nav-link`} href={accountDataPath}>
+      <Link className={`${isActive ? 'active ' : ''}nav-link`} href={accountDataPath}>
         {tab.title}
       </Link>
     </li>
@@ -673,7 +686,7 @@ function FeatureGateLink({ address, tab }: { address: string; tab: Tab }) {
 
   return (
     <li key={tab.slug} className="nav-item">
-      <Link className={`${isActive ? 'active' : ''}nav-link`} href={accountDataPath}>
+      <Link className={`${isActive ? 'active ' : ''}nav-link`} href={accountDataPath}>
         {tab.title}
       </Link>
     </li>
@@ -695,7 +708,7 @@ function CompressedNftLink({ tab, address, pubkey }: { tab: Tab; address: string
 
   return (
     <li key={tab.slug} className="nav-item">
-      <Link className={`${isActive ? 'active' : ''}nav-link`} href={tabPath}>
+      <Link className={`${isActive ? 'active ' : ''}nav-link`} href={tabPath}>
         {tab.title}
       </Link>
     </li>
@@ -723,7 +736,7 @@ function ProgramMultisigLink({
 
   return (
     <li key={tab.slug} className="nav-item">
-      <Link className={`${isActive ? 'active' : ''}nav-link`} href={tabPath}>
+      <Link className={`${isActive ? 'active ' : ''}nav-link`} href={tabPath}>
         {tab.title}
       </Link>
     </li>
@@ -737,7 +750,7 @@ function TokenExtensionsLink({ address, tab }: { address: string; tab: Tab }) {
 
   return (
     <li key={tab.slug} className="nav-item">
-      <Link className={`${isActive ? 'active' : ''}nav-link`} href={accountDataPath}>
+      <Link className={`${isActive ? 'active ' : ''}nav-link`} href={accountDataPath}>
         {tab.title}
       </Link>
     </li>

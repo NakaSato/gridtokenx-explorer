@@ -21,8 +21,12 @@ const SQUADS_MAP_URL = 'https://4fnetmviidiqkjzenwxe66vgoa0soerr.lambda-url.us-e
 // Squads Multisig reverse map info is only available on mainnet
 export function useSquadsMultisigLookup(programAuthority: PublicKey | null | undefined, cluster: Cluster) {
   return useSWRImmutable<SquadsMultisigMapInfo | null>(
-    ['squadsReverseMap', programAuthority?.toString(), cluster],
-    async ([_prefix, programIdString, cluster]: [string, string | undefined, Cluster]) => {
+    // Null key off-mainnet: skips the fetch AND the suspense throw — otherwise
+    // every address page suspends on a promise that just resolves null.
+    cluster === Cluster.MainnetBeta && programAuthority
+      ? ['squadsReverseMap', programAuthority.toString(), cluster]
+      : null,
+    async ([_prefix, programIdString, cluster]: [string, string, Cluster]) => {
       if (cluster !== Cluster.MainnetBeta || !programIdString) {
         return null;
       }
