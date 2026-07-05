@@ -4,7 +4,7 @@ import { Input } from '@/app/(shared)/components/ui/input';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Label } from '@/app/(shared)/components/ui/label';
 import { Database, RefreshCw, Activity, CheckCircle2, XCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import toast from 'react-hot-toast';
 import { tradingApi } from '../../services/trading-api';
 import type { SettlementStats as ISettlementStats } from '../../services/trading-api';
 

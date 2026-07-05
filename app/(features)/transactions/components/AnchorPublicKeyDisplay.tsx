@@ -1,6 +1,6 @@
 'use client';
 
-import { toast } from 'sonner';
+import toast from 'react-hot-toast';
 import { PublicKey, Keypair } from '@solana/web3.js';
 import { addressToPublicKey, toAddress } from '@/app/(shared)/utils/rpc';
 import React from 'react';

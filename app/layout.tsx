@@ -4,7 +4,7 @@ import NavbarWrapper from '@/app/(core)/components/NavbarWrapper';
 import SearchBarWrapper from '@/app/(core)/components/SearchBarWrapper';
 import { ClusterProvider } from '@/app/(core)/providers/cluster';
 import { ScrollAnchorProvider } from '@/app/(core)/providers/scroll-anchor';
-import { Toaster } from '@/app/(shared)/components/ui/sonner';
+import { Toaster } from 'react-hot-toast';
 import type { Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Metadata } from 'next/types';
@@ -107,7 +107,18 @@ export default function RootLayout({
             </Suspense>
           </ScrollAnchorProvider>
         </Suspense>
-        <Toaster position="bottom-right" richColors />
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: '#1a1f2e',
+              color: '#e2e8f0',
+              border: '1px solid rgba(255,255,255,0.08)',
+            },
+            success: { iconTheme: { primary: '#14F195', secondary: '#0a0a0a' } },
+            error: { iconTheme: { primary: '#ff5555', secondary: '#0a0a0a' } },
+          }}
+        />
         {analytics}
       </body>
     </html>

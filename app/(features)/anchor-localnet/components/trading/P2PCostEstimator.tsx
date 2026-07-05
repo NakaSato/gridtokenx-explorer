@@ -3,7 +3,7 @@ import { Button } from '@/app/(shared)/components/ui/button';
 import { Input } from '@/app/(shared)/components/ui/input';
 import { Label } from '@/app/(shared)/components/ui/label';
 import { Database } from 'lucide-react';
-import { toast } from 'sonner';
+import toast from 'react-hot-toast';
 import { tradingApi, type P2PCostResponse } from '../../services/trading-api';
 
 export function P2PCostEstimator() {
