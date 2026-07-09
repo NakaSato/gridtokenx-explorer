@@ -57,17 +57,19 @@ export function useAnchorLocalnet(rpcUrl: string, enabled: boolean) {
   const connectionRef = useRef<Connection | null>(null);
   const lastSlotRef = useRef<number>(0);
 
-  // Get or create connection
-  const getConnection = useCallback(() => {
-    if (!connectionRef.current && rpcUrl && (rpcUrl.startsWith('http:') || rpcUrl.startsWith('https:'))) {
-      connectionRef.current = new Connection(rpcUrl, 'confirmed');
+  // Get or create connection. Always returns a live Connection: rpcUrl can be
+  // momentarily empty/invalid on first render (cluster context still
+  // resolving), so fall back to the local validator rather than returning null
+  // — callers deref this synchronously and a null crashes the page.
+  const getConnection = useCallback((): Connection => {
+    const endpoint =
+      rpcUrl && (rpcUrl.startsWith('http:') || rpcUrl.startsWith('https:'))
+        ? rpcUrl
+        : 'http://localhost:8899';
+    if (!connectionRef.current || connectionRef.current.rpcEndpoint !== endpoint) {
+      connectionRef.current = new Connection(endpoint, 'confirmed');
     }
     return connectionRef.current;
-  }, [rpcUrl]);
-
-  // Reset connection when URL changes
-  useEffect(() => {
-    connectionRef.current = null;
   }, [rpcUrl]);
 
   // Fetch overview status
