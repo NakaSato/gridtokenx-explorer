@@ -3,7 +3,7 @@
 import React from 'react';
 import { ProgramPageLayout } from '@/app/(shared)/components/layout/ProgramPageLayout';
 import { GovernanceExplorer } from '@/app/(features)/anchor-localnet';
-import { Shield, Lock } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 export default function GovernancePage() {
   return (
@@ -11,10 +11,6 @@ export default function GovernancePage() {
       icon={Shield}
       iconColor="green"
       badgeColor="green"
-      secondaryLabel="Security Level"
-      secondaryValue="Institutional Grade"
-      secondaryIcon={Lock}
-      secondaryColor="green"
       contentClassName="overflow-hidden p-0"
     >
       {({ rpcUrl, getConnection }) => (

@@ -74,7 +74,13 @@ type Block = {
   childSlot?: number;
   childLeader?: PublicKeyLike;
   parentLeader?: PublicKeyLike;
+  errorMessage?: string;
 };
+
+/** Block-availability errors that are expected on ledger-limited validators (pruned/skipped/not-yet-confirmed). */
+function isExpectedBlockUnavailable(message: string): boolean {
+  return /cleaned up|does not exist|not available|was skipped|is not available/i.test(message);
+}
 
 type State = Cache.State<Block>;
 type Dispatch = Cache.Dispatch<Block>;
@@ -205,7 +211,10 @@ export async function fetchBlock(dispatch: Dispatch, url: string, cluster: Clust
     }
   } catch (err) {
     status = FetchStatus.FetchFailed;
-    if (cluster !== Cluster.Custom) {
+    const message = err instanceof Error ? err.message : String(err);
+    data = { errorMessage: message };
+    // Pruned/skipped blocks are normal on a ledger-limited validator — don't spam the console.
+    if (cluster !== Cluster.Custom && !isExpectedBlockUnavailable(message)) {
       console.error(err, { tags: { url } });
     }
   }

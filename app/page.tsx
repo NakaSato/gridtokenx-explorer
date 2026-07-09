@@ -1,6 +1,8 @@
 'use client';
 
 import React, { Suspense } from 'react';
+// Aliased: `dynamic` (route directive) below collides with next/dynamic's name.
+import nextDynamic from 'next/dynamic';
 
 // Force dynamic rendering to avoid static generation issues
 export const dynamic = 'force-dynamic';
@@ -14,8 +16,17 @@ import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import { Progress } from '@/app/(shared)/components/ui/progress';
 import { Skeleton } from '@/app/(shared)/components/ui/skeleton';
-import AnalyticsDashboard from '@/app/(shared)/components/analytics/AnalyticsDashboard';
-import { LiveTransactionStats } from '@/app/(features)/analytics/components';
+// Chart-heavy leaves: chart.js (LiveTransactionStats) and recharts
+// (AnalyticsDashboard) load only when mounted, not in the homepage's initial
+// bundle. ssr:false — both are client-only charts. See loading skeletons.
+const AnalyticsDashboard = nextDynamic(() => import('@/app/(shared)/components/analytics/AnalyticsDashboard'), {
+  ssr: false,
+  loading: () => <LoadingCard />,
+});
+const LiveTransactionStats = nextDynamic(
+  () => import('@/app/(features)/analytics/components/LiveTransactionStats'),
+  { ssr: false, loading: () => <LoadingCard /> },
+);
 import StatsNotReady from '@/app/(features)/analytics/components/StatsNotReady';
 import { useVoteAccounts } from '@/app/(core)/providers/accounts/vote-accounts';
 import { useCluster } from '@/app/(core)/providers/cluster';
@@ -32,6 +43,7 @@ import { abbreviatedNumber, lamportsToSol, slotsToHumanString } from '@/app/(sha
 import { percentage } from '@/app/(shared)/utils/math';
 
 import { UpcomingFeatures } from '@/app/(shared)/utils/feature-gate/UpcomingFeatures';
+import { GridTokenXOverview } from '@/app/(shared)/components/GridTokenXOverview';
 
 export default function Page() {
   return (
@@ -56,6 +68,10 @@ export default function Page() {
               <div className="w-full">
                 <LiveTransactionStats />
               </div>
+            </div>
+
+            <div className="mb-4">
+              <GridTokenXOverview />
             </div>
 
             <div className="mb-4">

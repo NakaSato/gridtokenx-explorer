@@ -76,9 +76,12 @@ function BlockOverview({ slotNumber }: { slotNumber: number }) {
     return <LoadingCard message={`Loading block ${slotNumber.toLocaleString('en-US')}`} />;
   }
   if (confirmedBlock.status === FetchStatus.FetchFailed) {
+    const reason = confirmedBlock.data?.errorMessage;
+    // Pruned/skipped blocks are expected on a ledger-limited validator — show the node's reason.
+    const pruned = reason && /cleaned up|does not exist|not available|was skipped/i.test(reason);
     return (
       <ErrorCard
-        text={`Failed to fetch block ${slotNumber.toLocaleString('en-US')}`}
+        text={pruned ? reason! : `Failed to fetch block ${slotNumber.toLocaleString('en-US')}`}
         retry={() => fetchBlock(slotNumber)}
       />
     );
@@ -101,7 +104,8 @@ function BlockOverview({ slotNumber }: { slotNumber: number }) {
   const txCount = txs.length;
   const successCount = txs.filter(tx => tx.meta && !tx.meta.err).length;
   const failedCount = txs.filter(tx => tx.meta?.err).length;
-  const totalFees = txs.reduce((sum, tx) => sum + (tx.meta?.fee ?? 0), 0);
+  // meta.fee comes back as bigint from the kit RPC — coerce to number before summing.
+  const totalFees = txs.reduce((sum, tx) => sum + Number(tx.meta?.fee ?? 0), 0);
   const successRate = txCount > 0 ? (successCount / txCount) * 100 : 0;
 
   return (

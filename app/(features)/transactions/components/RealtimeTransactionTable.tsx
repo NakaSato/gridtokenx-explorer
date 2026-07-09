@@ -2,13 +2,11 @@
 
 import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Button } from '@/app/(shared)/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/ui/table';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/(shared)/components/ui/tooltip';
 import { Signature } from '@/app/(shared)/components/Signature';
 import { Slot } from '@/app/(shared)/components/Slot';
 import { TimestampToggle } from '@/app/(shared)/components/TimestampToggle';
-import { PlayIcon, PauseIcon, UpdateIcon } from '@radix-ui/react-icons';
+import { PlayIcon, PauseIcon } from '@radix-ui/react-icons';
 
 /**
  * Transaction signature information
@@ -30,10 +28,25 @@ export interface TransactionSignatureInfo {
 export interface Transaction extends TransactionSignatureInfo {
   details?: any | null; // Full transaction response when fetched
   programIds?: string[];
+  programNames?: string[]; // GridTokenX programs this tx touched (by queried address)
   accountKeys?: string[];
   computeUnits?: number;
   fee?: number;
 }
+
+/** Tint classes per GridTokenX program, for the Program column badges (theme-aware). */
+const PROGRAM_BADGE_CLASS: Record<string, string> = {
+  Trading: 'bg-blue-500/15 text-blue-400 border-blue-500/20',
+  'Energy Token': 'bg-amber-500/15 text-amber-400 border-amber-500/20',
+  Governance: 'bg-green-500/15 text-green-400 border-green-500/20',
+  Oracle: 'bg-orange-500/15 text-orange-400 border-orange-500/20',
+  Registry: 'bg-purple-500/15 text-purple-400 border-purple-500/20',
+  Treasury: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+  Blockbench: 'bg-pink-500/15 text-pink-400 border-pink-500/20',
+  System: 'bg-secondary text-muted-foreground border-border/50',
+};
+
+const BADGE_BASE = 'px-2 py-0.5 text-xs font-medium border';
 
 interface RealtimeTransactionTableProps {
   transactions: Transaction[];
@@ -44,6 +57,8 @@ interface RealtimeTransactionTableProps {
   refreshInterval: number;
   onPauseToggle: () => void;
   onInspect: (tx: Transaction) => void;
+  /** Signatures that arrived in the latest refresh — flash-highlighted on entry. */
+  newSignatures?: Set<string>;
 }
 
 export function RealtimeTransactionTable({
@@ -55,187 +70,181 @@ export function RealtimeTransactionTable({
   refreshInterval,
   onPauseToggle,
   onInspect,
+  newSignatures,
 }: RealtimeTransactionTableProps) {
   return (
-    <Card>
-      <CardHeader className="from-background to-muted/20 space-y-4 bg-gradient-to-r">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center gap-3">
-              <CardTitle className="text-2xl font-bold">Real-time Transactions</CardTitle>
-              {!isPaused && (
-                <Badge
-                  variant="outline"
-                  className="animate-pulse border-green-500 bg-green-50 px-3 py-1 text-green-700 shadow-sm transition-all hover:bg-green-100 dark:bg-green-950 dark:text-green-400"
-                >
-                  <span
-                    className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-green-600 dark:bg-green-400"
-                    role="status"
-                    aria-label="Live updates active"
-                  />
-                  LIVE
-                </Badge>
-              )}
-              {isPaused && (
-                <Badge variant="secondary" className="px-3 py-1 shadow-sm">
-                  ⏸ Paused
-                </Badge>
-              )}
-            </div>
-            <CardDescription className="flex flex-wrap items-center gap-2 text-base">
-              <span>
-                Showing the latest <strong className="text-foreground">{transactions.length}</strong> transactions
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-lg font-bold text-foreground md:text-xl">Real-time Transactions</h2>
+            {isPaused ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                Paused
               </span>
-              {!isPaused && (
-                <>
-                  <span className="text-muted-foreground/50">•</span>
-                  <span className="text-muted-foreground">
-                    Updates every <strong className="text-foreground">{refreshInterval / 1000}s</strong>
-                  </span>
-                </>
-              )}
-            </CardDescription>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-green-500/25 bg-green-500/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-green-400">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-400" />
+                Live
+              </span>
+            )}
           </div>
-          <TooltipProvider>
-            <div className="flex flex-wrap items-center gap-3">
-              {lastSlot && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="group from-background/80 to-background/60 hover:from-background hover:to-background/90 hover:border-primary/20 relative flex min-w-[200px] items-center justify-between gap-3 rounded-xl border bg-gradient-to-r px-4 py-3 text-sm shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
-                      <div className="from-primary/5 absolute inset-0 rounded-xl bg-gradient-to-r to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                      <div className="relative flex flex-1 items-center gap-3">
-                        <div className="bg-primary/10 group-hover:bg-primary/20 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-colors">
-                          <UpdateIcon className="text-primary h-4 w-4 transition-transform duration-500 group-hover:rotate-180" />
-                        </div>
-                        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                          <span className="text-muted-foreground text-xs font-medium tracking-wide whitespace-nowrap uppercase">
-                            Current Slot
-                          </span>
-                          <div className="text-foreground truncate font-mono font-semibold">
-                            <Slot slot={lastSlot} link />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-shrink-0 items-center">
-                        <div className="h-2 w-2 animate-pulse rounded-full bg-green-500 opacity-75" />
-                      </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-popover/95 border-primary/20 backdrop-blur-sm">
-                    <div className="flex flex-col gap-1">
-                      <p className="font-medium">Latest blockchain slot</p>
-                      <p className="text-muted-foreground text-xs">Slot {lastSlot.toLocaleString()}</p>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={isPaused ? 'default' : 'outline'}
-                    size="default"
-                    onClick={onPauseToggle}
-                    className="min-w-[120px] font-semibold shadow-sm transition-all duration-200 hover:scale-105 active:scale-95"
-                  >
-                    {isPaused ? (
-                      <>
-                        <PlayIcon className="mr-2 h-4 w-4" />
-                        Resume
-                      </>
-                    ) : (
-                      <>
-                        <PauseIcon className="mr-2 h-4 w-4" />
-                        Pause
-                      </>
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{isPaused ? 'Resume real-time updates' : 'Pause real-time updates'}</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          </TooltipProvider>
+          <p className="text-sm text-muted-foreground">
+            Latest <span className="font-semibold text-foreground">{transactions.length}</span> transactions
+            {!isPaused && (
+              <>
+                {' · updates every '}
+                <span className="font-semibold text-foreground">{refreshInterval / 1000}s</span>
+              </>
+            )}
+          </p>
         </div>
-      </CardHeader>
-      <CardContent className="p-0">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Signature</TableHead>
-              <TableHead>Slot</TableHead>
-              <TableHead>Time</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Confirmations</TableHead>
-              <TableHead>Details</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions.map((tx, index) => (
-              <TableRow key={`${tx.signature}-${index}`} className="hover:bg-muted/50 transition-colors">
-                <TableCell className="font-mono text-sm">
-                  <Signature signature={tx.signature} link truncateChars={48} />
-                </TableCell>
-                <TableCell className="font-mono">
-                  <Slot slot={tx.slot} link />
-                </TableCell>
-                <TableCell className="whitespace-nowrap">
-                  {tx.blockTime ? (
-                    // Solana blockTime is in seconds, multiply by 1000 to convert to milliseconds for Date
-                    <TimestampToggle unixTimestamp={tx.blockTime * 1000} shorter />
-                  ) : (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {tx.err ? (
-                    <Badge variant="destructive" className="font-medium">
-                      Failed
-                    </Badge>
-                  ) : (
-                    <Badge variant="default" className="bg-green-100 font-medium text-green-700 hover:bg-green-100">
-                      Success
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {tx.confirmationStatus === 'finalized' ? (
-                    <Badge variant="default" className="bg-green-100 font-medium text-green-800 hover:bg-green-100">
-                      Finalized
-                    </Badge>
-                  ) : tx.confirmationStatus === 'confirmed' ? (
-                    <Badge variant="secondary" className="bg-blue-100 font-medium text-blue-800 hover:bg-blue-100">
-                      Confirmed
-                    </Badge>
-                  ) : (
-                    <Badge
-                      variant="secondary"
-                      className="bg-yellow-100 font-medium text-yellow-800 hover:bg-yellow-100"
-                    >
-                      Processed
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onInspect(tx)}
-                    disabled={detailsLoading && selectedTxSignature === tx.signature}
-                    className="min-w-[80px]"
-                  >
-                    {detailsLoading && selectedTxSignature === tx.signature ? (
-                      <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    ) : (
-                      'Inspect'
-                    )}
-                  </Button>
-                </TableCell>
+
+        <div className="flex items-center gap-2">
+          {lastSlot != null && (
+            <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-secondary/30 px-3 py-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Slot</span>
+              <span className="font-mono text-sm font-semibold text-cyan-400">
+                <Slot slot={lastSlot} link />
+              </span>
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400/70" />
+            </div>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onPauseToggle}
+            className="h-9 min-w-[104px] border-border/50 bg-transparent font-semibold transition-colors hover:border-cyan-500/30 hover:text-foreground"
+          >
+            {isPaused ? (
+              <>
+                <PlayIcon className="mr-1.5 h-4 w-4" />
+                Resume
+              </>
+            ) : (
+              <>
+                <PauseIcon className="mr-1.5 h-4 w-4" />
+                Pause
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="overflow-hidden rounded-lg border border-border/50">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border/50 bg-secondary/30 hover:bg-secondary/30">
+                <TableHead className="text-muted-foreground">Signature</TableHead>
+                <TableHead className="text-muted-foreground">Program</TableHead>
+                <TableHead className="text-muted-foreground">Slot</TableHead>
+                <TableHead className="text-muted-foreground">Time</TableHead>
+                <TableHead className="text-muted-foreground">Status</TableHead>
+                <TableHead className="text-muted-foreground">Confirmations</TableHead>
+                <TableHead className="text-right text-muted-foreground">Inspect</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {transactions.map((tx, index) => (
+                <TableRow
+                  key={`${tx.signature}-${index}`}
+                  className={`border-border/30 transition-colors hover:bg-secondary/20 ${
+                    newSignatures?.has(tx.signature) ? 'animate-tx-row-enter' : ''
+                  }`}
+                >
+                  <TableCell className="font-mono text-sm text-cyan-400">
+                    <Signature signature={tx.signature} link truncateChars={48} />
+                  </TableCell>
+                  <TableCell>
+                    {tx.programNames && tx.programNames.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {tx.programNames.map(name => (
+                          <Badge
+                            key={name}
+                            variant="outline"
+                            className={`${BADGE_BASE} ${PROGRAM_BADGE_CLASS[name] ?? PROGRAM_BADGE_CLASS.System}`}
+                          >
+                            {name}
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="font-mono text-cyan-400">
+                    <Slot slot={tx.slot} link />
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap text-muted-foreground">
+                    {tx.blockTime ? (
+                      // Solana blockTime is in seconds → ms for Date
+                      <TimestampToggle unixTimestamp={tx.blockTime * 1000} shorter />
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {tx.err ? (
+                      <Badge variant="outline" className={`${BADGE_BASE} bg-red-500/15 text-red-400 border-red-500/20`}>
+                        Failed
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className={`${BADGE_BASE} bg-green-500/15 text-green-400 border-green-500/20`}
+                      >
+                        Success
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {tx.confirmationStatus === 'finalized' ? (
+                      <Badge
+                        variant="outline"
+                        className={`${BADGE_BASE} bg-green-500/15 text-green-400 border-green-500/20`}
+                      >
+                        Finalized
+                      </Badge>
+                    ) : tx.confirmationStatus === 'confirmed' ? (
+                      <Badge
+                        variant="outline"
+                        className={`${BADGE_BASE} bg-cyan-500/15 text-cyan-400 border-cyan-500/20`}
+                      >
+                        Confirmed
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className={`${BADGE_BASE} bg-amber-500/15 text-amber-400 border-amber-500/20`}
+                      >
+                        Processed
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onInspect(tx)}
+                      disabled={detailsLoading && selectedTxSignature === tx.signature}
+                      className="min-w-[84px] border-border/50 bg-transparent transition-colors hover:border-cyan-500/30 hover:text-cyan-400"
+                    >
+                      {detailsLoading && selectedTxSignature === tx.signature ? (
+                        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      ) : (
+                        'Inspect'
+                      )}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </div>
   );
 }

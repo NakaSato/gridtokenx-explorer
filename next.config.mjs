@@ -24,8 +24,21 @@ const nextConfig = {
       fullUrl: false,
     },
   },
-  // Use empty turbopack config to silence warning and use webpack
-  turbopack: {},
+  // Turbopack config (default bundler for `next dev`). borsh 2.0.0 resolves
+  // natively (no alias needed). Stub node builtins for the browser condition —
+  // mirrors the webpack `resolve.fallback: { fs: false, ... }` below. Only
+  // node-only dep code paths (e.g. anchor env/wallet) reach these; unused in
+  // the browser.
+  turbopack: {
+    resolveAlias: {
+      fs: { browser: './app/(shared)/lib/empty-module.js' },
+      os: { browser: './app/(shared)/lib/empty-module.js' },
+      path: { browser: './app/(shared)/lib/empty-module.js' },
+      crypto: { browser: './app/(shared)/lib/empty-module.js' },
+      stream: { browser: './app/(shared)/lib/empty-module.js' },
+      util: { browser: './app/(shared)/lib/empty-module.js' },
+    },
+  },
   // Suppress webpack warnings
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,

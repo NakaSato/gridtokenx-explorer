@@ -37,8 +37,11 @@ export function BlockRewardsCard({ block }: { block: VersionedBlockResponse }) {
               }
 
               let percentChange;
-              if (reward.postBalance !== null && reward.postBalance !== 0) {
-                percentChange = ((Math.abs(reward.lamports) / (reward.postBalance - reward.lamports)) * 100).toFixed(9);
+              // lamports/postBalance may be bigint from the kit RPC — coerce before math.
+              const lamports = Number(reward.lamports);
+              const postBalance = Number(reward.postBalance);
+              if (reward.postBalance !== null && postBalance !== 0) {
+                percentChange = ((Math.abs(lamports) / (postBalance - lamports)) * 100).toFixed(9);
               }
               return (
                 <tr key={reward.pubkey + reward.rewardType}>

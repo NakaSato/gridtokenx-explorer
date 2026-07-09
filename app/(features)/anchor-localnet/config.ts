@@ -162,6 +162,11 @@ export type ProgramKey = keyof typeof PROGRAMS;
 
 export const ALL_PROGRAM_IDS = Object.values(PROGRAMS).map(p => p.id);
 
+/** Map program id → human name, for labelling transactions by program. */
+export const PROGRAM_NAME_BY_ID: Record<string, string> = Object.fromEntries(
+  Object.values(PROGRAMS).map(p => [p.id, p.name])
+);
+
 /** Enum maps for Registry program */
 export const ENUM_MAPS = {
   UserType: { 0: 'Prosumer', 1: 'Consumer' },

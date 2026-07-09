@@ -3,19 +3,13 @@
 import React from 'react';
 import { ProgramPageLayout } from '@/app/(shared)/components/layout/ProgramPageLayout';
 import { OracleExplorer } from '@/app/(features)/anchor-localnet';
-import { Radio, Server } from 'lucide-react';
+import { Radio } from 'lucide-react';
 
 export default function OraclePage() {
   return (
     <ProgramPageLayout
       icon={Radio}
       iconColor="orange"
-      badgeText="IoT Telemetry"
-      badgeColor="orange"
-      secondaryLabel="Nodes Online"
-      secondaryValue="Validator Active"
-      secondaryIcon={Server}
-      secondaryColor="orange"
       contentClassName="overflow-hidden p-0"
     >
       {({ rpcUrl, getConnection }) => (

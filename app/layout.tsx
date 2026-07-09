@@ -3,6 +3,7 @@ import { MessageBanner } from '@/app/(core)/components/MessageBanner';
 import NavbarWrapper from '@/app/(core)/components/NavbarWrapper';
 import SearchBarWrapper from '@/app/(core)/components/SearchBarWrapper';
 import { ClusterProvider } from '@/app/(core)/providers/cluster';
+import { BufferPolyfill } from '@/app/(shared)/components/BufferPolyfill';
 import { ScrollAnchorProvider } from '@/app/(core)/providers/scroll-anchor';
 import { Toaster } from 'react-hot-toast';
 import type { Viewport } from 'next';
@@ -84,6 +85,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-navy-900" suppressHydrationWarning>
+        <BufferPolyfill />
         <Suspense fallback={<div>Loading...</div>}>
           <ScrollAnchorProvider>
             <Suspense fallback={<div>Loading...</div>}>

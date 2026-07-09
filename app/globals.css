@@ -165,8 +165,89 @@
   }
 }
 
+@keyframes tx-row-enter {
+  0% {
+    background-color: rgba(34, 211, 238, 0.24);
+    box-shadow: inset 3px 0 0 0 rgb(34, 211, 238);
+    transform: translateY(-5px);
+  }
+  55% {
+    background-color: rgba(34, 211, 238, 0.1);
+    box-shadow: inset 3px 0 0 0 rgba(34, 211, 238, 0.6);
+    transform: translateY(0);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: inset 3px 0 0 0 transparent;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tx-stat-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.13);
+    color: rgb(34, 211, 238);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes tx-slide-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes tx-fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Custom utility classes */
 @layer utilities {
+  .animate-tx-row-enter {
+    animation: tx-row-enter 2.2s ease-out forwards;
+  }
+
+  .animate-tx-stat-pop {
+    display: inline-block;
+    animation: tx-stat-pop 0.45s ease-out;
+  }
+
+  .animate-tx-slide-in-right {
+    animation: tx-slide-in-right 0.35s ease-out;
+  }
+
+  .animate-tx-fade-in-up {
+    opacity: 0;
+    animation: tx-fade-in-up 0.5s ease-out forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-tx-row-enter,
+    .animate-tx-stat-pop,
+    .animate-tx-slide-in-right,
+    .animate-tx-fade-in-up {
+      animation: none;
+      opacity: 1;
+    }
+  }
+
   .animate-electric-pulse {
     animation: electric-pulse 4s ease-in-out infinite;
   }

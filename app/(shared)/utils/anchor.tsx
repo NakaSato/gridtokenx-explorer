@@ -3,6 +3,9 @@
 import { Address } from '@/app/(shared)/components/Address';
 import { SolarizedJsonViewer as ReactJson } from '@/app/(shared)/components/JsonViewer';
 import { BorshInstructionCoder, Idl, Program } from '@coral-xyz/anchor';
+// Explicit import: module-scope `Buffer.from` below runs at import time, before
+// the global Buffer polyfill chunk may have evaluated. See BufferPolyfill.tsx.
+import { Buffer } from 'buffer';
 import { IdlDefinedFields } from '@coral-xyz/anchor/dist/cjs/idl';
 import { IdlField, IdlInstruction, IdlType, IdlTypeDef } from '@coral-xyz/anchor/dist/cjs/idl';
 import { useAnchorProgram } from '@/app/(core)/providers/anchor';

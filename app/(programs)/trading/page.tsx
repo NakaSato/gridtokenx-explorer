@@ -1,8 +1,13 @@
 'use client';
 
 import React from 'react';
+import nextDynamic from 'next/dynamic';
 import { ProgramPageLayout } from '@/app/(shared)/components/layout/ProgramPageLayout';
-import { TradingTerminal } from '@/app/(features)/anchor-localnet/components/TradingTerminal';
+// chart.js-heavy terminal — defer off the initial trading-page bundle.
+const TradingTerminal = nextDynamic(
+  () => import('@/app/(features)/anchor-localnet/components/TradingTerminal').then(m => m.TradingTerminal),
+  { ssr: false },
+);
 import { TradingExplorer } from '@/app/(features)/anchor-localnet/components/TradingExplorer';
 import { Zap, LayoutGrid, BarChart2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/(shared)/components/ui/tabs';

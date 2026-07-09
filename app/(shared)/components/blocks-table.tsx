@@ -58,6 +58,7 @@ export function BlocksTable() {
               // Add delay between individual requests in a batch to be gentle
               await new Promise(resolve => setTimeout(resolve, 200))
               return await connectionRef.current!.getBlock(slot, {
+                commitment: "confirmed",
                 maxSupportedTransactionVersion: 0,
                 rewards: true,
               })
