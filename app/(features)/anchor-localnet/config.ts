@@ -5,15 +5,17 @@
  *
  * Program IDs resolve at runtime (window.__RUNTIME_CONFIG__, injected per
  * request by the root layout) so a redeploy with new keys only needs a
- * container restart — never an image rebuild. Hardcoded fallbacks mirror
- * gridtokenx-anchor/Anchor.toml [programs.localnet].
+ * container restart — never an image rebuild. The build-time fallbacks come
+ * from PROGRAM_IDS, which is generated from gridtokenx-anchor/Anchor.toml
+ * [programs.localnet] on predev/prebuild — no hardcoded literals here.
  */
 
 import { runtimeConfig } from '@/app/(shared)/utils/runtime-config';
+import { PROGRAM_IDS } from './program-ids.generated';
 
 export const PROGRAMS = {
   trading: {
-    id: runtimeConfig('TRADING_PROGRAM_ID', process.env.NEXT_PUBLIC_TRADING_PROGRAM_ID) || 'CnWDEUhTvSixeLSyViWgAnnu9YouBAYVGcrrFm1s9WcX',
+    id: runtimeConfig('TRADING_PROGRAM_ID', process.env.NEXT_PUBLIC_TRADING_PROGRAM_ID) || PROGRAM_IDS.trading,
     name: 'Trading',
     description: 'P2P energy trading marketplace with CDA and batch execution',
     seeds: {
@@ -48,7 +50,7 @@ export const PROGRAMS = {
     ],
   },
   energy_token: {
-    id: runtimeConfig('TOKEN_PROGRAM_ID', process.env.NEXT_PUBLIC_TOKEN_PROGRAM_ID) || '6FZKcVKCLFSNLMxypFJGU4K14xUBnxNW9VAuKGhmqjGX',
+    id: runtimeConfig('TOKEN_PROGRAM_ID', process.env.NEXT_PUBLIC_TOKEN_PROGRAM_ID) || PROGRAM_IDS.energy_token,
     name: 'Energy Token',
     description: 'GRX token minting, metadata, and transfers via Metaplex',
     seeds: {},
@@ -60,7 +62,7 @@ export const PROGRAMS = {
     events: [],
   },
   governance: {
-    id: runtimeConfig('GOVERNANCE_PROGRAM_ID', process.env.NEXT_PUBLIC_GOVERNANCE_PROGRAM_ID) || 'FokVuBSPXP11aeL7VZWd8n8aVAhWqVpyPZETToSxdvTS',
+    id: runtimeConfig('GOVERNANCE_PROGRAM_ID', process.env.NEXT_PUBLIC_GOVERNANCE_PROGRAM_ID) || PROGRAM_IDS.governance,
     name: 'Governance',
     description: 'ERC certificates, PoA governance, and authority management',
     seeds: {
@@ -79,7 +81,7 @@ export const PROGRAMS = {
     events: [],
   },
   oracle: {
-    id: runtimeConfig('ORACLE_PROGRAM_ID', process.env.NEXT_PUBLIC_ORACLE_PROGRAM_ID) || '64Vgos61STZ8pW9NnHi2iGtXMTQr7NqBoMorK6Zg8RJU',
+    id: runtimeConfig('ORACLE_PROGRAM_ID', process.env.NEXT_PUBLIC_ORACLE_PROGRAM_ID) || PROGRAM_IDS.oracle,
     name: 'Oracle',
     description: 'Meter readings, energy data validation, and anomaly detection',
     seeds: {
@@ -97,7 +99,7 @@ export const PROGRAMS = {
     ],
   },
   registry: {
-    id: runtimeConfig('REGISTRY_PROGRAM_ID', process.env.NEXT_PUBLIC_REGISTRY_PROGRAM_ID) || 'FcSd5x4X1nzJMKLZC4tMZXnQ1ipLrGsEfeoH8N4mvJX7',
+    id: runtimeConfig('REGISTRY_PROGRAM_ID', process.env.NEXT_PUBLIC_REGISTRY_PROGRAM_ID) || PROGRAM_IDS.registry,
     name: 'Registry',
     description: 'Participant registration, meter management, and zone assignments',
     seeds: {
@@ -117,7 +119,7 @@ export const PROGRAMS = {
     ],
   },
   treasury: {
-    id: runtimeConfig('TREASURY_PROGRAM_ID', process.env.NEXT_PUBLIC_TREASURY_PROGRAM_ID) || 'FfxSQYKUmx9NGdCC9TDPmZSYjWYE1h4ruu3JatzHN5Tn',
+    id: runtimeConfig('TREASURY_PROGRAM_ID', process.env.NEXT_PUBLIC_TREASURY_PROGRAM_ID) || PROGRAM_IDS.treasury,
     name: 'Treasury',
     description: 'THBG stablecoin reserve, GRX staking/rewards, and batch settlement commitments',
     seeds: {
@@ -148,7 +150,7 @@ export const PROGRAMS = {
     ],
   },
   blockbench: {
-    id: runtimeConfig('BLOCKBENCH_PROGRAM_ID', process.env.NEXT_PUBLIC_BLOCKBENCH_PROGRAM_ID) || '9AM4JkvUkK8ZfRneTAQVahFgPe9rEisNkB9byRfZ4TwT',
+    id: runtimeConfig('BLOCKBENCH_PROGRAM_ID', process.env.NEXT_PUBLIC_BLOCKBENCH_PROGRAM_ID) || PROGRAM_IDS.blockbench,
     name: 'Blockbench',
     description: 'TPC-C performance benchmarking for Solana',
     seeds: {},

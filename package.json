@@ -3,8 +3,11 @@
   "version": "0.1.2",
   "private": true,
   "scripts": {
+    "gen:program-ids": "node scripts/gen-program-ids.mjs",
+    "prebuild": "node scripts/gen-program-ids.mjs",
     "build": "next build --webpack",
     "coverage": "vitest --coverage",
+    "predev": "node scripts/gen-program-ids.mjs",
     "dev": "next dev",
     "dev:webpack": "next dev --webpack",
     "format": "prettier --config .prettierrc.cjs **/*.{ts,tsx,mts,mjs,cjs} *.json --check",

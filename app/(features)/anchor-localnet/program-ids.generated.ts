@@ -1,0 +1,17 @@
+/**
+ * AUTO-GENERATED — DO NOT EDIT.
+ * Source of truth: gridtokenx-anchor/Anchor.toml [programs.localnet].
+ * Regenerate: `node scripts/gen-program-ids.mjs` (runs on predev/prebuild).
+ */
+export const PROGRAM_IDS = {
+  blockbench: '9AM4JkvUkK8ZfRneTAQVahFgPe9rEisNkB9byRfZ4TwT',
+  energy_token: '6FZKcVKCLFSNLMxypFJGU4K14xUBnxNW9VAuKGhmqjGX',
+  governance: 'FokVuBSPXP11aeL7VZWd8n8aVAhWqVpyPZETToSxdvTS',
+  oracle: '64Vgos61STZ8pW9NnHi2iGtXMTQr7NqBoMorK6Zg8RJU',
+  registry: 'FcSd5x4X1nzJMKLZC4tMZXnQ1ipLrGsEfeoH8N4mvJX7',
+  tpc_benchmark: 'ELv3cWARDqNLgv7A7dochy2CC4Ke9wdgAHvkU3wCwQha',
+  trading: 'CnWDEUhTvSixeLSyViWgAnnu9YouBAYVGcrrFm1s9WcX',
+  treasury: 'FfxSQYKUmx9NGdCC9TDPmZSYjWYE1h4ruu3JatzHN5Tn',
+} as const;
+
+export type GeneratedProgramName = keyof typeof PROGRAM_IDS;
