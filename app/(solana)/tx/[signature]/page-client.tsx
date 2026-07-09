@@ -28,12 +28,15 @@ import { displayTimestamp } from '@/app/(shared)/utils/date';
 import { SignatureProps } from '@/app/(shared)/utils/index';
 import { getTransactionInstructionError } from '@/app/(shared)/utils/program-err';
 import { intoTransactionInstruction } from '@/app/(shared)/utils/tx';
+import { toWsUrl } from '@/app/(shared)/utils/rpc';
+import { runtimeConfig } from '@/app/(shared)/utils/runtime-config';
+import { useSignatureSubscription } from '@/app/(shared)/utils/use-signature-subscription';
 import { useClusterPath } from '@/app/(shared)/utils/url';
 import useTabVisibility from '@/app/(shared)/utils/use-tab-visibility';
 import { BigNumber } from 'bignumber.js';
 import bs58 from 'bs58';
 import Link from 'next/link';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import { RefreshCw, Settings } from 'react-feather';
 
 import { estimateRequestedComputeUnitsForParsedTransaction } from '@/app/(shared)/utils/compute-units-schedule';
@@ -145,10 +148,17 @@ export default function TransactionDetailsPageClient({ params: { signature: raw 
 
 function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProps) {
   const fetchStatus = useFetchTransactionStatus();
+  const fetchDetails = useFetchTransactionDetails();
   const status = useTransactionStatus(signature);
   const details = useTransactionDetails(signature);
   const { cluster, clusterInfo, name: clusterName, status: clusterStatus, url: clusterUrl } = useCluster();
   const inspectPath = useClusterPath({ pathname: `/tx/${signature}/inspect` });
+
+  const wsUrl = toWsUrl(clusterUrl, runtimeConfig('SOLANA_RPC_WS', process.env.NEXT_PUBLIC_SOLANA_RPC_WS));
+  const [wsFailed, setWsFailed] = useState(false);
+
+  // Reset the websocket-failure flag whenever the target changes.
+  useEffect(() => setWsFailed(false), [signature, wsUrl]);
 
   // Fetch transaction on load
   useEffect(() => {
@@ -157,16 +167,25 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
     }
   }, [signature, clusterStatus]); // eslint-disablline react-hooks/exhaustivdeps
 
-  // Effect to set and clear interval for auto-refresh
+  // Realtime: push status + details refetch on each new commitment level.
+  const onSignatureUpdate = useCallback(() => {
+    fetchStatus(signature);
+    fetchDetails(signature);
+  }, [fetchStatus, fetchDetails, signature]);
+  useSignatureSubscription(signature, wsUrl, autoRefresh === AutoRefresh.Active, onSignatureUpdate, () =>
+    setWsFailed(true),
+  );
+
+  // Fallback: interval polling only when no websocket is available or it failed.
   useEffect(() => {
-    if (autoRefresh === AutoRefresh.Active) {
+    if (autoRefresh === AutoRefresh.Active && (!wsUrl || wsFailed)) {
       const intervalHandle: NodeJS.Timeout = setInterval(() => fetchStatus(signature), AUTO_REFRESH_INTERVAL);
 
       return () => {
         clearInterval(intervalHandle);
       };
     }
-  }, [autoRefresh, fetchStatus, signature]);
+  }, [autoRefresh, fetchStatus, signature, wsUrl, wsFailed]);
 
   if (!status || (status.status === FetchStatus.Fetching && autoRefresh === AutoRefresh.Inactive)) {
     return <LoadingCard />;

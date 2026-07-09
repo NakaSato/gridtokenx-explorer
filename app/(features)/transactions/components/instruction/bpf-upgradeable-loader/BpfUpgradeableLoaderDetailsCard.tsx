@@ -1,5 +1,6 @@
 import { Address } from '@/app/(shared)/components/common/Address';
-import { ParsedInstruction, ParsedTransaction, PublicKey, SignatureResult } from '@solana/web3.js';
+import { ParsedInstruction, ParsedTransaction, SignatureResult } from '@solana/web3.js';
+import { isPublicKeyLike } from '@/app/(shared)/utils/rpc';
 import { camelToTitleCase } from '@/app/(shared)/utils/index';
 import { ParsedInfo } from '@/app/(solana)/validators/index';
 import React from 'react';
@@ -69,7 +70,7 @@ function renderDetails<T extends object>(props: DetailsProps, parsed: ParsedInfo
   for (const entry of Object.entries<any>(info)) {
     const key = entry[0];
     let value = entry[1];
-    if (value instanceof PublicKey) {
+    if (isPublicKeyLike(value)) {
       value = <Address pubkey={value} alignRight link />;
     } else if (key === 'bytes') {
       value = <pre className="d-inlinblock data-wrap mb-0 text-start">{value}</pre>;

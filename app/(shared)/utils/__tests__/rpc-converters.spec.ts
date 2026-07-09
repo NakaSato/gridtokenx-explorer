@@ -6,6 +6,8 @@ import {
   publicKeyToAddress,
   addressToPublicKey,
   bigintToNumber,
+  bigintToNumberLossy,
+  isPublicKeyLike,
   toLegacyAccountInfo,
   toLegacyBlockResponse,
   toLegacyParsedTransaction,
@@ -61,6 +63,35 @@ describe('RPC Type Converters', () => {
     });
   });
 
+  describe('bigintToNumberLossy', () => {
+    it('should convert small bigint exactly', () => {
+      expect(bigintToNumberLossy(5000n)).toBe(5000);
+    });
+
+    it('should NOT throw for lamport balances exceeding MAX_SAFE_INTEGER', () => {
+      // Regression: large faucet/rent-exempt balances (u64) crashed the tx page.
+      const huge = 499999999993855000n;
+      expect(() => bigintToNumberLossy(huge)).not.toThrow();
+      expect(bigintToNumberLossy(huge)).toBe(Number(huge));
+    });
+
+    it('should tolerate u64::MAX (rentEpoch of rent-exempt accounts)', () => {
+      expect(() => bigintToNumberLossy(18446744073709551615n)).not.toThrow();
+    });
+  });
+
+  describe('isPublicKeyLike', () => {
+    it('duck-types a PublicKey via toBase58', () => {
+      expect(isPublicKeyLike(testPubkey)).toBe(true);
+    });
+
+    it('rejects strings, null, and plain objects', () => {
+      expect(isPublicKeyLike(testAddressString)).toBe(false);
+      expect(isPublicKeyLike(null)).toBe(false);
+      expect(isPublicKeyLike({})).toBe(false);
+    });
+  });
+
   describe('toLegacyAccountInfo', () => {
     it('should convert kit account to legacy AccountInfo', () => {
       const kitAccount = {
@@ -77,6 +108,19 @@ describe('RPC Type Converters', () => {
       expect(result.lamports).toBe(1000000);
       expect(result.owner.toBase58()).toBe(testAddressString);
       expect(result.rentEpoch).toBe(100);
+    });
+
+    it('should not throw for huge lamports and u64::MAX rentEpoch', () => {
+      const kitAccount = {
+        data: Buffer.from('test'),
+        executable: false,
+        lamports: 499999999993855000n,
+        owner: testAddress,
+        rentEpoch: 18446744073709551615n,
+      };
+      const result = toLegacyAccountInfo(kitAccount);
+      expect(result.lamports).toBe(Number(499999999993855000n));
+      expect(result.rentEpoch).toBe(Number(18446744073709551615n));
     });
 
     it('should handle null account', () => {
@@ -168,6 +212,48 @@ describe('RPC Type Converters', () => {
 
     it('should handle null transaction', () => {
       expect(toLegacyParsedTransaction(null)).toBeNull();
+    });
+
+    it('should not throw for balances exceeding MAX_SAFE_INTEGER', () => {
+      // Regression: a 0.5B-SOL faucet balance threw in bigintToNumber and failed
+      // the whole tx fetch (FetchFailed).
+      const kitTx = {
+        slot: 200000000n,
+        transaction: { message: { accountKeys: [] } },
+        meta: {
+          fee: 5000n,
+          preBalances: [499999999993855000n, 2000000n],
+          postBalances: [499999999993850000n, 2000000n],
+          err: null,
+        },
+      };
+      const result = toLegacyParsedTransaction(kitTx);
+      expect(result!.meta!.preBalances[0]).toBe(Number(499999999993855000n));
+    });
+
+    it('should preserve ix.parsed.info pubkeys as strings (not PublicKey)', () => {
+      // Detail cards coerce info strings via superstruct PublicKeyFromString;
+      // eagerly converting here leaked foreign-instance PublicKey objects.
+      const kitTx = {
+        slot: 1n,
+        transaction: {
+          message: {
+            accountKeys: [{ pubkey: testAddressString, signer: true, writable: true }],
+            instructions: [
+              {
+                program: 'vote',
+                programId: testAddressString,
+                parsed: { type: 'vote', info: { voteAuthority: testAddressString } },
+              },
+            ],
+          },
+        },
+        meta: null,
+      };
+      const result = toLegacyParsedTransaction(kitTx);
+      const ix = result!.transaction.message.instructions[0];
+      expect(typeof ix.parsed.info.voteAuthority).toBe('string');
+      expect(ix.programId).toBeInstanceOf(PublicKey);
     });
 
     it('should convert pubkey fields to PublicKey instances', () => {

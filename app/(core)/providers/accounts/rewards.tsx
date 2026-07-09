@@ -6,7 +6,7 @@ import { FetchStatus } from '@/app/(core)/providers/cache';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { InflationReward, PublicKey } from '@solana/web3.js';
 import { Cluster } from '@/app/(shared)/utils/cluster';
-import { createRpc, publicKeyToAddress, bigintToNumber } from '@/app/(shared)/utils/rpc';
+import { createRpc, publicKeyToAddress, bigintToNumber, bigintToNumberLossy } from '@/app/(shared)/utils/rpc';
 import React from 'react';
 
 const REWARDS_AVAILABLE_EPOCH = new Map<Cluster, number>([
@@ -117,10 +117,10 @@ async function fetchRewards(
       const reward = result[0];
       if (!reward) return null;
       return {
-        amount: bigintToNumber(reward.amount),
+        amount: bigintToNumberLossy(reward.amount),
         effectiveSlot: bigintToNumber(reward.effectiveSlot),
         epoch: epoch,
-        postBalance: bigintToNumber(reward.postBalance),
+        postBalance: bigintToNumberLossy(reward.postBalance),
         commission: reward.commission ?? null,
       } as InflationReward;
     } catch (error) {

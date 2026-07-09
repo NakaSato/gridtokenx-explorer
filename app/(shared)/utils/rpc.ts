@@ -7,6 +7,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 
 import {
   createSolanaRpc,
+  createSolanaRpcSubscriptions,
   address as createAddress,
   Address,
   Commitment,
@@ -22,6 +23,22 @@ type PublicKeyLike = {
   equals(other: PublicKeyLike): boolean;
   toBuffer(): Buffer;
 };
+
+/**
+ * Structural (duck-typed) check for a web3.js `PublicKey`.
+ *
+ * `value instanceof PublicKey` is unreliable here: `@solana/web3.js` is loaded
+ * as both a CJS and an ESM instance under Turbopack (dual-package hazard), so a
+ * `PublicKey` built in one module fails `instanceof` in another and would then
+ * be rendered as a raw React child. Checking for `toBase58` is instance-agnostic.
+ */
+export function isPublicKeyLike(value: unknown): value is PublicKeyLike {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as { toBase58?: unknown }).toBase58 === 'function'
+  );
+}
 
 type LegacyCommitment = 'processed' | 'confirmed' | 'finalized' | 'recent' | 'single' | 'singleGossip' | 'root' | 'max';
 
@@ -75,6 +92,33 @@ export function createRpc(url: string) {
 }
 
 /**
+ * Derive a websocket subscription URL from an HTTP RPC URL.
+ * Prefers an explicit override (e.g. NEXT_PUBLIC_SOLANA_RPC_WS). Otherwise
+ * swaps http→ws / https→wss and applies the local-validator convention of
+ * RPC :8899 → WS :8900. Returns undefined when no usable URL can be formed.
+ */
+export function toWsUrl(httpUrl: string | undefined, explicitWs?: string): string | undefined {
+  if (explicitWs && explicitWs.trim() !== '') return explicitWs;
+  if (!httpUrl) return undefined;
+  try {
+    const u = new URL(httpUrl);
+    u.protocol = u.protocol === 'https:' ? 'wss:' : 'ws:';
+    if (u.port === '8899') u.port = '8900';
+    return u.toString();
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Create a Solana RPC subscriptions (websocket) client using @solana/kit.
+ * @param wsUrl ws:// or wss:// endpoint (see toWsUrl)
+ */
+export function createSubscriptions(wsUrl: string) {
+  return createSolanaRpcSubscriptions(wsUrl);
+}
+
+/**
  * Create an Address from a string or PublicKey
  * @param addressLike String address or PublicKey
  * @returns Address type from @solana/kit
@@ -124,6 +168,17 @@ export function bigintToNumber(value: bigint): number {
 }
 
 /**
+ * Convert a bigint to number without throwing, tolerating values beyond
+ * MAX_SAFE_INTEGER at the cost of precision. Use for lamport amounts
+ * (balances, fees) which routinely exceed 2^53 for large accounts — legacy
+ * `@solana/web3.js` also represents lamports as a (lossy) `number`. Do NOT use
+ * where exactness matters (slots, ids).
+ */
+export function bigintToNumberLossy(value: bigint): number {
+  return Number(value);
+}
+
+/**
  * Create a legacy Connection instance for third-party library compatibility
  * Use this only when @solana/kit is not compatible with the library
  * @param url RPC endpoint URL
@@ -154,9 +209,11 @@ export function toLegacyAccountInfo<T>(account: any): AccountInfo<T> {
   return {
     data: account.data,
     executable: account.executable,
-    lamports: typeof account.lamports === 'bigint' ? bigintToNumber(account.lamports) : account.lamports,
+    lamports: typeof account.lamports === 'bigint' ? bigintToNumberLossy(account.lamports) : account.lamports,
     owner: account.owner ? addressToPublicKey(account.owner) : account.owner,
-    rentEpoch: typeof account.rentEpoch === 'bigint' ? bigintToNumber(account.rentEpoch) : account.rentEpoch,
+    // rentEpoch is u64::MAX (18446744073709551615) for rent-exempt accounts — always
+    // exceeds MAX_SAFE_INTEGER, so a strict conversion would throw. Lossy is fine here.
+    rentEpoch: typeof account.rentEpoch === 'bigint' ? bigintToNumberLossy(account.rentEpoch) : account.rentEpoch,
   } as AccountInfo<T>;
 }
 
@@ -204,7 +261,14 @@ export function toLegacyParsedTransaction(tx: any): ParsedTransactionWithMeta | 
     if (typeof obj === 'object') {
       const converted: any = {};
       for (const key in obj) {
-        if (key === 'pubkey' || key === 'owner' || key === 'mint' || key === 'authority') {
+        if (key === 'parsed') {
+          // Preserve jsonParsed instruction payloads verbatim: `ix.parsed.info`
+          // must keep base58 strings so each detail card's superstruct
+          // `PublicKeyFromString` coercion produces a single, consistent
+          // PublicKey instance. Eagerly converting here leaks foreign-instance
+          // PublicKey objects into the render tree. See isPublicKeyLike.
+          converted[key] = obj[key];
+        } else if (key === 'pubkey' || key === 'owner' || key === 'mint' || key === 'authority') {
           try {
             converted[key] = new PublicKey(obj[key]);
           } catch {
@@ -227,9 +291,9 @@ export function toLegacyParsedTransaction(tx: any): ParsedTransactionWithMeta | 
     meta: tx.meta
       ? {
           ...tx.meta,
-          fee: typeof tx.meta.fee === 'bigint' ? bigintToNumber(tx.meta.fee) : tx.meta.fee,
-          preBalances: tx.meta.preBalances?.map((b: any) => (typeof b === 'bigint' ? bigintToNumber(b) : b)),
-          postBalances: tx.meta.postBalances?.map((b: any) => (typeof b === 'bigint' ? bigintToNumber(b) : b)),
+          fee: typeof tx.meta.fee === 'bigint' ? bigintToNumberLossy(tx.meta.fee) : tx.meta.fee,
+          preBalances: tx.meta.preBalances?.map((b: any) => (typeof b === 'bigint' ? bigintToNumberLossy(b) : b)),
+          postBalances: tx.meta.postBalances?.map((b: any) => (typeof b === 'bigint' ? bigintToNumberLossy(b) : b)),
           preTokenBalances: convertAddresses(tx.meta.preTokenBalances),
           postTokenBalances: convertAddresses(tx.meta.postTokenBalances),
         }

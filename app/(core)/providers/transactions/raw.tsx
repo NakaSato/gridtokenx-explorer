@@ -48,14 +48,22 @@ export function useRawTransactionDetails(signature: TransactionSignature): Cache
 }
 
 async function fetchRawTransaction(dispatch: Dispatch, signature: TransactionSignature, cluster: Cluster, url: string) {
+  dispatch({
+    key: signature,
+    status: FetchStatus.Fetching,
+    type: ActionType.Update,
+    url,
+  });
+
   let fetchStatus;
+  let data: Details | undefined;
   try {
     const response = await new Connection(url).getTransaction(signature, {
       maxSupportedTransactionVersion: 0,
     });
     fetchStatus = FetchStatus.Fetched;
 
-    let data: Details = { raw: null };
+    data = { raw: null };
     if (response !== null) {
       const { message, signatures } = response.transaction;
       const accountKeysFromLookups = response.meta?.loadedAddresses;
@@ -68,19 +76,20 @@ async function fetchRawTransaction(dispatch: Dispatch, signature: TransactionSig
         },
       };
     }
-
-    dispatch({
-      data,
-      key: signature,
-      status: fetchStatus,
-      type: ActionType.Update,
-      url,
-    });
   } catch (error) {
     if (cluster !== Cluster.Custom) {
       console.error(error, { url });
     }
+    fetchStatus = FetchStatus.FetchFailed;
   }
+
+  dispatch({
+    data,
+    key: signature,
+    status: fetchStatus,
+    type: ActionType.Update,
+    url,
+  });
 }
 
 export function useFetchRawTransaction() {

@@ -1,7 +1,7 @@
 import { Address } from '@/app/(shared)/components/common/Address';
 import { InstructionDetailsProps } from '@/app/(shared)/components/transaction/InstructionsSection';
 import { useCluster } from '@/app/(core)/providers/cluster';
-import { PublicKey } from '@solana/web3.js';
+import { isPublicKeyLike } from '@/app/(shared)/utils/rpc';
 import { displayTimestamp } from '@/app/(shared)/utils/date';
 import { camelToTitleCase } from '@/app/(shared)/utils/index';
 import { ParsedInfo } from '@/app/(solana)/validators/index';
@@ -55,7 +55,7 @@ function renderDetails<T extends object>(props: InstructionDetailsProps, parsed:
   for (const entry of Object.entries<any>(info)) {
     const key = entry[0];
     let value = entry[1];
-    if (value instanceof PublicKey) {
+    if (isPublicKeyLike(value)) {
       value = <Address pubkey={value} alignRight link />;
     }
 

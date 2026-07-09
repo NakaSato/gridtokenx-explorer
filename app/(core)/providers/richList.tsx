@@ -3,7 +3,7 @@
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { AccountBalancePair } from '@solana/web3.js';
 import { Cluster, ClusterStatus } from '@/app/(shared)/utils/cluster';
-import { createRpc, bigintToNumber, addressToPublicKey } from '@/app/(shared)/utils/rpc';
+import { createRpc, bigintToNumberLossy, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import React from 'react';
 
 export enum Status {
@@ -66,15 +66,15 @@ async function fetch(dispatch: Dispatch, cluster: Cluster, url: string) {
     // Convert from kit types to legacy types
     const total: AccountBalancePair[] = totalResponse.map(item => ({
       address: addressToPublicKey(item.address),
-      lamports: bigintToNumber(item.lamports),
+      lamports: bigintToNumberLossy(item.lamports),
     }));
     const circulating: AccountBalancePair[] = circulatingResponse.map(item => ({
       address: addressToPublicKey(item.address),
-      lamports: bigintToNumber(item.lamports),
+      lamports: bigintToNumberLossy(item.lamports),
     }));
     const nonCirculating: AccountBalancePair[] = nonCirculatingResponse.map(item => ({
       address: addressToPublicKey(item.address),
-      lamports: bigintToNumber(item.lamports),
+      lamports: bigintToNumberLossy(item.lamports),
     }));
 
     // Update state if still connecting

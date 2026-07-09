@@ -1,6 +1,6 @@
 import { Address } from '@/app/(shared)/components/common/Address';
 import { useFetchAccountInfo, useMintAccountInfo, useTokenAccountInfo } from '@/app/(core)/providers/accounts';
-import { ParsedInstruction, ParsedTransaction, PublicKey, SignatureResult } from '@solana/web3.js';
+import { ParsedInstruction, ParsedTransaction, SignatureResult } from '@solana/web3.js';
 import { normalizeTokenAmount } from '@/app/(shared)/utils/index';
 import { ParsedInfo } from '@/app/(solana)/validators/index';
 import React from 'react';
@@ -14,7 +14,7 @@ import { getTokenInfo, getTokenInfoSwrKey } from '@/app/(shared)/utils/token-inf
 
 import { InstructionCard } from '../InstructionCard';
 import { IX_STRUCTS, IX_TITLES, TokenAmountUi, TokenInstructionType } from './types';
-import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
+import { toAddress, addressToPublicKey, isPublicKeyLike } from '@/app/(shared)/utils/rpc';
 
 type DetailsProps = {
   tx: ParsedTransaction;
@@ -56,11 +56,11 @@ function TokenInstruction(props: InfoProps) {
     // No sense fetching accounts if we don't need to convert an amount
     if (!('amount' in props.info)) return {};
 
-    if ('mint' in props.info && props.info.mint instanceof PublicKey) {
+    if ('mint' in props.info && isPublicKeyLike(props.info.mint)) {
       mintAddress = props.info.mint.toBase58();
-    } else if ('account' in props.info && props.info.account instanceof PublicKey) {
+    } else if ('account' in props.info && isPublicKeyLike(props.info.account)) {
       tokenAddress = props.info.account.toBase58();
-    } else if ('source' in props.info && props.info.source instanceof PublicKey) {
+    } else if ('source' in props.info && isPublicKeyLike(props.info.source)) {
       tokenAddress = props.info.source.toBase58();
     }
     return {
@@ -121,7 +121,7 @@ function TokenInstruction(props: InfoProps) {
     if (value === undefined) continue;
 
     // Flatten lists of public keys
-    if (Array.isArray(value) && value.every(v => v instanceof PublicKey)) {
+    if (Array.isArray(value) && value.length > 0 && value.every(isPublicKeyLike)) {
       for (let i = 0; i < value.length; i++) {
         const publicKey = value[i];
         const label = `${key.charAt(0).toUpperCase() + key.slice(1)} - #${i + 1}`;
@@ -145,7 +145,7 @@ function TokenInstruction(props: InfoProps) {
 
     let tag;
     let labelSuffix = '';
-    if (value instanceof PublicKey) {
+    if (isPublicKeyLike(value)) {
       tag = <Address pubkey={value} alignRight link />;
     } else if (key === 'amount') {
       let amount;
@@ -164,7 +164,9 @@ function TokenInstruction(props: InfoProps) {
         </>
       );
     } else {
-      tag = <>{value}</>;
+      // Never render a raw object as a React child — stringify any object
+      // (e.g. a cross-instance PublicKey) so it degrades to text instead of crashing.
+      tag = <>{typeof value === 'object' && value !== null ? String(value) : value}</>;
     }
 
     const label = key.charAt(0).toUpperCase() + key.slice(1) + labelSuffix;
