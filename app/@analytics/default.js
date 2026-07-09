@@ -32,6 +32,7 @@ export default function Analytics() {
                         height="0"
                         width="0"
                         style={{ display: 'none', visibility: 'hidden' }}
+                        sandbox=""
                     ></iframe>
                 </noscript>
             </>

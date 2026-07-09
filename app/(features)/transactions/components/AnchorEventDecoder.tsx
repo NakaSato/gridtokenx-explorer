@@ -8,12 +8,9 @@ interface AnchorEventDecoderProps {
 }
 
 export function AnchorEventDecoder({ logs, programId }: AnchorEventDecoderProps) {
-  const [decodedEvents, setDecodedEvents] = React.useState<any[]>([]);
-
-  React.useEffect(() => {
+  const decodedEvents = React.useMemo<any[]>(() => {
     // Extract Anchor events from logs
     const events: any[] = [];
-    let currentEvent: any = null;
 
     logs.forEach((log, idx) => {
       // Anchor events typically have "Program log: " prefix
@@ -64,7 +61,7 @@ export function AnchorEventDecoder({ logs, programId }: AnchorEventDecoderProps)
       }
     });
 
-    setDecodedEvents(events);
+    return events;
   }, [logs]);
 
   if (decodedEvents.length === 0) {

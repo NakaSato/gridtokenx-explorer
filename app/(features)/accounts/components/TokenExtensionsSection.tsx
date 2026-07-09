@@ -164,11 +164,11 @@ function ExtensionListItem({
 
       {/* External links badges */}
       <div className="flex justify-end gap-1 text-white max-sm:col-span-6 sm:col-span-6 md:col-span-6 lg:col-span-2 xl:col-span-2">
-        <a key="raw" href="javascript:void(0)" onClick={handleToggleRaw}>
+        <button key="raw" type="button" onClick={handleToggleRaw}>
           <Badge className="font-normal text-white" variant={raw ? 'default' : 'outline'}>
             <Code size={16} /> Raw
           </Badge>
-        </a>
+        </button>
         {ext.externalLinks.map((link, index) => (
           <a key={index} href={link.url} target="_blank" rel="noopener noreferrer">
             <Badge variant="outline" className="font-normal text-white">

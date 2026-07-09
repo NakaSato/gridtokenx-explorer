@@ -8,7 +8,6 @@ export function AddressTableLookupsCard({ message }: { message: VersionedMessage
   const [expanded, setExpanded] = React.useState(true);
 
   const lookupRows = React.useMemo(() => {
-    let key = 0;
     return message.addressTableLookups.flatMap(lookup => {
       const indexes = [
         ...lookup.writableIndexes.map(index => ({ index, readOnly: false })),
@@ -23,7 +22,8 @@ export function AddressTableLookupsCard({ message }: { message: VersionedMessage
           lookupTableKey: lookup.accountKey,
           readOnly,
         };
-        return <LookupRow key={key++} {...props} />;
+        const key = `${lookup.accountKey.toBase58()}-${index}-${readOnly}`;
+        return <LookupRow key={key} {...props} />;
       });
     });
   }, [message]);

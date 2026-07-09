@@ -38,6 +38,21 @@ export interface AnalyticsChartProps {
   colorScheme?: 'blue' | 'green' | 'purple' | 'orange' | 'red';
 }
 
+// Recharts injects active/payload/label; formatValue passed explicitly.
+function CustomTooltip({ active, payload, label, formatValue }: any) {
+  if (active && payload && payload.length) {
+    const dataPoint = payload[0].payload;
+    return (
+      <div className="rounded bg-black px-2 py-1 text-xs text-white shadow-lg border border-border">
+        <div className="font-medium">{label}</div>
+        <div>{formatValue(payload[0].value)}</div>
+        {dataPoint.timestamp && <div className="text-gray-300">{dataPoint.timestamp.toLocaleString()}</div>}
+      </div>
+    );
+  }
+  return null;
+}
+
 export function AnalyticsChart({
   title,
   data,
@@ -63,21 +78,6 @@ export function AnalyticsChart({
   };
 
   const colors = getColorPalette(colorScheme);
-
-  // Custom Tooltip
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const dataPoint = payload[0].payload;
-      return (
-        <div className="rounded bg-black px-2 py-1 text-xs text-white shadow-lg border border-border">
-          <div className="font-medium">{label}</div>
-          <div>{formatValue(payload[0].value)}</div>
-          {dataPoint.timestamp && <div className="text-gray-300">{dataPoint.timestamp.toLocaleString()}</div>}
-        </div>
-      );
-    }
-    return null;
-  };
 
   const renderChart = () => {
     if (!data || data.length === 0) {
@@ -105,7 +105,7 @@ export function AnalyticsChart({
                 axisLine={false}
                 tickFormatter={formatValue}
               />
-              {showTooltip && <Tooltip content={<CustomTooltip />} />}
+              {showTooltip && <Tooltip content={<CustomTooltip formatValue={formatValue} />} />}
               {showLegend && <Legend />}
               <Line
                 type="monotone"
@@ -138,7 +138,7 @@ export function AnalyticsChart({
                 axisLine={false}
                 tickFormatter={formatValue}
               />
-              {showTooltip && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />}
+              {showTooltip && <Tooltip content={<CustomTooltip formatValue={formatValue} />} cursor={{ fill: 'transparent' }} />}
               {showLegend && <Legend />}
               <Bar dataKey="value" fill={colors[0]} radius={[4, 4, 0, 0]} animationDuration={1000}>
                 {data.map((entry, index) => (
@@ -166,7 +166,7 @@ export function AnalyticsChart({
                   <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                 ))}
               </Pie>
-              {showTooltip && <Tooltip content={<CustomTooltip />} />}
+              {showTooltip && <Tooltip content={<CustomTooltip formatValue={formatValue} />} />}
               {showLegend && <Legend />}
             </PieChart>
           </ResponsiveContainer>
@@ -197,7 +197,7 @@ export function AnalyticsChart({
                 axisLine={false}
                 tickFormatter={formatValue}
               />
-              {showTooltip && <Tooltip content={<CustomTooltip />} />}
+              {showTooltip && <Tooltip content={<CustomTooltip formatValue={formatValue} />} />}
               {showLegend && <Legend />}
               <Area
                 type="monotone"
