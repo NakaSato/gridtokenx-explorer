@@ -17,9 +17,13 @@ import {
 } from '@/app/(shared)/components/ui/select';
 import { Clock, Search, X, CheckCircle2, XCircle, Gauge, Activity } from 'lucide-react';
 
-const REFRESH_INTERVAL = 5000; // 5 seconds
-const MAX_TRANSACTIONS = 25;
-const SYSTEM_PROGRAM = '11111111111111111111111111111111';
+// One-time history backfill on load/resume (no polling after — new txs arrive
+// over the RPC WebSocket via onLogs).
+const BACKFILL_LIMIT = 25;
+// Ring-buffer cap: keep only the newest N in memory so an all-day live stream
+// can't grow unbounded. Older rows fall off the tail.
+const LIST_CAP = 500;
+const PAGE_SIZE = 25;
 const VOTE_PROGRAM = 'Vote111111111111111111111111111111111111111';
 
 type StatusFilter = 'all' | 'success' | 'failed';
@@ -56,90 +60,130 @@ export default function TransactionsPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [programFilter, setProgramFilter] = useState<string>('all');
 
-  // Fetch latest transactions, tagged by the program address they were found under.
-  const fetchTransactions = useCallback(async () => {
-    if (!connection || isPaused) return;
+  // Programs to watch, tagged by name. A tx touching several fires under each.
+  // Localnet: only the GridTokenX programs — the System program is a per-slot
+  // firehose of validator housekeeping that would bury real app activity in a
+  // live (uncapped) stream. Mainnet: Vote, as before.
+  const buildTargets = useCallback((): SearchTarget[] => {
+    if (!connection) return [];
+    const isMainnet = connection.rpcEndpoint.includes('mainnet');
+    return isMainnet
+      ? [{ id: VOTE_PROGRAM, name: 'Vote' }]
+      : ALL_PROGRAM_IDS.map(id => ({ id, name: PROGRAM_NAME_BY_ID[id] ?? 'Program' }));
+  }, [connection]);
 
+  // Merge incoming txs into the list: union program names, keep any details we
+  // already fetched, prefer a real blockTime, newest slot first. Genuinely new
+  // signatures (never seen before) are flash-highlighted when `flash` is set.
+  const upsert = useCallback((incoming: Transaction[], flash: boolean) => {
+    if (incoming.length === 0) return;
+    const seen = seenSigsRef.current;
+    const freshSigs: string[] = [];
+    for (const tx of incoming) {
+      if (!seen.has(tx.signature)) {
+        seen.add(tx.signature);
+        freshSigs.push(tx.signature);
+      }
+    }
+
+    setTransactions(prev => {
+      const map = new Map(prev.map(t => [t.signature, t] as const));
+      for (const tx of incoming) {
+        const old = map.get(tx.signature);
+        if (old) {
+          const names = new Set([...(old.programNames ?? []), ...(tx.programNames ?? [])]);
+          map.set(tx.signature, {
+            ...old,
+            ...tx,
+            programNames: Array.from(names),
+            // never lose already-inspected analytics or a resolved blockTime
+            details: old.details,
+            fee: old.fee,
+            computeUnits: old.computeUnits,
+            blockTime: tx.blockTime ?? old.blockTime,
+          });
+        } else {
+          map.set(tx.signature, tx);
+        }
+      }
+      // Newest first, then trim to the ring-buffer cap.
+      return Array.from(map.values())
+        .sort((a, b) => b.slot - a.slot)
+        .slice(0, LIST_CAP);
+    });
+
+    if (flash && hasLoadedRef.current && freshSigs.length > 0) {
+      setNewSignatures(prev => new Set([...prev, ...freshSigs]));
+    }
+  }, []);
+
+  // Batch live events: onLogs can fire many times per slot. Buffer arrivals and
+  // flush once per animation frame → one re-render/frame instead of one per tx.
+  const pendingRef = useRef<Transaction[]>([]);
+  const rafRef = useRef<number | null>(null);
+  const flushPending = useCallback(() => {
+    rafRef.current = null;
+    const batch = pendingRef.current;
+    pendingRef.current = [];
+    if (batch.length > 0) upsert(batch, true);
+  }, [upsert]);
+  const enqueue = useCallback(
+    (tx: Transaction) => {
+      pendingRef.current.push(tx);
+      if (rafRef.current == null) {
+        rafRef.current = requestAnimationFrame(flushPending);
+      }
+    },
+    [flushPending]
+  );
+
+  // One-time history load so the page isn't empty before live events arrive.
+  const backfill = useCallback(async () => {
+    if (!connection) return;
     try {
       setError(null);
-
       const slot = await connection.getSlot();
       setLastSlot(slot);
 
-      const isMainnet = connection.rpcEndpoint.includes('mainnet');
-      const targets: SearchTarget[] = isMainnet
-        ? [{ id: VOTE_PROGRAM, name: 'Vote' }]
-        : [
-            { id: SYSTEM_PROGRAM, name: 'System' },
-            ...ALL_PROGRAM_IDS.map(id => ({ id, name: PROGRAM_NAME_BY_ID[id] ?? 'Program' })),
-          ];
-
-      // Fetch per target; keep the program name alongside each signature.
+      const targets = buildTargets();
       const results = await Promise.all(
         targets.map(t =>
           connection
-            .getSignaturesForAddress(new PublicKey(t.id), { limit: MAX_TRANSACTIONS })
+            .getSignaturesForAddress(new PublicKey(t.id), { limit: BACKFILL_LIMIT })
             .then(sigs => sigs.map(s => ({ sig: s, program: t.name })))
             .catch(e => {
-              console.warn(`Failed to fetch signatures for ${t.name} (${t.id}):`, e);
+              console.warn(`Failed to backfill signatures for ${t.name} (${t.id}):`, e);
               return [] as { sig: ConfirmedSignatureInfo; program: string }[];
             })
         )
       );
 
-      // Dedupe by signature; a tx can appear under several programs — collect all names.
       const bySig = new Map<string, { sig: ConfirmedSignatureInfo; programs: Set<string> }>();
       for (const { sig, program } of results.flat()) {
         const existing = bySig.get(sig.signature);
-        if (existing) {
-          existing.programs.add(program);
-        } else {
-          bySig.set(sig.signature, { sig, programs: new Set([program]) });
-        }
+        if (existing) existing.programs.add(program);
+        else bySig.set(sig.signature, { sig, programs: new Set([program]) });
       }
 
-      const txs: Transaction[] = Array.from(bySig.values())
-        .sort((a, b) => b.sig.slot - a.sig.slot)
-        .slice(0, MAX_TRANSACTIONS)
-        .map(({ sig, programs }) => ({
-          signature: sig.signature,
-          slot: sig.slot,
-          err: sig.err,
-          memo: sig.memo || null,
-          blockTime: sig.blockTime || null,
-          confirmationStatus: sig.confirmationStatus,
-          programNames: Array.from(programs),
-        }));
+      const txs: Transaction[] = Array.from(bySig.values()).map(({ sig, programs }) => ({
+        signature: sig.signature,
+        slot: sig.slot,
+        err: sig.err,
+        memo: sig.memo || null,
+        blockTime: sig.blockTime || null,
+        confirmationStatus: sig.confirmationStatus,
+        programNames: Array.from(programs),
+      }));
 
-      // Flag signatures not seen before. Skip the flash on the very first load
-      // (everything would flash at once); animate only genuinely new arrivals after.
-      const seen = seenSigsRef.current;
-      const freshSigs = txs.map(t => t.signature).filter(s => !seen.has(s));
-      txs.forEach(t => seen.add(t.signature));
-      if (!hasLoadedRef.current) {
-        hasLoadedRef.current = true;
-      } else if (freshSigs.length > 0) {
-        setNewSignatures(new Set(freshSigs));
-      }
-
-      // Preserve already-inspected details (fee/CU/full response) across refreshes
-      // so analytics keep their fetched values instead of resetting each interval.
-      setTransactions(prev => {
-        const prevMap = new Map(prev.map(t => [t.signature, t]));
-        return txs.map(t => {
-          const old = prevMap.get(t.signature);
-          return old
-            ? { ...t, details: old.details, fee: old.fee, computeUnits: old.computeUnits }
-            : t;
-        });
-      });
+      upsert(txs, false); // no flash for historical rows
+      hasLoadedRef.current = true;
       setIsLoading(false);
     } catch (err) {
-      console.error('Error fetching transactions:', err);
+      console.error('Error backfilling transactions:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch transactions');
       setIsLoading(false);
     }
-  }, [connection, isPaused]);
+  }, [connection, buildTargets, upsert]);
 
   // Fetch transaction details
   const handleInspect = useCallback(
@@ -188,17 +232,64 @@ export default function TransactionsPage() {
     setIsPaused(prev => !prev);
   }, []);
 
-  // Initial fetch
+  // Live stream: backfill history once, then subscribe to program logs over the
+  // RPC WebSocket. New transactions push in as they confirm — no polling.
   useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
+    if (!connection || isPaused) return;
+    let cancelled = false;
+    const subIds: number[] = [];
 
-  // Auto-refresh
-  useEffect(() => {
-    if (isPaused) return;
-    const interval = setInterval(fetchTransactions, REFRESH_INTERVAL);
-    return () => clearInterval(interval);
-  }, [fetchTransactions, isPaused]);
+    backfill();
+
+    const targets = buildTargets();
+    for (const t of targets) {
+      try {
+        const id = connection.onLogs(
+          new PublicKey(t.id),
+          (logs, ctx) => {
+            if (cancelled || !logs.signature) return;
+            const tx: Transaction = {
+              signature: logs.signature,
+              slot: ctx.slot,
+              err: logs.err,
+              memo: null,
+              blockTime: null,
+              confirmationStatus: 'confirmed',
+              programNames: [t.name],
+            };
+            enqueue(tx);
+            setLastSlot(prev => (prev == null || ctx.slot > prev ? ctx.slot : prev));
+            // Resolve the block time for the Time column without blocking the row.
+            connection
+              .getBlockTime(ctx.slot)
+              .then(bt => {
+                if (!cancelled && bt) enqueue({ ...tx, blockTime: bt });
+              })
+              .catch(() => {});
+          },
+          'confirmed'
+        );
+        subIds.push(id);
+      } catch (e) {
+        console.warn(`onLogs subscribe failed for ${t.name}:`, e);
+      }
+    }
+
+    const slotSub = connection.onSlotChange(s => {
+      if (!cancelled) setLastSlot(s.slot);
+    });
+
+    return () => {
+      cancelled = true;
+      if (rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      pendingRef.current = [];
+      subIds.forEach(id => connection.removeOnLogsListener(id).catch(() => {}));
+      connection.removeSlotChangeListener(slotSub).catch(() => {});
+    };
+  }, [connection, isPaused, backfill, buildTargets, enqueue]);
 
   // Drop the "new" flag once the flash animation (2.2s) has played out.
   useEffect(() => {
@@ -241,6 +332,20 @@ export default function TransactionsPage() {
     return { total, success, failed, successRate, tps };
   }, [transactions]);
 
+  // Pagination — render only the current page so the DOM stays small even as the
+  // live buffer fills toward LIST_CAP.
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  useEffect(() => {
+    // Snap back to the first page whenever the filtered set changes shape.
+    setPage(1);
+  }, [query, statusFilter, programFilter]);
+  const pageTransactions = useMemo(
+    () => filteredTransactions.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [filteredTransactions, currentPage]
+  );
+
   const hasActiveFilters = query !== '' || statusFilter !== 'all' || programFilter !== 'all';
   const clearFilters = () => {
     setQuery('');
@@ -278,9 +383,9 @@ export default function TransactionsPage() {
           >
           <StatTile
             icon={<Activity className="h-4 w-4" />}
-            label="Sample Size"
+            label="Transactions"
             value={stats.total.toString()}
-            hint={`${MAX_TRANSACTIONS} max`}
+            hint="live stream"
             accent="text-cyan-400"
           />
           <StatTile
@@ -386,16 +491,46 @@ export default function TransactionsPage() {
             <div className="space-y-6">
               <div className="rounded-xl border border-border/50 bg-card/30 overflow-hidden p-4 md:p-6">
                 <RealtimeTransactionTable
-                  transactions={filteredTransactions}
+                  transactions={pageTransactions}
                   lastSlot={lastSlot}
                   isPaused={isPaused}
                   detailsLoading={detailsLoading}
                   selectedTxSignature={selectedTx?.signature || null}
-                  refreshInterval={REFRESH_INTERVAL}
                   onPauseToggle={handlePauseToggle}
                   onInspect={handleInspect}
                   newSignatures={newSignatures}
                 />
+
+                {/* Pagination */}
+                <div className="mt-4 flex flex-col items-center justify-between gap-3 border-t border-border/50 pt-4 sm:flex-row">
+                  <span className="text-xs text-muted-foreground">
+                    Showing{' '}
+                    <span className="font-semibold text-foreground">
+                      {(currentPage - 1) * PAGE_SIZE + 1}–
+                      {Math.min(currentPage * PAGE_SIZE, filteredTransactions.length)}
+                    </span>{' '}
+                    of <span className="font-semibold text-foreground">{filteredTransactions.length}</span>
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage <= 1}
+                      className="rounded-lg border border-border/50 bg-secondary/30 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-cyan-500/30 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Prev
+                    </button>
+                    <span className="font-mono text-xs text-muted-foreground">
+                      Page <span className="font-bold text-cyan-400">{currentPage}</span> / {totalPages}
+                    </span>
+                    <button
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage >= totalPages}
+                      className="rounded-lg border border-border/50 bg-secondary/30 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-cyan-500/30 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 gap-6">

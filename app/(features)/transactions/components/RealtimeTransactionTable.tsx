@@ -1,5 +1,6 @@
 'use client';
 
+import { Fragment, useMemo } from 'react';
 import { Badge } from '@/app/(shared)/components/ui/badge';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/ui/table';
@@ -54,7 +55,6 @@ interface RealtimeTransactionTableProps {
   isPaused: boolean;
   detailsLoading: boolean;
   selectedTxSignature: string | null;
-  refreshInterval: number;
   onPauseToggle: () => void;
   onInspect: (tx: Transaction) => void;
   /** Signatures that arrived in the latest refresh — flash-highlighted on entry. */
@@ -67,11 +67,21 @@ export function RealtimeTransactionTable({
   isPaused,
   detailsLoading,
   selectedTxSignature,
-  refreshInterval,
   onPauseToggle,
   onInspect,
   newSignatures,
 }: RealtimeTransactionTableProps) {
+  // Group consecutive rows by slot (input is already sorted newest-slot-first).
+  const slotGroups = useMemo(() => {
+    const groups: { slot: number; txs: Transaction[] }[] = [];
+    for (const tx of transactions) {
+      const last = groups[groups.length - 1];
+      if (last && last.slot === tx.slot) last.txs.push(tx);
+      else groups.push({ slot: tx.slot, txs: [tx] });
+    }
+    return groups;
+  }, [transactions]);
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -91,13 +101,8 @@ export function RealtimeTransactionTable({
             )}
           </div>
           <p className="text-sm text-muted-foreground">
-            Latest <span className="font-semibold text-foreground">{transactions.length}</span> transactions
-            {!isPaused && (
-              <>
-                {' · updates every '}
-                <span className="font-semibold text-foreground">{refreshInterval / 1000}s</span>
-              </>
-            )}
+            <span className="font-semibold text-foreground">{transactions.length}</span> transactions
+            {!isPaused && ' · streaming live'}
           </p>
         </div>
 
@@ -140,7 +145,6 @@ export function RealtimeTransactionTable({
               <TableRow className="border-border/50 bg-secondary/30 hover:bg-secondary/30">
                 <TableHead className="text-muted-foreground">Signature</TableHead>
                 <TableHead className="text-muted-foreground">Program</TableHead>
-                <TableHead className="text-muted-foreground">Slot</TableHead>
                 <TableHead className="text-muted-foreground">Time</TableHead>
                 <TableHead className="text-muted-foreground">Status</TableHead>
                 <TableHead className="text-muted-foreground">Confirmations</TableHead>
@@ -148,9 +152,25 @@ export function RealtimeTransactionTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {transactions.map((tx, index) => (
+              {slotGroups.map(group => (
+                <Fragment key={group.slot}>
+                  <TableRow className="border-border/40 bg-secondary/40 hover:bg-secondary/40">
+                    <TableCell colSpan={6} className="py-1.5">
+                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-cyan-400/70" />
+                        Slot
+                        <span className="font-mono text-cyan-400">
+                          <Slot slot={group.slot} link />
+                        </span>
+                        <span className="font-normal normal-case text-muted-foreground/60">
+                          · {group.txs.length} tx
+                        </span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                  {group.txs.map(tx => (
                 <TableRow
-                  key={`${tx.signature}-${index}`}
+                  key={tx.signature}
                   className={`border-border/30 transition-colors hover:bg-secondary/20 ${
                     newSignatures?.has(tx.signature) ? 'animate-tx-row-enter' : ''
                   }`}
@@ -174,9 +194,6 @@ export function RealtimeTransactionTable({
                     ) : (
                       <span className="text-muted-foreground">-</span>
                     )}
-                  </TableCell>
-                  <TableCell className="font-mono text-cyan-400">
-                    <Slot slot={tx.slot} link />
                   </TableCell>
                   <TableCell className="whitespace-nowrap text-muted-foreground">
                     {tx.blockTime ? (
@@ -240,6 +257,8 @@ export function RealtimeTransactionTable({
                     </Button>
                   </TableCell>
                 </TableRow>
+                  ))}
+                </Fragment>
               ))}
             </TableBody>
           </Table>
