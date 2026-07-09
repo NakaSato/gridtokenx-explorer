@@ -71,12 +71,21 @@ const SELL_DEPTH_OFF = 328; // sell_side_depth (abs 336 − 8 disc)
 const u64 = (d: Buffer, o: number) => Number(d.readBigUInt64LE(o));
 const i64 = (d: Buffer, o: number) => Number(d.readBigInt64LE(o));
 
+// On-chain scaling (trading program): energy amounts carry 9 decimals
+// (ENERGY_AMOUNT_DECIMALS_DIVISOR = 1e9) → kWh; price_per_kwh is 6-decimal
+// micro-THB (settlement currency, THBG) → THB. Raw u64s must be divided before
+// display, else e.g. 204_309_749_000 base units reads as "204B kWh".
+const ENERGY_DIVISOR = 1_000_000_000;
+const PRICE_DIVISOR = 1_000_000;
+const kwh = (raw: number) => raw / ENERGY_DIVISOR;
+const thb = (raw: number) => raw / PRICE_DIVISOR;
+
 function readDepth(d: Buffer, base: number, into: Map<number, number>) {
   for (let i = 0; i < DEPTH_LEN; i++) {
     const o = base + i * PRICE_LEVEL;
     if (o + 16 > d.length) break;
-    const price = u64(d, o);
-    const amount = u64(d, o + 8);
+    const price = thb(u64(d, o));
+    const amount = kwh(u64(d, o + 8));
     if (price > 0 && amount > 0) into.set(price, (into.get(price) ?? 0) + amount);
   }
 }
@@ -110,9 +119,9 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
         if (data.length === SIZE.market) {
           marketData = {
             address: pubkey.toBase58(),
-            totalVolume: u64(d, 32),
-            lastPrice: u64(d, 48), // last_clearing_price
-            vwap: u64(d, 56),
+            totalVolume: kwh(u64(d, 32)),
+            lastPrice: thb(u64(d, 48)), // last_clearing_price
+            vwap: thb(u64(d, 56)),
             activeOrders: d.readUInt32LE(64),
             totalTrades: d.readUInt32LE(68),
             feeBps: d.readUInt16LE(72),
@@ -120,7 +129,7 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
               .map((_, i) => {
                 const start = 2160 + i * PRICE_LEVEL; // price_history ring, payload offset
                 if (start + 24 > d.length) return null;
-                return { price: u64(d, start), volume: u64(d, start + 8), time: i64(d, start + 16) };
+                return { price: thb(u64(d, start)), volume: kwh(u64(d, start + 8)), time: i64(d, start + 16) };
               })
               .filter((ph): ph is PricePoint => !!ph && ph.time > 0)
               .sort((a, b) => a.time - b.time),
@@ -134,16 +143,16 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
           // Standalone Order accounts (when the CDA rests them individually).
           const status = d[97];
           if (status > 1) continue; // only Active / PartiallyFilled stay on the book
-          const remaining = u64(d, 72) - u64(d, 80); // amount − filled
+          const remaining = kwh(u64(d, 72) - u64(d, 80)); // (amount − filled), kWh
           if (remaining <= 0) continue;
-          const price = u64(d, 88);
+          const price = thb(u64(d, 88));
           const map = d[96] === 1 ? bidMap : askMap; // OrderType: 1 = Buy, 0 = Sell
           if (price > 0) map.set(price, (map.get(price) ?? 0) + remaining);
         } else if (data.length === SIZE.trade) {
           tradeList.push({
             address: pubkey.toBase58(),
-            amount: u64(d, 128),
-            price: u64(d, 136),
+            amount: kwh(u64(d, 128)),
+            price: thb(u64(d, 136)),
             time: i64(d, 160),
           });
         }

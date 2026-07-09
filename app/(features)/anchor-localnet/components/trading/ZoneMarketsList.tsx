@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollArea } from '@/app/(shared)/components/ui/scroll-area';
 import { Map } from 'lucide-react';
 import type { ZoneMarketData } from '../../lib/trading-decoders';
+import { fmtKwh, fmtThb } from '../../lib/units';
 
 interface ZoneMarketsListProps {
   zoneMarkets: ZoneMarketData[];
@@ -30,7 +31,7 @@ export function ZoneMarketsList({ zoneMarkets }: ZoneMarketsListProps) {
                     Zone {zone.zoneId}
                   </span>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-base font-bold text-[#e0e0e0]">{zone.totalVolume}</span>
+                    <span className="text-base font-bold text-[#e0e0e0]">{fmtKwh(zone.totalVolume)}</span>
                     <span className="text-[10px] uppercase text-[#666]">kWh volume</span>
                   </div>
                 </div>
@@ -42,7 +43,7 @@ export function ZoneMarketsList({ zoneMarkets }: ZoneMarketsListProps) {
                     <span className="text-[#14F195]">{zone.totalTrades}</span> trades
                   </span>
                   <span>
-                    clear <span className="text-[#e0e0e0]">{zone.lastClearingPrice}</span>
+                    clear <span className="text-[#e0e0e0]">฿{fmtThb(zone.lastClearingPrice)}</span>
                   </span>
                 </div>
               </div>
@@ -56,7 +57,7 @@ export function ZoneMarketsList({ zoneMarkets }: ZoneMarketsListProps) {
                 </div>
                 <div className="flex flex-1 items-center justify-end gap-2">
                   <span className="text-[9px] uppercase tracking-wider text-[#666]">
-                    capacity {zone.committedFlow}/{zone.capacity}
+                    capacity {fmtKwh(zone.committedFlow)}/{fmtKwh(zone.capacity)} kWh
                   </span>
                   <div className="h-1.5 w-28 bg-[#1a1a1a]">
                     <div

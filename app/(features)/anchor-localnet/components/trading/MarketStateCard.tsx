@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/components/ui/card';
 import { BarChart3 } from 'lucide-react';
 import type { MarketData } from '../../hooks/useTradingExplorerData';
+import { fmtKwh, fmtThb } from '../../lib/units';
 
 interface MarketStateCardProps {
   market: MarketData | null;
@@ -38,13 +39,13 @@ export function MarketStateCard({ market }: MarketStateCardProps) {
       <CardContent className="p-0">
         <div className="grid grid-cols-2 sm:grid-cols-4">
           {[
-            ['Total Volume', `${market.totalVolume.toLocaleString()}`, 'kWh'],
+            ['Total Volume', fmtKwh(market.totalVolume), 'kWh'],
             ['Total Trades', market.totalTrades.toLocaleString(), ''],
             ['Active Orders', String(market.activeOrders), ''],
-            ['Last Price', String(market.lastClearingPrice), '/kWh'],
-            ['VWAP', String(market.vwap), '/kWh'],
+            ['Last Price', `฿${fmtThb(market.lastClearingPrice)}`, '/kWh'],
+            ['VWAP', `฿${fmtThb(market.vwap)}`, '/kWh'],
             ['Fee', String(market.marketFeeBps), 'bps'],
-            ['Price Range', `${market.minPrice} - ${market.maxPrice || '∞'}`, ''],
+            ['Price Range', `฿${fmtThb(market.minPrice)} - ${market.maxPrice ? `฿${fmtThb(market.maxPrice)}` : '∞'}`, ''],
           ].map(([label, value, unit]) => (
             <div key={label} className="space-y-1 border-b border-r border-[#1a1a1a] p-3">
               <p className="text-[9px] font-medium uppercase tracking-wider text-[#666]">{label}</p>

@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollArea } from '@/app/(shared)/components/ui/scroll-area';
 import { Clock, ShoppingCart } from 'lucide-react';
 import type { OrderData } from '../../hooks/useTradingExplorerData';
+import { fmtKwh, fmtThb } from '../../lib/units';
 
 interface OrdersListProps {
   orders: OrderData[];
@@ -34,12 +35,12 @@ export function OrdersList({ orders }: OrdersListProps) {
                     {order.orderType}
                   </span>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-base font-bold text-[#e0e0e0]">{order.amount}</span>
+                    <span className="text-base font-bold text-[#e0e0e0]">{fmtKwh(order.amount)}</span>
                     <span className="text-[10px] uppercase text-[#666]">kWh</span>
                   </div>
                   <span className="text-[#666]">@</span>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-sm font-bold text-[#e0e0e0]">{order.pricePerKwh}</span>
+                    <span className="text-sm font-bold text-[#e0e0e0]">฿{fmtThb(order.pricePerKwh)}</span>
                     <span className="text-[10px] uppercase text-[#666]">/kWh</span>
                   </div>
                 </div>
@@ -51,7 +52,7 @@ export function OrdersList({ orders }: OrdersListProps) {
                 <div className="flex items-center gap-4 text-[10px] text-[#666]">
                   <div className="flex items-center gap-1.5">
                     <span className="h-1.5 w-1.5 rounded-full bg-[#9945FF]/60"></span>
-                    Filled: {order.filledAmount}/{order.amount}
+                    Filled: {fmtKwh(order.filledAmount)}/{fmtKwh(order.amount)}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="h-3 w-3" />

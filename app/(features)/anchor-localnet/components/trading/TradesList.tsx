@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollArea } from '@/app/(shared)/components/ui/scroll-area';
 import { ArrowUpDown, Clock } from 'lucide-react';
 import type { TradeData } from '../../hooks/useTradingExplorerData';
+import { fmtKwh, fmtThb } from '../../lib/units';
 
 interface TradesListProps {
   trades: TradeData[];
@@ -28,22 +29,22 @@ export function TradesList({ trades }: TradesListProps) {
                   <ArrowUpDown className="h-4 w-4" />
                 </div>
                 <div className="flex items-baseline gap-1.5">
-                  <span className="text-base font-bold text-[#e0e0e0]">{trade.amount}</span>
+                  <span className="text-base font-bold text-[#e0e0e0]">{fmtKwh(trade.amount)}</span>
                   <span className="text-[10px] uppercase text-[#666]">kWh</span>
                   <span className="mx-1 text-[#666]">@</span>
-                  <span className="text-sm font-bold text-[#e0e0e0]">{trade.pricePerKwh}</span>
+                  <span className="text-sm font-bold text-[#e0e0e0]">฿{fmtThb(trade.pricePerKwh)}</span>
                   <span className="text-[10px] uppercase text-[#666]">/kWh</span>
                 </div>
               </div>
               <div className="text-right">
                 <p className="mb-0.5 text-[9px] uppercase tracking-wider text-[#666]">Value</p>
-                <p className="font-bold text-[#14F195]">{trade.totalValue.toLocaleString()}</p>
+                <p className="font-bold text-[#14F195]">฿{fmtThb(trade.totalValue)}</p>
               </div>
             </div>
             <div className="mt-2 flex items-center justify-between">
               <div className="flex items-center gap-4 text-[10px] text-[#666]">
                 <div className="flex items-center gap-1.5">
-                  <span className="bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] text-[#888]">Fee: {trade.feeAmount}</span>
+                  <span className="bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] text-[#888]">Fee: ฿{fmtThb(trade.feeAmount)}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-3 w-3" />
