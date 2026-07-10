@@ -31,6 +31,7 @@ export function ClusterDropdown() {
   const [isNavigating, setIsNavigating] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const updateCustomUrl = useUpdateCustomUrl();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -53,13 +54,45 @@ export function ClusterDropdown() {
     };
   }, []);
 
-  // Keyboard navigation
+  // Keyboard navigation: Escape closes, Arrow/Home/End move a roving focus
+  // across the menu items so the list is fully keyboard-operable.
   useEffect(() => {
+    function focusItem(index: number) {
+      const items = itemRefs.current.filter(Boolean) as HTMLButtonElement[];
+      if (items.length === 0) return;
+      const next = (index + items.length) % items.length;
+      items[next]?.focus();
+    }
+
+    function currentIndex() {
+      const items = itemRefs.current.filter(Boolean) as HTMLButtonElement[];
+      return items.findIndex(el => el === document.activeElement);
+    }
+
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-        setShowCustomInput(false);
-        buttonRef.current?.focus();
+      if (!isOpen) return;
+      switch (event.key) {
+        case 'Escape':
+          setIsOpen(false);
+          setShowCustomInput(false);
+          buttonRef.current?.focus();
+          break;
+        case 'ArrowDown':
+          event.preventDefault();
+          focusItem(currentIndex() + 1);
+          break;
+        case 'ArrowUp':
+          event.preventDefault();
+          focusItem(currentIndex() - 1);
+          break;
+        case 'Home':
+          event.preventDefault();
+          focusItem(0);
+          break;
+        case 'End':
+          event.preventDefault();
+          focusItem(itemRefs.current.filter(Boolean).length - 1);
+          break;
       }
     }
 
@@ -70,6 +103,13 @@ export function ClusterDropdown() {
       };
     }
   }, [isOpen]);
+
+  // Move focus onto the active option when the menu opens.
+  useEffect(() => {
+    if (!isOpen) return;
+    const activeIdx = CLUSTERS.findIndex(net => net === cluster);
+    itemRefs.current[activeIdx >= 0 ? activeIdx : 0]?.focus();
+  }, [isOpen, cluster]);
 
   const onUrlInput = useDebounceCallback((url: string) => {
     updateCustomUrl(url);
@@ -82,16 +122,19 @@ export function ClusterDropdown() {
   }, 500);
 
   const handleClusterSelect = (selectedCluster: Cluster) => {
-    setIsOpen(false);
-
+    // Custom keeps the menu open so the URL input can be shown; only real
+    // clusters close it. (Previously the menu closed before this check, so
+    // the custom input never appeared.)
     if (selectedCluster === Cluster.Custom) {
       setShowCustomInput(true);
       return;
     }
 
+    setIsOpen(false);
+
     const nextSearchParams = new URLSearchParams(searchParams?.toString());
     const slug = clusterSlug(selectedCluster);
-    
+
     // Save to localStorage
     try {
       localStorage.setItem('explorer-last-cluster', slug);
@@ -106,7 +149,7 @@ export function ClusterDropdown() {
     }
     const nextQueryString = nextSearchParams.toString();
     const clusterUrl = `${pathname}${nextQueryString ? `?${nextQueryString}` : ''}`;
-    
+
     setIsNavigating(true);
     router.push(clusterUrl);
   };
@@ -157,6 +200,9 @@ export function ClusterDropdown() {
     }
   }, [status]);
 
+  // Reset the per-item ref list on every render so stale rows don't linger.
+  itemRefs.current = [];
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Trigger Button */}
@@ -175,8 +221,8 @@ export function ClusterDropdown() {
           {getStatusIcon()}
           <span className="truncate text-xs sm:text-sm">{statusName}</span>
         </div>
-        <ChevronDown 
-          size={14} 
+        <ChevronDown
+          size={14}
           className={`flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           aria-hidden="true"
         />
@@ -184,7 +230,7 @@ export function ClusterDropdown() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div 
+        <div
           className="absolute top-full right-0 z-50 mt-2 w-72 animate-in fade-in slide-in-from-top-2 rounded-lg border border-border bg-popover shadow-xl duration-200 sm:w-80 md:w-96"
           role="menu"
           aria-label="Cluster selection menu"
@@ -201,13 +247,16 @@ export function ClusterDropdown() {
                   return (
                     <div key={index} className="space-y-2">
                       <Button
+                        ref={el => {
+                          itemRefs.current[index] = el;
+                        }}
                         type="button"
                         variant={active ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => handleClusterSelect(net)}
                         className={`h-10 w-full justify-start transition-all duration-200 hover:scale-[1.02] active:scale-98 sm:h-9 ${
-                          active 
-                            ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+                          active
+                            ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                             : 'hover:bg-accent hover:text-accent-foreground'
                         }`}
                         role="menuitem"
@@ -243,13 +292,16 @@ export function ClusterDropdown() {
                 return (
                   <Button
                     key={index}
+                    ref={el => {
+                      itemRefs.current[index] = el;
+                    }}
                     type="button"
                     variant={active ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => handleClusterSelect(net)}
                     className={`h-10 w-full justify-start transition-all duration-200 hover:scale-[1.02] active:scale-98 sm:h-9 ${
-                      active 
-                        ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+                      active
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                         : 'hover:bg-accent hover:text-accent-foreground'
                     }`}
                     role="menuitem"

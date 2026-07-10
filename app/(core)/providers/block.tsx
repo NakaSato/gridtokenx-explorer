@@ -149,36 +149,70 @@ export async function fetchBlock(dispatch: Dispatch, url: string, cluster: Clust
         blockHeight: blockRaw.blockHeight !== null && typeof blockRaw.blockHeight === 'bigint' ? Number(blockRaw.blockHeight) : blockRaw.blockHeight,
       };
       
-      // Add getAccountKeys compatibility method to each transaction message
+      // The kit RPC returns each message as raw JSON: `accountKeys` (base58 strings),
+      // `header`, and `instructions` ({ programIdIndex, accounts, data }). The block
+      // cards, though, consume the web3.js VersionedMessage API — `compiledInstructions`,
+      // `staticAccountKeys`, `getAccountKeys()`, `isAccountWritable()`. Bridge the two
+      // shapes once here so every consumer sees a consistent object (idempotent: a real
+      // web3.js message already carrying both fields is left untouched).
       block.transactions.forEach(tx => {
         const message = tx.transaction.message as any;
-        if (!message.getAccountKeys) {
-          message.getAccountKeys = (args?: { accountKeysFromLookups?: any }) => {
-            const staticKeys = message.staticAccountKeys || [];
-            const loadedKeys = args?.accountKeysFromLookups || { writable: [], readonly: [] };
-            
-            return {
-              staticAccountKeys: staticKeys,
-              get: (index: number) => {
-                if (index < staticKeys.length) {
-                  return staticKeys[index];
-                }
-                const lookupIndex = index - staticKeys.length;
-                const writableLength = loadedKeys.writable?.length || 0;
-                if (lookupIndex < writableLength) {
-                  return loadedKeys.writable[lookupIndex];
-                }
-                return loadedKeys.readonly?.[lookupIndex - writableLength];
-              },
-              keySegments: () => {
-                const segments = [staticKeys];
-                if (loadedKeys.writable?.length) segments.push(loadedKeys.writable);
-                if (loadedKeys.readonly?.length) segments.push(loadedKeys.readonly);
-                return segments;
-              },
-            };
+        if (message.getAccountKeys && message.compiledInstructions) return;
+
+        // Wrap kit's base58 string keys as PublicKey-like { toBase58 } objects.
+        const wrap = (k: any) =>
+          typeof k === 'string'
+            ? { toBase58: () => k, equals: (o: any) => o?.toBase58?.() === k }
+            : k;
+        const rawKeys: any[] = message.staticAccountKeys || message.accountKeys || [];
+        const staticKeys = rawKeys.map(wrap);
+        const header = message.header || {
+          numRequiredSignatures: 0,
+          numReadonlySignedAccounts: 0,
+          numReadonlyUnsignedAccounts: 0,
+        };
+
+        // instructions → compiledInstructions (accounts → accountKeyIndexes).
+        const rawIx: any[] = message.compiledInstructions || message.instructions || [];
+        message.compiledInstructions = rawIx.map(ix => ({
+          programIdIndex: ix.programIdIndex,
+          accountKeyIndexes: ix.accountKeyIndexes || ix.accounts || [],
+          data: ix.data,
+        }));
+        message.staticAccountKeys = staticKeys;
+
+        message.getAccountKeys = (args?: { accountKeysFromLookups?: any }) => {
+          const loaded = args?.accountKeysFromLookups || { writable: [], readonly: [] };
+          const writable = (loaded.writable || []).map(wrap);
+          const readonly = (loaded.readonly || []).map(wrap);
+          const all = [...staticKeys, ...writable, ...readonly];
+          return {
+            staticAccountKeys: staticKeys,
+            length: all.length,
+            get: (index: number) => all[index],
+            keySegments: () => {
+              const segments = [staticKeys];
+              if (writable.length) segments.push(writable);
+              if (readonly.length) segments.push(readonly);
+              return segments;
+            },
           };
-        }
+        };
+
+        // web3.js MessageV0.isAccountWritable: writable lookups precede readonly ones;
+        // static keys split by the header's signed/readonly counts.
+        message.isAccountWritable = (index: number) => {
+          const numSigned = header.numRequiredSignatures ?? 0;
+          const numStatic = staticKeys.length;
+          if (index >= numStatic) {
+            const loaded = tx.meta?.loadedAddresses || { writable: [] };
+            return index - numStatic < (loaded.writable?.length || 0);
+          }
+          if (index < numSigned) {
+            return index < numSigned - (header.numReadonlySignedAccounts ?? 0);
+          }
+          return index - numSigned < numStatic - numSigned - (header.numReadonlyUnsignedAccounts ?? 0);
+        };
       });
       
       const childSlots = await rpc.getBlocks(BigInt(slot + 1), BigInt(slot + 100), { commitment: 'confirmed' }).send();

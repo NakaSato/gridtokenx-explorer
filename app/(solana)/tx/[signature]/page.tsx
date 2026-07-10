@@ -1,5 +1,6 @@
 import { SignatureProps } from '@/app/(shared)/utils/index';
 import { TransactionsProvider } from '@/app/(core)/providers/transactions';
+import { AccountsProvider } from '@/app/(core)/providers/accounts';
 import { Metadata } from 'next/types';
 import React from 'react';
 
@@ -21,7 +22,9 @@ export default async function TransactionDetailsPage({ params }: Props) {
   const resolvedParams = await params;
   return (
     <TransactionsProvider>
-      <TransactionDetailsPageClient params={resolvedParams} />
+      <AccountsProvider>
+        <TransactionDetailsPageClient params={resolvedParams} />
+      </AccountsProvider>
     </TransactionsProvider>
   );
 }

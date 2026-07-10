@@ -25,6 +25,8 @@ import { InstructionReference } from './shared-explorer/InstructionReference';
 
 // Treasury token mints use 6 decimals (THBG_DECIMALS / GRX, state.rs).
 const TOKEN_DECIMALS = 6;
+// acc_reward_per_share is scaled by ACC_PRECISION = 1e12 (state.rs).
+const ACC_PRECISION = 1e12;
 
 interface TreasuryExplorerProps {
   rpcUrl: string;
@@ -33,6 +35,7 @@ interface TreasuryExplorerProps {
 
 interface TreasuryData {
   address: string;
+  accRewardPerShare: bigint;
   authority: string;
   attestor: string;
   grxMint: string;
@@ -55,6 +58,7 @@ interface StakePosition {
   address: string;
   owner: string;
   amount: number;
+  rewardDebt: number;
   pending: number;
 }
 
@@ -78,10 +82,15 @@ interface SettlementRecord {
 }
 
 // Account payload sizes (excluding the 8-byte Anchor discriminator).
-const SIZE = { treasury: 256, stake: 65, shard: 24, settlement: 112 };
+const SIZE = { treasury: 272, stake: 65, shard: 24, settlement: 112 };
 
 function pk(buf: Uint8Array, off: number): string {
   return new PublicKey(buf.slice(off, off + 32)).toBase58();
+}
+
+// Read a little-endian u128 as bigint (web3.js Buffer has no readBigUInt128LE).
+function u128(buf: Buffer, off: number): bigint {
+  return buf.readBigUInt64LE(off) + (buf.readBigUInt64LE(off + 8) << 64n);
 }
 
 export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProps) {
@@ -113,6 +122,7 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
           if (data.length === SIZE.treasury + 8) {
             treasuryData = {
               address: addr,
+              accRewardPerShare: u128(d, 0),
               authority: pk(d, 16),
               attestor: pk(d, 48),
               grxMint: pk(d, 80),
@@ -135,6 +145,7 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
               address: addr,
               owner: pk(d, 0),
               amount: Number(d.readBigUInt64LE(32)),
+              rewardDebt: Number(u128(d, 40)),
               pending: Number(d.readBigUInt64LE(56)),
             });
           } else if (data.length === SIZE.shard + 8) {
@@ -317,6 +328,10 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
               <CardContent className="grid grid-cols-1 gap-x-8 gap-y-1 p-4 sm:grid-cols-2">
                 <Row label="Swap Fee" value={`${(treasury.swapFeeBps / 100).toFixed(2)} %`} />
                 <Row label="GRX per THBG Rate" value={treasury.grxPerThbgRate.toLocaleString()} />
+                <Row
+                  label="Acc Reward / Share"
+                  value={(Number(treasury.accRewardPerShare) / ACC_PRECISION).toLocaleString(undefined, { maximumFractionDigits: 6 })}
+                />
                 <Row label="Total Settled" value={`${fmtToken(treasury.totalSettledThbg)} THBG`} />
                 <Row
                   label="Attestation TTL"
@@ -336,6 +351,7 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                 />
                 <Row label="Authority" value={treasury.authority} mono truncate />
                 <Row label="Attestor" value={treasury.attestor} mono truncate />
+                <Row label="GRX Mint" value={treasury.grxMint} mono truncate />
                 <Row label="THBG Mint" value={treasury.thbgMint} mono truncate />
                 <Row label="Settlement Recorder" value={treasury.settlementRecorder} mono truncate />
               </CardContent>
@@ -361,10 +377,11 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                     <EmptyState label="No stake positions" />
                   ) : (
                     <DataTable
-                      head={['Owner', 'Staked (GRX)', 'Pending Rewards (GRX)']}
+                      head={['Owner', 'Staked (GRX)', 'Reward Debt (GRX)', 'Pending Rewards (GRX)']}
                       rows={stakes.map((s) => [
                         <span key="o" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]">{shorten(s.owner)}</span>,
                         fmtToken(s.amount),
+                        fmtToken(s.rewardDebt),
                         fmtToken(s.pending),
                       ])}
                     />
@@ -378,12 +395,13 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                     <EmptyState label="No settlement records" />
                   ) : (
                     <DataTable
-                      head={['Batch', 'Zone', 'Total (THBG)', 'VAT', 'Committed', 'Merkle Root']}
+                      head={['Batch', 'Zone', 'Total (THBG)', 'VAT', 'Recorder', 'Committed', 'Merkle Root']}
                       rows={settlements.map((s) => [
                         s.batchId.toLocaleString(),
                         s.zoneId.toLocaleString(),
                         fmtToken(s.totalValue),
                         `${fmtToken(s.vatAmount)} (${(s.vatRateBps / 100).toFixed(1)}%)`,
+                        <span key="r" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]">{shorten(s.recorder)}</span>,
                         new Date(s.committedTs * 1000).toLocaleString(),
                         <span key="m" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]">{s.merkleRoot.slice(0, 12)}…</span>,
                       ])}

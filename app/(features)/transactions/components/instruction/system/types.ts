@@ -1,15 +1,16 @@
  
 
+import { NumberFromBig } from '@validators/number';
 import { PublicKeyFromString } from '@validators/pubkey';
-import { enums, Infer, number, string, type } from 'superstruct';
+import { enums, Infer, string, type } from 'superstruct';
 
 export type CreateAccountInfo = Infer<typeof CreateAccountInfo>;
 export const CreateAccountInfo = type({
-  lamports: number(),
+  lamports: NumberFromBig,
   newAccount: PublicKeyFromString,
   owner: PublicKeyFromString,
   source: PublicKeyFromString,
-  space: number(),
+  space: NumberFromBig,
 });
 
 export type AssignInfo = Infer<typeof AssignInfo>;
@@ -21,19 +22,19 @@ export const AssignInfo = type({
 export type TransferInfo = Infer<typeof TransferInfo>;
 export const TransferInfo = type({
   destination: PublicKeyFromString,
-  lamports: number(),
+  lamports: NumberFromBig,
   source: PublicKeyFromString,
 });
 
 export type CreateAccountWithSeedInfo = Infer<typeof CreateAccountWithSeedInfo>;
 export const CreateAccountWithSeedInfo = type({
   base: PublicKeyFromString,
-  lamports: number(),
+  lamports: NumberFromBig,
   newAccount: PublicKeyFromString,
   owner: PublicKeyFromString,
   seed: string(),
   source: PublicKeyFromString,
-  space: number(),
+  space: NumberFromBig,
 });
 
 export type AdvanceNonceInfo = Infer<typeof AdvanceNonceInfo>;
@@ -45,7 +46,7 @@ export const AdvanceNonceInfo = type({
 export type WithdrawNonceInfo = Infer<typeof WithdrawNonceInfo>;
 export const WithdrawNonceInfo = type({
   destination: PublicKeyFromString,
-  lamports: number(),
+  lamports: NumberFromBig,
   nonceAccount: PublicKeyFromString,
   nonceAuthority: PublicKeyFromString,
 });
@@ -66,7 +67,7 @@ export const AuthorizeNonceInfo = type({
 export type AllocateInfo = Infer<typeof AllocateInfo>;
 export const AllocateInfo = type({
   account: PublicKeyFromString,
-  space: number(),
+  space: NumberFromBig,
 });
 
 export type AllocateWithSeedInfo = Infer<typeof AllocateWithSeedInfo>;
@@ -75,7 +76,7 @@ export const AllocateWithSeedInfo = type({
   base: PublicKeyFromString,
   owner: PublicKeyFromString,
   seed: string(),
-  space: number(),
+  space: NumberFromBig,
 });
 
 export type AssignWithSeedInfo = Infer<typeof AssignWithSeedInfo>;
@@ -89,7 +90,7 @@ export const AssignWithSeedInfo = type({
 export type TransferWithSeedInfo = Infer<typeof TransferWithSeedInfo>;
 export const TransferWithSeedInfo = type({
   destination: PublicKeyFromString,
-  lamports: number(),
+  lamports: NumberFromBig,
   source: PublicKeyFromString,
   sourceBase: PublicKeyFromString,
   sourceOwner: PublicKeyFromString,

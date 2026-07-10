@@ -80,9 +80,14 @@ export function TokenBalancesCardInner({ rows }: TokenBalancesCardInnerProps) {
             </tr>
           </thead>
           <tbody className="list">
-            {rows.map(row => (
+            {rows.map((row, i) => (
               <TokenBalanceRow
-                key={row.account.toBase58() + row.mint}
+                // account+mint alone collides when two account indexes resolve to
+                // the same pubkey+mint (duplicate accountKeys via lookup tables) or
+                // in the mint-change double-push. accountIndex narrows it, but the
+                // render index guarantees uniqueness even when two rows share
+                // index+pubkey+mint (e.g. repeated token-balance entries).
+                key={`${i}-${row.accountIndex}-${row.account.toBase58()}-${row.mint}`}
                 {...row}
                 units={tokenSymbols.get(row.mint) || 'tokens'}
               />

@@ -54,7 +54,7 @@ export const PROGRAMS = {
     name: 'Energy Token',
     description: 'GRX token minting, metadata, and transfers via Metaplex',
     seeds: {},
-    accounts: ['TokenInfo', 'MeterReading'],
+    accounts: ['TokenInfo', 'GenerationMintRecord'],
     instructions: [
       'initialize', 'create_token_mint',
       'mint_to_meter', 'burn_tokens', 'transfer_tokens',
@@ -137,7 +137,7 @@ export const PROGRAMS = {
     instructions: [
       'initialize', 'set_params', 'update_attestation',
       'record_settlement', 'record_settlement_batch',
-      'initialize_settlement_shard', 'record_settlement_sharded',
+      'initialize_settlement_shard', 'initialize_rebate_vault', 'record_settlement_sharded',
       'aggregate_settlement_shards', 'record_settlement_batch_sharded',
       'swap_grx_for_thbg', 'redeem_thbg_for_grx',
       'stake_grx', 'unstake_grx', 'claim_rewards', 'fund_rewards', 'slash_stake',

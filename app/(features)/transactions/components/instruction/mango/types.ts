@@ -1,4 +1,4 @@
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, TransactionInstruction } from '@solana/web3.js';
 import {
   OPENBOOK_V2_PROGRAM_ID,
   getSerumModule,
@@ -118,20 +118,27 @@ export async function decodeSerumInstruction(instruction: any): Promise<any> {
   }
 }
 
+// Compare program IDs by base58 string, not `.equals`. Under Turbopack's
+// dual-package resolution the parsed instruction's programId can be a
+// PublicKey-*like* object with no `.equals` method, so calling it throws
+// "programId.equals is not a function". toBase58() is always present.
+function sameProgram(a: PublicKey, b: PublicKey): boolean {
+  return a?.toBase58?.() === b?.toBase58?.();
+}
+
 // Helper function to check if a program ID is Mango
 export function isMangoProgram(programId: PublicKey): boolean {
-  return programId.equals(MANGO_PROGRAM_ID);
+  return sameProgram(programId, MANGO_PROGRAM_ID);
 }
 
 // Helper function to check if a program ID is legacy Serum (for security warnings)
 export function isLegacySerumProgramPk(programId: PublicKey): boolean {
-  return programId.equals(LEGACY_SERUM_PROGRAM_ID);
+  return sameProgram(programId, LEGACY_SERUM_PROGRAM_ID);
 }
 
 // Helper function to check if a program ID is OpenBook V2
 export function isOpenBookV2ProgramPk(programId: PublicKey): boolean {
-  const openbookId = new PublicKey(OPENBOOK_V2_PROGRAM_ID);
-  return programId.equals(openbookId);
+  return sameProgram(programId, new PublicKey(OPENBOOK_V2_PROGRAM_ID));
 }
 
 // Migration helper for updating old program references
@@ -143,9 +150,11 @@ export function getSecureProgramId(legacyProgramId: PublicKey): PublicKey {
   return legacyProgramId;
 }
 
-// Additional exports needed by the application
-export function isMangoInstruction(programId: PublicKey): boolean {
-  return isMangoProgram(programId);
+// Additional exports needed by the application.
+// Callers pass a whole instruction (see InstructionsSection), so read its
+// programId — not the instruction object itself.
+export function isMangoInstruction(instruction: TransactionInstruction): boolean {
+  return isMangoProgram(instruction.programId);
 }
 
 export function parseMangoInstructionTitle(instruction: any): string {

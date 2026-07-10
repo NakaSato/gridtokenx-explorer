@@ -69,8 +69,11 @@ async function fetchAccountTokens(dispatch: Dispatch, pubkey: PublicKey, cluster
     const rpc = createRpc(url);
     const address = toAddress(pubkey);
 
-    // Fetch token accounts for both TOKEN_PROGRAM_ID and TOKEN_2022_PROGRAM_ID
-    const [tokenAccountsResponse, token2022AccountsResponse] = await Promise.all([
+    // Fetch token accounts for both TOKEN_PROGRAM_ID and TOKEN_2022_PROGRAM_ID.
+    // allSettled, not all: a local validator without the Token-2022 program
+    // rejects that query ("unrecognized Token program id"). One program missing
+    // must not blank the whole token list — fall back to [] per failed query.
+    const [tokenAccountsResult, token2022AccountsResult] = await Promise.allSettled([
       rpc
         .getTokenAccountsByOwner(address, { programId: toAddress(TOKEN_PROGRAM_ID) }, { encoding: 'jsonParsed' })
         .send(),
@@ -79,8 +82,12 @@ async function fetchAccountTokens(dispatch: Dispatch, pubkey: PublicKey, cluster
         .send(),
     ]);
 
+    const tokenAccounts = tokenAccountsResult.status === 'fulfilled' ? tokenAccountsResult.value.value : [];
+    const token2022Accounts =
+      token2022AccountsResult.status === 'fulfilled' ? token2022AccountsResult.value.value : [];
+
     // Combine and convert token accounts
-    const allAccounts = [...Array.from(tokenAccountsResponse.value), ...Array.from(token2022AccountsResponse.value)];
+    const allAccounts = [...Array.from(tokenAccounts), ...Array.from(token2022Accounts)];
 
     const tokens: TokenInfoWithPubkey[] = allAccounts.slice(0, 101).map(accountInfo => {
       const parsedInfo = accountInfo.account.data.parsed.info;

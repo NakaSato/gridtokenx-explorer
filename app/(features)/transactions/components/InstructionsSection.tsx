@@ -244,7 +244,7 @@ function InstructionCard({
     return <WormholeDetailsCard key={key} {...props} />;
   } else if (isPythInstruction(transactionIx)) {
     return <PythDetailsCard key={key} {...props} />;
-  } else if (ComputeBudgetProgram.programId.equals(transactionIx.programId)) {
+  } else if (ComputeBudgetProgram.programId.toBase58() === transactionIx.programId?.toBase58?.()) {
     return <ComputeBudgetDetailsCard key={key} {...props} />;
   } else if (isLighthouseInstruction(transactionIx)) {
     return <LighthouseDetailsCard key={key} {...props} />;

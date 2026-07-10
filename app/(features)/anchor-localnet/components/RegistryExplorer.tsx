@@ -22,6 +22,7 @@ import {
 import { RegistryStatsCard } from './registry/RegistryStatsCard';
 import { UsersTable } from './registry/UsersTable';
 import { MetersTable } from './registry/MetersTable';
+import { TablePagination } from './registry/TablePagination';
 import { InstructionReference } from './shared-explorer/InstructionReference';
 
 interface RegistryExplorerProps {
@@ -55,17 +56,19 @@ interface MeterData {
   totalGeneration: number;
 }
 
-// Rows rendered per table; full counts still shown in the tab badge.
-const MAX_ROWS = 100;
+// Rows rendered per page. The full decoded lists live in state; pagination
+// only ever mounts one page of rows so a busy registry (tens of thousands of
+// accounts) never floods the DOM.
+const PAGE_SIZE = 25;
 
 export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProps) {
   const [registry, setRegistry] = useState<RegistryData | null>(null);
   const [users, setUsers] = useState<UserData[]>([]);
   const [meters, setMeters] = useState<MeterData[]>([]);
-  const [totalUsers, setTotalUsers] = useState(0);
-  const [totalMeters, setTotalMeters] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [activeView, setActiveView] = useState<'users' | 'meters'>('users');
+  const [userPage, setUserPage] = useState(0);
+  const [meterPage, setMeterPage] = useState(0);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -150,12 +153,11 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
       }
 
       setRegistry(registryData);
-      setTotalUsers(userList.length);
-      setTotalMeters(meterList.length);
-      // Cap what reaches the DOM — rendering tens of thousands of table rows
-      // hangs the tab. The badge shows the full on-chain count.
-      setUsers(userList.slice(0, MAX_ROWS));
-      setMeters(meterList.slice(0, MAX_ROWS));
+      // Keep the full lists; pagination renders one PAGE_SIZE window at a time.
+      setUsers(userList);
+      setMeters(meterList);
+      setUserPage(0);
+      setMeterPage(0);
     } catch (err) {
       console.warn('RegistryExplorer fetch error:', err);
     } finally {
@@ -166,6 +168,12 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Live counts derived from the fetched lists (authoritative — the global
+  // Registry counters are sharded and read 0 until aggregate_shards runs).
+  const activeMeterCount = meters.reduce((n, m) => n + (m.isActive ? 1 : 0), 0);
+  const pagedUsers = users.slice(userPage * PAGE_SIZE, userPage * PAGE_SIZE + PAGE_SIZE);
+  const pagedMeters = meters.slice(meterPage * PAGE_SIZE, meterPage * PAGE_SIZE + PAGE_SIZE);
 
   if (isLoading) {
     return (
@@ -199,7 +207,12 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
       </div>
 
       {/* Stats Card */}
-      {registry && <RegistryStatsCard registry={registry} />}
+      {registry && (
+        <RegistryStatsCard
+          registry={registry}
+          counts={{ users: users.length, meters: meters.length, activeMeters: activeMeterCount }}
+        />
+      )}
 
       <Tabs value={activeView} onValueChange={(v) => setActiveView(v as any)} className="w-full">
         <div className="flex items-center justify-between mb-2">
@@ -209,25 +222,31 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
           </TabsList>
 
           <span className="border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-[#888]">
-            {activeView === 'users'
-              ? totalUsers > users.length
-                ? `${users.length} of ${totalUsers} Identities`
-                : `${totalUsers} Identities`
-              : totalMeters > meters.length
-                ? `${meters.length} of ${totalMeters} Nodes`
-                : `${totalMeters} Nodes`}
+            {activeView === 'users' ? `${users.length} Identities` : `${meters.length} Nodes`}
           </span>
         </div>
 
         <TabsContent value="users" className="mt-0">
           <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
-            <UsersTable users={users} />
+            <UsersTable users={pagedUsers} />
+            <TablePagination
+              page={userPage}
+              pageSize={PAGE_SIZE}
+              totalItems={users.length}
+              onPageChange={setUserPage}
+            />
           </Card>
         </TabsContent>
 
         <TabsContent value="meters" className="mt-0">
           <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
-            <MetersTable meters={meters} />
+            <MetersTable meters={pagedMeters} />
+            <TablePagination
+              page={meterPage}
+              pageSize={PAGE_SIZE}
+              totalItems={meters.length}
+              onPageChange={setMeterPage}
+            />
           </Card>
         </TabsContent>
       </Tabs>

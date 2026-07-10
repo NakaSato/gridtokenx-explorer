@@ -1,4 +1,12 @@
 import { Address as AddressComponent } from '@/app/(shared)/components/common/Address';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/app/(shared)/components/ui/table';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { VersionedBlockResponse } from '@solana/web3.js';
 import { useClusterPath } from '@/app/(shared)/utils/url';
@@ -64,31 +72,29 @@ export function BlockAccountsCard({ block, blockSlot }: { block: VersionedBlockR
         <h3 className="text-lg font-semibold">Block Account Usage</h3>
       </div>
 
-      <div className="mb-0 overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr>
-              <th className="text-muted-foreground">Account</th>
-              <th className="text-muted-foreground">Read-Write Count</th>
-              <th className="text-muted-foreground">Read-Only Count</th>
-              <th className="text-muted-foreground">Total Count</th>
-              <th className="text-muted-foreground">% of Transactions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {accountStats.slice(0, numDisplayed).map(([address, { writes, reads }]) => (
-              <StatsRow
-                address={address}
-                blockSlot={blockSlot}
-                key={address}
-                reads={reads}
-                totalTransactions={totalTransactions}
-                writes={writes}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Account</TableHead>
+            <TableHead>Read-Write Count</TableHead>
+            <TableHead>Read-Only Count</TableHead>
+            <TableHead>Total Count</TableHead>
+            <TableHead>% of Transactions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {accountStats.slice(0, numDisplayed).map(([address, { writes, reads }]) => (
+            <StatsRow
+              address={address}
+              blockSlot={blockSlot}
+              key={address}
+              reads={reads}
+              totalTransactions={totalTransactions}
+              writes={writes}
+            />
+          ))}
+        </TableBody>
+      </Table>
 
       {accountStats.length > numDisplayed && (
         <div className="border-t px-6 py-4">
@@ -122,16 +128,16 @@ function StatsRow({
     pathname: `/block/${blockSlot}`,
   });
   return (
-    <tr>
-      <td>
+    <TableRow>
+      <TableCell>
         <Link href={accountPath}>
           <AddressComponent pubkey={addressToPublicKey(toAddress(address))} />
         </Link>
-      </td>
-      <td>{writes}</td>
-      <td>{reads}</td>
-      <td>{writes + reads}</td>
-      <td>{((100 * (writes + reads)) / totalTransactions).toFixed(2)}%</td>
-    </tr>
+      </TableCell>
+      <TableCell>{writes}</TableCell>
+      <TableCell>{reads}</TableCell>
+      <TableCell>{writes + reads}</TableCell>
+      <TableCell>{((100 * (writes + reads)) / totalTransactions).toFixed(2)}%</TableCell>
+    </TableRow>
   );
 }

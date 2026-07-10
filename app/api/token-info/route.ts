@@ -160,7 +160,16 @@ export async function GET(request: NextRequest) {
 
     const chainId = getChainId(cluster);
     if (!chainId) {
-      return NextResponse.json({ error: 'Invalid cluster' }, { status: 400 });
+      // Clusters without a UTL chainId (localnet/custom) have no external token
+      // list — return empty rather than erroring so the client doesn't spam 400s.
+      return NextResponse.json(
+        { data: null },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+          },
+        }
+      );
     }
 
     const [legacyCdnTokenInfo, utlApiTokenInfo] = await Promise.all([
@@ -261,9 +270,15 @@ export async function POST(request: NextRequest) {
 
     const chainId = getChainId(cluster);
     if (!chainId) {
+      // Clusters without a UTL chainId (localnet/custom) have no external token
+      // list — return empty rather than erroring so the client doesn't spam 400s.
       return NextResponse.json(
-        { error: 'Invalid cluster' },
-        { status: 400 }
+        { data: [] },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+          },
+        }
       );
     }
 

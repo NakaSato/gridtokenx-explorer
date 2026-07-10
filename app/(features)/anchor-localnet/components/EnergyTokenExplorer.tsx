@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { PROGRAMS } from '../config';
 import {
@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/app/(shared)/compone
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/(shared)/components/ui/table';
 import { Button } from '@/app/(shared)/components/ui/button';
 import { Address } from '@/app/(shared)/components/Address';
+import { InstructionReference } from './shared-explorer/InstructionReference';
 import {
   Coins, Activity, Zap, ShieldCheck, Search, RefreshCw, Clock, Wifi, WifiOff, AlertTriangle,
   ChevronUp, ChevronDown, ChevronsUpDown, ChevronLeft, ChevronRight,
@@ -87,6 +88,37 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [page, setPage] = useState(0);
 
+  // Source of truth for the live view: every GenerationMintRecord on-chain, keyed
+  // by its PDA address. Realtime account-change events upsert into this map; the
+  // rendered state (capped list + totals) is derived from it. Kept in a ref so
+  // per-event upserts don't each trigger a render — we flush once per frame.
+  const recordsMapRef = useRef<Map<string, GenRecord>>(new Map());
+  const rafRef = useRef<number | null>(null);
+
+  // Recompute the derived state (totals + newest-first capped rows) from the map.
+  const recomputeFromMap = useCallback(() => {
+    const all = Array.from(recordsMapRef.current.values());
+    let mintedSum = 0;
+    for (const r of all) mintedSum += r.amount;
+    all.sort((a, b) => b.windowMs - a.windowMs);
+    setTotalRecords(all.length);
+    setTotalMinted(mintedSum);
+    setRecords(all.slice(0, MAX_ROWS));
+    setLastUpdated(Date.now());
+  }, []);
+
+  // Coalesce bursts of account-change events into one recompute per animation
+  // frame (a settlement flush can mint many records at once).
+  const scheduleFlush = useCallback(() => {
+    if (rafRef.current != null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      recomputeFromMap();
+    });
+  }, [recomputeFromMap]);
+
+  // One-time (and manual-refresh) full load — the source of truth the live
+  // subscription then keeps current.
   const fetchData = useCallback(async () => {
     try {
       const conn = getConnection();
@@ -101,34 +133,75 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
         ? decodeEnergyTokenInfo(infoAccounts[0].account.data, infoAccounts[0].pubkey.toBase58())
         : null;
 
-      let mintedSum = 0;
-      const recs: GenRecord[] = genAccounts.map(({ pubkey, account }) => {
+      const map = recordsMapRef.current;
+      map.clear();
+      for (const { pubkey, account } of genAccounts) {
         const rec = decodeGenerationMintRecord(account.data, pubkey.toBase58());
-        mintedSum += rec.amount;
-        return rec;
-      });
+        map.set(rec.address, rec);
+      }
 
-      recs.sort((a, b) => b.windowMs - a.windowMs);
       setTokenInfo(info);
-      setTotalRecords(recs.length);
-      setTotalMinted(mintedSum);
-      setRecords(recs.slice(0, MAX_ROWS));
+      recomputeFromMap();
       setError(null);
-      setLastUpdated(Date.now());
     } catch (err) {
       console.error('Error fetching energy token data:', err);
       setError(err instanceof Error ? err.message : 'Failed to reach RPC endpoint');
     } finally {
       setIsLoading(false);
     }
-  }, [getConnection]);
+  }, [getConnection, recomputeFromMap]);
 
+  // Live stream: backfill once, then subscribe to the program's account changes
+  // over the RPC WebSocket. New/updated GenerationMintRecords and TokenInfo push
+  // in as they confirm — no polling.
   useEffect(() => {
     setIsLoading(true);
+    let cancelled = false;
+    const conn = getConnection();
+    const programId = new PublicKey(PROGRAMS.energy_token.id);
+
     fetchData();
-    const interval = setInterval(fetchData, 15000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
+
+    const subIds: number[] = [];
+    try {
+      subIds.push(
+        conn.onProgramAccountChange(
+          programId,
+          info => {
+            if (cancelled) return;
+            const rec = decodeGenerationMintRecord(info.accountInfo.data, info.accountId.toBase58());
+            recordsMapRef.current.set(rec.address, rec);
+            scheduleFlush();
+          },
+          'confirmed',
+          [{ dataSize: GENERATION_MINT_RECORD_ACCOUNT_SIZE }]
+        )
+      );
+      subIds.push(
+        conn.onProgramAccountChange(
+          programId,
+          info => {
+            if (cancelled) return;
+            setTokenInfo(decodeEnergyTokenInfo(info.accountInfo.data, info.accountId.toBase58()));
+            setLastUpdated(Date.now());
+          },
+          'confirmed',
+          [{ dataSize: TOKEN_INFO_ACCOUNT_SIZE }]
+        )
+      );
+    } catch (e) {
+      console.warn('energy-token account subscribe failed:', e);
+    }
+
+    return () => {
+      cancelled = true;
+      if (rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      subIds.forEach(id => conn.removeProgramAccountChangeListener(id).catch(() => {}));
+    };
+  }, [fetchData, getConnection, scheduleFlush]);
 
   // Search + status filter.
   const filtered = useMemo(
@@ -285,6 +358,16 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
         />
       </div>
 
+      {/* TokenInfo on-chain accounts — linked out to the address explorer */}
+      {tokenInfo && (
+        <div className="grid grid-cols-1 gap-px border border-[#2a2a2a] bg-[#2a2a2a] sm:grid-cols-2 lg:grid-cols-4">
+          <TokenInfoAddr label="GRX Mint" value={tokenInfo.mint} />
+          <TokenInfoAddr label="Token Authority" value={tokenInfo.authority} />
+          <TokenInfoAddr label="Registry Program" value={tokenInfo.registryProgram} />
+          <TokenInfoAddr label="Registry Authority" value={tokenInfo.registryAuthority} />
+        </div>
+      )}
+
       {/* Records table (full width) */}
       <div className="flex min-h-0 flex-1 flex-col">
         <Card className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border-[#2a2a2a] bg-black">
@@ -382,6 +465,12 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
                               ? 'No records match the current filter'
                               : 'No generation records on-chain yet'}
                           </p>
+                          {!searchQuery && statusFilter === 'all' && (
+                            <p className="text-[9px] normal-case tracking-normal text-[#444]">
+                              Records appear when a settlement mints GRX via{' '}
+                              <code className="bg-[#0a0a0a] px-1 py-0.5 text-[#9945FF]">mint_to_meter</code>
+                            </p>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -424,6 +513,8 @@ export function EnergyTokenExplorer({ rpcUrl, getConnection }: EnergyTokenExplor
           </CardContent>
         </Card>
       </div>
+
+      <InstructionReference title="Energy Token Instruction Set" instructions={PROGRAMS.energy_token.instructions} />
     </div>
   );
 }
@@ -458,6 +549,19 @@ function SortHeader({
         <Icon className={`h-3 w-3 ${active ? 'opacity-100' : 'opacity-40'}`} />
       </button>
     </TableHead>
+  );
+}
+
+// One labelled, click-through account address from TokenInfo. Links to the
+// address explorer so mint/authority/registry PDAs are navigable.
+function TokenInfoAddr({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1 bg-black px-3 py-2">
+      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#666]">{label}</span>
+      <div className="text-xs">
+        <Address pubkey={new PublicKey(value)} link truncateChars={16} />
+      </div>
+    </div>
   );
 }
 

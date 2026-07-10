@@ -25,6 +25,12 @@ const BACKFILL_LIMIT = 25;
 const LIST_CAP = 500;
 const PAGE_SIZE = 25;
 const VOTE_PROGRAM = 'Vote111111111111111111111111111111111111111';
+// A live validator pushes a slot update several times per second. If none
+// arrives for this long while unpaused, the pubsub WebSocket (ws://…:8900) is
+// down/unreachable — the live stream is dead even if the initial HTTP backfill
+// succeeded. web3.js swallows pubsub socket errors, so this heartbeat is our
+// only public-API signal for it.
+const STREAM_STALE_MS = 15000;
 
 type StatusFilter = 'all' | 'success' | 'failed';
 
@@ -47,6 +53,10 @@ export default function TransactionsPage() {
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // True when the live stream's pubsub WebSocket has gone silent (see heartbeat).
+  const [streamStale, setStreamStale] = useState(false);
+  // Timestamp of the last slot/log tick — the heartbeat's freshness clock.
+  const lastTickRef = useRef<number>(Date.now());
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
 
@@ -137,6 +147,46 @@ export default function TransactionsPage() {
     [flushPending]
   );
 
+  // Slot → blockTime cache. Many txs share one slot, so resolve the time once per
+  // slot and fan it out, instead of firing one getBlockTime RPC per transaction.
+  const blockTimeCacheRef = useRef<Map<number, number>>(new Map());
+  const pendingSlotTimesRef = useRef<Set<number>>(new Set());
+  const resolveBlockTime = useCallback(
+    (slot: number) => {
+      if (!connection) return;
+      const cache = blockTimeCacheRef.current;
+      if (cache.has(slot) || pendingSlotTimesRef.current.has(slot)) return;
+      pendingSlotTimesRef.current.add(slot);
+      connection
+        .getBlockTime(slot)
+        .then(bt => {
+          pendingSlotTimesRef.current.delete(slot);
+          if (bt == null) return;
+          cache.set(slot, bt);
+          // Bound the cache against an all-day stream (FIFO by insertion order).
+          if (cache.size > 2 * LIST_CAP) {
+            const oldest = cache.keys().next().value;
+            if (oldest !== undefined) cache.delete(oldest);
+          }
+          // Fan the resolved time out to every buffered row in that slot at once.
+          setTransactions(prev =>
+            prev.map(t => (t.slot === slot && t.blockTime == null ? { ...t, blockTime: bt } : t))
+          );
+        })
+        .catch(() => pendingSlotTimesRef.current.delete(slot));
+    },
+    [connection]
+  );
+
+  // Push the live slot on every event — no throttle, no interval. Updates are
+  // event-driven (onLogs / onSlotChange from the RPC WebSocket), so the slot
+  // number tracks the chain in realtime as ticks arrive.
+  const pushSlot = useCallback((slot: number) => {
+    lastTickRef.current = Date.now();
+    setStreamStale(false);
+    setLastSlot(prev => (prev == null || slot > prev ? slot : prev));
+  }, []);
+
   // One-time history load so the page isn't empty before live events arrive.
   const backfill = useCallback(async () => {
     if (!connection) return;
@@ -179,8 +229,17 @@ export default function TransactionsPage() {
       hasLoadedRef.current = true;
       setIsLoading(false);
     } catch (err) {
-      console.error('Error backfilling transactions:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch transactions');
+      const message = err instanceof Error ? err.message : 'Failed to fetch transactions';
+      // A down/unreachable RPC (e.g. no local validator) is an expected, transient
+      // condition — surface it in the UI Alert but keep it a warn so Next's dev
+      // overlay doesn't treat it as an uncaught error. Real failures still log.
+      const isNetwork = /failed to fetch|fetch|network|ECONNREFUSED/i.test(message);
+      if (isNetwork) {
+        console.warn('RPC unreachable while backfilling transactions:', message);
+      } else {
+        console.error('Error backfilling transactions:', err);
+      }
+      setError(message);
       setIsLoading(false);
     }
   }, [connection, buildTargets, upsert]);
@@ -253,19 +312,15 @@ export default function TransactionsPage() {
               slot: ctx.slot,
               err: logs.err,
               memo: null,
-              blockTime: null,
+              blockTime: blockTimeCacheRef.current.get(ctx.slot) ?? null,
               confirmationStatus: 'confirmed',
               programNames: [t.name],
             };
             enqueue(tx);
-            setLastSlot(prev => (prev == null || ctx.slot > prev ? ctx.slot : prev));
-            // Resolve the block time for the Time column without blocking the row.
-            connection
-              .getBlockTime(ctx.slot)
-              .then(bt => {
-                if (!cancelled && bt) enqueue({ ...tx, blockTime: bt });
-              })
-              .catch(() => {});
+            pushSlot(ctx.slot);
+            // Resolve the block time once per slot (deduped + cached), not once per
+            // tx — collapses an N-per-slot RPC storm into a single call.
+            if (tx.blockTime == null) resolveBlockTime(ctx.slot);
           },
           'confirmed'
         );
@@ -276,11 +331,23 @@ export default function TransactionsPage() {
     }
 
     const slotSub = connection.onSlotChange(s => {
-      if (!cancelled) setLastSlot(s.slot);
+      if (cancelled) return;
+      pushSlot(s.slot);
     });
+
+    // Heartbeat: if no slot tick arrives within STREAM_STALE_MS, the pubsub
+    // WebSocket is unreachable — flag the stream as stale so the UI can warn.
+    lastTickRef.current = Date.now();
+    setStreamStale(false);
+    const healthTimer = setInterval(() => {
+      if (!cancelled && Date.now() - lastTickRef.current > STREAM_STALE_MS) {
+        setStreamStale(true);
+      }
+    }, 5000);
 
     return () => {
       cancelled = true;
+      clearInterval(healthTimer);
       if (rafRef.current != null) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
@@ -289,7 +356,7 @@ export default function TransactionsPage() {
       subIds.forEach(id => connection.removeOnLogsListener(id).catch(() => {}));
       connection.removeSlotChangeListener(slotSub).catch(() => {});
     };
-  }, [connection, isPaused, backfill, buildTargets, enqueue]);
+  }, [connection, isPaused, backfill, buildTargets, enqueue, resolveBlockTime, pushSlot]);
 
   // Drop the "new" flag once the flash animation (2.2s) has played out.
   useEffect(() => {
@@ -478,6 +545,18 @@ export default function TransactionsPage() {
           {error && (
             <Alert variant="destructive" className="border-red-500/20 bg-red-500/10 text-red-400">
               <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Live-stream stale warning: HTTP backfill worked but the pubsub
+              WebSocket went silent — new transactions won't stream in. */}
+          {streamStale && !error && !isPaused && (
+            <Alert className="border-amber-500/20 bg-amber-500/10 text-amber-400">
+              <AlertDescription>
+                Live stream disconnected — the RPC WebSocket ({connection?.rpcEndpoint}) stopped
+                sending updates. New transactions won&apos;t appear until it reconnects. Check that
+                the validator&apos;s pubsub port (ws) is reachable.
+              </AlertDescription>
             </Alert>
           )}
 

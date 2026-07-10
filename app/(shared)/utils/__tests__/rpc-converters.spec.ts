@@ -256,6 +256,36 @@ describe('RPC Type Converters', () => {
       expect(ix.programId).toBeInstanceOf(PublicKey);
     });
 
+    it('should normalize bigint numeric fields in ix.parsed.info to number', () => {
+      // kit's jsonParsed returns lamports/space as bigint; detail cards validate
+      // with superstruct number(), which rejects bigint. Keep addresses strings.
+      const kitTx = {
+        slot: 1n,
+        transaction: {
+          message: {
+            accountKeys: [{ pubkey: testAddressString, signer: true, writable: true }],
+            instructions: [
+              {
+                program: 'system',
+                programId: testAddressString,
+                parsed: {
+                  type: 'createAccount',
+                  info: { lamports: 2074080n, space: 165n, newAccount: testAddressString },
+                },
+              },
+            ],
+          },
+        },
+        meta: null,
+      };
+      const result = toLegacyParsedTransaction(kitTx);
+      const info = result!.transaction.message.instructions[0].parsed.info;
+      expect(info.lamports).toBe(2074080);
+      expect(typeof info.lamports).toBe('number');
+      expect(info.space).toBe(165);
+      expect(typeof info.newAccount).toBe('string');
+    });
+
     it('should convert pubkey fields to PublicKey instances', () => {
       const kitTx = {
         slot: 200000000n,

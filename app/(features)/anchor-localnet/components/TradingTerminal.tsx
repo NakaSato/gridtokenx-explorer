@@ -167,7 +167,12 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
       setError(null);
       setLastUpdated(Date.now());
     } catch (err) {
-      console.error('TradingTerminal fetch error:', err);
+      // Unreachable RPC (localnet validator down) is a routine, self-recovering
+      // state — surface it via the error UI, not console.error. In Next dev,
+      // console.error trips the full-screen overlay and would re-fire every poll.
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('TradingTerminal fetch error:', err);
+      }
       setError(err instanceof Error ? err.message : 'Failed to reach RPC endpoint');
     } finally {
       setIsLoading(false);

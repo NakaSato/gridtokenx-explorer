@@ -41,7 +41,10 @@ export function useCompressedNft({ address, url }: { address: string; url: strin
           return response.result;
         });
     },
-    { suspense: true },
+    // No suspense: SWR's legacy suspense throws a fresh, uncached promise on
+    // every render, which React 19 / Next 16 rejects ("suspended by an uncached
+    // promise"). Consumers already treat the return as nullable and render
+    // nothing until data arrives, so plain (non-suspense) fetching is correct.
   );
   return error ? null : (data ?? null);
 }
@@ -73,7 +76,8 @@ export function useCompressedNftProof({ address, url }: { address: string; url: 
           return response.result;
         });
     },
-    { suspense: true },
+    // No suspense — see useCompressedNft above (React 19 rejects SWR's
+    // uncached-promise suspense throw). Consumers null-check the result.
   );
   return error ? null : (data ?? null);
 }

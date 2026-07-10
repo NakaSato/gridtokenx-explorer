@@ -9,7 +9,12 @@ import {
   TableHeader, 
   TableRow 
 } from '@/app/(shared)/components/ui/table';
-import { Gauge, MapPin, Sun, Wind, Battery } from 'lucide-react';
+import { Gauge, Sun, Wind, Battery } from 'lucide-react';
+import { Address } from '@/app/(shared)/components/Address';
+
+/** Plain pubkey-like wrapper so <Address> never constructs a web3.js PublicKey
+ * (dodges the dual-package `instanceof` trap under Turbopack). */
+const pk = (address: string) => ({ toBase58: () => address });
 
 interface MeterData {
   address: string;
@@ -49,13 +54,14 @@ export function MetersTable({ meters }: MetersTableProps) {
           <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Status</TableHead>
           <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Total Gen</TableHead>
           <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Last Reading</TableHead>
-          <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666] text-right">Owner</TableHead>
+          <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666]">Owner</TableHead>
+          <TableHead className="h-9 text-[9px] uppercase font-bold tracking-wider text-[#666] text-right">Meter (PDA)</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {meters.length === 0 ? (
           <TableRow className="border-[#1a1a1a]">
-            <TableCell colSpan={6} className="h-32 text-center text-[#555] text-xs italic">
+            <TableCell colSpan={7} className="h-32 text-center text-[#555] text-xs italic">
               No meters found in the registry
             </TableCell>
           </TableRow>
@@ -91,10 +97,15 @@ export function MetersTable({ meters }: MetersTableProps) {
               <TableCell className="py-2 font-mono text-[10px] text-[#888]">
                 {formatLastReadingAt(meter.lastReadingAt)}
               </TableCell>
+              <TableCell className="py-2">
+                <div className="font-mono text-[10px] text-[#888] hover:text-[#9945FF]">
+                  <Address pubkey={pk(meter.owner)} link raw />
+                </div>
+              </TableCell>
               <TableCell className="py-2 text-right">
-                <span className="font-mono text-[9px] bg-[#0a0a0a] px-1.5 py-0.5 text-[#888]" title={meter.owner}>
-                  {meter.owner.slice(0, 8)}...
-                </span>
+                <div className="font-mono text-[10px] text-[#888] hover:text-[#9945FF]">
+                  <Address pubkey={pk(meter.address)} link raw alignRight />
+                </div>
               </TableCell>
             </TableRow>
           ))

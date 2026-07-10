@@ -1,5 +1,13 @@
 import { Address as AddressComponent } from '@/app/(shared)/components/common/Address';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/app/(shared)/components/ui/table';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { VersionedBlockResponse } from '@solana/web3.js';
 import React from 'react';
@@ -78,38 +86,36 @@ export function BlockProgramsCard({ block }: { block: VersionedBlockResponse }) 
           <h3 className="text-lg font-semibold">Block Programs</h3>
         </div>
 
-        <div className="mb-0 overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr>
-                <th className="text-muted-foreground">Program</th>
-                <th className="text-muted-foreground">Transaction Count</th>
-                <th className="text-muted-foreground">% of Total</th>
-                <th className="text-muted-foreground">Instruction Count</th>
-                <th className="text-muted-foreground">% of Total</th>
-                {showSuccessRate && <th className="text-muted-foreground">Success Rate</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {programEntries.map(([programId, txFreq]) => {
-                const ixFreq = ixFrequency.get(programId) as number;
-                const successes = txSuccesses.get(programId) || 0;
-                return (
-                  <tr key={programId}>
-                    <td>
-                      <AddressComponent pubkey={addressToPublicKey(toAddress(programId))} link />
-                    </td>
-                    <td>{txFreq}</td>
-                    <td>{((100 * txFreq) / totalTransactions).toFixed(2)}%</td>
-                    <td>{ixFreq}</td>
-                    <td>{((100 * ixFreq) / totalInstructions).toFixed(2)}%</td>
-                    {showSuccessRate && <td>{((100 * successes) / txFreq).toFixed(0)}%</td>}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Program</TableHead>
+              <TableHead>Transaction Count</TableHead>
+              <TableHead>% of Total</TableHead>
+              <TableHead>Instruction Count</TableHead>
+              <TableHead>% of Total</TableHead>
+              {showSuccessRate && <TableHead>Success Rate</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {programEntries.map(([programId, txFreq]) => {
+              const ixFreq = ixFrequency.get(programId) as number;
+              const successes = txSuccesses.get(programId) || 0;
+              return (
+                <TableRow key={programId}>
+                  <TableCell>
+                    <AddressComponent pubkey={addressToPublicKey(toAddress(programId))} link />
+                  </TableCell>
+                  <TableCell>{txFreq}</TableCell>
+                  <TableCell>{((100 * txFreq) / totalTransactions).toFixed(2)}%</TableCell>
+                  <TableCell>{ixFreq}</TableCell>
+                  <TableCell>{((100 * ixFreq) / totalInstructions).toFixed(2)}%</TableCell>
+                  {showSuccessRate && <TableCell>{((100 * successes) / txFreq).toFixed(0)}%</TableCell>}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
     </>
   );

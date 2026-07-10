@@ -179,6 +179,31 @@ export function bigintToNumberLossy(value: bigint): number {
 }
 
 /**
+ * Recursively convert every `bigint` to a (lossy) `number`, leaving all other
+ * values — strings, PublicKeys, arrays — untouched.
+ *
+ * `@solana/kit`'s `jsonParsed` encoding returns numeric instruction fields
+ * (`lamports`, `space`, `rentEpoch`, …) as `bigint`. The detail cards validate
+ * `ix.parsed.info` with superstruct `number()`, which rejects `bigint`
+ * ("Expected a number, but received: 2074080"). Normalize the preserved parsed
+ * payload so those coercions pass, while keeping base58 address strings as
+ * strings (each card re-coerces them to a single PublicKey via
+ * `PublicKeyFromString`). See `toLegacyParsedTransaction`.
+ */
+export function normalizeParsedBigints(value: any): any {
+  if (typeof value === 'bigint') return bigintToNumberLossy(value);
+  if (Array.isArray(value)) return value.map(normalizeParsedBigints);
+  if (value && typeof value === 'object') {
+    const out: any = {};
+    for (const key in value) {
+      out[key] = normalizeParsedBigints(value[key]);
+    }
+    return out;
+  }
+  return value;
+}
+
+/**
  * Create a legacy Connection instance for third-party library compatibility
  * Use this only when @solana/kit is not compatible with the library
  * @param url RPC endpoint URL
@@ -267,6 +292,15 @@ export function toLegacyParsedTransaction(tx: any): ParsedTransactionWithMeta | 
           // `PublicKeyFromString` coercion produces a single, consistent
           // PublicKey instance. Eagerly converting here leaks foreign-instance
           // PublicKey objects into the render tree. See isPublicKeyLike.
+          // Only bigint numeric fields (kit's jsonParsed lamports/space/…) are
+          // normalized to number so superstruct `number()` coercions pass.
+          converted[key] = normalizeParsedBigints(obj[key]);
+        } else if (key === 'recentBlockhash' || key === 'blockhash') {
+          // A blockhash is a 32-byte base58 string — the SAME length as an
+          // address — so the blanket string→PublicKey conversion below would
+          // turn it into a PublicKey. It's rendered directly as text
+          // (Overview → Recent Blockhash), so keep it a string; otherwise React
+          // throws "Objects are not valid as a React child (PublicKey)".
           converted[key] = obj[key];
         } else if (key === 'pubkey' || key === 'owner' || key === 'mint' || key === 'authority') {
           try {

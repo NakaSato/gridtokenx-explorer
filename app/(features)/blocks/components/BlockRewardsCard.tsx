@@ -1,5 +1,13 @@
 import { Address as AddressComponent } from '@/app/(shared)/components/common/Address';
 import { SolBalance } from '@/app/(shared)/components/SolBalance';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/app/(shared)/components/ui/table';
 import { toAddress, addressToPublicKey } from '@/app/(shared)/utils/rpc';
 import { VersionedBlockResponse } from '@solana/web3.js';
 import React from 'react';
@@ -19,47 +27,45 @@ export function BlockRewardsCard({ block }: { block: VersionedBlockResponse }) {
         <h3 className="text-lg font-semibold">Block Rewards</h3>
       </div>
 
-      <div className="mb-0 overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr>
-              <th className="text-muted-foreground">Address</th>
-              <th className="text-muted-foreground">Type</th>
-              <th className="text-muted-foreground">Amount</th>
-              <th className="text-muted-foreground">New Balance</th>
-              <th className="text-muted-foreground">Percent Change</th>
-            </tr>
-          </thead>
-          <tbody>
-            {block.rewards.map((reward, index) => {
-              if (index >= rewardsDisplayed - 1) {
-                return null;
-              }
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Address</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>New Balance</TableHead>
+            <TableHead>Percent Change</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {block.rewards.map((reward, index) => {
+            if (index >= rewardsDisplayed - 1) {
+              return null;
+            }
 
-              let percentChange;
-              // lamports/postBalance may be bigint from the kit RPC — coerce before math.
-              const lamports = Number(reward.lamports);
-              const postBalance = Number(reward.postBalance);
-              if (reward.postBalance !== null && postBalance !== 0) {
-                percentChange = ((Math.abs(lamports) / (postBalance - lamports)) * 100).toFixed(9);
-              }
-              return (
-                <tr key={reward.pubkey + reward.rewardType}>
-                  <td>
-                    <AddressComponent pubkey={addressToPublicKey(toAddress(reward.pubkey))} link />
-                  </td>
-                  <td>{reward.rewardType}</td>
-                  <td>
-                    <SolBalance lamports={reward.lamports} />
-                  </td>
-                  <td>{reward.postBalance ? <SolBalance lamports={reward.postBalance} /> : '-'}</td>
-                  <td>{percentChange ? percentChange + '%' : '-'}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+            let percentChange;
+            // lamports/postBalance may be bigint from the kit RPC — coerce before math.
+            const lamports = Number(reward.lamports);
+            const postBalance = Number(reward.postBalance);
+            if (reward.postBalance !== null && postBalance !== 0) {
+              percentChange = ((Math.abs(lamports) / (postBalance - lamports)) * 100).toFixed(9);
+            }
+            return (
+              <TableRow key={reward.pubkey + reward.rewardType}>
+                <TableCell>
+                  <AddressComponent pubkey={addressToPublicKey(toAddress(reward.pubkey))} link />
+                </TableCell>
+                <TableCell>{reward.rewardType}</TableCell>
+                <TableCell>
+                  <SolBalance lamports={reward.lamports} />
+                </TableCell>
+                <TableCell>{reward.postBalance ? <SolBalance lamports={reward.postBalance} /> : '-'}</TableCell>
+                <TableCell>{percentChange ? percentChange + '%' : '-'}</TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
 
       {block.rewards.length > rewardsDisplayed && (
         <div className="border-t px-6 py-4">

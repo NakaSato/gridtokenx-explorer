@@ -1,7 +1,10 @@
+'use client';
+
 import { Address } from '@/app/(shared)/components/common/Address';
 import { SolBalance } from '@/app/(shared)/components/SolBalance';
 import { TableCardBody } from '@/app/(shared)/components/common/TableCardBody';
-import { Account } from '@/app/(core)/providers/accounts';
+import { Account, useFetchAccountInfo } from '@/app/(core)/providers/accounts';
+import { useCluster } from '@/app/(core)/providers/cluster';
 import {
   decodeEnergyTokenInfo,
   decodeGenerationMintRecord,
@@ -10,8 +13,35 @@ import {
   SETTLEMENT_WINDOW_MS,
   TOKEN_INFO_ACCOUNT_SIZE,
 } from '@/app/(features)/anchor-localnet/lib/energy-token-decoders';
-import { PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import React from 'react';
+
+// Live-refresh: subscribe to this account over the RPC WebSocket and re-pull it
+// through the AccountsProvider cache whenever it changes on-chain, so the
+// TokenInfo / GenerationMintRecord card tracks mints without a manual reload.
+// Mirrors the explorer page's onProgramAccountChange stream, scoped to one PDA.
+function useLiveAccount(pubkey: PublicKey) {
+  const { url } = useCluster();
+  const fetchAccount = useFetchAccountInfo();
+  const address = pubkey.toBase58();
+
+  React.useEffect(() => {
+    if (!url) return;
+    const key = new PublicKey(address);
+    let conn: Connection;
+    let subId: number | undefined;
+    try {
+      conn = new Connection(url, 'confirmed');
+      subId = conn.onAccountChange(key, () => fetchAccount(key, 'parsed'), 'confirmed');
+    } catch (e) {
+      console.warn('energy-token live account subscribe failed:', e);
+      return;
+    }
+    return () => {
+      if (subId !== undefined) conn.removeAccountChangeListener(subId).catch(() => {});
+    };
+  }, [url, address, fetchAccount]);
+}
 
 const fmtGrx = (raw: number) =>
   (raw / 10 ** GRX_DECIMALS).toLocaleString(undefined, { maximumFractionDigits: 4 });
@@ -40,7 +70,22 @@ export function isEnergyTokenAccountData(rawData: Buffer | undefined): rawData i
   );
 }
 
+// Pulsing "LIVE" pill — signals the card is subscribed to on-chain changes.
+function LiveBadge() {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded bg-green-500/15 px-2 py-1 text-xs font-bold uppercase text-green-500">
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+      </span>
+      Live
+    </span>
+  );
+}
+
 export function EnergyTokenAccountSection({ account }: { account: Account }) {
+  useLiveAccount(account.pubkey);
+
   const rawData = account.data.raw;
   if (!rawData) return null;
 
@@ -87,7 +132,10 @@ function GenerationMintRecordCard({ account, data }: { account: Account; data: B
   return (
     <div className="bg-card rounded-lg border shadow-sm">
       <div className="flex items-center justify-between border-b px-6 py-4">
-        <h3 className="text-lg font-semibold">Generation Mint Record</h3>
+        <div className="flex items-center gap-3">
+          <h3 className="text-lg font-semibold">Generation Mint Record</h3>
+          <LiveBadge />
+        </div>
         {rec.minted ? (
           <span className="rounded bg-green-500/15 px-2 py-1 text-xs font-bold uppercase text-green-500">Minted</span>
         ) : (
@@ -129,8 +177,9 @@ function TokenInfoCard({ account, data }: { account: Account; data: Buffer }) {
 
   return (
     <div className="bg-card rounded-lg border shadow-sm">
-      <div className="flex items-center border-b px-6 py-4">
+      <div className="flex items-center justify-between border-b px-6 py-4">
         <h3 className="text-lg font-semibold">Energy Token Info</h3>
+        <LiveBadge />
       </div>
 
       <TableCardBody>

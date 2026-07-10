@@ -24,6 +24,15 @@ const PAGE_SIZE = 10
 const REFRESH_INTERVAL = 10000 // 10 seconds
 const THROTTLE_MS = 3000 // 3 seconds minimum between real-time fetches
 
+// A down/unreachable RPC (e.g. no local validator) surfaces as a fetch
+// TypeError. That's an expected, transient condition — log it as a warn so
+// Next's dev overlay doesn't flag it as an uncaught error. Real failures still
+// go to console.error.
+function isNetworkErr(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error)
+  return /failed to fetch|fetch|network|ECONNREFUSED/i.test(msg)
+}
+
 export function BlocksTable() {
   const { cluster, url } = useCluster()
   const [blocks, setBlocks] = useState<Block[]>([])
@@ -125,7 +134,8 @@ export function BlocksTable() {
         await new Promise(resolve => setTimeout(resolve, 2000))
 
       } catch (error) {
-        console.error("Error fetching batch:", error)
+        if (isNetworkErr(error)) console.warn("RPC unreachable while fetching batch:", error)
+        else console.error("Error fetching batch:", error)
       }
     }
 
@@ -144,7 +154,8 @@ export function BlocksTable() {
         const newBlocks = await fetchBlockBatch(startSlot, PAGE_SIZE)
         setBlocks(newBlocks)
       } catch (error) {
-        console.error("Error fetching initial blocks:", error)
+        if (isNetworkErr(error)) console.warn("RPC unreachable while fetching initial blocks:", error)
+        else console.error("Error fetching initial blocks:", error)
       } finally {
         setIsScanning(false)
       }
@@ -203,7 +214,8 @@ export function BlocksTable() {
           }
         }
       } catch (error) {
-        console.error("WebSocket subscription error:", error)
+        if (isNetworkErr(error)) console.warn("RPC WebSocket unreachable for block updates:", error)
+        else console.error("WebSocket subscription error:", error)
       }
     }
 

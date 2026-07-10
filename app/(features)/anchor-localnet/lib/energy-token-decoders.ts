@@ -9,6 +9,8 @@
  */
 import { PublicKey } from '@solana/web3.js';
 
+import { readU64LE, readI64LE, decodeAsciiId } from './bytes';
+
 export const TOKEN_INFO_ACCOUNT_SIZE = 320; // 312 payload + 8 disc
 export const GENERATION_MINT_RECORD_ACCOUNT_SIZE = 42; // 34 payload + 8 disc
 
@@ -39,16 +41,15 @@ export interface GenerationMintRecordData {
   bump: number;
 }
 
-export function decodeMeterId(buf: Buffer): string {
+export function decodeMeterId(buf: Uint8Array): string {
   // meter_id is 16 bytes; the seeder stores an ASCII id. Fall back to hex.
-  const ascii = buf.toString('ascii').replace(/[\x00\s]+$/g, ''); // trim trailing NUL/space padding
-  return /^[\x20-\x7e]+$/.test(ascii) ? ascii : buf.toString('hex');
+  return decodeAsciiId(buf);
 }
 
 /** TokenInfo payload (state.rs): authority@0, registry_authority@32,
  * registry_program@64, mint@96, total_supply@128, created_at@136,
  * rec_validators[5]@144, rec_validators_count@304. */
-export function decodeEnergyTokenInfo(data: Buffer, address: string): EnergyTokenInfoData {
+export function decodeEnergyTokenInfo(data: Uint8Array, address: string): EnergyTokenInfoData {
   const d = data.subarray(8);
   const count = d[304];
   const recValidators: string[] = [];
@@ -58,26 +59,26 @@ export function decodeEnergyTokenInfo(data: Buffer, address: string): EnergyToke
   return {
     address,
     authority: new PublicKey(d.subarray(0, 32)).toBase58(),
-    createdAt: Number(d.readBigInt64LE(136)),
+    createdAt: Number(readI64LE(d, 136)),
     mint: new PublicKey(d.subarray(96, 128)).toBase58(),
     recValidators,
     recValidatorsCount: count,
     registryAuthority: new PublicKey(d.subarray(32, 64)).toBase58(),
     registryProgram: new PublicKey(d.subarray(64, 96)).toBase58(),
-    totalSupply: Number(d.readBigUInt64LE(128)),
+    totalSupply: Number(readU64LE(d, 128)),
   };
 }
 
 /** GenerationMintRecord payload (state.rs): meter_id@0, window_start_ms@16,
  * amount@24, minted@32, bump@33. */
-export function decodeGenerationMintRecord(data: Buffer, address: string): GenerationMintRecordData {
+export function decodeGenerationMintRecord(data: Uint8Array, address: string): GenerationMintRecordData {
   const d = data.subarray(8);
   return {
     address,
-    amount: Number(d.readBigUInt64LE(24)),
+    amount: Number(readU64LE(d, 24)),
     bump: d[33],
-    meterId: decodeMeterId(d.subarray(0, 16) as Buffer),
+    meterId: decodeMeterId(d.subarray(0, 16)),
     minted: d[32] === 1,
-    windowMs: Number(d.readBigInt64LE(16)),
+    windowMs: Number(readI64LE(d, 16)),
   };
 }
