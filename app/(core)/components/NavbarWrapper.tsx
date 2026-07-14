@@ -8,7 +8,7 @@ export default function NavbarWrapper({ children }: { children?: React.ReactNode
     <Suspense
       fallback={
         <nav className="border-b border-gray-200">
-          <div className="container mx-auto px-4 py-4">Loading...</div>
+          <div className="w-full px-4 py-4 sm:px-6 lg:px-8">Loading...</div>
         </nav>
       }
     >

@@ -55,10 +55,10 @@ export function BaseInstructionCard({
           <span
             className={`mr-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
               resultClass === 'success'
-                ? 'bg-green-100 text-green-800'
+                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
                 : resultClass === 'warning'
-                  ? 'bg-yellow-100 text-yellow-800'
-                  : 'bg-gray-800 text-white'
+                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                  : 'bg-gray-800 text-white dark:bg-gray-700'
             }`}
           >
             #{index + 1}
@@ -69,15 +69,15 @@ export function BaseInstructionCard({
 
         <button
           disabled={defaultRaw}
-          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${showRaw ? 'bg-gray-800 text-white' : 'border hover:bg-gray-100'}`}
+          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${showRaw ? 'bg-primary text-primary-foreground' : 'hover:bg-muted border'}`}
           onClick={rawClickHandler}
         >
           <Code className="mr-2" size={13} /> Raw
         </button>
       </div>
       <div className="mb-0 overflow-x-auto">
-        <table className="w-full text-sm">
-          <tbody className="list">
+        <table className="w-full text-sm [&_td]:px-6 [&_td]:py-3">
+          <tbody className="divide-y divide-border">
             {showRaw ? (
               <>
                 <tr>

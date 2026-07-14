@@ -35,7 +35,7 @@ export function AddressTableLookupsCard({ message }: { message: VersionedMessage
       <div className="border-b px-6 py-4">
         <h3 className="text-lg font-semibold">Address Table Lookup(s)</h3>
         <button
-          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${expanded ? 'bg-gray-800 text-white' : 'border hover:bg-gray-100'}`}
+          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${expanded ? 'bg-primary text-primary-foreground' : 'border hover:bg-muted'}`}
           onClick={() => setExpanded(e => !e)}
         >
           {expanded ? 'Collapse' : 'Expand'}
@@ -58,7 +58,7 @@ export function AddressTableLookupsCard({ message }: { message: VersionedMessage
               <tbody className="border-t px-6 py-4">
                 <tr>
                   <td colSpan={4}>
-                    <span className="text-muted text-center">No entries found</span>
+                    <span className="text-muted-foreground text-center">No entries found</span>
                   </td>
                 </tr>
               </tbody>
@@ -83,7 +83,7 @@ function LookupRow({
 
   const loadingComponent = (
     <span className="text-muted-foreground">
-      <span className="spinner-grow spinner-grow-sm m2"></span>
+      <span className="mr-2 inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent align-middle"></span>
       Loading
     </span>
   );
@@ -116,7 +116,7 @@ function LookupRow({
       <td className="lg:text-right">{resolvedKeyComponent}</td>
       <td>
         {!readOnly && (
-          <span className="mr-1 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+          <span className="mr-1 inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-xs font-medium text-red-800 dark:text-red-400">
             Writable
           </span>
         )}

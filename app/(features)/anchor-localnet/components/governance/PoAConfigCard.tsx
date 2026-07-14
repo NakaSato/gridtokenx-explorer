@@ -5,6 +5,9 @@ import { Card, CardContent } from '@/app/(shared)/components/ui/card';
 import { StatItem } from '../shared-explorer/Stats';
 import { ShieldCheck } from 'lucide-react';
 import { cn } from '@/app/(shared)/utils/cn';
+import { Address } from '@/app/(shared)/components/Address';
+
+const pk = (s: string) => ({ toBase58: () => s });
 
 interface PoAConfigData {
   address: string;
@@ -46,9 +49,11 @@ export function PoAConfigCard({ config }: PoAConfigCardProps) {
               <span className={cn("text-xs font-bold", config.ercValidationEnabled ? "text-[#14F195]" : "text-[#888]")}>{config.ercValidationEnabled ? 'Enabled' : 'Disabled'}</span>
             </div>
           </div>
-          <div className="col-span-2">
+          <div className="col-span-2 text-[11px] text-[#888] [&_a]:text-[#888] [&_a:hover]:text-[#9945FF]">
             <p className="text-[10px] font-bold uppercase tracking-wider text-[#666]">Authority Wallet</p>
-            <p className="mt-0.5 truncate font-mono text-[11px] text-[#888]">{config.authority}</p>
+            <div className="mt-0.5">
+              <Address pubkey={pk(config.authority)} link raw />
+            </div>
           </div>
         </div>
       </CardContent>

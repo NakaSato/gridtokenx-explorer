@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { PROGRAMS } from '../config';
+import { readU64LE, readI64LE, readU32LE, readU16LE, bytesToHex } from '../lib/bytes';
 import { cn } from '@/app/(shared)/utils/cn';
 import { InstructionReference } from './shared-explorer/InstructionReference';
 
@@ -52,6 +53,12 @@ interface TreasuryData {
   totalSettledThbg: number;
   swapFeeBps: number;
   paused: boolean;
+  bump: number;
+  thbgMintBump: number;
+  swapVaultBump: number;
+  stakeVaultBump: number;
+  rewardVaultBump: number;
+  rebateVaultBump: number;
 }
 
 interface StakePosition {
@@ -60,6 +67,7 @@ interface StakePosition {
   amount: number;
   rewardDebt: number;
   pending: number;
+  bump: number;
 }
 
 interface SettlementShard {
@@ -67,6 +75,7 @@ interface SettlementShard {
   shardId: number;
   settledThbg: number;
   settlementCount: number;
+  bump: number;
 }
 
 interface SettlementRecord {
@@ -79,6 +88,7 @@ interface SettlementRecord {
   batchId: number;
   zoneId: number;
   vatRateBps: number;
+  bump: number;
 }
 
 // Account payload sizes (excluding the 8-byte Anchor discriminator).
@@ -88,9 +98,9 @@ function pk(buf: Uint8Array, off: number): string {
   return new PublicKey(buf.slice(off, off + 32)).toBase58();
 }
 
-// Read a little-endian u128 as bigint (web3.js Buffer has no readBigUInt128LE).
-function u128(buf: Buffer, off: number): bigint {
-  return buf.readBigUInt64LE(off) + (buf.readBigUInt64LE(off + 8) << 64n);
+// Read a little-endian u128 as bigint over raw account bytes (Uint8Array).
+function u128(buf: Uint8Array, off: number): bigint {
+  return readU64LE(buf, off) + (readU64LE(buf, off + 8) << 64n);
 }
 
 export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProps) {
@@ -114,7 +124,9 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
       const settlementList: SettlementRecord[] = [];
 
       for (const { pubkey, account } of accounts) {
-        const data = account.data;
+        // account.data reaches the browser as Uint8Array (no Buffer readBig* methods);
+        // decode via lib/bytes DataView readers so it works in every realm.
+        const data = account.data as Uint8Array;
         const d = data.slice(8);
         const addr = pubkey.toBase58();
 
@@ -128,44 +140,53 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
               grxMint: pk(d, 80),
               thbgMint: pk(d, 112),
               settlementRecorder: pk(d, 144),
-              attestedReserve: Number(d.readBigUInt64LE(176)),
-              attestationTs: Number(d.readBigInt64LE(184)),
-              attestationTtl: Number(d.readBigInt64LE(192)),
-              thbgSupply: Number(d.readBigUInt64LE(200)),
-              grxPerThbgRate: Number(d.readBigUInt64LE(208)),
-              totalStaked: Number(d.readBigUInt64LE(216)),
-              rewardPool: Number(d.readBigUInt64LE(224)),
-              createdAt: Number(d.readBigInt64LE(232)),
-              totalSettledThbg: Number(d.readBigUInt64LE(240)),
-              swapFeeBps: d.readUInt16LE(248),
+              attestedReserve: Number(readU64LE(d, 176)),
+              attestationTs: Number(readI64LE(d, 184)),
+              attestationTtl: Number(readI64LE(d, 192)),
+              thbgSupply: Number(readU64LE(d, 200)),
+              grxPerThbgRate: Number(readU64LE(d, 208)),
+              totalStaked: Number(readU64LE(d, 216)),
+              rewardPool: Number(readU64LE(d, 224)),
+              createdAt: Number(readI64LE(d, 232)),
+              totalSettledThbg: Number(readU64LE(d, 240)),
+              swapFeeBps: readU16LE(d, 248),
               paused: d[250] === 1,
+              bump: d[251],
+              thbgMintBump: d[252],
+              swapVaultBump: d[253],
+              stakeVaultBump: d[254],
+              rewardVaultBump: d[255],
+              rebateVaultBump: d[256],
             };
           } else if (data.length === SIZE.stake + 8) {
             stakeList.push({
               address: addr,
               owner: pk(d, 0),
-              amount: Number(d.readBigUInt64LE(32)),
+              amount: Number(readU64LE(d, 32)),
               rewardDebt: Number(u128(d, 40)),
-              pending: Number(d.readBigUInt64LE(56)),
+              pending: Number(readU64LE(d, 56)),
+              bump: d[64],
             });
           } else if (data.length === SIZE.shard + 8) {
             shardList.push({
               address: addr,
-              settledThbg: Number(d.readBigUInt64LE(0)),
-              settlementCount: Number(d.readBigUInt64LE(8)),
+              settledThbg: Number(readU64LE(d, 0)),
+              settlementCount: Number(readU64LE(d, 8)),
               shardId: d[16],
+              bump: d[17],
             });
           } else if (data.length === SIZE.settlement + 8) {
             settlementList.push({
               address: addr,
-              merkleRoot: Buffer.from(d.slice(0, 32)).toString('hex'),
+              merkleRoot: bytesToHex(d.slice(0, 32)),
               recorder: pk(d, 32),
-              totalValue: Number(d.readBigUInt64LE(64)),
-              vatAmount: Number(d.readBigUInt64LE(72)),
-              committedTs: Number(d.readBigInt64LE(80)),
-              batchId: Number(d.readBigUInt64LE(88)),
-              zoneId: d.readUInt32LE(96),
-              vatRateBps: d.readUInt16LE(100),
+              totalValue: Number(readU64LE(d, 64)),
+              vatAmount: Number(readU64LE(d, 72)),
+              committedTs: Number(readI64LE(d, 80)),
+              batchId: Number(readU64LE(d, 88)),
+              zoneId: readU32LE(d, 96),
+              vatRateBps: readU16LE(d, 100),
+              bump: d[102],
             });
           }
         } catch (e) {
@@ -349,11 +370,18 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                   label="Created"
                   value={treasury.createdAt > 0 ? new Date(treasury.createdAt * 1000).toLocaleString() : '—'}
                 />
+                <Row label="Treasury PDA" value={treasury.address} mono truncate />
                 <Row label="Authority" value={treasury.authority} mono truncate />
                 <Row label="Attestor" value={treasury.attestor} mono truncate />
                 <Row label="GRX Mint" value={treasury.grxMint} mono truncate />
                 <Row label="THBG Mint" value={treasury.thbgMint} mono truncate />
                 <Row label="Settlement Recorder" value={treasury.settlementRecorder} mono truncate />
+                <Row
+                  label="PDA Bumps"
+                  value={`treasury ${treasury.bump} · thbg-mint ${treasury.thbgMintBump} · swap ${treasury.swapVaultBump} · stake ${treasury.stakeVaultBump} · reward ${treasury.rewardVaultBump} · rebate ${treasury.rebateVaultBump}`}
+                  mono
+                  truncate
+                />
               </CardContent>
             </Card>
 
@@ -377,12 +405,13 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                     <EmptyState label="No stake positions" />
                   ) : (
                     <DataTable
-                      head={['Owner', 'Staked (GRX)', 'Reward Debt (GRX)', 'Pending Rewards (GRX)']}
+                      head={['Owner', 'Staked (GRX)', 'Reward Debt (GRX)', 'Pending Rewards (GRX)', 'Bump']}
                       rows={stakes.map((s) => [
-                        <span key="o" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]">{shorten(s.owner)}</span>,
+                        <span key="o" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]" title={s.owner}>{shorten(s.owner)}</span>,
                         fmtToken(s.amount),
                         fmtToken(s.rewardDebt),
                         fmtToken(s.pending),
+                        s.bump,
                       ])}
                     />
                   )}
@@ -395,15 +424,16 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                     <EmptyState label="No settlement records" />
                   ) : (
                     <DataTable
-                      head={['Batch', 'Zone', 'Total (THBG)', 'VAT', 'Recorder', 'Committed', 'Merkle Root']}
+                      head={['Batch', 'Zone', 'Total (THBG)', 'VAT', 'Recorder', 'Committed', 'Bump', 'Merkle Root']}
                       rows={settlements.map((s) => [
                         s.batchId.toLocaleString(),
                         s.zoneId.toLocaleString(),
                         fmtToken(s.totalValue),
                         `${fmtToken(s.vatAmount)} (${(s.vatRateBps / 100).toFixed(1)}%)`,
-                        <span key="r" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]">{shorten(s.recorder)}</span>,
+                        <span key="r" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]" title={s.recorder}>{shorten(s.recorder)}</span>,
                         new Date(s.committedTs * 1000).toLocaleString(),
-                        <span key="m" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]">{s.merkleRoot.slice(0, 12)}…</span>,
+                        s.bump,
+                        <span key="m" className="bg-[#0a0a0a] px-1.5 py-0.5 font-mono text-[10px] text-[#14F195]" title={s.merkleRoot}>{s.merkleRoot.slice(0, 12)}…</span>,
                       ])}
                     />
                   )}
@@ -416,11 +446,12 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                     <EmptyState label="No settlement shards initialized" />
                   ) : (
                     <DataTable
-                      head={['Shard', 'Settled (THBG)', 'Settlement Count']}
+                      head={['Shard', 'Settled (THBG)', 'Settlement Count', 'Bump']}
                       rows={shards.map((s) => [
                         `#${s.shardId}`,
                         fmtToken(s.settledThbg),
                         s.settlementCount.toLocaleString(),
+                        s.bump,
                       ])}
                     />
                   )}

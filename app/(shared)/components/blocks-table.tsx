@@ -248,11 +248,6 @@ export function BlocksTable() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Blocks</h1>
-      </div>
-
       {/* Tabs and Pagination */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-1">

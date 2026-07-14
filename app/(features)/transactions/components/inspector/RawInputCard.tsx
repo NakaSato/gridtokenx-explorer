@@ -283,10 +283,10 @@ export function RawInput({
   return (
     <div className="bg-card rounded-lg border shadow-sm">
       <div className="border-b px-6 py-4">
-        <div className="align-items-center flex justify-between">
+        <div className="items-center flex justify-between">
           <h3 className="text-lg font-semibold">Inspector Input</h3>
           <button
-            className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
+            className="rounded-md border px-3 py-1.5 text-sm hover:bg-muted"
             onClick={clearInput}
             type="button"
           >
@@ -307,11 +307,11 @@ export function RawInput({
           <div className="col flex items-center">
             {error && (
               <>
-                <span className="text-warning small m2">
+                <span className="text-yellow-500 text-xs ml-2">
                   <i className="fe falert-circle"></i>
                 </span>
 
-                <span className="text-warning">{error}</span>
+                <span className="text-yellow-500">{error}</span>
               </>
             )}
           </div>

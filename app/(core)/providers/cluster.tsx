@@ -134,9 +134,12 @@ export function ClusterProvider({ children }: ClusterProviderProps) {
     }
   }, [enableCustomUrl]); // eslint-disablline react-hooks/exhaustivdeps
 
-  // Restore last selected cluster from localStorage
+  // Restore last selected cluster from localStorage whenever we land on a URL
+  // without an explicit cluster param. Reactive to navigation (not mount-only)
+  // so the selection survives browser Back / soft nav: the ClusterProvider lives
+  // at the layout root and never remounts, so a `[]` effect would only fire once
+  // and Back-navigating to a param-less URL would silently drop the choice.
   useEffect(() => {
-    // Only run on client and if no cluster param is present (defaulting to mainnet)
     if (localStorageIsAvailable() && !searchParams?.has('cluster')) {
       try {
         const lastCluster = localStorage.getItem('explorer-last-cluster');
@@ -150,7 +153,7 @@ export function ClusterProvider({ children }: ClusterProviderProps) {
         // Ignore localStorage errors
       }
     }
-  }, []); // Run once on mount
+  }, [searchParams, pathname, router]);
 
   // Reconnect to cluster when params change
   useEffect(() => {

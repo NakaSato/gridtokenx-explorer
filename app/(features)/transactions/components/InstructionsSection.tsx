@@ -102,14 +102,10 @@ export function InstructionsSection({ signature }: SignatureProps) {
   }
 
   return (
-    <>
-      <div className="container mx-auto px-4">
-        <div className="header">
-          <div className="header-body">
-            <h3 className="mb-0">{transaction.message.instructions.length > 1 ? 'Instructions' : 'Instruction'}</h3>
-          </div>
-        </div>
-      </div>
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">
+        {transaction.message.instructions.length > 1 ? 'Instructions' : 'Instruction'}
+      </h3>
       <React.Suspense fallback={<LoadingCard message="Loading Instructions" />}>
         {transaction.message.instructions.map((instruction, index) => {
           const innerCards: JSX.Element[] = [];
@@ -148,7 +144,7 @@ export function InstructionsSection({ signature }: SignatureProps) {
           );
         })}
       </React.Suspense>
-    </>
+    </div>
   );
 }
 

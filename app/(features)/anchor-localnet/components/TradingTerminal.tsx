@@ -23,6 +23,7 @@ import {
 } from 'recharts';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { PROGRAMS } from '../config';
+import { readU64LE, readI64LE, readU32LE, readU16LE } from '../lib/bytes';
 import { cn } from '@/app/(shared)/utils/cn';
 
 interface TradingTerminalProps {
@@ -68,8 +69,8 @@ const DEPTH_LEN = 10;
 const BUY_DEPTH_OFF = 88; // zone payload offset of buy_side_depth (abs 96 − 8 disc)
 const SELL_DEPTH_OFF = 328; // sell_side_depth (abs 336 − 8 disc)
 
-const u64 = (d: Buffer, o: number) => Number(d.readBigUInt64LE(o));
-const i64 = (d: Buffer, o: number) => Number(d.readBigInt64LE(o));
+const u64 = (d: Uint8Array, o: number) => Number(readU64LE(d, o));
+const i64 = (d: Uint8Array, o: number) => Number(readI64LE(d, o));
 
 // On-chain scaling (trading program): energy amounts carry 9 decimals
 // (ENERGY_AMOUNT_DECIMALS_DIVISOR = 1e9) → kWh; price_per_kwh is 6-decimal
@@ -80,7 +81,7 @@ const PRICE_DIVISOR = 1_000_000;
 const kwh = (raw: number) => raw / ENERGY_DIVISOR;
 const thb = (raw: number) => raw / PRICE_DIVISOR;
 
-function readDepth(d: Buffer, base: number, into: Map<number, number>) {
+function readDepth(d: Uint8Array, base: number, into: Map<number, number>) {
   for (let i = 0; i < DEPTH_LEN; i++) {
     const o = base + i * PRICE_LEVEL;
     if (o + 16 > d.length) break;
@@ -114,7 +115,7 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
 
       for (const { pubkey, account } of accounts) {
         const data = account.data;
-        const d = data.subarray(8) as Buffer;
+        const d = data.subarray(8) as Uint8Array;
 
         if (data.length === SIZE.market) {
           marketData = {
@@ -122,9 +123,9 @@ export function TradingTerminal({ rpcUrl, getConnection }: TradingTerminalProps)
             totalVolume: kwh(u64(d, 32)),
             lastPrice: thb(u64(d, 48)), // last_clearing_price
             vwap: thb(u64(d, 56)),
-            activeOrders: d.readUInt32LE(64),
-            totalTrades: d.readUInt32LE(68),
-            feeBps: d.readUInt16LE(72),
+            activeOrders: readU32LE(d, 64),
+            totalTrades: readU32LE(d, 68),
+            feeBps: readU16LE(d, 72),
             priceHistory: Array.from({ length: 24 })
               .map((_, i) => {
                 const start = 2160 + i * PRICE_LEVEL; // price_history ring, payload offset

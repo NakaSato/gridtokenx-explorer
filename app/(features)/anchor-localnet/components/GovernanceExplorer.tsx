@@ -12,12 +12,20 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { PROGRAMS } from '../config';
 import { cn } from '@/app/(shared)/utils/cn';
 import { Card } from '@/app/(shared)/components/ui/card';
+import { Address } from '@/app/(shared)/components/Address';
+import { readU64LE, readI64LE, readI32LE } from '../lib/bytes';
+
+const pk = (s: string) => ({ toBase58: () => s });
 
 // Refactored Sub-components
 import { InstructionReference } from './shared-explorer/InstructionReference';
 import { PoAConfigCard } from './governance/PoAConfigCard';
 import { CertificatesTable } from './governance/CertificatesTable';
 import { IssueErcDialog } from './governance/IssueErcDialog';
+import { ProposalsTable, ProposalData } from './governance/ProposalsTable';
+import { VotesTable, VoteData } from './governance/VotesTable';
+import { ZonesTable, ZoneData } from './governance/ZonesTable';
+import { AggregatorsTable, AggregatorData } from './governance/AggregatorsTable';
 
 interface GovernanceExplorerProps {
   rpcUrl: string;
@@ -48,6 +56,10 @@ interface CertificateData {
 export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorerProps) {
   const [config, setConfig] = useState<PoAConfigData | null>(null);
   const [certificates, setCertificates] = useState<CertificateData[]>([]);
+  const [proposals, setProposals] = useState<ProposalData[]>([]);
+  const [votes, setVotes] = useState<VoteData[]>([]);
+  const [zones, setZones] = useState<ZoneData[]>([]);
+  const [aggregators, setAggregators] = useState<AggregatorData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showIssueErc, setShowIssueErc] = useState(false);
@@ -64,6 +76,10 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
       const accounts = await conn.getProgramAccounts(programId);
 
       const certList: CertificateData[] = [];
+      const proposalList: ProposalData[] = [];
+      const voteList: VoteData[] = [];
+      const zoneList: ZoneData[] = [];
+      const aggregatorList: AggregatorData[] = [];
       let poaConfig: PoAConfigData | null = null;
 
       for (const { pubkey, account } of accounts) {
@@ -80,8 +96,8 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
               authorityName: new TextDecoder().decode(d.slice(32, 32 + Math.min(nameLen, 64))).replace(/\0/g, ''),
               maintenanceMode: d[227] === 1,
               ercValidationEnabled: d[228] === 1,
-              minEnergyAmount: Number(d.readBigUInt64LE(229)),
-              maxErcAmount: Number(d.readBigUInt64LE(237)),
+              minEnergyAmount: Number(readU64LE(d, 229)),
+              maxErcAmount: Number(readU64LE(d, 237)),
             };
           } catch (err) {
             console.error('Error parsing PoA config:', err);
@@ -101,26 +117,106 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
               address: pubkey.toBase58(),
               certificateId: new TextDecoder().decode(d.slice(0, Math.min(idLen, 64))).replace(/\0/g, ''),
               owner: new PublicKey(d.slice(97, 129)).toBase58(),
-              energyAmount: Number(d.readBigUInt64LE(129)),
+              energyAmount: Number(readU64LE(d, 129)),
               renewableSource:
                 new TextDecoder().decode(d.slice(137, 137 + Math.min(sourceLen, 64))).replace(/\0/g, '') || 'Unknown',
               status: statuses[statusNum] || 'Unknown',
               validatedForTrading: d[478] === 1,
-              createdAt: Number(d.readBigInt64LE(460)), // issued_at
+              createdAt: Number(readI64LE(d, 460)), // issued_at
             });
           } catch (err) {
             console.error('Error parsing ERC certificate:', err);
+          }
+        }
+        // Proposal (Borsh) — total 87 bytes (8 disc + 79)
+        else if (data.length === 87) {
+          try {
+            const d = data.slice(8);
+            const params = ['IncentiveMultiplier', 'WheelingCharge', 'LossFactor', 'MaintenanceMode'];
+            const pStatuses = ['Active', 'Passed', 'Rejected', 'Executed', 'Cancelled'];
+            proposalList.push({
+              address: pubkey.toBase58(),
+              proposer: new PublicKey(d.slice(0, 32)).toBase58(),
+              targetZone: readI32LE(d, 32),
+              parameter: params[d[36]] || 'Unknown',
+              newValue: Number(readU64LE(d, 37)),
+              votesFor: Number(readU64LE(d, 45)),
+              votesAgainst: Number(readU64LE(d, 53)),
+              status: pStatuses[d[61]] || 'Unknown',
+              expiresAt: Number(readI64LE(d, 62)),
+              proposalId: Number(readU64LE(d, 70)),
+            });
+          } catch (err) {
+            console.error('Error parsing proposal:', err);
+          }
+        }
+        // VoteRecord (Borsh) — total 90 bytes (8 disc + 82)
+        else if (data.length === 90) {
+          try {
+            const d = data.slice(8);
+            voteList.push({
+              address: pubkey.toBase58(),
+              proposal: new PublicKey(d.slice(0, 32)).toBase58(),
+              voter: new PublicKey(d.slice(32, 64)).toBase58(),
+              choice: d[64] === 1,
+              weight: Number(readU64LE(d, 65)),
+              votedAt: Number(readI64LE(d, 73)),
+            });
+          } catch (err) {
+            console.error('Error parsing vote:', err);
+          }
+        }
+        // ZoneConfig (Borsh) — total 46 bytes (8 disc + 38)
+        else if (data.length === 46) {
+          try {
+            const d = data.slice(8);
+            zoneList.push({
+              address: pubkey.toBase58(),
+              zoneId: readI32LE(d, 0),
+              incentiveMultiplier: Number(readU64LE(d, 4)),
+              wheelingCharge: Number(readU64LE(d, 12)),
+              lossFactor: Number(readU64LE(d, 20)),
+              maintenanceMode: d[28] === 1,
+              lastUpdated: Number(readI64LE(d, 29)),
+            });
+          } catch (err) {
+            console.error('Error parsing zone config:', err);
+          }
+        }
+        // AggregatorEntry (Borsh) — total 59 bytes (8 disc + 51)
+        else if (data.length === 59) {
+          try {
+            const d = data.slice(8);
+            const segments = ['Retail', 'Wholesale'];
+            aggregatorList.push({
+              address: pubkey.toBase58(),
+              aggregator: new PublicKey(d.slice(0, 32)).toBase58(),
+              admittedAt: Number(readI64LE(d, 32)),
+              updatedAt: Number(readI64LE(d, 40)),
+              active: d[48] === 1,
+              segment: segments[d[50]] || 'Unknown',
+            });
+          } catch (err) {
+            console.error('Error parsing aggregator entry:', err);
           }
         }
       }
 
       setConfig(poaConfig);
       setCertificates(certList.sort((a, b) => b.createdAt - a.createdAt));
+      setProposals(proposalList.sort((a, b) => b.proposalId - a.proposalId));
+      setVotes(voteList.sort((a, b) => b.votedAt - a.votedAt));
+      setZones(zoneList.sort((a, b) => a.zoneId - b.zoneId));
+      setAggregators(aggregatorList.sort((a, b) => b.admittedAt - a.admittedAt));
     } catch (err) {
       console.warn('GovernanceExplorer fetch error:', err);
       setError(err instanceof Error ? err.message : 'Failed to load governance data from RPC.');
       setConfig(null);
       setCertificates([]);
+      setProposals([]);
+      setVotes([]);
+      setZones([]);
+      setAggregators([]);
     } finally {
       setIsLoading(false);
     }
@@ -167,8 +263,8 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
           </div>
           <div>
             <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">Governance Program</h3>
-            <code className="mt-1 inline-block bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] tracking-wider text-[#14F195]">
-              {PROGRAMS.governance.id.slice(0, 24)}...
+            <code className="mt-1 inline-block bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] tracking-wider text-[#14F195] [&_a]:text-[#14F195] [&_a:hover]:text-[#9945FF]">
+              <Address pubkey={pk(PROGRAMS.governance.id)} link raw truncateChars={24} />
             </code>
           </div>
         </div>
@@ -197,6 +293,50 @@ export function GovernanceExplorer({ rpcUrl, getConnection }: GovernanceExplorer
         </div>
         <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
           <CertificatesTable certificates={certificates} />
+        </Card>
+      </div>
+
+      {/* DAO Proposals Section */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">DAO Proposals</h4>
+          <span className="border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] text-[#888]">{proposals.length} Total</span>
+        </div>
+        <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
+          <ProposalsTable proposals={proposals} />
+        </Card>
+      </div>
+
+      {/* DAO Votes Section */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">Vote Records</h4>
+          <span className="border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] text-[#888]">{votes.length} Total</span>
+        </div>
+        <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
+          <VotesTable votes={votes} />
+        </Card>
+      </div>
+
+      {/* Zone Config Section */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">Zone Configuration</h4>
+          <span className="border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] text-[#888]">{zones.length} Total</span>
+        </div>
+        <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
+          <ZonesTable zones={zones} />
+        </Card>
+      </div>
+
+      {/* Admitted Aggregators Section */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#9945FF]">Admitted Aggregators</h4>
+          <span className="border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-0.5 text-[9px] text-[#888]">{aggregators.length} Total</span>
+        </div>
+        <Card className="overflow-hidden rounded-none border-[#2a2a2a] bg-black">
+          <AggregatorsTable aggregators={aggregators} />
         </Card>
       </div>
 

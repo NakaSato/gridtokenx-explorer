@@ -89,7 +89,7 @@ function SignatureRow({
   return (
     <tr>
       <td>
-        <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+        <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-800 dark:text-blue-400">
           {index + 1}
         </span>
       </td>
@@ -101,18 +101,18 @@ function SignatureRow({
         {verified === undefined ? (
           'N/A'
         ) : verified ? (
-          <span className="mr-1 inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+          <span className="mr-1 inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/30 px-2 py-0.5 text-xs font-medium text-green-800 dark:text-green-400">
             Valid
           </span>
         ) : (
-          <span className="mr-1 inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+          <span className="mr-1 inline-flex items-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 px-2 py-0.5 text-xs font-medium text-yellow-800 dark:text-yellow-400">
             Invalid
           </span>
         )}
       </td>
       <td>
         {index === 0 && (
-          <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+          <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-800 dark:text-blue-400">
             Fee Payer
           </span>
         )}

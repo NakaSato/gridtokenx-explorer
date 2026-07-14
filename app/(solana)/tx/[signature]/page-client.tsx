@@ -8,6 +8,7 @@ import { LoadingCard } from '@/app/(shared)/components/LoadingCard';
 import { Signature } from '@/app/(shared)/components/Signature';
 import { Slot } from '@/app/(shared)/components/Slot';
 import { SolBalance } from '@/app/(shared)/components/SolBalance';
+import { StatusBadge } from '@/app/(shared)/components/StatusBadge';
 import { TableCardBody } from '@/app/(shared)/components/TableCardBody';
 import { SignatureContext } from '@/app/(features)/transactions/components/instruction/SignatureContext';
 import { InstructionsSection } from '@/app/(features)/transactions/components/InstructionsSection';
@@ -124,7 +125,7 @@ export default function TransactionDetailsPageClient({ params: { signature: raw 
 
   return (
     <div className="container mx-auto -mt-12 px-4">
-      <div className="header">
+      <div className="header mb-4">
         <div className="header-body">
           <h6 className="header-pretitle">Details</h6>
           <h2 className="header-title">Transaction</h2>
@@ -136,10 +137,12 @@ export default function TransactionDetailsPageClient({ params: { signature: raw 
         <ErrorCard text="RPC is not responding. Please change your RPC url and try again." />
       ) : (
         <SignatureContext.Provider value={signature}>
-          <StatusCard signature={signature} autoRefresh={autoRefresh} />
-          <Suspense fallback={<LoadingCard message="Loading transaction details" />}>
-            <DetailsSection signature={signature} />
-          </Suspense>
+          <div className="space-y-4">
+            <StatusCard signature={signature} autoRefresh={autoRefresh} />
+            <Suspense fallback={<LoadingCard message="Loading transaction details" />}>
+              <DetailsSection signature={signature} />
+            </Suspense>
+          </div>
         </SignatureContext.Provider>
       )}
     </div>
@@ -254,23 +257,28 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
 
   return (
     <div className="bg-card rounded-lg border shadow-sm">
-      <div className="flex items-center border-b px-6 py-4">
+      <div className="flex items-center gap-2 border-b px-6 py-4">
         <h3 className="text-lg font-semibold">Overview</h3>
-        <Link className="mr-2 rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100" href={inspectPath}>
-          <Settings className="mr-2 align-text-top" size={13} />
-          Inspect
-        </Link>
-        {autoRefresh === AutoRefresh.Active ? (
-          <span className="inline-block h-4 w-4 animate-pulse rounded-full bg-current"></span>
-        ) : (
-          <button
-            className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
-            onClick={() => fetchStatus(signature)}
+        <div className="ml-auto flex items-center gap-2">
+          <Link
+            className="hover:bg-muted inline-flex items-center rounded-md border px-3 py-1.5 text-sm"
+            href={inspectPath}
           >
-            <RefreshCw className="mr-2 align-text-top" size={13} />
-            Refresh
-          </button>
-        )}
+            <Settings className="mr-2 align-text-top" size={13} />
+            Inspect
+          </Link>
+          {autoRefresh === AutoRefresh.Active ? (
+            <span className="inline-block h-4 w-4 animate-pulse rounded-full bg-green-500"></span>
+          ) : (
+            <button
+              className="hover:bg-muted inline-flex items-center rounded-md border px-3 py-1.5 text-sm"
+              onClick={() => fetchStatus(signature)}
+            >
+              <RefreshCw className="mr-2 align-text-top" size={13} />
+              Refresh
+            </button>
+          )}
+        </div>
       </div>
 
       <TableCardBody>
@@ -284,19 +292,11 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
         <tr>
           <td>Result</td>
           <td className="lg:text-right">
-            <h3 className="mb-0">
-              <span
-                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                  statusClass === 'success'
-                    ? 'bg-green-100 text-green-800'
-                    : statusClass === 'warning'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-gray-800 text-white'
-                }`}
-              >
-                {statusText}
-              </span>
-            </h3>
+            <StatusBadge
+              status={statusClass === 'success' ? 'success' : 'warning'}
+              label={statusText}
+              className="inline-flex"
+            />
           </td>
         </tr>
 
@@ -304,27 +304,13 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
           <tr>
             <td>Error</td>
             <td className="lg:text-right">
-              <h3 className="mb-0">
-                {errorLink !== undefined ? (
-                  <Link href={errorLink}>
-                    <span
-                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                        statusClass === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-800 text-white'
-                      }`}
-                    >
-                      {errorReason}
-                    </span>
-                  </Link>
-                ) : (
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                      statusClass === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-800 text-white'
-                    }`}
-                  >
-                    {errorReason}
-                  </span>
-                )}
-              </h3>
+              {errorLink !== undefined ? (
+                <Link href={errorLink}>
+                  <StatusBadge status="warning" label={errorReason} showIcon={false} className="inline-flex" />
+                </Link>
+              ) : (
+                <StatusBadge status="warning" label={errorReason} showIcon={false} className="inline-flex" />
+              )}
             </td>
           </tr>
         )}
@@ -387,7 +373,9 @@ function StatusCard({ signature, autoRefresh }: SignatureProps & AutoRefreshProp
                 </InfoTooltip>
               )}
             </td>
-            <td className="lg:text-right">{blockhash}</td>
+            <td className="lg:text-right">
+              <span className="font-mono text-sm">{blockhash}</span>
+            </td>
           </tr>
         )}
 
@@ -460,12 +448,12 @@ function DetailsSection({ signature }: SignatureProps) {
   }
 
   return (
-    <>
+    <div className="space-y-4">
       <AccountsCard signature={signature} />
       <TokenBalancesCard signature={signature} />
       <InstructionsSection signature={signature} />
       <ProgramLogSection signature={signature} />
-    </>
+    </div>
   );
 }
 
@@ -504,31 +492,33 @@ function AccountsCard({ signature }: SignatureProps) {
           <SolBalance lamports={post} />
         </td>
         <td>
-          {index === 0 && (
-            <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
-              Fee Payer
-            </span>
-          )}
-          {account.signer && (
-            <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
-              Signer
-            </span>
-          )}
-          {account.writable && (
-            <span className="mr-1 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
-              Writable
-            </span>
-          )}
-          {message.instructions.find(ix => ix.programId.equals(pubkey)) && (
-            <span className="mr-1 inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-              Program
-            </span>
-          )}
-          {account.source === 'lookupTable' && (
-            <span className="mr-1 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800">
-              Address Table Lookup
-            </span>
-          )}
+          <div className="flex flex-wrap gap-1">
+            {index === 0 && (
+              <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                Fee Payer
+              </span>
+            )}
+            {account.signer && (
+              <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                Signer
+              </span>
+            )}
+            {account.writable && (
+              <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                Writable
+              </span>
+            )}
+            {message.instructions.find(ix => ix.programId.equals(pubkey)) && (
+              <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                Program
+              </span>
+            )}
+            {account.source === 'lookupTable' && (
+              <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-800 dark:text-gray-400">
+                Address Table Lookup
+              </span>
+            )}
+          </div>
         </td>
       </tr>
     );
@@ -540,8 +530,8 @@ function AccountsCard({ signature }: SignatureProps) {
         <h3 className="text-lg font-semibold">Account Input(s)</h3>
       </div>
       <div className="mb-0 overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
+        <table className="w-full text-sm whitespace-nowrap [&_td]:px-6 [&_td]:py-3 [&_th]:px-6 [&_th]:py-3 [&_th]:text-left [&_th]:font-medium">
+          <thead className="border-b">
             <tr>
               <th className="text-muted-foreground">#</th>
               <th className="text-muted-foreground">Address</th>
@@ -550,7 +540,7 @@ function AccountsCard({ signature }: SignatureProps) {
               <th className="text-muted-foreground">Details</th>
             </tr>
           </thead>
-          <tbody className="list">{accountRows}</tbody>
+          <tbody className="divide-y divide-border">{accountRows}</tbody>
         </table>
       </div>
     </div>

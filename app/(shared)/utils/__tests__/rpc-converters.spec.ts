@@ -286,6 +286,76 @@ describe('RPC Type Converters', () => {
       expect(typeof info.newAccount).toBe('string');
     });
 
+    it('should keep recentBlockhash a string (rendered raw in Overview)', () => {
+      // Regression: a blockhash is a 32-byte base58 string — address-shaped — so
+      // the old blanket conversion turned it into a PublicKey; rendering it raw
+      // threw React #31 "Objects are not valid as a React child (PublicKey)".
+      const kitTx = {
+        slot: 1n,
+        transaction: {
+          message: { accountKeys: [], instructions: [], recentBlockhash: testAddressString },
+        },
+        meta: null,
+      };
+      const result = toLegacyParsedTransaction(kitTx);
+      expect(typeof result!.transaction.message.recentBlockhash).toBe('string');
+    });
+
+    it('should NOT convert address-length non-address fields rendered as raw text', () => {
+      // Regression (React #31): any address-shaped string outside a known address
+      // position must stay a string. Only pubkey/programId/accounts convert.
+      const kitTx = {
+        slot: 1n,
+        transaction: {
+          message: {
+            accountKeys: [{ pubkey: testAddressString, signer: true, writable: true }],
+            addressTableLookups: [{ accountKey: testAddressString, writableIndexes: [0], readonlyIndexes: [] }],
+            instructions: [
+              {
+                programId: testAddressString,
+                accounts: [testAddressString],
+                // 32-byte-decodable base58 data must not become a PublicKey.
+                data: testAddressString,
+              },
+            ],
+            recentBlockhash: testAddressString,
+          },
+        },
+        meta: null,
+      };
+      const result = toLegacyParsedTransaction(kitTx);
+      const msg = result!.transaction.message;
+      // Converted (address positions):
+      expect(msg.accountKeys[0].pubkey).toBeInstanceOf(PublicKey);
+      expect(msg.instructions[0].programId).toBeInstanceOf(PublicKey);
+      expect(msg.instructions[0].accounts[0]).toBeInstanceOf(PublicKey);
+      // Preserved as strings (raw-text / non-address positions):
+      expect(typeof msg.instructions[0].data).toBe('string');
+      expect(typeof msg.addressTableLookups[0].accountKey).toBe('string');
+      expect(typeof msg.recentBlockhash).toBe('string');
+    });
+
+    it('should keep token-balance mint a string (fixes ref-equality mint-change bug)', () => {
+      // meta.*TokenBalances[].mint is consumed via toAddress()/Map keys as a
+      // string; converting it to PublicKey made `preBalance.mint !== mint`
+      // compare object identity and spuriously emit mint-change rows.
+      const kitTx = {
+        slot: 1n,
+        transaction: { message: { accountKeys: [], instructions: [] } },
+        meta: {
+          fee: 5000n,
+          preBalances: [],
+          postBalances: [],
+          preTokenBalances: [{ accountIndex: 0, mint: testAddressString, owner: testAddressString }],
+          postTokenBalances: [{ accountIndex: 0, mint: testAddressString, owner: testAddressString }],
+          err: null,
+        },
+      };
+      const result = toLegacyParsedTransaction(kitTx);
+      expect(typeof result!.meta!.preTokenBalances[0].mint).toBe('string');
+      expect(typeof result!.meta!.postTokenBalances[0].owner).toBe('string');
+    });
+
     it('should convert pubkey fields to PublicKey instances', () => {
       const kitTx = {
         slot: 200000000n,

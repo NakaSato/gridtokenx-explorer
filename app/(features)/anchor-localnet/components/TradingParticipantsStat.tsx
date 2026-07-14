@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { useCluster } from '@/app/(core)/providers/cluster';
 import { PROGRAMS } from '../config';
+import { readU32LE } from '../lib/bytes';
 
 // Trading account sizes (incl. 8-byte discriminator).
 const MARKET_SIZE = 2760;
@@ -31,7 +32,7 @@ export function TradingParticipantsStat() {
         for (const { account } of accounts) {
           const data = account.data;
           if (data.length === MARKET_SIZE) {
-            activeOrders = data.subarray(8).readUInt32LE(64); // active_orders
+            activeOrders = readU32LE(data.subarray(8), 64); // active_orders
           } else if (data.length === ZONE_MARKET_SIZE) {
             zones++;
           }

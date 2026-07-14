@@ -5,6 +5,7 @@ import SearchBarWrapper from '@/app/(core)/components/SearchBarWrapper';
 import { ClusterProvider } from '@/app/(core)/providers/cluster';
 import { BufferPolyfill } from '@/app/(shared)/components/BufferPolyfill';
 import { ScrollAnchorProvider } from '@/app/(core)/providers/scroll-anchor';
+import { TooltipProvider } from '@/app/(shared)/components/ui/tooltip';
 import { Toaster } from 'react-hot-toast';
 import type { Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
@@ -90,6 +91,7 @@ export default function RootLayout({
           <ScrollAnchorProvider>
             <Suspense fallback={<div>Loading...</div>}>
               <ClusterProvider>
+                <TooltipProvider delayDuration={0}>
                 <div className="relative pb-12 sm:pb-16">
                   {/* Global Decorative Background */}
                   <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
@@ -105,6 +107,7 @@ export default function RootLayout({
                     {children}
                   </div>
                 </div>
+                </TooltipProvider>
               </ClusterProvider>
             </Suspense>
           </ScrollAnchorProvider>

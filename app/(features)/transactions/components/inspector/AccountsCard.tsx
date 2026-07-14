@@ -96,7 +96,7 @@ export function AccountsCard({ message }: { message: VersionedMessage }) {
       <div className="flex items-center justify-between border-b px-6 py-4">
         <h3 className="text-lg font-semibold">{`Account List (${numAccounts})`}</h3>
         <button
-          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${expanded ? 'bg-gray-800 text-white' : 'border hover:bg-gray-100'}`}
+          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${expanded ? 'bg-primary text-primary-foreground' : 'border hover:bg-muted'}`}
           onClick={() => setExpanded(e => !e)}
         >
           {expanded ? 'Collapse' : 'Expand'}
@@ -125,7 +125,7 @@ function AccountFromLookupTableRow({
           Account #{accountIndex + 1}
           <span className="mt-1">
             {!readOnly && (
-              <span className="mr-1 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+              <span className="mr-1 inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-xs font-medium text-red-800 dark:text-red-400">
                 Writable
               </span>
             )}
@@ -156,11 +156,11 @@ function AccountRow({
   return (
     <tr>
       <td>
-        <div className="d-flex align-items-start flex-column">
+        <div className="flex items-start flex-col">
           Account #{accountIndex + 1}
           <span className="mt-1">
             {signer && (
-              <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+              <span className="mr-1 inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-800 dark:text-blue-400">
                 Signer
               </span>
             )}

@@ -269,19 +269,43 @@ export function toLegacyBlockResponse(block: any): VersionedBlockResponse {
 export function toLegacyParsedTransaction(tx: any): ParsedTransactionWithMeta | null {
   if (!tx) return tx;
 
-  // Convert addresses in transaction to PublicKey instances
-  const convertAddresses = (obj: any): any => {
+  // Object keys whose *string* value is an address the UI renders through
+  // `<Address>` / compares with `.equals()` — so it must become a PublicKey:
+  //   - `pubkey`    : accountKeys[].pubkey  (AccountsCard, TokenBalancesCard)
+  //   - `programId` : instructions[].programId  (AccountsCard `.equals`,
+  //                   ProgramLogsCardBody `.toBase58`, InstructionCard, Address)
+  // Elements of an `accounts` array (PartiallyDecodedInstruction.accounts) are
+  // bare address strings consumed via `.equals()` in intoTransactionInstruction,
+  // so they convert too (see the array branch below).
+  const ADDRESS_KEYS = new Set(['pubkey', 'programId']);
+
+  // Allow-list conversion. A base58 address is indistinguishable by shape from a
+  // blockhash, a bs58-encoded seed, or instruction data — so we ONLY coerce a
+  // string to PublicKey when it sits in a known address position. Every other
+  // string stays a string. This is the inverse of the old deny-list, which
+  // blanket-converted every 32-byte string and leaked PublicKey objects into the
+  // React tree for any field rendered as raw text (recentBlockhash, and any
+  // address-length field not covered by the preserve list) → React error #31
+  // "Objects are not valid as a React child (PublicKey)".
+  //
+  // `parentKey` is the object key (or containing array's key) this value came
+  // from — undefined at the top level and for `meta.*TokenBalances` array roots.
+  const convertAddresses = (obj: any, parentKey?: string): any => {
     if (!obj) return obj;
     if (typeof obj === 'string') {
-      // Check if it's a base58 address
-      try {
-        return new PublicKey(obj);
-      } catch {
-        return obj;
+      if (parentKey && (ADDRESS_KEYS.has(parentKey) || parentKey === 'accounts')) {
+        try {
+          return new PublicKey(obj);
+        } catch {
+          return obj;
+        }
       }
+      return obj;
     }
     if (Array.isArray(obj)) {
-      return obj.map(convertAddresses);
+      // Array elements inherit the array's key so `accounts: [<addr>, …]` and
+      // `accountKeys: [{ pubkey }, …]` both resolve correctly.
+      return obj.map(item => convertAddresses(item, parentKey));
     }
     if (typeof obj === 'object') {
       const converted: any = {};
@@ -295,21 +319,8 @@ export function toLegacyParsedTransaction(tx: any): ParsedTransactionWithMeta | 
           // Only bigint numeric fields (kit's jsonParsed lamports/space/…) are
           // normalized to number so superstruct `number()` coercions pass.
           converted[key] = normalizeParsedBigints(obj[key]);
-        } else if (key === 'recentBlockhash' || key === 'blockhash') {
-          // A blockhash is a 32-byte base58 string — the SAME length as an
-          // address — so the blanket string→PublicKey conversion below would
-          // turn it into a PublicKey. It's rendered directly as text
-          // (Overview → Recent Blockhash), so keep it a string; otherwise React
-          // throws "Objects are not valid as a React child (PublicKey)".
-          converted[key] = obj[key];
-        } else if (key === 'pubkey' || key === 'owner' || key === 'mint' || key === 'authority') {
-          try {
-            converted[key] = new PublicKey(obj[key]);
-          } catch {
-            converted[key] = obj[key];
-          }
         } else {
-          converted[key] = convertAddresses(obj[key]);
+          converted[key] = convertAddresses(obj[key], key);
         }
       }
       return converted;

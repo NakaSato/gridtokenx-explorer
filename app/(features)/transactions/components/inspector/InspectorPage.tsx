@@ -387,7 +387,7 @@ function TransactionInspectorPageClient({
 
   return (
     <div className="container mt-4">
-      <div className="header">
+      <div className="header mb-4">
         <div className="header-body">
           <h2 className="header-title">Transaction Inspector</h2>
         </div>
@@ -463,14 +463,14 @@ function LoadedView({
   }, [message, fetchAccountInfo]);
 
   return (
-    <>
+    <div className="space-y-4">
       <OverviewCard message={message} raw={rawMessage} onClear={onClear} />
       <SimulatorCard message={message} showTokenBalanceChanges={showTokenBalanceChanges} />
       {signatures && <TransactionSignatures message={message} signatures={signatures} rawMessage={rawMessage} />}
       <AccountsCard message={message} />
       <AddressTableLookupsCard message={message} />
       <InstructionsSection message={message} />
-    </>
+    </div>
   );
 }
 
@@ -493,7 +493,7 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
         <div className="flex items-center justify-between border-b px-6 py-4">
           <h3 className="text-lg font-semibold">Transaction Overview</h3>
           <button
-            className="flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
+            className="flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-muted"
             onClick={onClear}
           >
             Clear
@@ -503,9 +503,9 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
           <tr>
             <td>Serialized Size</td>
             <td className="lg:text-right">
-              <div className="d-flex align-items-end flex-column">
+              <div className="flex items-end flex-col">
                 {size} bytes
-                <span className={size <= PACKET_DATA_SIZE ? 'text-muted' : 'text-warning'}>
+                <span className={size <= PACKET_DATA_SIZE ? 'text-muted-foreground' : 'text-yellow-500'}>
                   Max transaction size is {PACKET_DATA_SIZE} bytes
                 </span>
               </div>
@@ -514,7 +514,7 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
           <tr>
             <td>Fees</td>
             <td className="lg:text-right">
-              <div className="d-flex align-items-end flex-column">
+              <div className="flex items-end flex-col">
                 <SolBalance lamports={fee} />
                 <span className="text-muted-foreground">
                   {`Each signature costs ${DEFAULT_FEES.lamportsPerSignature} lamports`}
@@ -525,13 +525,13 @@ function OverviewCard({ message, raw, onClear }: { message: VersionedMessage; ra
 
           <tr>
             <td>
-              <div className="d-flex align-items-start flex-column">
+              <div className="flex items-start flex-col">
                 Fee payer
                 <span className="mt-1">
-                  <span className="mr-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                  <span className="mr-2 inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-800 dark:text-blue-400">
                     Signer
                   </span>
-                  <span className="mr-2 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                  <span className="mr-2 inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-xs font-medium text-red-800 dark:text-red-400">
                     Writable
                   </span>
                 </span>

@@ -43,7 +43,7 @@ export function SimulatorCard({
           <h3 className="text-lg font-semibold">Transaction Simulation</h3>
         </div>
         <div className="p-6 text-center">
-          <span className="spinner-grow spinner-grow-sm m2"></span>
+          <span className="mr-2 inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent align-middle"></span>
           Simulating
         </div>
       </div>
@@ -54,7 +54,7 @@ export function SimulatorCard({
         <div className="flex items-center justify-between border-b px-6 py-4">
           <h3 className="text-lg font-semibold">Transaction Simulation</h3>
           <button
-            className="flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
+            className="flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-muted"
             onClick={simulate}
           >
             {simulationError ? 'Retry' : 'Simulate'}
@@ -64,7 +64,7 @@ export function SimulatorCard({
           {simulationError ? (
             <>
               Simulation Failure:
-              <span className="text-warning ms-2">{simulationError}</span>
+              <span className="text-yellow-500 ml-2">{simulationError}</span>
             </>
           ) : (
             <ul className="text-muted-foreground">
@@ -83,7 +83,7 @@ export function SimulatorCard({
         <div className="flex items-center justify-between border-b px-6 py-4">
           <h3 className="text-lg font-semibold">Transaction Simulation</h3>
           <button
-            className="flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-gray-100"
+            className="flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-muted"
             onClick={simulate}
           >
             Retry

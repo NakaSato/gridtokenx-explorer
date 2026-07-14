@@ -40,7 +40,7 @@ export function AddressFromLookupTableWithContext({
   if (!lookupTable) {
     return (
       <span className="text-muted-foreground">
-        <span className="spinner-grow spinner-grow-sm m2"></span>
+        <span className="mr-2 inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent align-middle"></span>
         Loading
       </span>
     );
@@ -51,7 +51,7 @@ export function AddressFromLookupTableWithContext({
   } else {
     const pubkey = lookupTable.state.addresses[lookupTableIndex];
     return (
-      <div className="d-flex align-items-lg-end flex-column">
+      <div className="flex lg:items-end flex-col">
         <Address pubkey={pubkey} link />
         {hideInfo ? null : <AccountInfo pubkey={pubkey} />}
       </div>
@@ -69,7 +69,7 @@ export function AddressWithContext({
   hideInfo?: boolean;
 }) {
   return (
-    <div className="d-flex align-items-lg-end flex-column">
+    <div className="flex lg:items-end flex-col">
       <Address pubkey={pubkey} link />
       {hideInfo ? null : <AccountInfo pubkey={pubkey} validator={validator} />}
     </div>
@@ -93,13 +93,13 @@ function AccountInfo({ pubkey, validator }: { pubkey: PublicKey; validator?: Acc
   if (!account)
     return (
       <span className="text-muted-foreground">
-        <span className="spinner-grow spinner-grow-sm m2"></span>
+        <span className="mr-2 inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent align-middle"></span>
         Loading
       </span>
     );
 
   const errorMessage = validator && validator(account);
-  if (errorMessage) return <span className="text-warning">{errorMessage}</span>;
+  if (errorMessage) return <span className="text-yellow-500">{errorMessage}</span>;
 
   if (account.lamports === 0) {
     return <span className="text-muted-foreground">Account doesn&apos;t exist</span>;

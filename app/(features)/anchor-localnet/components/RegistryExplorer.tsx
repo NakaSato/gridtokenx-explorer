@@ -24,6 +24,7 @@ import { UsersTable } from './registry/UsersTable';
 import { MetersTable } from './registry/MetersTable';
 import { TablePagination } from './registry/TablePagination';
 import { InstructionReference } from './shared-explorer/InstructionReference';
+import { readU64LE, readI64LE, readU32LE } from '../lib/bytes';
 
 interface RegistryExplorerProps {
   rpcUrl: string;
@@ -93,9 +94,9 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
           registryData = {
             address: pubkey.toBase58(),
             authority: new PublicKey(d.slice(0, 32)).toBase58(),
-            userCount: Number(d.readBigUInt64LE(72)),
-            meterCount: Number(d.readBigUInt64LE(80)),
-            activeMeterCount: Number(d.readBigUInt64LE(88)),
+            userCount: Number(readU64LE(d, 72)),
+            meterCount: Number(readU64LE(d, 80)),
+            activeMeterCount: Number(readU64LE(d, 88)),
           };
         } catch (err) {
           console.error('Error parsing registry record:', err);
@@ -110,7 +111,7 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
           const userTypeNum = d[32];
           const statusNum = d[56];
           const isRegistered = statusNum === 0; // UserStatus::Active is 0
-          const meterCount = d.readUInt32LE(72);
+          const meterCount = readU32LE(d, 72);
 
           userList.push({
             address: pubkey.toBase58(),
@@ -135,8 +136,8 @@ export function RegistryExplorer({ rpcUrl, getConnection }: RegistryExplorerProp
           const isActive = statusNum === 0; // MeterStatus::Active is 0
           // Layout (state.rs MeterAccount): last_reading_at i64 @80 is a unix
           // timestamp; total_generation u64 @88 is cumulative energy.
-          const lastReadingAt = Number(d.readBigInt64LE(80));
-          const totalGeneration = Number(d.readBigUInt64LE(88));
+          const lastReadingAt = Number(readI64LE(d, 80));
+          const totalGeneration = Number(readU64LE(d, 88));
 
           meterList.push({
             address: pubkey.toBase58(),

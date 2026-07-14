@@ -10,7 +10,7 @@ export interface ProgramAccountInfo {
   dataSize: number;
   owner: string;
   executable: boolean;
-  data: Buffer | null;
+  data: Uint8Array | null;
 }
 
 export interface ProgramStatus {
@@ -213,7 +213,7 @@ export function useAnchorLocalnet(rpcUrl: string, enabled: boolean) {
         dataSize: account.data.length,
         owner: account.owner.toBase58(),
         executable: account.executable,
-        data: Buffer.from(account.data),
+        data: account.data as Uint8Array,
       }));
 
       setProgramAccounts(prev => ({ ...prev, [programKey]: mapped }));

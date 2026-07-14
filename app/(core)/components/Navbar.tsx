@@ -37,7 +37,7 @@ export function Navbar({ children }: INavbarProps) {
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="container mx-auto px-4">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between sm:h-16">
           {/* Logo */}
           <div className="flex items-center">

@@ -12,6 +12,9 @@ import {
 import { Button } from '@/app/(shared)/components/ui/button';
 import { FileCheck, Clock } from 'lucide-react';
 import { cn } from '@/app/(shared)/utils/cn';
+import { Address } from '@/app/(shared)/components/Address';
+
+const pk = (s: string) => ({ toBase58: () => s });
 
 interface CertificateData {
   address: string;
@@ -78,10 +81,8 @@ export function CertificatesTable({ certificates }: CertificatesTableProps) {
                   )}
                 </div>
               </TableCell>
-              <TableCell className="py-2">
-                <p className="w-24 truncate font-mono text-[10px] text-[#888]" title={cert.owner}>
-                  {cert.owner}
-                </p>
+              <TableCell className="py-2 text-[10px] text-[#888] [&_a]:text-[#888] [&_a:hover]:text-[#9945FF]">
+                <Address pubkey={pk(cert.owner)} link raw truncateChars={16} />
               </TableCell>
               <TableCell className="py-2 text-right">
                 <Button variant="ghost" size="icon" className="h-6 w-6 rounded-none hover:bg-[#9945FF]/20">

@@ -25,14 +25,14 @@ export function UnknownDetailsCard({
     <div className="bg-card rounded-lg border shadow-sm" ref={scrollAnchorRef}>
       <div className={`card-header${!expanded ? 'border-bottom-none' : ''}`}>
         <h3 className="mb-0 flex items-center text-lg font-semibold">
-          <span className="mr-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+          <span className="mr-2 inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-800 dark:text-blue-400">
             #{index + 1}
           </span>
           {programName} Instruction
         </h3>
 
         <button
-          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${expanded ? 'bg-gray-800 text-white' : 'border hover:bg-gray-100'}`}
+          className={`flex items-center rounded-md px-3 py-1.5 text-sm ${expanded ? 'bg-primary text-primary-foreground' : 'border hover:bg-muted'}`}
           onClick={() => setExpanded(e => !e)}
         >
           {expanded ? 'Collapse' : 'Expand'}
