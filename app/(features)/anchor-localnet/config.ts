@@ -121,10 +121,10 @@ export const PROGRAMS = {
   treasury: {
     id: runtimeConfig('TREASURY_PROGRAM_ID', process.env.NEXT_PUBLIC_TREASURY_PROGRAM_ID) || PROGRAM_IDS.treasury,
     name: 'Treasury',
-    description: 'THBG stablecoin reserve, GRX staking/rewards, and batch settlement commitments',
+    description: 'THBC stablecoin reserve, GRX staking/rewards, and batch settlement commitments',
     seeds: {
       treasury: [Buffer.from('treasury')],
-      thbg_mint: [Buffer.from('thbg_mint')],
+      thbc_mint: [Buffer.from('thbc_mint')],
       stake: (owner: string) => [Buffer.from('stake'), Buffer.from(owner)],
       settle_shard: (shardId: number) => [Buffer.from('settle_shard'), Buffer.from([shardId])],
       settlement: (zoneId: number, batchId: number) => [
@@ -139,11 +139,11 @@ export const PROGRAMS = {
       'record_settlement', 'record_settlement_batch',
       'initialize_settlement_shard', 'initialize_rebate_vault', 'record_settlement_sharded',
       'aggregate_settlement_shards', 'record_settlement_batch_sharded',
-      'swap_grx_for_thbg', 'redeem_thbg_for_grx',
+      'swap_grx_for_thbc', 'redeem_thbc_for_grx',
       'stake_grx', 'unstake_grx', 'claim_rewards', 'fund_rewards', 'slash_stake',
     ],
     events: [
-      'ReserveAttested', 'SwappedGrxForThbg', 'RedeemedThbgForGrx',
+      'ReserveAttested', 'SwappedGrxForThbc', 'RedeemedThbcForGrx',
       'Staked', 'Unstaked', 'RewardsClaimed', 'RewardsFunded',
       'SettlementRecorded', 'SettlementShardRecorded', 'SettlementBatchRecorded',
       'StakeSlashed',

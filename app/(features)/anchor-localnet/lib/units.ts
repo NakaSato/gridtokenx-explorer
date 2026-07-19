@@ -4,7 +4,7 @@
  * Energy amounts carry 9 decimals (ENERGY_AMOUNT_DECIMALS_DIVISOR = 1e9 in
  * gridtokenx-anchor/programs/trading/src/lib.rs) → kWh. Prices and currency
  * values (price_per_kwh, total_value, fee_amount) are 6-decimal micro-THB
- * (settlement currency, THBG) → THB. Decoders return the raw u64s untouched
+ * (settlement currency, THBC) → THB. Decoders return the raw u64s untouched
  * (see trading-decoders.ts, fixture-tested); scale here at the presentation
  * boundary only.
  */

@@ -24,7 +24,7 @@ import { readU64LE, readI64LE, readU32LE, readU16LE, bytesToHex } from '../lib/b
 import { cn } from '@/app/(shared)/utils/cn';
 import { InstructionReference } from './shared-explorer/InstructionReference';
 
-// Treasury token mints use 6 decimals (THBG_DECIMALS / GRX, state.rs).
+// Treasury token mints use 6 decimals (THBC_DECIMALS / GRX, state.rs).
 const TOKEN_DECIMALS = 6;
 // acc_reward_per_share is scaled by ACC_PRECISION = 1e12 (state.rs).
 const ACC_PRECISION = 1e12;
@@ -40,21 +40,21 @@ interface TreasuryData {
   authority: string;
   attestor: string;
   grxMint: string;
-  thbgMint: string;
+  thbcMint: string;
   settlementRecorder: string;
   attestedReserve: number;
   attestationTs: number;
   attestationTtl: number;
-  thbgSupply: number;
-  grxPerThbgRate: number;
+  thbcSupply: number;
+  grxPerThbcRate: number;
   totalStaked: number;
   rewardPool: number;
   createdAt: number;
-  totalSettledThbg: number;
+  totalSettledThbc: number;
   swapFeeBps: number;
   paused: boolean;
   bump: number;
-  thbgMintBump: number;
+  thbcMintBump: number;
   swapVaultBump: number;
   stakeVaultBump: number;
   rewardVaultBump: number;
@@ -73,7 +73,7 @@ interface StakePosition {
 interface SettlementShard {
   address: string;
   shardId: number;
-  settledThbg: number;
+  settledThbc: number;
   settlementCount: number;
   bump: number;
 }
@@ -138,21 +138,21 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
               authority: pk(d, 16),
               attestor: pk(d, 48),
               grxMint: pk(d, 80),
-              thbgMint: pk(d, 112),
+              thbcMint: pk(d, 112),
               settlementRecorder: pk(d, 144),
               attestedReserve: Number(readU64LE(d, 176)),
               attestationTs: Number(readI64LE(d, 184)),
               attestationTtl: Number(readI64LE(d, 192)),
-              thbgSupply: Number(readU64LE(d, 200)),
-              grxPerThbgRate: Number(readU64LE(d, 208)),
+              thbcSupply: Number(readU64LE(d, 200)),
+              grxPerThbcRate: Number(readU64LE(d, 208)),
               totalStaked: Number(readU64LE(d, 216)),
               rewardPool: Number(readU64LE(d, 224)),
               createdAt: Number(readI64LE(d, 232)),
-              totalSettledThbg: Number(readU64LE(d, 240)),
+              totalSettledThbc: Number(readU64LE(d, 240)),
               swapFeeBps: readU16LE(d, 248),
               paused: d[250] === 1,
               bump: d[251],
-              thbgMintBump: d[252],
+              thbcMintBump: d[252],
               swapVaultBump: d[253],
               stakeVaultBump: d[254],
               rewardVaultBump: d[255],
@@ -170,7 +170,7 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
           } else if (data.length === SIZE.shard + 8) {
             shardList.push({
               address: addr,
-              settledThbg: Number(readU64LE(d, 0)),
+              settledThbc: Number(readU64LE(d, 0)),
               settlementCount: Number(readU64LE(d, 8)),
               shardId: d[16],
               bump: d[17],
@@ -296,9 +296,9 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
               />
               <StatCard
                 icon={Coins}
-                label="THBG Supply"
-                value={fmtToken(treasury.thbgSupply)}
-                unit="THBG"
+                label="THBC Supply"
+                value={fmtToken(treasury.thbcSupply)}
+                unit="THBC"
                 accent="purple"
               />
               <StatCard
@@ -348,12 +348,12 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
               </CardHeader>
               <CardContent className="grid grid-cols-1 gap-x-8 gap-y-1 p-4 sm:grid-cols-2">
                 <Row label="Swap Fee" value={`${(treasury.swapFeeBps / 100).toFixed(2)} %`} />
-                <Row label="GRX per THBG Rate" value={treasury.grxPerThbgRate.toLocaleString()} />
+                <Row label="GRX per THBC Rate" value={treasury.grxPerThbcRate.toLocaleString()} />
                 <Row
                   label="Acc Reward / Share"
                   value={(Number(treasury.accRewardPerShare) / ACC_PRECISION).toLocaleString(undefined, { maximumFractionDigits: 6 })}
                 />
-                <Row label="Total Settled" value={`${fmtToken(treasury.totalSettledThbg)} THBG`} />
+                <Row label="Total Settled" value={`${fmtToken(treasury.totalSettledThbc)} THBC`} />
                 <Row
                   label="Attestation TTL"
                   value={treasury.attestationTtl > 0 ? `${treasury.attestationTtl}s` : '—'}
@@ -374,11 +374,11 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                 <Row label="Authority" value={treasury.authority} mono truncate />
                 <Row label="Attestor" value={treasury.attestor} mono truncate />
                 <Row label="GRX Mint" value={treasury.grxMint} mono truncate />
-                <Row label="THBG Mint" value={treasury.thbgMint} mono truncate />
+                <Row label="THBC Mint" value={treasury.thbcMint} mono truncate />
                 <Row label="Settlement Recorder" value={treasury.settlementRecorder} mono truncate />
                 <Row
                   label="PDA Bumps"
-                  value={`treasury ${treasury.bump} · thbg-mint ${treasury.thbgMintBump} · swap ${treasury.swapVaultBump} · stake ${treasury.stakeVaultBump} · reward ${treasury.rewardVaultBump} · rebate ${treasury.rebateVaultBump}`}
+                  value={`treasury ${treasury.bump} · thbc-mint ${treasury.thbcMintBump} · swap ${treasury.swapVaultBump} · stake ${treasury.stakeVaultBump} · reward ${treasury.rewardVaultBump} · rebate ${treasury.rebateVaultBump}`}
                   mono
                   truncate
                 />
@@ -424,7 +424,7 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                     <EmptyState label="No settlement records" />
                   ) : (
                     <DataTable
-                      head={['Batch', 'Zone', 'Total (THBG)', 'VAT', 'Recorder', 'Committed', 'Bump', 'Merkle Root']}
+                      head={['Batch', 'Zone', 'Total (THBC)', 'VAT', 'Recorder', 'Committed', 'Bump', 'Merkle Root']}
                       rows={settlements.map((s) => [
                         s.batchId.toLocaleString(),
                         s.zoneId.toLocaleString(),
@@ -446,10 +446,10 @@ export function TreasuryExplorer({ rpcUrl, getConnection }: TreasuryExplorerProp
                     <EmptyState label="No settlement shards initialized" />
                   ) : (
                     <DataTable
-                      head={['Shard', 'Settled (THBG)', 'Settlement Count', 'Bump']}
+                      head={['Shard', 'Settled (THBC)', 'Settlement Count', 'Bump']}
                       rows={shards.map((s) => [
                         `#${s.shardId}`,
-                        fmtToken(s.settledThbg),
+                        fmtToken(s.settledThbc),
                         s.settlementCount.toLocaleString(),
                         s.bump,
                       ])}

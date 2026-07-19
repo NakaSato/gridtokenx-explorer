@@ -74,7 +74,7 @@ const i64 = (d: Uint8Array, o: number) => Number(readI64LE(d, o));
 
 // On-chain scaling (trading program): energy amounts carry 9 decimals
 // (ENERGY_AMOUNT_DECIMALS_DIVISOR = 1e9) → kWh; price_per_kwh is 6-decimal
-// micro-THB (settlement currency, THBG) → THB. Raw u64s must be divided before
+// micro-THB (settlement currency, THBC) → THB. Raw u64s must be divided before
 // display, else e.g. 204_309_749_000 base units reads as "204B kWh".
 const ENERGY_DIVISOR = 1_000_000_000;
 const PRICE_DIVISOR = 1_000_000;
